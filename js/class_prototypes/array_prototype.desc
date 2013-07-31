@@ -1,0 +1,95 @@
+CLASS_PROTOTYPE("Array", array_prototype, object_prototype, array_class, {
+})
+
+CONSTRUCTOR("Array", array_prototype, do_array_constructor)
+
+FUNCTION("push", array_prototype, do_array_prototype_push, { 
+    .params = { 
+       { .name = "item1 [, item2 [, ...] ]", .description = "object[s] to be added" },
+     },
+    .description = "The arguments are appended to the end of the array, "
+        "in the order in which they appear",
+    .return_value = "The new length of the array",
+    .example = "var a = [];\n"
+        "a.push(1);",
+})
+
+FUNCTION("pop", array_prototype, do_array_prototype_pop, {
+    .params = { },
+    .description = "The last element of the array is removed from the array and returned",
+    .return_value = "Popped object",
+    .example = "var a = [ 2, 1 ];\n"
+        "var one = a.pop();",
+})
+
+FUNCTION("forEach", array_prototype, do_array_prototype_foreach, {
+    .params = { 
+        { 
+            .name = "cb", 
+            .description = "function that accepts three arguments:\n"
+ 	        "Value of the element, \n"
+ 	        "Index of the element, \n"
+ 	        "The object being traversed"
+        },
+        { 
+            .name = "this", 
+	    .description = "[optional] if provided, used as the "
+                "'this' value for each invocation of 'cb'. If not provided, "
+	        "'undefined' is used" 
+        },
+    },
+    .description = "Calls cb once for each element present in the "
+          "array, in ascending order",
+    .return_value = "undefined",
+    .example = "var a = [ 1, 2, 3];\n"
+	"a.forEach(function(value, k, obj) { debug.dump(value + ' [' + k + '] ' + ' @ ' + obj); });",
+})
+
+FUNCTION("indexOf", array_prototype, do_array_prototype_indexof, {
+    .params = { 
+        { .name = "searchElement", .description = "Object to search for" },
+        { .name = "fromIndex", .description = "[optional] start search index" },
+    },
+    .description = "Searches for searchElement in the elements of the array",
+    .return_value = "if found at one or more positions, returns the index of "
+         "the first such position (zero based); otherwise, -1 is returned",
+    .example = "var a = [ 1, 2, 3];\n"
+	"var one = a.indexOf(2);\n",
+})
+
+FUNCTION("join", array_prototype, do_array_prototype_join, {
+    .params = { 
+        { .name = "separator", .description = "[optional] string. If not "
+	    "provided, a single comma is used" },
+    },
+    .description = "Joins the string coversions of the elements of the array "
+        "separated by occurrences of the separator",
+    .return_value = "The resulted string",
+         "the first such position (zero based); otherwise, -1 is returned",
+    .example = "var a = [ 1, 2, 3];\n"
+	"debug.assert(a.join('-'), '1-2-3');\n",
+})
+
+FUNCTION("map", array_prototype, do_array_prototype_map, {
+    .params = { 
+        { 
+            .name = "cb", 
+            .description = "function that accepts three arguments:\n"
+ 	        "Value of the element, \n"
+ 	        "Index of the element, \n"
+ 	        "The object being traversed"
+        },
+        { 
+            .name = "this", 
+	    .description = "[optional] if provided, used as the "
+                "'this' value for each invocation of 'cb'. If not provided, "
+	        "'undefined' is used" 
+        },
+    },
+    .description = "Calls cb once for each element present in the array, "
+        "in ascending order, and constructs a new Array from the results",
+    .return_value = "The constructed array",
+    .example = "var a = [ 1, 2, 3];\n"
+	"var b = a.map(function(value, k, obj) { return value + 1 });\n"
+	"debug.assert(b, [ 2, 3, 4]);",
+})

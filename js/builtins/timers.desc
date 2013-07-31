@@ -1,0 +1,53 @@
+CATEGORY(timers, global_env, {
+    .display_name = "Timer",
+})
+
+FUNCTION("setTimeout", timers, do_set_timeout, {
+    .params = { 
+        { .name = "cb", .description = "Callback to be run" },
+        { .name = "ms", .description = "Timeout in milliseconds" },
+    },
+    .description = "Schedule 'cb' to run in ms milliseconds",
+    .return_value = "Timer ID that can be used in clearTimeout()",
+    .example = "setTimeout(function() { debug.dump('Timer Expired'); }, 1000);",
+})
+
+FUNCTION("setInterval", timers, do_set_interval, {
+    .params = { 
+        { .name = "cb", .description = "Callback to be run" },
+        { .name = "ms", .description = "Period in milliseconds" },
+    },
+    .description = "Schedule 'cb' to run periodically every ms milliseconds",
+    .return_value = "Timer ID that can be used in clearTimeout()",
+    .example = "setInterval(function() { debug.dump('.'); }, 1000);",
+})
+
+FUNCTION("clearTimeout", timers, do_clear_timeout, {
+    .params = { 
+        { .name = "tid", .description = "Timer ID to cancel" },
+    },
+    .description = "Cancel timeout timer if timeout hadn't expired",
+    .return_value = "None",
+    .example = "var to = setTimeout(function() { "
+        "debug.dump('timeout'); }, 1000);\n"
+	"clearTimeout(to);",
+})
+
+FUNCTION("clearInterval", timers, do_clear_interval, {
+    .params = { 
+        { .name = "tid", .description = "Timer ID to cancel" },
+    },
+    .description = "Cancel periodic timer",
+    .return_value = "None",
+    .example = "var to = setInterval(function() { "
+        "debug.dump('.'); }, 1000);\n"
+	"clearInterval(to);",
+})
+
+FUNCTION("getTime", timers, do_get_time, {
+    .params = { 
+    },
+    .description = "Get number of seconds since system startup",
+    .return_value = "Floating point time in seconds",
+    .example = "debug.dump('Up for ' + getTime() + ' seconds');",
+})

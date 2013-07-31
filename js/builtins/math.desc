@@ -1,0 +1,145 @@
+OBJECT("Math", math, {
+})
+
+CONST("E", math, e, STATIC_NUM_FP(2.71828182846))
+CONST("Pi", math, pi, STATIC_NUM_FP(3.14159265359))
+
+FUNCTION("sin", math, do_sin, {
+    .params = { 
+       { .name = "angle", .description = "angle in radians" },
+     },
+    .description = "Compute the sine of an angle",
+    .return_value = "sine of angle",
+    .example = "var zero = Math.sin(Pi);",
+})
+
+FUNCTION("asin", math, do_asin, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the arc sine of a number",
+    .return_value = "arc sine of x in radians",
+    .example = "var pi = Math.asin(1) * 2;",
+})
+
+FUNCTION("cos", math, do_cos, {
+    .params = { 
+       { .name = "angle", .description = "angle in radians" },
+     },
+    .description = "Compute the cosine of an angle",
+    .return_value = "Cosine of angle",
+    .example = "var one = Math.cos(0);",
+})
+
+FUNCTION("acos", math, do_acos, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the arc cosine of a number",
+    .return_value = "arc cosine of x in radians",
+    .example = "var zero = Math.acos(1);",
+})
+
+FUNCTION("tan", math, do_tan, {
+    .params = { 
+       { .name = "angle", .description = "angle in radians" },
+     },
+    .description = "Compute the tangent of an angle",
+    .return_value = "Tangent of angle",
+    .example = "var half =  Math.tan(0.463648);",
+})
+
+FUNCTION("atan", math, do_atan, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the arc tangent of a number",
+    .return_value = "arc tangent of x in radians",
+    .example = "var pi = Math.atan(1) * 4;",
+})
+
+FUNCTION("sqrt", math, do_sqrt, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the square root of a number",
+    .return_value = "Square root of x",
+    .example = "var three = Math.sqrt(9);",
+})
+
+FUNCTION("log", math, do_log, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the natural logarithm of a number",
+    .return_value = "Natural logarithm of x",
+    .example = "var zero = Math.log(1);",
+})
+
+FUNCTION("exp", math, do_exp, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the base-e exponent of a number",
+    .return_value = "Base-e exponent of x",
+    .example = "var e = Math.exp(1);",
+})
+
+FUNCTION("floor", math, do_floor, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the largest integral value not greater "
+        "than the argument",
+    .return_value = "Largest integer not greater than x",
+    .example = "var three = Math.floor(3.5);",
+})
+
+FUNCTION("ceil", math, do_ceil, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the smallest integral value not less "
+        "than the argument",
+    .return_value = "Smallest integer not less than x",
+    .example = "var three = Math.ceil(2.5);",
+})
+
+FUNCTION("round", math, do_round, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Round to nearest integer, away from zero",
+    .return_value = "Nearest integer to x",
+    .example = "var three = Math.round(2.7);\n"
+        "var two = Math.round(2.2);",
+})
+
+FUNCTION("abs", math, do_abs, {
+    .params = { 
+       { .name = "x", .description = "number" },
+     },
+    .description = "Compute the absolute value of an integer",
+    .return_value = "Absolute value of x",
+    .example = "var two = Math.abs(-2);",
+})
+
+FUNCTION("atan2", math, do_atan2, {
+    .params = { 
+       { .name = "x", .description = "number" },
+       { .name = "y", .description = "number" },
+     },
+    .description = "Compute the arc tangent of two variables",
+    .return_value = "Principal value of the arc tangent of y/x in radians",
+    .example = "var pi = Math.atan2(1, 1) * 4;",
+})
+
+FUNCTION("pow", math, do_pow, {
+    .params = { 
+       { .name = "x", .description = "number" },
+       { .name = "y", .description = "number" },
+     },
+    .description = "Power function",
+    .return_value = "x to the power of y",
+    .example = "var hundred = Math.pow(10, 2);",
+})

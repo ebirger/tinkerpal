@@ -1,0 +1,10 @@
+debug.assert(3=="3",true);
+debug.assert(3=="4",false);
+debug.assert("3"==3,true);
+debug.assert("13"==3,false);
+debug.assert("13"!=3,true);
+debug.assert(0 == false, true);
+debug.assert(0 == true, false);
+debug.assert(1 == true, true);
+debug.assert(1 == false, false);
+debug.assert(1 != false, true);

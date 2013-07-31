@@ -1,0 +1,13 @@
+/* XXX: this needs a lot more details */
+CATEGORY(module, global_env, {
+    .display_name = "Module",
+})
+
+FUNCTION("require", module, do_require, {
+    .params = { 
+       { .name = "module_name", .description = "String containing module name to load" },
+     },
+    .description = "Searches for a module and evaluates its code",
+    .return_value = "The module's 'exports' property",
+    .example = "var as = require('assert');",
+})

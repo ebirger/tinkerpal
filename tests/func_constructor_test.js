@@ -1,0 +1,16 @@
+var f = new Function();
+f.prototype.bla = function() { return 1; };
+debug.assert(f.bla(), 1);
+var g = new f();
+debug.assert(g.bla(), 1);
+var two = new Function("1 + 1");
+debug.assert(two(), 2);
+var echo = new Function("a", "a");
+debug.assert(echo(1), 1);
+debug.assert(echo("kuku"), "kuku");
+var sum = new Function("a", "b", "a+b");
+debug.assert(sum(1, 2), 3);
+var sum = new Function("a, b", "a+b");
+debug.assert(sum(1, 2), 3);
+var sum = new Function("a, b", "c",  "a+b+c");
+debug.assert(sum(1, 2, 3), 6);

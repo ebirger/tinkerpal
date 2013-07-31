@@ -1,0 +1,12 @@
+tags
+build.*
+staging.*
+.config
+.config.old
+.sw*
+.*.swp
+.*.swo
+include
+*/gmon.out
+gmon.out
+.vagrant

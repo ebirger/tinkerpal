@@ -1,0 +1,22 @@
+Platforms
+=========
+- TI Stellaris Launchpad (LM4F120XL)
+- STM32F3Discovery
+- Linux/Cygwin
+
+Installation
+============
+Basic pre-requisites:
+gcc
+make
+gperf
+bison
+libncurses5-dev
+
+lm4tools:
+git-core
+libusb-1.0.0-dev
+pkg-config
+
+Runtime:
+screen / minicom / putty

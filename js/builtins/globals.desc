@@ -1,0 +1,56 @@
+FUNCTION("eval", global_env, do_eval, {
+    .params = { 
+       { .name = "str", .description = "String to be evaluated" },
+     },
+    .description = "Evaluate the given String",
+    .return_value = "Last valued statement return value",
+    .example = "var two = eval('1+1');",
+})
+
+FUNCTION("toInteger", global_env, do_to_integer, {
+    .params = { 
+       { .name = "object", .description = "Object to be converted" },
+     },
+    .description = "Convert the given object to an integer value",
+    .return_value = "Numeric value of converted object",
+    .example = "var n = toInteger('5') + 1;",
+})
+
+OBJECT("debug", debug, {
+})
+
+FUNCTION("assert", debug, do_assert, {
+    .params = { 
+       { .name = "object1", .description = "Object for comparison" },
+       { .name = "object2", .description = "Object for comparison" },
+     },
+    .description = "Panic on mismatch between two objects",
+    .return_value = "None",
+    .example = "debug.assert(1, 1);",
+})
+
+FUNCTION("assert_cond", debug, do_assert_cond, {
+    .params = { 
+       { .name = "object", .description = "Object to test" },
+     },
+    .description = "Panic if object is false",
+    .return_value = "None",
+    .example = "debug.assert_cond(1 == 1);",
+})
+
+FUNCTION("dump", debug, do_dump, {
+    .params = { 
+       { .name = "object", .description = "Object to display" },
+     },
+    .description = "Dump object to the console",
+    .return_value = "None",
+    .example = "debug.dump('Hello World');",
+})
+
+FUNCTION("dump_env", debug, do_dump_env, {
+    .params = { 
+     },
+    .description = "Dump global environment information to the console",
+    .return_value = "None",
+    .example = "debug.dump_env();",
+})

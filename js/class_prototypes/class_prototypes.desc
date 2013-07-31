@@ -1,0 +1,11 @@
+CLASS_PROTOTYPE("Number", num_prototype, object_prototype, num_class, {
+})
+
+CLASS_PROTOTYPE("Undefined", undefined_prototype, object_prototype, undefined_class, {
+})
+
+CLASS_PROTOTYPE("Null", null_prototype, object_prototype, null_class, {
+})
+
+CLASS_PROTOTYPE("Bool", bool_prototype, object_prototype, bool_class, {
+})

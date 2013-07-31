@@ -1,0 +1,5 @@
+MK_OBJS+=$(if $(CONFIG_BUILTIN_GLOBALS),globals.o)
+MK_OBJS+=$(if $(CONFIG_BUILTIN_TIMERS),timers.o)
+MK_OBJS+=$(if $(CONFIG_BUILTIN_MATH),math.o)
+MK_OBJS+=$(if $(CONFIG_MODULES),module.o)
+MK_DESCS:=$(MK_OBJS:%.o=%.desc)

@@ -1,0 +1,47 @@
+PROTOTYPE("Serial", serial, {
+})
+
+CONSTRUCTOR("Serial", serial, do_serial_constructor)
+
+FUNCTION("enable", serial, do_serial_enable, {
+    .params = { }, .description = "Enable a serial port",
+    .return_value = "None",
+    .example = "var s = new Serial(UART1);\n"
+        "s.enable();",
+})
+
+FUNCTION("disable", serial, do_serial_disable, {
+    .params = { },
+    .description = "Disable a serial port",
+    .return_value = "None",
+    .example = "var s = new Serial(UART1);\n"
+        "s.disable();",
+})
+
+FUNCTION("print", serial, do_serial_print, {
+    .params = {
+        { .name = "string" , .description = "String to be printed to serial port" }
+    },
+    .description = "Prints string",
+    .return_value = "None",
+    .example = "var s = new Serial(UART1);\n"
+        "s.print('Hello World!');",
+})
+
+FUNCTION("onData", serial, do_serial_on_data, {
+    .params = {
+        { .name = "cb", .description = "callback function accepting a data object" },
+    },
+    .description = "Calls 'cb' when data is available on serial port",
+    .return_value = "Event ID",
+    .example = "var s = new Serial(UART1);\n"
+        "s.onData(function(e) { s.print(e.data); });",
+})
+
+FUNCTION("setConsole", serial, do_serial_set_console, {
+    .params = { },
+    .description = "Sets TinkerPal console to the given serial port",
+    .return_value = "None",
+    .example = "var s = new Serial(UART1);\n"
+        "s.setConsole",
+})

@@ -1,0 +1,51 @@
+menu "Core Tuning"
+
+config JS
+	bool "JS support"
+	default y
+
+config PLAT_HAS_MALLOC
+	bool
+
+choice
+	prompt "Memory allocation mode"
+	default MALLOC
+
+config MALLOC
+	bool "Use libc malloc"
+	depends on PLAT_HAS_MALLOC
+
+config DLMALLOC
+	bool "Use Doug Lea malloc"
+	depends on !TI_CCS5
+
+endchoice
+
+config MEM_PROFILING
+	bool "Allow profiling of used memory"
+	help
+		In order to profile memory use, additional space is allocated 
+		on each request in order to keep track of allocated memory.
+		This is used by OBJ_REGISTRY and MEM_ALLOCATION_LIMIT
+		If in doubt, say n
+
+config DLMALLOC_STATISTICS
+	bool "dlmalloc Statistics"
+	depends on DLMALLOC && MEM_PROFILING
+	default y if PLATFORM_EMULATION
+
+config OBJ_REGISTRY
+	bool "Object Registry Records"
+	depends on MEM_PROFILING
+	default y if PLATFORM_EMULATION
+
+config MEM_ALLOCATION_LIMIT
+	bool "Limit amount of allocated memory"
+	depends on MEM_PROFILING
+
+config MEM_ALLOCATION_LIMIT_BYTES
+	int "Maximum number of allocated bytes"
+	depends on MEM_ALLOCATION_LIMIT
+	default 32768
+
+endmenu

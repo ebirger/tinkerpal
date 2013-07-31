@@ -1,0 +1,3 @@
+MK_OBJS+=$(if $(CONFIG_PLATFORM_EMULATION),sim.o)
+MK_OBJS+=$(if $(CONFIG_UNIX),unix.o)
+LIBS+=-lm

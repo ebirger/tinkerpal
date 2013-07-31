@@ -1,0 +1,93 @@
+Platform
+========
+- Additional platforms (TI Stellaris, TI MSP430 (possible?), Raspi, STM32,
+    Piccollo, MIPS, AVR32, PIC32)
+- STM32F{4,0}Discovery
+- Pinguino
+- Freescale FRDM
+- LCD (canvas API?)
+- CMSIS API integration (?)
+- Correct and power managed "select"
+- Consolidate "select" for all platforms?
+- Peripherals (I2C, USB, SPI, 1Wire)
+- Permanent storage support
+- USB Mass storage support so modules could be edited on the fly (!)
+- Multiple UARTS on STM32
+- DigitalRead, AnalogRead, AnalogWrite on STM32
+- Allow using Arduino like libraries (libmaple, energia, ...)
+- Porting assistive apps (blinky, peripheral tests) that don't use JS
+
+OS
+==
+- Properly define os/platform/scheduling framework boundries
+- malloc / free from os layer
+- RTOS support (FreeRTOS, contiki)
+- Windows native (MinGW / Visual Studio)
+- Windows no Cygwin build (?)
+- Libevent support
+
+Apps
+====
+- CLI improvements (autocomplete, multiline edit, variable size history buffer)
+
+Core
+====
+- 1/2 = 0 (!)
+- Memory cache for objects
+- Builtinfs doesn't support file extensions
+- Execution break (CTRL-C)
+- binary number values (0b110011)
+- Formatting exceptions ("pinmod %s is not available")
+- Proper types (u8 ? uint8_t ?, ..)
+- Convert most assertions to exceptions
+- Exceptions within expressions
+- Assertion fail on long "while" loops
+- Reduce memory footprint
+- Memory leaks
+- Minimize stack usage
+- additional operators (<<=, >>=, comma)
+- reduce libc dependency
+- Concise "this" semantics
+- Strict mode
+- Garbage collection - fix function vars mess - example:
+    var kuku = {};
+    kuku.pupu = function() {};
+- Various objects as objects prototypes in literal definitions (e.g. { "xxx" : "yyy" }
+  instead of { xxx : "yyy" }, { 1 : "yy" })
+- Additional keywords (arguments, constructor, do, with, throw, typeof, delete)
+- Error objects
+- Typed arrays
+- Regexps
+- Rename var_t
+- Multi instance
+- Object descriptions
+- Help items in Kconfig
+- Node.js like API
+
+Infrastructure/Coding
+=====================
+- Add dependency on Makefiles
+- Get rid of redundant forward decl.
+- Make sure all static functions are declared static
+- Code cleanups - remove all XXXs
+- Improve builtin API
+- Build using ccs5 project/other IDEs
+- Allow building as library
+- Automatic binding functions init from .desc files
+
+Release
+=======
+- Vagrant SDK (minimal size)
+- OpenWRT/Buildroot?
+- Packaging
+- Web based IDE
+- Reference for all builtin functions
+- Proper licensing
+
+Debugging
+=========
+- TI UIA log messages
+- Firebug / Webinspector / Chrome developer / jsconsole.com - remote debugging
+- ECMA262 tests
+- Debugger
+- Can we run jslinux ?

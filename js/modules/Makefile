@@ -1,0 +1,3 @@
+# Builtin modules
+MODULES+=$(if $(CONFIG_MODULE_ASSERT),assert.js)
+MK_BUILTIN_FS_INTERNAL_FILES=$(MODULES)

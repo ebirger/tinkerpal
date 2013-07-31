@@ -1,0 +1,4 @@
+TOOLCHAIN_MKS+=$(if $(CONFIG_GCC),gcc.mk)
+TOOLCHAIN_MKS+=$(if $(CONFIG_TI_CCS5),ti_ccs5.mk)
+
+include $(addprefix scripts/,$(TOOLCHAIN_MKS))

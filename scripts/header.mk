@@ -1,0 +1,7 @@
+MK_SUBDIRS:=
+MK_INCLUDES:=
+MK_OBJS:=
+MK_LINKS:=
+MK_DESCS:=
+MK_BUILTIN_FS_INTERNAL_FILES:=
+$(shell mkdir -p $(BUILD)/$(d))

@@ -1,0 +1,21 @@
+OBJECT("fs", fs, {
+    .display_name = "File System",
+})
+
+FUNCTION("readFileSync", fs, do_read_file_sync, {
+    .params = { 
+       { .name = "path", .description = "File Path" },
+     },
+    .description = "Synchronously reads the entire contents of a file",
+    .return_value = "String containing the entire file contents",
+    .example = "var s = fs.readFileSync('FAT/file.txt');",
+})
+
+FUNCTION("readdirSync", fs, do_readdir_sync, {
+    .params = { 
+       { .name = "path", .description = "Directory Path" },
+     },
+    .description = "Synchronously reads the directory listing of a path",
+    .return_value = "Array containing the files / directories names",
+    .example = "var s = fs.readdirSync('FAT/');",
+})

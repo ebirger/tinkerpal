@@ -1,0 +1,15 @@
+menu "Built-in Features"
+
+config BUILTIN_GLOBALS
+	bool "Global functions"
+	default y
+
+config BUILTIN_TIMERS
+	bool "Timer functions"
+	default y
+
+config BUILTIN_MATH
+	bool "Math functions"
+	default y
+
+endmenu

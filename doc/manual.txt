@@ -1,0 +1,68 @@
+TinkerPal User's Manual
+=======================
+Eyal Birger <eyal.birger@gmail.com>
+v0.1, May 2013
+:toc:
+:icons:
+:numbered:
+:website: http://www.tinkerpal.org
+
+TinkerPal is a lightweight JavaScript interpreter designed for low cost, low power
+microcontrollers (MCUs) allowing rapid prototyping of embedded projects
+
+Supported Boards
+----------------
+
+TI's Stellaris(R)
+~~~~~~~~~~~~~~~~~
+* EK-LM4F120XL (Stellaris(R) LaunchPad)
+* EK-LM3S6965
+
+STMicroelectronics' STM32(C)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* STM32F3DISCOVERY
+
+Quick Start
+-----------
+
+Downloading TinkerPal
+~~~~~~~~~~~~~~~~~~~~~
+
+Flashing TinkerPal
+~~~~~~~~~~~~~~~~~~
+
+Connecting via Serial
+~~~~~~~~~~~~~~~~~~~~~
+
+Quick Examples
+~~~~~~~~~~~~~~
+
+Peripherals Support
+-------------------
+
+Summary
+~~~~~~~
+
+.table
+[options="header"]
+|=================
+||Stellaris(R) LaunchPad | EK~LM3S6965 | STM32F3DISCOVERY
+| GPIO | Supported |  Partial |  Partial
+| UART | Supported | Partial | Partial
+|=================
+
+Hardware Pin Mapping
+~~~~~~~~~~~~~~~~~~~~
+
+Hacking TinkerPal
+-----------------
+
+Development Environment
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Porting TinkerPal to a New Board
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Porting TinkerPal to a New Chipset
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

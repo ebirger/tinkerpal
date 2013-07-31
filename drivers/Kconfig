@@ -1,0 +1,35 @@
+menu "Drivers"
+
+config SPI
+	bool "SPI support"
+	depends on PLAT_HAS_SPI
+	default y
+
+config GPIO
+	bool "GPIO support"
+	depends on PLAT_HAS_GPIO
+	default y
+
+config MMC
+	bool "MMC over SPI support"
+	depends on SPI && GPIO
+	default y
+
+config VFS
+	bool "File Systems Support"
+	default y
+
+if VFS
+source "drivers/fs/Kconfig"
+endif
+
+config LCD
+	bool "LCD Drivers"
+	depends on GPIO
+	default y
+
+if LCD
+source "drivers/lcd/Kconfig"
+endif
+
+endmenu

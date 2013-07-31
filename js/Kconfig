@@ -1,0 +1,25 @@
+menu "JS Tuning"
+
+config MAX_FUNCTION_CALL_ARGS
+	int "Maximum Number of Arguments Allowed on a Function Call"
+	range 1 20
+	default 11
+	help
+		In general there is no need to tinker with this value.
+		Change it in case you need to send a large amount of 
+		arguments to a function.
+
+source "js/builtins/Kconfig"
+
+config MODULES
+	bool "Modules support"
+	depends on VFS
+	default y
+
+if MODULES
+
+source "js/modules/Kconfig"
+
+endif
+
+endmenu

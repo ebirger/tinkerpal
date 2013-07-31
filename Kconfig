@@ -1,0 +1,13 @@
+mainmenu "TinkerPal Configuration"
+
+config TINKERPAL
+	bool
+	default y
+
+source "platform/Kconfig"
+source "apps/Kconfig"
+source "main/Kconfig"
+if JS
+source "js/Kconfig"
+endif
+source "drivers/Kconfig"

@@ -1,0 +1,70 @@
+CATEGORY(gpio, global_env, {
+    .display_name = "GPIO",
+})
+
+FUNCTION("digitalWrite", gpio, do_digital_write, {
+    .params = { 
+       { .name = "pin[s]", .description = "Single GPIO ID or array of GPIO IDs" },
+       { .name = "value", .description = "Boolean for a single GPIO\n"
+         "In case of an array, value is considered an integer where the\n"
+	 "first array element maps to the MSB" },
+     },
+    .description = "Set the digital value of a GPIO or a number of GPIOs",
+    .return_value = "None",
+    .example = "digitalWrite(GPIO_PF2, true); /* Turn on PF2 */\n"
+        "digitalWrite([GPIO_PF1, GPIO_PF2, GPIO_PF3], 0x5); /* Turn on PF1 & "
+	"PF3 */",
+})
+
+FUNCTION("digitalPulse", gpio, do_digital_pulse, {
+    .params = { 
+       { .name = "pin", .description = "GPIO pin ID" },
+       { .name = "value", .description = "Boolean" },
+       { .name = "ms", .description = "Pulse period in milliseconds" },
+     },
+    .description = "Create a digital pulse on a GPIO pin for a given period",
+    "Set the digital value of a GPIO or a number of GPIOs",
+    .return_value = "None",
+    .example = "digitalPulse(GPIO_PF2, true, 0.1);",
+})
+
+FUNCTION("digitalRead", gpio, do_digital_read, {
+    .params = { 
+       { .name = "pin[s]", .description = "GPIO pin ID or array of GPIO pin IDs" },
+     },
+    .description = "Read the digital state of a GPIO pin or a number of pins",
+    .return_value = "Single pin - boolean GPIO state\n"
+      "Multiple pin array - number representing the pins state where the first "
+      "pin is the MSB",
+    .example = "var state = digitalRead(GPIO_PF2);\n"
+      "var a = digitalRead([GPIO_PF0, GPIO_PF1, GPIO_PF2",
+})
+
+FUNCTION("analogWrite", gpio, do_analog_write, {
+    .params = { 
+       { .name = "pin", .description = "GPIO pin ID" },
+       { .name = "value", .description = "Floating point number with range [0-1]" },
+     },
+    .description = "Set the analog value of a GPIO pin",
+    .return_value = "None",
+    .example = "analogWrite(GPIO_PF2, 0.5);",
+})
+
+FUNCTION("analogRead", gpio, do_analog_read, {
+    .params = { 
+       { .name = "pin", .description = "GPIO pin ID" },
+     },
+    .description = "Read the analog value of a GPIO pin",
+    .return_value = "Floating point number with range [0-1]",
+    .example = "var f = analogRead(GPIO_PF2);",
+})
+
+FUNCTION("setWatch", gpio, do_set_watch, {
+    .params = { 
+       { .name = "cb", .description = "callback function" },
+       { .name = "pin", .description = "GPIO pin ID" },
+     },
+    .description = "Calls a callback function whenever the GPIO pin changes state",
+    .return_value = "Event ID",
+    .example = "setWatch(function() { debug.dump('button changed state'); }, GPIO_PF0);",
+})

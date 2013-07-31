@@ -1,0 +1,7 @@
+menu "Modules"
+
+config MODULE_ASSERT
+	bool "Assert module"
+	default y
+
+endmenu

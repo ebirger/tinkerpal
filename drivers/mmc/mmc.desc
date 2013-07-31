@@ -1,0 +1,4 @@
+PROTOTYPE("MMC", mmc, {
+})
+
+CONSTRUCTOR("MMC", mmc, do_mmc_constructor)

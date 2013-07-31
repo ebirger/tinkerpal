@@ -1,0 +1,23 @@
+menu "Toolchain"
+
+config PLAT_HAS_GCC
+	bool
+
+config PLAT_HAS_TI_CCS5
+	bool
+
+choice
+	prompt "Toolchain"
+	default GCC
+
+config GCC
+	bool "GCC"
+	depends on PLAT_HAS_GCC
+
+config TI_CCS5
+	bool "TI Code Composer Studio 5"
+	depends on PLAT_HAS_TI_CCS5
+
+endchoice
+
+endmenu

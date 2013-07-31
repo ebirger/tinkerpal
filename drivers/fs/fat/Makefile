@@ -1,0 +1,2 @@
+MK_SUBDIRS+=FatFS
+MK_OBJS=fat.o

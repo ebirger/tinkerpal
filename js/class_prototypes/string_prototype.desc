@@ -1,0 +1,62 @@
+CLASS_PROTOTYPE("String", string_prototype, object_prototype, string_class, {
+})
+
+CONSTRUCTOR("String", string_prototype, do_string_constructor)
+
+FUNCTION("split", string_prototype, do_string_prototype_split, { 
+    .params = { 
+       { .name = "separator", .description = "Delimiter" },
+     },
+    .description = "Breaks a string into substrings based on occurences of "
+        "'separator'",
+    .return_value = "Array of strings, 'separator' is not part of the strings",
+    .example = "var s = '1|2|3';\n"
+        "var a = s.split('|');\n"
+	"debug.assert(a, [ '1', '2', '3' ]);",
+})
+
+FUNCTION("indexOf", string_prototype, do_string_prototype_indexof, { 
+    .params = { 
+       { .name = "searchString", .description = "String to search for" },
+     },
+    .description = "Search for occurences of 'searchString' in a given string",
+    .return_value = "If 'searchString' is found, the firt index is returned; "
+         "-1 otherwise",
+    .example = "var s = 'looking for me';\n"
+        "var i = s.indexOf('for');\n"
+	"debug.assert(i, 8);",
+})
+
+FUNCTION("substring", string_prototype, do_string_prototype_substring, { 
+    .params = { 
+       { .name = "start", .description = "Character position to start from" },
+       { .name = "end", .description = "Character position to end with "
+           "(not including" },
+     },
+    .description = "Creates a new string based on a subset of a given string",
+    .return_value = "A string containing the characters in the original string "
+        "in the range [start,end)",
+    .example = "var s = 'a big string';\n"
+        "var big = s.substring(2, 5);",
+})
+
+FUNCTION("charAt", string_prototype, do_string_prototype_char_at, { 
+    .params = { 
+       { .name = "pos", .description = "Position of character" },
+     },
+    .description = "Creates a new string containing the character at a position",
+    .return_value = "A string containing the character at position 'pos'",
+    .example = "var s = 'a string';\n"
+        "var a = s.charAt(0);",
+})
+
+FUNCTION("charCodeAt", string_prototype, do_string_prototype_char_code_at, { 
+    .params = { 
+       { .name = "pos", .description = "Position of character" },
+     },
+    .description = "Get the ASCII value of the character at a position",
+    .return_value = "A number containing the ASCII value of the character "
+        "at position 'pos'",
+    .example = "var s = 'a string';\n"
+        "var ninty_seven = s.charCodeAt(0);",
+})

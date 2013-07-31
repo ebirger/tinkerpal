@@ -1,0 +1,40 @@
+menu "Application"
+
+config HAVE_CMDLINE
+	bool
+
+choice
+	prompt "Application"
+
+config APP_CLI
+	bool "Command Line Interface (CLI) Application"
+	depends on JS
+
+config APP_FILE_LOADER
+	bool "Application accepting a source file via command line"
+	depends on HAVE_CMDLINE && JS
+
+config APP_STATIC_FILE
+	bool "Static File Application"
+	depends on JS
+
+config APP_DUMMY
+	bool "Dummy. Does nothing. Used for testing"
+
+endchoice
+
+config APP_STATIC_FILE_PATH
+	string "Static File Path"
+	depends on APP_STATIC_FILE
+
+config APP_CLI_HISTORY_BUFFER_SIZE
+	int "History Buffer Size"
+	depends on APP_CLI
+	default 2048
+
+config APP_CLI_SYNTAX_HIGHLIGHTING
+	bool "Syntax highlighting"
+	depends on APP_CLI
+	default y
+
+endmenu

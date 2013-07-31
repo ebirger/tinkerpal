@@ -1,0 +1,12 @@
+CLASS_PROTOTYPE("Object", object_prototype, NULL, object_class, {
+})
+
+CONSTRUCTOR("Object", object_prototype, do_object_constructor)
+
+FUNCTION("toString", object_prototype, do_object_prototype_to_string, { 
+    .params = { },
+    .description = "The object is converted to a string",
+    .return_value = "String value",
+    .example = "var a = 1;\n"
+        "debug.assert(a.toString(), '1');",
+})

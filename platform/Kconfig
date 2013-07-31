@@ -1,0 +1,108 @@
+menu "Platform"
+
+config ARM
+	bool
+
+config STELLARIS
+	bool
+
+config STM32
+	bool
+
+config PLAT_HAS_GPIO
+	bool
+
+config PLAT_HAS_GPIO_INTERRUPTS
+	bool
+
+config PLAT_HAS_SERIAL
+	bool
+
+config PLAT_HAS_SPI
+	bool
+
+config BUFFERED_SERIAL
+	bool
+	depends on PLAT_HAS_SERIAL
+
+config PLAT_HAS_BLK
+	bool
+
+config UNIX
+	bool
+	select PLAT_HAS_MALLOC
+	select HAVE_CMDLINE
+	select PLAT_HAS_GCC
+
+config LM3S6918
+	bool
+	select ARM
+	select STELLARIS
+	select PLAT_HAS_GCC
+	select PLAT_HAS_TI_CCS5
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+	select PLAT_HAS_SPI
+	select PLAT_HAS_MALLOC
+
+choice 
+
+prompt "Platform"
+
+config PLATFORM_EMULATION
+	bool "Unix Platform Emulation"
+	select UNIX
+	select PLAT_HAS_SERIAL
+	help
+		Simulator using STDIO as console and PTY as UART
+		Uses Posix API, tested on Linux & Cygwin
+
+config LM4F120XL
+	bool "TI LM4F120XL (Stellaris Launchpad)"
+	select ARM
+	select STELLARIS
+	select PLAT_HAS_GCC
+	select PLAT_HAS_TI_CCS5
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_GPIO_INTERRUPTS
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+	select PLAT_HAS_MALLOC
+	select PLAT_HAS_SPI
+
+config LM3S6965
+	bool "TI LM3S6965"
+	select ARM
+	select STELLARIS
+	select PLAT_HAS_GCC
+	select PLAT_HAS_TI_CCS5
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+	select PLAT_HAS_SPI
+	select PLAT_HAS_MALLOC
+
+config RDK_IDM
+	bool "TI RDK-IDM (LM3S6918)"
+	select LM3S6918
+
+config STM32F3DISCOVERY
+	bool "ST Micro STM32F3 Discovery board"
+	select ARM
+	select STM32
+	select PLAT_HAS_GCC
+	select PLAT_HAS_MALLOC
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+
+endchoice
+
+if UNIX
+source "platform/unix/Kconfig"
+endif
+
+source "platform/Kconfig.toolchain"
+
+endmenu

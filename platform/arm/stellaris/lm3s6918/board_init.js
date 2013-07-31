@@ -1,0 +1,1 @@
+new MMC(SPI0, GPIO_PE2, GPIO_PE1);

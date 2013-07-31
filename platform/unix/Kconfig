@@ -1,0 +1,22 @@
+menu "Platform Emulation Options"
+
+config PLATFORM_EMULATION_PTY_TERM
+	bool "PTY Terminal"
+	default y
+
+config PLATFORM_EMULATION_BLOCK_DISK
+	bool "Block Disk Emulation"
+	default y
+	select PLAT_HAS_BLK
+
+config PLATFORM_EMULATION_BLOCK_DISK_PATH
+	string "Block Disk Path"
+	depends on PLATFORM_EMULATION_BLOCK_DISK
+	default "/tmp/tp_block_disk.img"
+
+config PLATFORM_EMULATION_BLOCK_DISK_NUM_SECTORS
+	int "Block Disk Number of Sectors"
+	depends on PLATFORM_EMULATION_BLOCK_DISK
+	default 2048
+
+endmenu
