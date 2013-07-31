@@ -10,19 +10,22 @@ Platforms
 
 Installation
 ============
-Basic pre-requisites:
-gcc
-make
-gperf
-bison
-libncurses5-dev
+Basic pre-requisites
+--------------------
+- gcc
+- make
+- gperf
+- bison
+- libncurses5-dev
 
-lm4tools:
-git-core
-libusb-1.0.0-dev
-pkg-config
+lm4tools
+--------
+- git-core
+- libusb-1.0.0-dev
+- pkg-config
 
-Runtime:
+Runtime
+-------
 screen / minicom / putty
 
 Obtaining Toolchain / SDK
@@ -33,17 +36,21 @@ Obtaining Toolchain / SDK
 
 Building
 ========
+```
 > make menuconfig
 > make
+```
 
 Environment Variables
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 - CROSS_COMPILE - compiler prefix
 - Other platform specific variables are required. See targets/
 
 Building for a specific target
 ==============================
+```
 > make <defconfig file>
 Where defconfig files can be found in targets/
 > . ./targets/setenv_<target>.sh
 > make
+```
