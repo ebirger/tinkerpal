@@ -837,10 +837,11 @@ Exit:
 
 static int eval_return(obj_t **ret, scan_t *scan)
 {
-    int rc;
+    int rc = 0;
 
     js_scan_match(scan, TOK_RETURN);
-    rc = eval_expression(ret, scan);
+    if (CUR_TOK(scan) != TOK_END_STATEMENT)
+	rc = eval_expression(ret, scan);
     return rc ? rc : COMPLETION_RETURN;
 }
 
