@@ -22,73 +22,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __DRIVERS_SPI_H__
-#define __DRIVERS_SPI_H__
+#include "util/tmalloc.h"
+#include "util/event.h"
+#include "util/debug.h"
+#include "main/console.h"
+#include "js/js_obj.h"
+#include "drivers/spi/spi.h"
 
-#include "drivers/resources.h"
-#include "platform/platform.h"
+#define Sspi_id S("spi_id")
 
-/* XXX: API should provide error indication
- * CS should be part of the SPI driver */
+/* XXX: provide CS */
 
-static inline int spi_init(int port)
+static int get_spi_id(obj_t *o)
 {
-    if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
-	return -1;
-
-    return platform.spi.init(RES_ID(port));
+    int ret = -1;
+    
+    tp_assert(!obj_get_property_int(&ret, o, Sspi_id));
+    return ret;
 }
 
-static inline void spi_reconf(int port)
+int do_spi_receive(obj_t **ret, function_t *func, obj_t *this,
+    int argc, obj_t *argv[])
 {
-    if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
-	return;
-
-    platform.spi.reconf(RES_ID(port));
-}
-
-static inline void spi_set_max_speed(int port, int speed)
-{
-    if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
-	return;
-
-    platform.spi.set_max_speed(RES_ID(port), speed);
-}
-
-static inline void spi_send(int port, unsigned long data)
-{
-    if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
-	return;
-
-    platform.spi.send(RES_ID(port), data);
-}
-
-static inline unsigned long spi_receive(int port)
-{
-    if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
-	return 0;
-
-    return platform.spi.receive(RES_ID(port));
-}
-
-static inline int spi_get_constant(int *constant, char *buf, int len)
-{
-#define SPI_PREFIX "SPI"
-
-    if (len < sizeof(SPI_PREFIX) -1 || 
-	prefix_comp(sizeof(SPI_PREFIX) - 1, SPI_PREFIX, buf))
-    {
-	return -1;
-    }
-
-    buf += sizeof(SPI_PREFIX) - 1;
-    len -= sizeof(SPI_PREFIX) - 1;
-
-    if (len != 1)
-	return -1;
-
-    *constant = RES(SPI_RESOURCE_ID_BASE, buf[0] - '0');
+    *ret = num_new_int(spi_receive(get_spi_id(this)));
     return 0;
 }
 
-#endif
+int do_spi_send(obj_t **ret, function_t *func, obj_t *this,
+    int argc, obj_t *argv[])
+{
+    unsigned long data;
+
+    tp_assert(argc == 1);
+
+    data = obj_get_int(argv[0]);
+
+    spi_send(get_spi_id(this), data);
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_spi_constructor(obj_t **ret, function_t *func, obj_t *this,
+    int argc, obj_t *argv[])
+{
+    int id;
+
+    tp_assert(argc == 1);
+
+    id = obj_get_int(argv[0]);
+    *ret = object_new();
+    (*ret)->prototype = obj_get(func->obj.prototype);
+    obj_set_property_int(*ret, Sspi_id, id);
+    spi_init(id);
+    return 0;
+}

@@ -1,0 +1,23 @@
+PROTOTYPE("SPI", spi, {
+})
+
+CONSTRUCTOR("SPI", spi, do_spi_constructor)
+
+FUNCTION("send", spi, do_spi_send, {
+    .params = {
+        { .name = "data" , .description = "Data to be sent on SPI (integer)" }
+    },
+    .description = "Sends data via SPI bus",
+    .return_value = "None",
+    .example = "var s = new SPI(SPI1);\n"
+        "s.send([ 0x0f, 0x0f]);",
+})
+
+FUNCTION("receive", spi, do_spi_receive, {
+    .params = {
+    },
+    .description = "Reads data via SPI bus (dummy data is sent)",
+    .return_value = "Integer - value read",
+    .example = "var s = new SPI(SPI1);\n"
+        "var data = s.receive();",
+})
