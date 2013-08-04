@@ -593,12 +593,13 @@ static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
 	tstr_t *error = NULL;
 
 	if (o_func == UNDEF)
-	    error = &Sexception_undefined;
+	    error = &S("Exception: Object is undefined, not a function");
 	else if (!is_function(o_func))
-	    error = &S("Exception: Requested object is not a function");
+	    error = &S("Exception: Object is not a function");
 
 	if (error)
 	{
+	    js_scan_trace(scan);
 	    /* Not a valid function. Throw exception */
 	    obj_put(o_func);
 	    *po = string_new(*error);
