@@ -129,6 +129,9 @@ tstr_t js_scan_get_string(scan_t *scan);
 int js_scan_get_num(scan_t *scan, tnum_t *ret);
 int js_scan_get_constant(scan_t *scan);
 
+void js_scan_set_trace_point(scan_t *scan);
+void js_scan_trace(scan_t *scan);
+
 /* _js_scan_match does not panic on error */
 int _js_scan_match(scan_t *scan, token_type_t tok);
 
@@ -154,8 +157,6 @@ token_group_t js_scan_get_token_group(scan_t *scan);
 scan_t *js_scan_save(scan_t *scan);
 void js_scan_restore(scan_t *dst, scan_t *src);
 void js_scan_free(scan_t *scan);
-
-void js_scan_eval_mark_set(scan_t *scan);
 
 void js_scan_uninit(scan_t *scan);
 scan_t *js_scan_init(tstr_t *data);

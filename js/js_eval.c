@@ -935,7 +935,7 @@ static int eval_statement(obj_t **ret, scan_t *scan)
 
     *ret = UNDEF;
 
-    js_scan_eval_mark_set(scan);
+    js_scan_set_trace_point(scan);
 
     switch (CUR_TOK(scan))
     {

@@ -39,7 +39,7 @@ struct scan_t {
     token_type_t tok; /* Must be first */
     char *lpc;
     char *pc;
-    char *eval_mark;
+    char *trace_point;
     char *last_token_start;
     int size; /* should be size_t */
     char look;
@@ -372,20 +372,25 @@ static char *tok_to_str(token_type_t tok)
     return s;
 }
 
-int scan_failure(scan_t *scan, token_type_t expected)
+void js_scan_trace(scan_t *scan)
 {
     char *p;
 
-    tp_out(("ERROR: expected %s\n", tok_to_str(expected)));
-    for (p = scan->eval_mark; p - scan->pc < scan->size && *p != '\n' && 
+    for (p = scan->trace_point; p - scan->pc < scan->size && *p != '\n' && 
 	*p != '\r' ; p++)
     {
 	tp_out(("%c", *p));
     }
     tp_out(("\n"));
-    for (p = scan->eval_mark; p < scan->last_token_start; p++)
+    for (p = scan->trace_point; p < scan->last_token_start; p++)
 	tp_out((" ", *p));
     tp_out(("^\n"));
+}
+
+static int scan_failure(scan_t *scan, token_type_t expected)
+{
+    tp_out(("ERROR: expected %s\n", tok_to_str(expected)));
+    js_scan_trace(scan);
     return -1;
 }
 
@@ -518,9 +523,9 @@ void js_scan_free(scan_t *scan)
     tfree(scan);
 }
 
-void js_scan_eval_mark_set(scan_t *scan)
+void js_scan_set_trace_point(scan_t *scan)
 {
-    scan->eval_mark = scan->last_token_start;
+    scan->trace_point = scan->last_token_start;
 }
 
 void js_scan_uninit(scan_t *scan)
@@ -532,7 +537,7 @@ scan_t *js_scan_init(tstr_t *data)
 {
     scan_t *scan = tmalloc_type(scan_t);
 
-    scan->last_token_start = scan->eval_mark = scan->pc = data->value;
+    scan->last_token_start = scan->trace_point = scan->pc = data->value;
     scan->size = data->len + 1;
     scan->look = 255;
     scan->flags = TSTR_IS_ALLOCATED(data) ? SCAN_FLAG_ALLOCED : 0;
