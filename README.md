@@ -59,6 +59,7 @@ Building as a Linux executable
 > . ./targets/setenv_unix_sim.sh
 > make
 ```
+The output executable can be found at ./build.Linux/tp
 
 Building for the Stellaris Launchpad on Linux
 ```
