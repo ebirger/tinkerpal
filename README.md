@@ -51,7 +51,16 @@ Where defconfig files can be found in targets/
 > make
 ```
 
-### For example, for building for the Stellaris Launchpad on Linux
+### Examples
+
+Building as a Linux executable
+```
+> make unix_sim_gcc_defconfig
+> . ./targets/setenv_unix_sim.sh
+> make
+```
+
+Building for the Stellaris Launchpad on Linux
 ```
 > make lm4f120xl_gcc_defconfig
 > . ./targets/setenv_lm4f120xl.sh
