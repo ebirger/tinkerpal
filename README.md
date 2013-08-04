@@ -50,3 +50,12 @@ Where defconfig files can be found in targets/
 > . ./targets/setenv_<target>.sh
 > make
 ```
+
+### For example, for building for the Stellaris Launchpad on Linux
+```
+> make lm4f120xl_gcc_defconfig
+> . ./targets/setenv_lm4f120xl.sh
+> make
+```
+
+The output file can be found at ./build.Linux/tp.bin
