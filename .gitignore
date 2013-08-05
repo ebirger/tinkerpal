@@ -10,3 +10,6 @@ include
 */gmon.out
 gmon.out
 .vagrant
+Makefile.in
+configure
+.autostuff
