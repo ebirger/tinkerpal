@@ -13,3 +13,4 @@ gmon.out
 Makefile.in
 configure
 .autostuff
+aclocal.m4
