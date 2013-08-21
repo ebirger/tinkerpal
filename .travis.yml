@@ -1,0 +1,2 @@
+language: c
+script: make unix_sim_tests_defconfig && make
