@@ -409,6 +409,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 	case TOK_IS_EQ: ret = !nan && (va == vb) ? TRUE : FALSE; break;
 	case TOK_NOT_EQ: ret = nan || (va != vb) ? TRUE : FALSE; break;
 	default:
+	    ret = UNDEF;
 	    tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
 	}
     }
@@ -440,6 +441,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 	case TOK_SHRZ: ret = nan ? NAN_OBJ : num_new_int((unsigned int)va >> vb); break;
 	case TOK_SHL: ret = nan ? NAN_OBJ : num_new_int(va << vb); break;
 	default:
+            ret = UNDEF;
 	    tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
 	}
     }
