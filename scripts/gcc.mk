@@ -2,9 +2,9 @@ CROSS_COMPILE?=$(CONFIG_CROSS_COMPILE:"%"=%)
 
 $(info ==== Using $(if $(CROSS_COMPILE),Cross,Local) GCC environment ====)
 
-CC=$(CROSS_COMPILE)gcc
+CC?=$(CROSS_COMPILE)gcc
 # Note: we use gcc as ld on Unix builds so that we get crtX.o paths
-LD=$(CROSS_COMPILE)$(if $(CONFIG_UNIX),gcc,ld)
+LD=$(CROSS_COMPILE)$(if $(CONFIG_UNIX),$(CC),ld)
 OBJCOPY=$(CROSS_COMPILE)objcopy
 #LDFLAGS+=$(if $(CONFIG_UNIX),-Wl,)-Map=$@.map
 LINK_DEPS=$(LINKER_SCRIPT)
