@@ -2,4 +2,4 @@ language: c
 before_install:
  - sudo apt-get update
  - sudo apt-get install gperf
-script: make unix_sim_tests_defconfig && make
+script: make unix_sim_tests_defconfig && make && cd tests && ./run_tests.sh
