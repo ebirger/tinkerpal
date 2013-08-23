@@ -4,5 +4,4 @@ before_install:
  - sudo apt-get install gperf
 compiler:
   - gcc
-  - clang
 script: make unix_sim_tests_defconfig && make && cd tests && ./run_tests.sh
