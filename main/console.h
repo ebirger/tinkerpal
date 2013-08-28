@@ -25,8 +25,11 @@
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
 
-#include "util/tprintf.h"
 #include "util/event.h"
+
+#ifdef CONFIG_PLAT_HAS_SERIAL
+
+#include "util/tprintf.h"
 
 void console_printf(char *fmt, ...);
 
@@ -38,5 +41,16 @@ int console_write(char *buf, int size);
 void console_set_id(int id);
 
 void console_init(void);
+
+#else
+
+static inline void console_printf(char *fmt, ...) {}
+static inline void console_event_watch_set(event_watch_t *ew) {}
+static inline int console_read(char *buf, int size) { return 0; }
+static inline int console_write(char *buf, int size) { return 0; }
+static inline void console_set_id(int id) {}
+static inline void console_init(void) {}
+
+#endif
 
 #endif
