@@ -30,10 +30,16 @@ static int gpio_event(int port, int (*is_active)(int id),
     void (*mark_on)(int id))
 {
     int ret = 0, i;
+    gpio_port_t state;
+
+    /* XXX: critical section here, disable port interrupts */
+    state = gpio_int_state[port];
+    gpio_int_state[port] = 0;
+    /* XXX: end critical section here, enable port interrupts */
 
     for (i = 0; i < GPIO_NUM_PORT_PINS; i++)
     {
-	if (gpio_int_state[port] & GPIO_BIT(i))
+	if (state & GPIO_BIT(i))
 	{
 	    int res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i));
 
@@ -57,7 +63,6 @@ int gpio_events_process(int (*is_active)(int id), void (*mark_on)(int id))
 	    continue;
 
 	event |= gpio_event(i, is_active, mark_on);
-	gpio_int_state[i] = 0;
     }
     return event;
 }
