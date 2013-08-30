@@ -65,6 +65,8 @@ void cortex_m_reset_isr(void)
     extern unsigned long _etext;
     extern unsigned long _data;
     extern unsigned long _edata;
+    extern unsigned long _bss;
+    extern unsigned long _ebss;
     unsigned long *src, *dst;
 
     /* Copy the data segment initializers from flash to RAM */
@@ -74,15 +76,10 @@ void cortex_m_reset_isr(void)
         *dst++ = *src++;
 
     /* Zero out the bss segment */
-    __asm("    ldr     r0, =_bss\n"
-          "    ldr     r1, =_ebss\n"
-          "    mov     r2, #0\n"
-          "    .thumb_func\n"
-          "zero_loop:\n"
-          "        cmp     r0, r1\n"
-          "        it      lt\n"
-          "        strlt   r2, [r0], #4\n"
-          "        blt     zero_loop");
+    src = &_bss;
+    while (src < &_ebss)
+	*src++ = 0;
+
 #elif defined(CONFIG_TI_CCS5)
     /* Jump to the CCS C initialization routine.  This will enable the
      * floating-point unit as well, so that does not need to be done here.
