@@ -22,23 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __PLATFORM_CONSTS_H__
-#define __PLATFORM_CONSTS_H__
-
-#ifdef CONFIG_PLATFORM_EMULATION
-#include "platform/unix/sim.h"
-#elif defined(CONFIG_LM4F120XL)
-#include "platform/arm/stellaris/lm4f120xl/lm4f120xl.h"
-#elif defined(CONFIG_LM3S6965)
-#include "platform/arm/stellaris/lm3s6965/lm3s6965.h"
-#elif defined(CONFIG_LM3S6918)
-#include "platform/arm/stellaris/lm3s6918/lm3s6918.h"
-#elif defined(CONFIG_STM32F3DISCOVERY)
-#include "platform/arm/stm32/stm32f3discovery/stm32f3discovery.h"
-#elif defined(CONFIG_FRDM_KL25Z)
-#include "platform/arm/frdm/kl25z.h"
-#else
-#error Platform constants not defined
-#endif
+#ifndef __KL25Z_CONSTS_H__
+#define __KL25Z_CONSTS_H__
 
 #endif

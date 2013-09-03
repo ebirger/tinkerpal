@@ -6,6 +6,9 @@ config ARM
 config STELLARIS
 	bool
 
+config FRDM
+	bool
+
 config STM32
 	bool
 
@@ -96,6 +99,13 @@ config STM32F3DISCOVERY
 	select PLAT_HAS_GPIO
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
+
+config FRDM_KL25Z
+	bool "Freescale FRDM-KL25Z"
+	select ARM
+	select FRDM
+	select PLAT_HAS_GCC
+	select PLAT_HAS_MALLOC
 
 endchoice
 
