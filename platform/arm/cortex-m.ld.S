@@ -1,9 +1,20 @@
 SECTIONS
 {
+#ifdef INTERRUPT_SECTION
+    .interrupts :
+    {
+        __vector_table = .;
+        . = ALIGN(4);
+	KEEP(*(.isr_vector))
+        . = ALIGN(4);
+    } > INTERRUPTS
+#endif
     .text :
     {
         _text = .;
+#ifndef INTERRUPT_SECTION
         KEEP(*(.isr_vector))
+#endif
         *(.text*)
         *(.rodata*)
         _etext = .;
