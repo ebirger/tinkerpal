@@ -106,6 +106,7 @@ config FRDM_KL25Z
 	select FRDM
 	select PLAT_HAS_GCC
 	select PLAT_HAS_MALLOC
+	select PLAT_HAS_SERIAL
 
 endchoice
 
