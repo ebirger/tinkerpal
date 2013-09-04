@@ -11,5 +11,7 @@ ifneq ($(CONFIG_APP_STATIC_FILE),)
 endif
 
 MK_OBJS+=$(if $(CONFIG_APP_FILE_LOADER),file_loader.o)
-MK_OBJS+=$(if $(CONFIG_APP_CLI),cli.o history.o)
+MK_OBJS+=$(if $(CONFIG_CLI),cli.o history.o)
+MK_OBJS+=$(if $(CONFIG_APP_JSCONSOLE),jsconsole.o)
+MK_OBJS+=$(if $(CONFIG_APP_ECHO_CONSOLE),echo_console.o)
 MK_OBJS+=$(if $(CONFIG_APP_DUMMY),dummy.o)

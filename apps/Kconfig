@@ -3,11 +3,20 @@ menu "Application"
 config HAVE_CMDLINE
 	bool
 
+config CLI
+	bool
+
 choice
 	prompt "Application"
 
-config APP_CLI
-	bool "Command Line Interface (CLI) Application"
+config APP_JSCONSOLE
+	bool "JavaScript Command Line Interface (CLI) Application"
+	depends on JS
+	select CLI
+
+config APP_ECHO_CONSOLE
+	bool "Echo Command Line Interface (CLI) Application"
+	select CLI
 
 config APP_FILE_LOADER
 	bool "Application accepting a source file via command line"
@@ -26,14 +35,14 @@ config APP_STATIC_FILE_PATH
 	string "Static File Path"
 	depends on APP_STATIC_FILE
 
-config APP_CLI_HISTORY_BUFFER_SIZE
+config CLI_HISTORY_BUFFER_SIZE
 	int "History Buffer Size"
-	depends on APP_CLI
+	depends on CLI
 	default 2048
 
-config APP_CLI_SYNTAX_HIGHLIGHTING
-	bool "Syntax highlighting"
-	depends on APP_CLI && JS
+config APP_JSCONSOLE_SYNTAX_HIGHLIGHTING
+	bool "JavaScript Syntax highlighting in JS Command Line application"
+	depends on APP_JSCONSOLE && JS
 	default y
 
 endmenu

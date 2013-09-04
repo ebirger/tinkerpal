@@ -26,11 +26,8 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "main/console.h"
-#ifdef CONFIG_JS
-#include "js/js_eval.h"
-#include "js/js.h"
-#endif
 #include "apps/history.h"
+#include "apps/cli.h"
 #include <string.h> /* memcpy - can we avoid this? */
 
 /* VT 100 control codes.
@@ -40,31 +37,17 @@
 static char TERM_BS[] = { '\b', ' ', '\b' };
 static char TERM_CURSOR_LEFT[] = { '\b' };
 static char CRLF[] = { '\r', '\n'};
-/* Not using real "dim" since screen doesn't seem to like it. paint it gray */
-#ifdef CONFIG_JS
-static char TERM_COLOR_DIM[] = { 0x1b, '[', '9', '0', 'm' };
-static char TERM_COLOR_RED[] = { 0x1b, '[', '3', '1', 'm' };
-#ifdef CONFIG_APP_CLI_SYNTAX_HIGHLIGHTING
+static char SPACE[] = { ' ' };
 static char TERM_SAVE_CURSOR[] = { 0x1b, '[', 's' };
 static char TERM_RESTORE_CURSOR[] = { 0x1b, '[', 'u' };
-static char TERM_COLOR_CYAN[] = { 0x1b, '[', '3', '6', 'm' };
-static char TERM_COLOR_MAGENTA[] = { 0x1b, '[', '3', '5', 'm' };
-static char TERM_COLOR_BLUE[] = { 0x1b, '[', '3', '4', 'm' };
-#endif
-static char TERM_COLOR_RESET[] = { 0x1b, '[', '0', 'm' };
-#endif
-
-static char SPACE[] = { ' ' };
 static char prompt[] = { 'T','i','n','k','e','r','P','a','l','>',' ' };
 
-static char cli_buf[CONFIG_APP_CLI_HISTORY_BUFFER_SIZE];
+static char cli_buf[CONFIG_CLI_HISTORY_BUFFER_SIZE];
 static char *buf, *read_buf;
 static int free_size = sizeof(cli_buf), size, cur_line_pos;
 static tstr_t cur_line = {}, history = {};
 
 #define BUF_START (cli_buf + sizeof(line_desc_t))
-
-#define CTRL(c) console_write(c, sizeof(c))
 
 static void reset_line(void)
 {
@@ -80,9 +63,7 @@ static void reset_line(void)
 
 static void syntax_hightlight(void)
 {
-#ifdef CONFIG_APP_CLI_SYNTAX_HIGHLIGHTING
-    scan_t *s;
-    int last_offset = 0, pos = cur_line_pos;
+    int pos = cur_line_pos;
 
     CTRL(TERM_SAVE_CURSOR);
 
@@ -90,38 +71,9 @@ static void syntax_hightlight(void)
     while (pos--)
 	CTRL(TERM_CURSOR_LEFT);
 
-    s = js_scan_init(&cur_line);
-    while ((CUR_TOK(s)) != TOK_EOF)
-    {
-	int offset;
+    cli_client_syntax_hightlight(&cur_line);
 
-	switch (js_scan_get_token_group(s))
-	{
-	case TOKEN_GRP_SCOPE:
-	    CTRL(TERM_COLOR_CYAN); 
-	    break;
-	case TOKEN_GRP_CONTROL:
-	    CTRL(TERM_COLOR_RED);
-	    break;
-	case TOKEN_GRP_DATA:
-	    CTRL(TERM_COLOR_MAGENTA);
-	    break;
-	case TOKEN_GRP_CONSTANT:
-	    CTRL(TERM_COLOR_BLUE);
-	    break;
-	default:
-	    break;
-	}
-
-	offset = cur_line.len - js_scan_get_remaining(s);
-	console_write(cur_line.value + last_offset, offset - last_offset);
-	CTRL(TERM_COLOR_RESET);
-	last_offset = offset;
-	js_scan_next_token(s);
-    }
-    js_scan_uninit(s);
     CTRL(TERM_RESTORE_CURSOR);
-#endif
 }
 
 static void read_ack(void)
@@ -346,27 +298,7 @@ static void on_event(event_watch_t *ew, int id)
 
     if (cur_line.len)
     {
-#ifdef CONFIG_JS
-	obj_t *o;
-	int rc;
-
-	rc = js_eval(&o, &cur_line);
-	if (rc)
-	{
-	    CTRL(TERM_COLOR_RED);
-	    tp_out(("%o\n", o));
-	}
-	else
-	{
-	    CTRL(TERM_COLOR_DIM);
-	    tp_out(("= %o\n", o));
-	}
-
-	CTRL(TERM_COLOR_RESET);
-	obj_put(o);
-#else
-	console_printf("Got %S\n", &cur_line);
-#endif
+	cli_client_process_line(&cur_line);
 	history_commit(&history, &cur_line);
 	cur_line_pos = 0;
 	read_buf = buf = cur_line.value;
@@ -379,10 +311,8 @@ static event_watch_t cli_event_watch = {
     .watch_event = on_event,
 };
 
-void app_start(int argc, char *argv[])
+void cli_start(void)
 {
-    tp_out(("Application - CLI\n"));
-
     console_write(prompt, sizeof(prompt));
     read_buf = buf = cur_line.value = BUF_START;
     history_init(&history, BUF_START);
