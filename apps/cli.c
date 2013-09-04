@@ -26,8 +26,10 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "main/console.h"
+#ifdef CONFIG_JS
 #include "js/js_eval.h"
 #include "js/js.h"
+#endif
 #include "apps/history.h"
 #include <string.h> /* memcpy - can we avoid this? */
 
@@ -39,6 +41,7 @@ static char TERM_BS[] = { '\b', ' ', '\b' };
 static char TERM_CURSOR_LEFT[] = { '\b' };
 static char CRLF[] = { '\r', '\n'};
 /* Not using real "dim" since screen doesn't seem to like it. paint it gray */
+#ifdef CONFIG_JS
 static char TERM_COLOR_DIM[] = { 0x1b, '[', '9', '0', 'm' };
 static char TERM_COLOR_RED[] = { 0x1b, '[', '3', '1', 'm' };
 #ifdef CONFIG_APP_CLI_SYNTAX_HIGHLIGHTING
@@ -49,6 +52,7 @@ static char TERM_COLOR_MAGENTA[] = { 0x1b, '[', '3', '5', 'm' };
 static char TERM_COLOR_BLUE[] = { 0x1b, '[', '3', '4', 'm' };
 #endif
 static char TERM_COLOR_RESET[] = { 0x1b, '[', '0', 'm' };
+#endif
 
 static char SPACE[] = { ' ' };
 static char prompt[] = { 'T','i','n','k','e','r','P','a','l','>',' ' };
@@ -304,8 +308,6 @@ static void write_buf(void)
 
 static void on_event(event_watch_t *ew, int id)
 {
-    int rc;
-    obj_t *o;
     tstr_t quit_cmd = S("quit");
 
     size = console_read(read_buf, free_size);
@@ -344,6 +346,10 @@ static void on_event(event_watch_t *ew, int id)
 
     if (cur_line.len)
     {
+#ifdef CONFIG_JS
+	obj_t *o;
+	int rc;
+
 	rc = js_eval(&o, &cur_line);
 	if (rc)
 	{
@@ -358,6 +364,9 @@ static void on_event(event_watch_t *ew, int id)
 
 	CTRL(TERM_COLOR_RESET);
 	obj_put(o);
+#else
+	console_printf("Got %S\n", &cur_line);
+#endif
 	history_commit(&history, &cur_line);
 	cur_line_pos = 0;
 	read_buf = buf = cur_line.value;

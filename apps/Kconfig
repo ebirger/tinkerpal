@@ -8,7 +8,6 @@ choice
 
 config APP_CLI
 	bool "Command Line Interface (CLI) Application"
-	depends on JS
 
 config APP_FILE_LOADER
 	bool "Application accepting a source file via command line"
@@ -34,7 +33,7 @@ config APP_CLI_HISTORY_BUFFER_SIZE
 
 config APP_CLI_SYNTAX_HIGHLIGHTING
 	bool "Syntax highlighting"
-	depends on APP_CLI
+	depends on APP_CLI && JS
 	default y
 
 endmenu
