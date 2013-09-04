@@ -240,7 +240,7 @@ static void do_del(void)
     do_bs();
 }
 
-static void app_quit()
+static void app_quit(void)
 {
     event_timer_del_all();
     event_watch_del_all();
