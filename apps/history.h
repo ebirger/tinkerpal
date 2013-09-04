@@ -32,6 +32,7 @@
 typedef struct {
     char *next;
     char *prev;
+    int len;
 } line_desc_t;
 
 extern char *history_buf, *history_last;

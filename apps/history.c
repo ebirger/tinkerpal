@@ -35,24 +35,22 @@ void history_next(tstr_t *history)
     line = ((line_desc_t *)history->value) - 1;
     history->value = line->next;
 
-    /* Calculate length of currently iterated node by subtracting it from the
-     * next node.
-     */
+    /* Extract length */
     line = ((line_desc_t *)history->value) - 1;
-    if (line->next)
-    	history->len = line->next - history->value - sizeof(line_desc_t);
-    else
-    	history->len = 0;
+    history->len = line->len;
 }
 
 void history_prev(tstr_t *history)
 {
     line_desc_t *line;
 
+    /* Go back to the previous node */
     line = ((line_desc_t *)history->value) - 1;
-
     history->value = line->prev;
-    history->len = (char *)line - line->prev;
+
+    /* Extract length */
+    line = ((line_desc_t *)history->value) - 1;
+    history->len = line->len;
 }
 
 #define ALIGN4(x) ((char *)(((unsigned long)(x) + 0x3) & ~0x3))
@@ -67,6 +65,7 @@ void history_commit(tstr_t *history, tstr_t *l)
 
     /* Set current node's next */
     line = ((line_desc_t *)l->value) - 1;
+    line->len = l->len;
     line->next = next;
 
     /* Set next node's prev */
