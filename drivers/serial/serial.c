@@ -38,7 +38,10 @@ static uart_buf_t *uart_bufs[NUM_UARTS] = {};
 int buffered_serial_push(int u, char c)
 {
     if (uart_bufs[u]->len == sizeof(uart_bufs[u]->buf))
+    {
+	/* XXX: should we disable uart irq here? */
 	return -1;
+    }
 
     uart_bufs[u]->buf[uart_bufs[u]->len] = c;
     uart_bufs[u]->len++;
