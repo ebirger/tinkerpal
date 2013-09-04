@@ -27,15 +27,23 @@
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/frdm/MKL25Z4.h"
+#include "drivers/serial/serial.h"
 
 #define CORE_CLOCK 48000000 /* Core clock speed */
 
 /* Serial enable routine (kl25z_serial_enable()) taken from bare-metal-arm, 
  * Copyright (c) 2012-2013 Andrew Payne <andy@payne.org>
  */
+static inline void enable_irq(int n) 
+{
+    NVIC_ICPR |= 1 << (n - 16);
+    NVIC_ISER |= 1 << (n - 16);			
+}
+
 static int kl25z_serial_enable(int u, int enabled)
 {
     int baud_rate = 115200;
+    uint16_t divisor;
 
     SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
         
@@ -55,18 +63,23 @@ static int kl25z_serial_enable(int u, int enabled)
 
     /* Set the baud rate divisor */
     #define OVER_SAMPLE 16
-    uint16_t divisor = (CORE_CLOCK / OVER_SAMPLE) / baud_rate;
+    divisor = (CORE_CLOCK / OVER_SAMPLE) / baud_rate;
     UART0_C4 = UARTLP_C4_OSR(OVER_SAMPLE - 1);
     UART0_BDH = (divisor >> 8) & UARTLP_BDH_SBR_MASK;
     UART0_BDL = (divisor & UARTLP_BDL_SBR_MASK);
 
-#if 0
-    // Enable the transmitter, receiver, and receive interrupts
+    /* Enable the transmitter, receiver, and receive interrupts */
     UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK | UART_C2_RIE_MASK;
     enable_irq(INT_UART0);
-#endif
-    UART0_C2 = UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK;
     return 0;
+}
+
+void kl25z_uart_isr(void)
+{
+    if (!(UART0_S1 & UART_S1_RDRF_MASK))
+       return;
+
+    buffered_serial_push(0, UART0_D);
 }
 
 static int kl25z_serial_write(int u, char *buf, int size)
@@ -78,6 +91,29 @@ static int kl25z_serial_write(int u, char *buf, int size)
         UART0_D = *buf++;
     }
     return 0;
+}
+
+static void kl25z_serial_irq_enable(int u, int enabled)
+{
+    if (enabled)
+	UART0_C2 |= UART_C2_RIE_MASK;
+    else
+	UART0_C2 &= ~UART_C2_RIE_MASK;
+}
+
+static int kl25z_select(int ms, int (*is_active)(int id), 
+    void (*mark_on)(int id))
+{
+    int expire = cortex_m_get_ticks_from_boot() + ms, event = 0;
+
+    while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
+    {
+	event |= buffered_serial_events_process(is_active, mark_on);
+
+	/* XXX: Sleep */
+    }
+
+    return event;
 }
 
 /* Clock initialization routine (init_clocks()) taken from bare-metal-arm, 
@@ -160,7 +196,9 @@ const platform_t platform = {
     .desc = "Freescale FRDM-KL-25Z",
     .serial = {
 	.enable = kl25z_serial_enable,
+	.read = buffered_serial_read,
 	.write = kl25z_serial_write,
+	.irq_enable = kl25z_serial_irq_enable,
 	.default_console_id = 0,
     },
 #ifdef CONFIG_GPIO
@@ -173,7 +211,7 @@ const platform_t platform = {
     .init = kl25z_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
-    .select = NULL,
+    .select = kl25z_select,
     .get_ticks_from_boot = cortex_m_get_ticks_from_boot,
     .get_system_clock = NULL,
     .msleep = NULL,

@@ -107,6 +107,7 @@ config FRDM_KL25Z
 	select PLAT_HAS_GCC
 	select PLAT_HAS_MALLOC
 	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
 
 endchoice
 

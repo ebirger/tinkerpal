@@ -26,8 +26,8 @@
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/frdm/MKL25Z4.h"
 
-extern void reset_isr(void);
 extern void cortex_m_systick_isr(void);
+extern void kl25z_uart_isr(void);
 
 static void nmi_isr(void)
 {
@@ -103,7 +103,7 @@ static void (*const g_pfnVectors[])(void) =
     default_isr, /* I2C1 interrupt */
     default_isr, /* SPI0 Interrupt */
     default_isr, /* SPI1 Interrupt */
-    default_isr, /* UART0 Status and Error interrupt */
+    kl25z_uart_isr, /* UART0 Status and Error interrupt */
     default_isr, /* UART1 Status and Error interrupt */
     default_isr, /* UART2 Status and Error interrupt */
     default_isr, /* ADC0 interrupt */

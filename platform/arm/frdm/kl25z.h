@@ -25,4 +25,6 @@
 #ifndef __KL25Z_CONSTS_H__
 #define __KL25Z_CONSTS_H__
 
+#define NUM_UARTS 1 /* XXX: temporary */
+
 #endif
