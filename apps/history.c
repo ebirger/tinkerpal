@@ -55,13 +55,15 @@ void history_prev(tstr_t *history)
     history->len = (char *)line - line->prev;
 }
 
+#define ALIGN4(x) ((char *)(((unsigned long)(x) + 0x3) & ~0x3))
+
 void history_commit(tstr_t *history, tstr_t *l)
 {
     line_desc_t *line;
     char *next, *cur;
     
     cur = l->value;
-    next = cur + l->len + sizeof(line_desc_t);
+    next = ALIGN4(cur + l->len + sizeof(line_desc_t));
 
     /* Set current node's next */
     line = ((line_desc_t *)l->value) - 1;
