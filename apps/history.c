@@ -25,37 +25,35 @@
 #include "util/tstr.h"
 #include "apps/history.h"
 
-char *history_buf, *history_last;
-
-void history_next(tstr_t *history)
+void history_next(history_t *h)
 {
     line_desc_t *line;
 
     /* Advance to the next node */
-    line = ((line_desc_t *)history->value) - 1;
-    history->value = line->next;
+    line = ((line_desc_t *)h->current.value) - 1;
+    h->current.value = line->next;
 
     /* Extract length */
-    line = ((line_desc_t *)history->value) - 1;
-    history->len = line->len;
+    line = ((line_desc_t *)h->current.value) - 1;
+    h->current.len = line->len;
 }
 
-void history_prev(tstr_t *history)
+void history_prev(history_t *h)
 {
     line_desc_t *line;
 
     /* Go back to the previous node */
-    line = ((line_desc_t *)history->value) - 1;
-    history->value = line->prev;
+    line = ((line_desc_t *)h->current.value) - 1;
+    h->current.value = line->prev;
 
     /* Extract length */
-    line = ((line_desc_t *)history->value) - 1;
-    history->len = line->len;
+    line = ((line_desc_t *)h->current.value) - 1;
+    h->current.len = line->len;
 }
 
 #define ALIGN4(x) ((char *)(((unsigned long)(x) + 0x3) & ~0x3))
 
-void history_commit(tstr_t *history, tstr_t *l)
+void history_commit(history_t *h, tstr_t *l)
 {
     line_desc_t *line;
     char *next, *cur;
@@ -76,9 +74,9 @@ void history_commit(tstr_t *history, tstr_t *l)
     line->next = NULL;
 
     /* Advance l */
-    history_last = l->value = next;
+    h->last = l->value = next;
 
     /* Set history to new entry */
-    history->value = history_last;
-    history->len = l->len = 0;
+    h->current.value = h->last;
+    h->current.len = l->len = 0;
 }

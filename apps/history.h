@@ -35,35 +35,39 @@ typedef struct {
     int len;
 } line_desc_t;
 
-extern char *history_buf, *history_last;
+typedef struct {
+    tstr_t current;
+    char *buf;
+    char *last;
+} history_t;
 
-static inline void history_init(tstr_t *history, char *buf)
+static inline void history_init(history_t *h, char *buf)
 {
-    history_buf = history->value = buf;
-    history->len = 0;
+    h->buf = h->current.value = buf;
+    h->current.len = 0;
 }
 
-static inline int history_get(tstr_t *history, char *buf, int free_size)
+static inline int history_get(history_t *h, char *buf, int free_size)
 {
     int size;
     
-    size = MIN(history->len, free_size);
-    memcpy(buf, history->value, size);
+    size = MIN(h->current.len, free_size);
+    memcpy(buf, h->current.value, size);
     return size;
 }
 
-static inline int history_is_first(tstr_t *history)
+static inline int history_is_first(history_t *h)
 {
-    return history->value == history_buf;
+    return h->current.value == h->buf;
 }
 
-static inline int history_is_last(tstr_t *history)
+static inline int history_is_last(history_t *h)
 {
-    return history->value == history_last;
+    return h->current.value == h->last;
 }
 
-void history_next(tstr_t *history);
-void history_prev(tstr_t *history);
-void history_commit(tstr_t *history, tstr_t *l);
+void history_next(history_t *h);
+void history_prev(history_t *h);
+void history_commit(history_t *h, tstr_t *l);
 
 #endif

@@ -45,7 +45,8 @@ static char prompt[] = { 'T','i','n','k','e','r','P','a','l','>',' ' };
 static char cli_buf[CONFIG_CLI_HISTORY_BUFFER_SIZE];
 static char *buf, *read_buf;
 static int free_size = sizeof(cli_buf), size, cur_line_pos;
-static tstr_t cur_line = {}, history = {};
+static tstr_t cur_line = {};
+history_t history = {};
 
 #define BUF_START (cli_buf + sizeof(line_desc_t))
 
