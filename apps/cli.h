@@ -26,6 +26,7 @@
 #define __CLI_H__
 
 #include "util/tstr.h"
+#include "main/console.h"
 
 #define CTRL(c) console_write(c, sizeof(c))
 

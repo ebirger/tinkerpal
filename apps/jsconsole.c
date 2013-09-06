@@ -25,7 +25,6 @@
 #include "apps/cli.h"
 #include "js/js_eval.h"
 #include "js/js.h"
-#include "main/console.h"
 
 /* VT 100 control codes.
  * XXX: should be consts

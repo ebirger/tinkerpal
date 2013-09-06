@@ -23,7 +23,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "apps/cli.h"
-#include "main/console.h"
 
 void cli_client_syntax_hightlight(tstr_t *line)
 {
