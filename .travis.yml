@@ -5,7 +5,7 @@ before_install:
 compiler:
  - gcc
 env:
- - BOARD=lm4f120xl_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m4 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m4 CROSS_COMPILE=sat/bin/arm-none-eabi-
- - BOARD=lm3s6965_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m3 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m3 CROSS_COMPILE=sat/bin/arm-none-eabi-
- - BOARD=kl25z_gcc_defconfig LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m0 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m0 CROSS_COMPILE=sat/bin/arm-none-eabi-
-script: wget www.tinkerpal.org/sat.tgz -O - | tar xz && wget www.tinkerpal.org/stellarisware.tgz -O - | tar xz && ls -l sat/bin/arm-none-eabi-gcc && id && make $BOARD && make
+ - BOARD=lm4f120xl_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m4 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m4 CROSS_COMPILE=./sat/bin/arm-none-eabi-
+ - BOARD=lm3s6965_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m3 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m3 CROSS_COMPILE=./sat/bin/arm-none-eabi-
+ - BOARD=kl25z_gcc_defconfig LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m0 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m0 CROSS_COMPILE=./sat/bin/arm-none-eabi-
+script: wget www.tinkerpal.org/sat.tgz -O - | tar xz && wget www.tinkerpal.org/stellarisware.tgz -O - | tar xz && make $BOARD && make V=1
