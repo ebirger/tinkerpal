@@ -7,6 +7,6 @@ before_install:
 compiler:
  - gcc
 env:
- - TARGET=lm4f120xl_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m4 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m4 CROSS_COMPILE=sat/bin/arm-none-eabi-
- - TARGET=lm3s6965_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m3 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m3 CROSS_COMPILE=sat/bin/arm-none-eabi-
-script: make $TARGET && make
+ - BOARD=lm4f120xl_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m4 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m4 CROSS_COMPILE=sat/bin/arm-none-eabi-
+ - BOARD=lm3s6965_gcc_defconfig STELLARISWARE_DIR=stellarisware LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m3 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m3 CROSS_COMPILE=sat/bin/arm-none-eabi-
+script: make $BOARD && make
