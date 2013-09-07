@@ -1,7 +1,6 @@
 language: c
 before_script:
- - curl -s http://www.tinkerpal.org/sat.tgz | tar xzf - -C /tmp/ && sudo cp -f -r /tmp/sat/* /usr/ && \
-     rm -rf /tmp/sat && arm-none-eabi-gcc --version || true
+ - curl -s http://www.tinkerpal.org/sat.tgz | tar xzf - -C /tmp/ && sudo cp -f -r /tmp/sat/* /usr/ && rm -rf /tmp/sat && arm-none-eabi-gcc --version || true
 before_install:
  - sudo apt-get update
  - sudo apt-get install gperf
