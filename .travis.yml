@@ -6,5 +6,5 @@ before_install:
 compiler:
  - gcc
 env:
- - TARGET=kl25z_gcc_defconfig LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m0 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m0 CROSS_COMPILE=sat/bin/arm-none-eabi-
-script: make `echo $TARGET` && make
+ - TARGET=frdm_kl25z_gcc_defconfig LIBC_DIR=sat/arm-none-eabi/lib/thumb/cortex-m0 LIBGCC_DIR=sat/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m0 CROSS_COMPILE=sat/bin/arm-none-eabi-
+script: make $TARGET && make
