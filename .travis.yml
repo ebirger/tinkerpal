@@ -2,6 +2,9 @@ language: c
 before_install:
  - sudo apt-get update
  - sudo apt-get install gperf
+ - sudo mkdir -p /usr/local/tinkerpal && cd /usr/local/tinkerpal/ && sudo wget www.tinkerpal.org/sat.tgz -O - | tar xz
 compiler:
-  - gcc
-script: make unix_sim_tests_defconfig && make && cd tests && ./run_tests.sh
+ - gcc
+env:
+ - TARGET=kl25z_gcc_defconfig TOOLCHAIN_DIR=/usr/local/tinkerpal/sat LIBC_DIR=$TOOLCHAIN_DIR/arm-none-eabi/lib/thumb/cortex-m0 LIBGCC_DIR=$TOOLCHAIN_DIR/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m0 CROSS_COMPILE=$TOOLCHAIN_DIR/bin/arm-none-eabi-
+script: make $TARGET && make
