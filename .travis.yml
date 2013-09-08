@@ -1,6 +1,6 @@
 language: c
 before_script:
- - curl -s http://www.tinkerpal.org/sat.tgz | tar xzf - -C /tmp/ && sudo cp -f -r /tmp/sat/* /usr/ && rm -rf /tmp/sat && arm-none-eabi-gcc --version || true
+ - wget https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q2-update/+download/gcc-arm-none-eabi-4_7-2013q2-20130614-linux.tar.bz2 -O - | tar xjf - -C /tmp/ && sudo cp -f -r /tmp/gcc-arm-none-eabi-4_7-2013q2/* /usr/ && rm -rf /tmp/gcc-arm-none-eabi-4_7-2013q2 && arm-none-eabi-gcc --version || true
 before_install:
  - sudo apt-get update
  - sudo apt-get install gperf
