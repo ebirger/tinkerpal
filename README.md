@@ -4,8 +4,12 @@ Lightweight JavaScript engine and ecosystem for embedded platforms
 
 Platforms
 ---------
+All supported platform provide serial support, some provide GPIO and SPI support
 - TI Stellaris Launchpad (LM4F120XL)
+- TI Stellaris LM3S6965
+- TI Stellaris LM3S6918
 - STM32F3Discovery
+- Freescale FRDM-KL25Z
 - Linux/Cygwin
 
 Installation
@@ -29,7 +33,7 @@ Obtaining Toolchain / SDK
 -------------------------
 - Use ./scripts/get_tools.sh as root (recommended basedir /usr/local/tinkerpal,
   otherwise setenv_<target> scripts would need to be adjusted)
-- Proper Vagrant environment is in the making...
+- You can also download a ready to use CD image file with all the required tools and pre-requisites from http://www.tinkerpal.org/tinkerpal.iso
 
 Building
 --------
