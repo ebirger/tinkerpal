@@ -125,21 +125,25 @@ static obj_t *var_exists(obj_t ***dst_obj, var_t ***dst_var, var_t **vars,
 
 static obj_t **var_create(var_t **vars, tstr_t str)
 {
-    var_t **dst_var, *next = NULL;
+    var_t **iter;
 
-    if (var_exists(NULL, &dst_var, vars, str))
+    for (iter = vars; *iter && tstr_cmp(&(*iter)->str, &str); 
+	iter = &(*iter)->next);
+    if (*iter)
     {
-	/* XXX: should just replace existing obj */
-	next = (*dst_var)->next;
-	obj_put((*dst_var)->obj);
-	var_free(*dst_var);
+	/* Recycle */
+	obj_put((*iter)->obj);
+	(*iter)->obj = NULL;
     }
-
-    (*dst_var) = tmalloc_type(var_t);
-    (*dst_var)->str = str;
-    (*dst_var)->obj = NULL;
-    (*dst_var)->next = next;
-    return &(*dst_var)->obj;
+    else
+    {
+	/* Create new */
+	*iter = tmalloc_type(var_t);
+	(*iter)->str = str;
+	(*iter)->next = NULL;
+	(*iter)->obj = NULL;
+    }
+    return &(*iter)->obj;
 }
 
 /*** Generic obj methods ***/
