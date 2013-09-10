@@ -33,7 +33,7 @@
 #define CONSTRUCTOR(n, o, f, ...) \
     extern int f(obj_t **ret, function_t *func, obj_t *this, int argc, obj_t *argv[]); \
     static function_t f##_func = STATIC_CONSTRUCTOR(f);
-#define OBJECT(n, o, ...) static obj_t o##_obj = STATIC_OBJ(&object_class), *o = &o##_obj;
+#define OBJECT(n, o, ...) static obj_t o##_obj = STATIC_OBJ(OBJECT_CLASS), *o = &o##_obj;
 #define CONST(n, o, c, v) static num_t o##c = v;
 #define CLASS_PROTOTYPE(n, o, p, c...) OBJECT(n, o)
 #define PROTOTYPE(n, o, ...) OBJECT(n, o)

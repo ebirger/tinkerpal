@@ -48,7 +48,7 @@ int do_to_integer(obj_t **ret, function_t *func, obj_t *this,
     if (!argc)
 	goto Exit;
 
-    n = to_num(obj_cast(argv[0], &num_class));
+    n = to_num(obj_cast(argv[0], NUM_CLASS));
     if (!NUM_IS_FP(n))
     {
 	/* It is already an integer, just return our cast */

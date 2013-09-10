@@ -28,7 +28,7 @@
 int do_object_prototype_to_string(obj_t **ret, function_t *func, obj_t *this, 
     int argc, obj_t *argv[])
 {
-    *ret = obj_cast(this, &string_class);
+    *ret = obj_cast(this, STRING_CLASS);
     return 0;
 }
 

@@ -136,7 +136,7 @@ int do_array_prototype_join(obj_t **ret, function_t *func, obj_t *this,
     {
 	obj_t *s;
 
-	s = obj_cast(iter.obj, &string_class);
+	s = obj_cast(iter.obj, STRING_CLASS);
 
 	if (o)
 	{

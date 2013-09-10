@@ -44,12 +44,12 @@ struct obj_class_t {
 };
 
 /* Global Objects */
-obj_t undefind_obj = STATIC_OBJ(&undefined_class);
-obj_t null_obj = STATIC_OBJ(&null_class);
+obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
+obj_t null_obj = STATIC_OBJ(NULL_CLASS);
 num_t zero_obj = STATIC_NUM(0);
 num_t nan_obj = STATIC_NUM(NaN);
-bool_t true_obj = { .obj = STATIC_OBJ(&bool_class), .is_true = 1 };
-bool_t false_obj = { .obj = STATIC_OBJ(&bool_class), .is_true = 0 };
+bool_t true_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 1 };
+bool_t false_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 0 };
 
 static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 double num_fp_value(num_t *n);
@@ -283,7 +283,7 @@ int obj_get_int(obj_t *o)
     int ret;
     num_t *n;
 
-    n = to_num(obj_cast(o, &num_class));
+    n = to_num(obj_cast(o, NUM_CLASS));
     ret = NUM_INT(n);
     obj_put(&n->obj);
     return ret;
@@ -294,7 +294,7 @@ double obj_get_fp(obj_t *o)
     double ret;
     num_t *n;
 
-    n = to_num(obj_cast(o, &num_class));
+    n = to_num(obj_cast(o, NUM_CLASS));
     ret = num_fp_value(n);
     obj_put(&n->obj);
     return ret;
@@ -305,7 +305,7 @@ tstr_t obj_get_str(obj_t *o)
     tstr_t ret;
     string_t *s;
 
-    s = to_string(obj_cast(o, &string_class));
+    s = to_string(obj_cast(o, STRING_CLASS));
     ret = tstr_dup(s->value);
     obj_put(&s->obj);
     return ret;
@@ -357,9 +357,9 @@ static tstr_t num_to_tstr(num_t *n)
 
 static obj_t *num_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return string_new(num_to_tstr(to_num(o)));
-    if (class == &num_class)
+    if (class == NUM_CLASS)
 	return obj_get(o);
 
     return UNDEF;
@@ -376,13 +376,13 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
      */
     if (oa != ZERO && is_string(ob))
     {
-	obj_t *ret, *n = num_cast(oa, &string_class);
+	obj_t *ret, *n = num_cast(oa, STRING_CLASS);
 	ret = string_do_op(op, n, ob);
 	obj_put(n);
 	return ret;
     }
 
-    ob = ob->class->cast(ob, &num_class);
+    ob = ob->class->cast(ob, NUM_CLASS);
     b = to_num(ob);
 
     tp_info(("%s: op %x:%c oa %p ob %p\n", __FUNCTION__, op, op, oa, ob));
@@ -467,7 +467,7 @@ obj_class_t num_class = {
 
 obj_t *num_new_int(int v)
 {
-    num_t *ret = (num_t *)obj_new_type(&num_class, num_t);
+    num_t *ret = (num_t *)obj_new_type(NUM_CLASS, num_t);
 
     NUM_INT(ret) = v;
     return (obj_t *)ret;
@@ -475,7 +475,7 @@ obj_t *num_new_int(int v)
 
 obj_t *num_new_fp(double v)
 {
-    num_t *ret = (num_t *)obj_new_type(&num_class, num_t);
+    num_t *ret = (num_t *)obj_new_type(NUM_CLASS, num_t);
 
     NUM_SET_FP(ret);
     NUM_FP(ret) = v;
@@ -514,9 +514,9 @@ static int undefined_is_true(obj_t *o)
 
 static obj_t *undefined_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return string_new(S("undefined"));
-    if (class == &num_class)
+    if (class == NUM_CLASS)
 	return NAN_OBJ;
 
     return UNDEF;
@@ -555,7 +555,7 @@ static int null_is_true(obj_t *o)
 
 static obj_t *null_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return string_new(S("null"));
 
     return UNDEF;
@@ -582,11 +582,11 @@ static void bool_dump(printer_t *printer, obj_t *o)
 
 static obj_t *bool_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return string_new(bool_is_true(o) ? S("true") : S("false"));
-    if (class == &num_class)
+    if (class == NUM_CLASS)
 	return num_new_int(bool_is_true(o));
-    if (class == &bool_class)
+    if (class == BOOL_CLASS)
 	return obj_get(o);
 
     return UNDEF;
@@ -596,7 +596,7 @@ static obj_t *bool_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
     if (is_num(ob))
     {
-	obj_t *ret, *n = bool_cast(oa, &num_class);
+	obj_t *ret, *n = bool_cast(oa, NUM_CLASS);
 	ret = num_do_op(op, n, ob);
 	obj_put(n);
 	return ret;
@@ -627,9 +627,9 @@ obj_class_t bool_class = {
 
 static obj_t *function_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return string_new(S("function"));
-    if (class == &function_class)
+    if (class == FUNCTION_CLASS)
 	return obj_get(o);
 
     return UNDEF;
@@ -681,7 +681,7 @@ obj_class_t function_class = {
 obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope, 
     call_t call)
 {
-    function_t *ret = (function_t *)obj_new_type(&function_class, function_t);
+    function_t *ret = (function_t *)obj_new_type(FUNCTION_CLASS, function_t);
 
     tp_assert(call);
     ret->obj.prototype = object_new();
@@ -738,7 +738,7 @@ static void object_dump(printer_t *printer, obj_t *o)
 
 static obj_t *object_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return string_new(S("Object"));
     return UNDEF;
 }
@@ -766,7 +766,7 @@ obj_class_t object_class = {
 
 obj_t *object_new(void)
 {
-    obj_t *ret = obj_new_type(&object_class, obj_t);
+    obj_t *ret = obj_new_type(OBJECT_CLASS, obj_t);
     return ret;
 }
 
@@ -798,7 +798,7 @@ static void array_dump(printer_t *printer, obj_t *o)
 
 static obj_t *array_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return string_new(S("Array"));
     return UNDEF;
 }
@@ -985,7 +985,7 @@ obj_class_t array_class = {
 
 obj_t *array_new(void)
 {
-    obj_t *ret = obj_new_type(&array_class, obj_t), **len_prop;
+    obj_t *ret = obj_new_type(ARRAY_CLASS, obj_t), **len_prop;
 
     /* Add length property */
     len_prop = var_create(&ret->properties, Slength);
@@ -1015,7 +1015,7 @@ obj_class_t env_class = {
 
 obj_t *env_new(obj_t *env)
 {
-    env_t *n = (env_t *)obj_new_type(&env_class, env_t);
+    env_t *n = (env_t *)obj_new_type(ENV_CLASS, env_t);
 
     n->obj.prototype = obj_get(env);
     return (obj_t *)n;
@@ -1043,7 +1043,7 @@ static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     string_t *a, *b;
 
     a = to_string(oa);
-    ob = ob->class->cast(ob, &string_class);
+    ob = ob->class->cast(ob, STRING_CLASS);
     b = to_string(ob);
 
     switch (op)
@@ -1086,11 +1086,11 @@ static obj_t *string_to_bool(string_t *s)
 
 static obj_t *string_cast(obj_t *o, obj_class_t *class)
 {
-    if (class == &string_class)
+    if (class == STRING_CLASS)
 	return obj_get(o);
-    if (class == &num_class)
+    if (class == NUM_CLASS)
 	return string_to_num(to_string(o));
-    if (class == &bool_class)
+    if (class == BOOL_CLASS)
 	return string_to_bool(to_string(o));
 
     return UNDEF;
@@ -1098,7 +1098,7 @@ static obj_t *string_cast(obj_t *o, obj_class_t *class)
 
 static int string_is_true(obj_t *o)
 {
-    return string_cast(o, &bool_class) == TRUE;
+    return string_cast(o, BOOL_CLASS) == TRUE;
 }
 
 static obj_t *string_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
@@ -1135,7 +1135,7 @@ obj_class_t string_class = {
 
 obj_t *string_new(tstr_t s)
 {
-    string_t *ret = (string_t *)obj_new_type(&string_class, string_t);
+    string_t *ret = (string_t *)obj_new_type(STRING_CLASS, string_t);
     obj_t **len_prop;
 
     ret->value = s;

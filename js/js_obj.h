@@ -110,6 +110,16 @@ extern obj_class_t array_class;
  */
 extern obj_class_t env_class;
 
+#define NUM_CLASS &num_class
+#define FUNCTION_CLASS &function_class
+#define UNDEFINED_CLASS &undefined_class
+#define NULL_CLASS &null_class
+#define BOOL_CLASS &bool_class
+#define STRING_CLASS &string_class
+#define OBJECT_CLASS &object_class
+#define ARRAY_CLASS &array_class
+#define ENV_CLASS &env_class
+
 /* Global objects */
 extern obj_t undefind_obj;
 #define UNDEF (&undefind_obj)
@@ -129,15 +139,15 @@ extern bool_t false_obj;
 
 #define STATIC_OBJ(c) _STATIC_OBJ(c, 0)
 
-#define STATIC_FUNCTION(f) { .obj = STATIC_OBJ(&function_class), \
+#define STATIC_FUNCTION(f) { .obj = STATIC_OBJ(FUNCTION_CLASS), \
     .call = f, .code = NULL, .scope = NULL, .formal_params = NULL }
 #define STATIC_CONSTRUCTOR(f) { \
-    .obj = _STATIC_OBJ(&function_class, OBJ_FUNCTION_CONSTRUCTOR), \
+    .obj = _STATIC_OBJ(FUNCTION_CLASS, OBJ_FUNCTION_CONSTRUCTOR), \
     .call = f, .code = NULL, .scope = NULL, .formal_params = NULL }
 
-#define STATIC_STRING(s) { .obj = STATIC_OBJ(&string_class), .value = S(s) }
-#define STATIC_NUM(v) { .obj = STATIC_OBJ(&num_class), .value.i = v }
-#define STATIC_NUM_FP(v) { .obj = _STATIC_OBJ(&num_class, OBJ_NUM_FP), \
+#define STATIC_STRING(s) { .obj = STATIC_OBJ(STRING_CLASS), .value = S(s) }
+#define STATIC_NUM(v) { .obj = STATIC_OBJ(NUM_CLASS), .value.i = v }
+#define STATIC_NUM_FP(v) { .obj = _STATIC_OBJ(NUM_CLASS, OBJ_NUM_FP), \
     .value.fp = v }
 
 /* Generic obj methods */
@@ -182,7 +192,7 @@ obj_t *num_new(tnum_t n);
 
 static inline int is_num(obj_t *o)
 {
-    return o && o->class == &num_class;
+    return o && o->class == NUM_CLASS;
 }
 
 static inline num_t *to_num(obj_t *o)
@@ -201,7 +211,7 @@ int function_call_construct(obj_t **ret, function_t *func, int argc,
 
 static inline int is_function(obj_t *o)
 {
-    return o && o->class == &function_class;
+    return o && o->class == FUNCTION_CLASS;
 }
 
 static inline function_t *to_function(obj_t *o)
@@ -215,7 +225,7 @@ obj_t *string_new(tstr_t s);
 
 static inline int is_string(obj_t *o)
 {
-    return o && o->class == &string_class;
+    return o && o->class == STRING_CLASS;
 }
 
 static inline string_t *to_string(obj_t *o)
@@ -233,7 +243,7 @@ obj_t *env_new(obj_t *env);
 
 static inline int is_env(obj_t *o)
 {
-    return o && o->class == &env_class;
+    return o && o->class == ENV_CLASS;
 }
 
 /* "array" objects methods */
@@ -244,7 +254,7 @@ void array_length_set(obj_t *arr, int length);
 
 static inline int is_array(obj_t *o)
 {
-    return o && o->class == &array_class;
+    return o && o->class == ARRAY_CLASS;
 }
 
 typedef struct {
