@@ -44,11 +44,12 @@ struct obj_t {
      * 'construct' function
      */
 #define OBJ_FUNCTION_CONSTRUCTOR 0x0004
-    unsigned short flags;
-    unsigned short ref_count;
-    var_t *properties;
+    unsigned char flags;
+    unsigned char ref_count;
+    unsigned short reserved;
 #define outer prototype
     obj_t *prototype;
+    var_t *properties;
     obj_class_t *class;
 };
 
@@ -153,6 +154,8 @@ static inline obj_t *obj_get(obj_t *o)
     if (!o)
 	return NULL;
 
+    /* We save up space by using a single byte for ref_count */
+    tp_assert(o->ref_count < 255);
     o->ref_count++;
     return o;
 }
