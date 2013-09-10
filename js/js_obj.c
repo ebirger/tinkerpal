@@ -43,6 +43,8 @@ struct obj_class_t {
     obj_t *class_prototype;
 };
 
+#define CLASS(obj) ((obj)->class)
+
 /* Global Objects */
 obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
 obj_t null_obj = STATIC_OBJ(NULL_CLASS);
@@ -132,8 +134,8 @@ static obj_t **var_create(var_t **vars, tstr_t str)
 
 void _obj_put(obj_t *o)
 {
-    if (o->class->free)
-	o->class->free(o);
+    if (CLASS(o)->free)
+	CLASS(o)->free(o);
     obj_put(o->prototype);
     vars_free(&o->properties);
     tp_debug(("%s: freeing %p\n", __FUNCTION__, o));
@@ -160,10 +162,10 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
      * Note that the class prototype of the "Object" class prototypes leads
      * to itself...
      */
-    if (!val && o->class->class_prototype && 
-	o->class->class_prototype != o)
+    if (!val && CLASS(o)->class_prototype && 
+	CLASS(o)->class_prototype != o)
     {
-        val = obj_get_property(&ref, o->class->class_prototype, property);
+        val = obj_get_property(&ref, CLASS(o)->class_prototype, property);
         /* User is not allowed to change the class prototype */
         ref = NULL;
     }
@@ -179,14 +181,14 @@ void obj_dump(printer_t *printer, obj_t *o)
     if (!o)
 	return;
 
-    o->class->dump(printer, o);
+    CLASS(o)->dump(printer, o);
 }
 
 int obj_true(obj_t *o)
 {
-    tp_assert(o->class->is_true);
+    tp_assert(CLASS(o)->is_true);
 
-    return o->class->is_true(o);
+    return CLASS(o)->is_true(o);
 }
 
 static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
@@ -196,8 +198,8 @@ static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
     if ((ret = var_exists(lval, NULL, &o->properties, str)))
 	return ret;
 
-    if (o->class->get_own_property && 
-	(ret = o->class->get_own_property(lval, o, str)))
+    if (CLASS(o)->get_own_property && 
+	(ret = CLASS(o)->get_own_property(lval, o, str)))
     {
 	return ret;
     }
@@ -207,7 +209,7 @@ static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
 
 obj_t *obj_cast(obj_t *o, obj_class_t *class)
 {
-    return o->class->cast(o, class);
+    return CLASS(o)->cast(o, class);
 }
 
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
@@ -221,14 +223,14 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_LOG_OR: ret = obj_true(oa) || obj_true(ob) ? TRUE : FALSE; break;
     case TOK_NOT_EQ_STRICT:
     case TOK_IS_EQ_STRICT:
-	if (oa->class != ob->class)
+	if (CLASS(oa) != CLASS(ob))
 	{
 	    ret = op == TOK_NOT_EQ_STRICT ? TRUE : FALSE;
 	    break;
 	}
     default:
-	tp_assert(oa->class->do_op);
-        ret = oa->class->do_op(op & ~STRICT, oa, ob);
+	tp_assert(CLASS(oa)->do_op);
+        ret = CLASS(oa)->do_op(op & ~STRICT, oa, ob);
     }
 
     obj_put(oa);
@@ -238,8 +240,8 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 
 obj_t **obj_var_create(obj_t *o, tstr_t str)
 {
-    if (o->class->pre_var_create)
-	o->class->pre_var_create(o, &str);
+    if (CLASS(o)->pre_var_create)
+	CLASS(o)->pre_var_create(o, &str);
     return var_create(&o->properties, str);
 }
 
@@ -381,7 +383,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 	return ret;
     }
 
-    ob = ob->class->cast(ob, NUM_CLASS);
+    ob = CLASS(ob)->cast(ob, NUM_CLASS);
     b = to_num(ob);
 
     tp_info(("%s: op %x:%c oa %p ob %p\n", __FUNCTION__, op, op, oa, ob));
@@ -1042,7 +1044,7 @@ static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     string_t *a, *b;
 
     a = to_string(oa);
-    ob = ob->class->cast(ob, STRING_CLASS);
+    ob = CLASS(ob)->cast(ob, STRING_CLASS);
     b = to_string(ob);
 
     switch (op)
