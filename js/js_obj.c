@@ -37,13 +37,25 @@ struct obj_class_t {
     void (*free)(obj_t *o);
     obj_t *(*do_op)(token_type_t op, obj_t *oa, obj_t *ob);
     int (*is_true)(obj_t *o);
-    obj_t *(*cast)(obj_t *o, obj_class_t *class);
+    obj_t *(*cast)(obj_t *o, unsigned char class);
     void (*pre_var_create)(obj_t *o, const tstr_t *str);
     obj_t *(*get_own_property)(obj_t ***lval, obj_t *o, tstr_t str);
     obj_t *class_prototype;
 };
 
-#define CLASS(obj) ((obj)->class)
+static const obj_class_t *classes[] = {
+    [ NUM_CLASS ] = &num_class,
+    [ FUNCTION_CLASS ] = &function_class, 
+    [ UNDEFINED_CLASS ] = &undefined_class,
+    [ NULL_CLASS ] = &null_class,
+    [ BOOL_CLASS ] = &bool_class,
+    [ STRING_CLASS ] = &string_class,
+    [ OBJECT_CLASS ] = &object_class,
+    [ ARRAY_CLASS] = &array_class,
+    [ ENV_CLASS ] = &env_class,
+};
+
+#define CLASS(obj) (classes[(obj)->class])
 
 /* Global Objects */
 obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
@@ -207,7 +219,7 @@ static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
     return NULL;
 }
 
-obj_t *obj_cast(obj_t *o, obj_class_t *class)
+obj_t *obj_cast(obj_t *o, unsigned char class)
 {
     return CLASS(o)->cast(o, class);
 }
@@ -245,7 +257,7 @@ obj_t **obj_var_create(obj_t *o, tstr_t str)
     return var_create(&o->properties, str);
 }
 
-obj_t *obj_new(obj_class_t *class, int size, char *type)
+obj_t *obj_new(unsigned char class, int size, char *type)
 {
     obj_t *ret = tmalloc(size, type);
 
@@ -356,7 +368,7 @@ static tstr_t num_to_tstr(num_t *n)
 	return int_to_tstr(NUM_INT(n));
 }
 
-static obj_t *num_cast(obj_t *o, obj_class_t *class)
+static obj_t *num_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return string_new(num_to_tstr(to_num(o)));
@@ -513,7 +525,7 @@ static int undefined_is_true(obj_t *o)
     return 0;
 }
 
-static obj_t *undefined_cast(obj_t *o, obj_class_t *class)
+static obj_t *undefined_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return string_new(S("undefined"));
@@ -554,7 +566,7 @@ static int null_is_true(obj_t *o)
     return 0;
 }
 
-static obj_t *null_cast(obj_t *o, obj_class_t *class)
+static obj_t *null_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return string_new(S("null"));
@@ -581,7 +593,7 @@ static void bool_dump(printer_t *printer, obj_t *o)
     tprintf(printer, "%s", bool_is_true(o) ? "true" : "false");
 }
 
-static obj_t *bool_cast(obj_t *o, obj_class_t *class)
+static obj_t *bool_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return string_new(bool_is_true(o) ? S("true") : S("false"));
@@ -626,7 +638,7 @@ obj_class_t bool_class = {
 
 /*** "function" class ***/
 
-static obj_t *function_cast(obj_t *o, obj_class_t *class)
+static obj_t *function_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return string_new(S("function"));
@@ -737,7 +749,7 @@ static void object_dump(printer_t *printer, obj_t *o)
     tprintf(printer, " }");
 }
 
-static obj_t *object_cast(obj_t *o, obj_class_t *class)
+static obj_t *object_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return string_new(S("Object"));
@@ -797,7 +809,7 @@ static void array_dump(printer_t *printer, obj_t *o)
     tprintf(printer, " ]");
 }
 
-static obj_t *array_cast(obj_t *o, obj_class_t *class)
+static obj_t *array_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return string_new(S("Array"));
@@ -1085,7 +1097,7 @@ static obj_t *string_to_bool(string_t *s)
     return s->value.len ? TRUE : FALSE;
 }
 
-static obj_t *string_cast(obj_t *o, obj_class_t *class)
+static obj_t *string_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
 	return obj_get(o);
@@ -1149,7 +1161,7 @@ obj_t *string_new(tstr_t s)
 }
 
 /*** Initialization Sequence Functions ***/
-void obj_class_set_prototype(obj_class_t *class, obj_t *proto)
+void obj_class_set_prototype(obj_class_t *obj_class, obj_t *proto)
 {
-    class->class_prototype = proto;
+    obj_class->class_prototype = proto;
 }

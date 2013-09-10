@@ -45,11 +45,11 @@ struct obj_t {
      */
 #define OBJ_FUNCTION_CONSTRUCTOR 0x0004
     unsigned char flags;
-    unsigned char ref_count;
-    unsigned short reserved;
+    unsigned char class;
+    char ref_count;
+    unsigned char reserved;
     obj_t *prototype;
     var_t *properties;
-    obj_class_t *class;
 };
 
 typedef int (*call_t)(obj_t **ret, function_t *func, obj_t *this, int argc, 
@@ -110,15 +110,15 @@ extern obj_class_t array_class;
  */
 extern obj_class_t env_class;
 
-#define NUM_CLASS &num_class
-#define FUNCTION_CLASS &function_class
-#define UNDEFINED_CLASS &undefined_class
-#define NULL_CLASS &null_class
-#define BOOL_CLASS &bool_class
-#define STRING_CLASS &string_class
-#define OBJECT_CLASS &object_class
-#define ARRAY_CLASS &array_class
-#define ENV_CLASS &env_class
+#define NUM_CLASS 1
+#define FUNCTION_CLASS 2
+#define UNDEFINED_CLASS 3
+#define NULL_CLASS 4
+#define BOOL_CLASS 5
+#define STRING_CLASS 6
+#define OBJECT_CLASS 7
+#define ARRAY_CLASS 8
+#define ENV_CLASS 9
 
 /* Global objects */
 extern obj_t undefind_obj;
