@@ -153,7 +153,7 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
 	val = obj_get_property(&ref, o->prototype, property);
 
     /* If this is an env obj, there is nothing more we can do. */
-    if (o->class == &env_class)
+    if (is_env(o))
 	goto Exit;
 
     /* If we couldn't find a better match, let's lookup the class_prototype,

@@ -229,6 +229,11 @@ obj_t *object_new(void);
 /* env_new takes a reference to the parent env */
 obj_t *env_new(obj_t *env);
 
+static inline int is_env(obj_t *o)
+{
+    return o && o->class == &env_class;
+}
+
 /* "array" objects methods */
 obj_t *array_new(void);
 obj_t *array_push(obj_t *arr, obj_t *item);
