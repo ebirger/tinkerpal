@@ -151,11 +151,11 @@ extern bool_t false_obj;
     .value.fp = v }
 
 /* Generic obj methods */
-obj_t *obj_cast(obj_t *o, obj_class_t *class);
+obj_t *obj_cast(obj_t *o, unsigned char class);
 obj_t **obj_var_create(obj_t *o, tstr_t str);
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property);
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob);
-obj_t *obj_new(obj_class_t *class, int size, char *type);
+obj_t *obj_new(unsigned char class, int size, char *type);
 #define obj_new_type(c, type) obj_new(c, sizeof(type), #type)
 
 static inline obj_t *obj_get(obj_t *o)
@@ -163,8 +163,10 @@ static inline obj_t *obj_get(obj_t *o)
     if (!o)
 	return NULL;
 
-    /* We save up space by using a single byte for ref_count */
-    tp_assert(o->ref_count < 255);
+    /* We save up space by using a single byte for ref_count,
+     * XXX: static objects may have negative ref_count (?)
+     */
+    tp_assert(o->ref_count < 255 || o->flags & OBJ_STATIC);
     o->ref_count++;
     return o;
 }
