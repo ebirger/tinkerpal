@@ -35,7 +35,7 @@ typedef struct obj_class_t obj_class_t;
 typedef struct function_t function_t;
 
 struct obj_t {
-     /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
+    /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
      *   saves space.
      */
 #define OBJ_STATIC 0x0001
