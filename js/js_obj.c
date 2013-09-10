@@ -132,7 +132,7 @@ static obj_t **var_create(var_t **vars, tstr_t str)
 
 void _obj_put(obj_t *o)
 {
-    if (o->class && o->class->free)
+    if (o->class->free)
 	o->class->free(o);
     obj_put(o->prototype);
     vars_free(&o->properties);
@@ -160,7 +160,7 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
      * Note that the class prototype of the "Object" class prototypes leads
      * to itself...
      */
-    if (!val && o->class && o->class->class_prototype && 
+    if (!val && o->class->class_prototype && 
 	o->class->class_prototype != o)
     {
         val = obj_get_property(&ref, o->class->class_prototype, property);
@@ -179,7 +179,6 @@ void obj_dump(printer_t *printer, obj_t *o)
     if (!o)
 	return;
 
-    tp_assert(o->class);
     o->class->dump(printer, o);
 }
 
@@ -239,7 +238,7 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 
 obj_t **obj_var_create(obj_t *o, tstr_t str)
 {
-    if (o->class && o->class->pre_var_create)
+    if (o->class->pre_var_create)
 	o->class->pre_var_create(o, &str);
     return var_create(&o->properties, str);
 }
