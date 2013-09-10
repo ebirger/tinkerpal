@@ -47,7 +47,6 @@ struct obj_t {
     unsigned char flags;
     unsigned char ref_count;
     unsigned short reserved;
-#define outer prototype
     obj_t *prototype;
     var_t *properties;
     obj_class_t *class;

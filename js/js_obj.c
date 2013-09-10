@@ -1017,7 +1017,7 @@ obj_t *env_new(obj_t *env)
 {
     env_t *n = (env_t *)obj_new_type(&env_class, env_t);
 
-    n->obj.outer = obj_get(env);
+    n->obj.prototype = obj_get(env);
     return (obj_t *)n;
 }
 
