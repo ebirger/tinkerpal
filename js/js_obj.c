@@ -99,21 +99,8 @@ static obj_t **var_get(var_t *vars, tstr_t str)
     if (!iter)
 	tp_crit(("Error var %S not found. Exiting\n", &str));
 
-    if (iter->obj)
-	obj_get(iter->obj);
+    obj_get(iter->obj);
     return &iter->obj;
-}
-
-static obj_t **var_exists(var_t **vars, tstr_t str)
-{
-    var_t **iter;
-
-    for (iter = vars; *iter && tstr_cmp(&(*iter)->str, &str); 
-	iter = &(*iter)->next);
-    if (!*iter)
-	return NULL;
-
-    return &(*iter)->obj;
 }
 
 static obj_t **var_create(var_t **vars, tstr_t str)
@@ -204,11 +191,11 @@ static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
 {
     obj_t **ref;
 
-    if ((ref = var_exists(&o->properties, str)))
+    if ((ref = var_get(o->properties, str)))
     {
 	if (lval)
 	    *lval = ref;
-	return obj_get(*ref);
+	return *ref;
     }
 
     if (CLASS(o)->get_own_property)
