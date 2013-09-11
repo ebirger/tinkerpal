@@ -104,23 +104,16 @@ static obj_t **var_get(var_t *vars, tstr_t str)
     return &iter->obj;
 }
 
-static obj_t *var_exists(obj_t ***dst_obj, var_t ***dst_var, var_t **vars, 
-    tstr_t str)
+static obj_t **var_exists(var_t **vars, tstr_t str)
 {
     var_t **iter;
-    obj_t *ret = NULL;
 
     for (iter = vars; *iter && tstr_cmp(&(*iter)->str, &str); 
 	iter = &(*iter)->next);
-    if (dst_var)
-	*dst_var = iter;
     if (!*iter)
 	return NULL;
 
-    ret = obj_get((*iter)->obj);
-    if (dst_obj)
-	*dst_obj = &(*iter)->obj;
-    return ret;
+    return &(*iter)->obj;
 }
 
 static obj_t **var_create(var_t **vars, tstr_t str)
@@ -209,16 +202,17 @@ int obj_true(obj_t *o)
 
 static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
 {
-    obj_t *ret;
+    obj_t **ref;
 
-    if ((ret = var_exists(lval, NULL, &o->properties, str)))
-	return ret;
-
-    if (CLASS(o)->get_own_property && 
-	(ret = CLASS(o)->get_own_property(lval, o, str)))
+    if ((ref = var_exists(&o->properties, str)))
     {
-	return ret;
+	if (lval)
+	    *lval = ref;
+	return obj_get(*ref);
     }
+
+    if (CLASS(o)->get_own_property)
+	return CLASS(o)->get_own_property(lval, o, str);
 
     return NULL;
 }
