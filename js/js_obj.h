@@ -109,6 +109,7 @@ typedef struct {
 #define OBJECT_CLASS 7
 #define ARRAY_CLASS 8
 #define ENV_CLASS 9
+#define CLASS_LAST ENV_CLASS
 
 /* Global objects */
 extern obj_t undefind_obj;

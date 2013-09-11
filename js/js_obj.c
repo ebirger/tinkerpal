@@ -40,16 +40,17 @@ struct obj_class_t {
     obj_t *(*cast)(obj_t *o, unsigned char class);
     void (*pre_var_create)(obj_t *o, const tstr_t *str);
     obj_t *(*get_own_property)(obj_t ***lval, obj_t *o, tstr_t str);
-    obj_t *class_prototype;
 };
 
 /* classes is defined at the bottom of this file.
  * It 'extern' instead of 'static' to avoid a mass of forward declarations
  */
-extern obj_class_t classes[];
+extern const obj_class_t classes[];
+
+static obj_t *class_prototypes[CLASS_LAST+1];
 
 #define CLASS(obj) (&classes[(obj)->class])
-#define CLASS_PROTOTYPE(obj) (classes[(obj)->class].class_prototype)
+#define CLASS_PROTOTYPE(obj) (class_prototypes[(obj)->class])
 
 /* Global Objects */
 obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
@@ -1079,12 +1080,10 @@ obj_t *string_new(tstr_t s)
 /*** Initialization Sequence Functions ***/
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {
-    obj_class_t *obj_class = &classes[class];
-
-    obj_class->class_prototype = proto;
+    class_prototypes[class] = proto;
 }
 
-obj_class_t classes[] = {
+const obj_class_t classes[] = {
     [ NUM_CLASS ] = {
 	.dump = num_dump,
 	.do_op = num_do_op,
