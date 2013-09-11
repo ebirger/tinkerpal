@@ -9,7 +9,6 @@ where="$1"
 last="$2"
 new="$3"
 
-host_os=`uname`;
 binpath=$where/tinkerpal-v$new;
 
 mkdir -p $binpath
@@ -25,17 +24,14 @@ function build()
 {
     target=$1;
     binfile_suffix=$2
-    make ${target}_gcc_defconfig;
-    source build.$host_os/.config;
-    source ./targets/setenv_${target}.sh;
-    make;
-    cp build.$host_os/tp${binfile_suffix} $binpath/tinkerpal-v$new-${target}${binfile_suffix};
-    make distclean;
+    ./scripts/build_dist.sh $target $binfile_suffix $binpath $new
 }
 
 build lm4f120xl .bin
 build lm3s6965 .bin
+build lm3s6918 .bin
 build stm32f3discovery .bin
+build frdm_kl25z .bin
 build unix_sim
 
 zip $binpath.zip $binpath/*;
