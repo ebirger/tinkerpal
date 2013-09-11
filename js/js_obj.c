@@ -97,7 +97,7 @@ static obj_t **var_get(var_t *vars, tstr_t str)
     for (iter = vars; iter && 
 	tstr_cmp(&iter->str, &str); iter = iter->next);
     if (!iter)
-	tp_crit(("Error var %S not found. Exiting\n", &str));
+	return NULL;
 
     obj_get(iter->obj);
     return &iter->obj;
