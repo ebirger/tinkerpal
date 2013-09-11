@@ -94,8 +94,7 @@ static obj_t **var_get(var_t *vars, tstr_t str)
 {
     var_t *iter;
 
-    for (iter = vars; iter && 
-	tstr_cmp(&iter->str, &str); iter = iter->next);
+    for (iter = vars; iter && tstr_cmp(&iter->str, &str); iter = iter->next);
     if (!iter)
 	return NULL;
 
@@ -158,8 +157,7 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
      * Note that the class prototype of the "Object" class prototypes leads
      * to itself...
      */
-    if (!val && CLASS(o)->class_prototype && 
-	CLASS(o)->class_prototype != o)
+    if (!val && CLASS(o)->class_prototype && CLASS(o)->class_prototype != o)
     {
         val = obj_get_property(&ref, CLASS(o)->class_prototype, property);
         /* User is not allowed to change the class prototype */
