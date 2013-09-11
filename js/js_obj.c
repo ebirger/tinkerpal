@@ -49,6 +49,7 @@ struct obj_class_t {
 extern obj_class_t classes[];
 
 #define CLASS(obj) (&classes[(obj)->class])
+#define CLASS_PROTOTYPE(obj) (classes[(obj)->class].class_prototype)
 
 /* Global Objects */
 obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
@@ -150,9 +151,9 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
      * Note that the class prototype of the "Object" class prototypes leads
      * to itself...
      */
-    if (!val && CLASS(o)->class_prototype && CLASS(o)->class_prototype != o)
+    if (!val && CLASS_PROTOTYPE(o) && CLASS_PROTOTYPE(o) != o)
     {
-        val = obj_get_property(&ref, CLASS(o)->class_prototype, property);
+        val = obj_get_property(&ref, CLASS_PROTOTYPE(o), property);
         /* User is not allowed to change the class prototype */
         ref = NULL;
     }
