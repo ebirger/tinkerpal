@@ -58,7 +58,7 @@ void js_builtins_uninit(void)
 #define CONST(...)
 #define CATEGORY(...)
 #define CLASS_PROTOTYPE(n, o, p, c, ...) \
-    obj_class_set_prototype(&c, NULL); \
+    obj_class_set_prototype(c, NULL); \
     obj_put(o);
 
 #include "descs.h"
@@ -94,7 +94,7 @@ void js_builtins_init(void)
 } while(0);
 #define CLASS_PROTOTYPE(n, o, p, c, ...) do { \
     o->prototype = p; \
-    obj_class_set_prototype(&c, o); \
+    obj_class_set_prototype(c, o); \
 } while(0);
 #define CONST(n, o, c, v, ...) do { \
     tstr_t cname = S(n); \

@@ -1,4 +1,4 @@
-CLASS_PROTOTYPE("Object", object_prototype, NULL, object_class, {
+CLASS_PROTOTYPE("Object", object_prototype, NULL, OBJECT_CLASS, {
 })
 
 CONSTRUCTOR("Object", object_prototype, do_object_constructor)

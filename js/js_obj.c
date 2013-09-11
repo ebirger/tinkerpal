@@ -43,19 +43,12 @@ struct obj_class_t {
     obj_t *class_prototype;
 };
 
-static const obj_class_t *classes[] = {
-    [ NUM_CLASS ] = &num_class,
-    [ FUNCTION_CLASS ] = &function_class, 
-    [ UNDEFINED_CLASS ] = &undefined_class,
-    [ NULL_CLASS ] = &null_class,
-    [ BOOL_CLASS ] = &bool_class,
-    [ STRING_CLASS ] = &string_class,
-    [ OBJECT_CLASS ] = &object_class,
-    [ ARRAY_CLASS] = &array_class,
-    [ ENV_CLASS ] = &env_class,
-};
+/* classes is defined at the bottom of this file.
+ * It 'extern' instead of 'static' to avoid a mass of forward declarations
+ */
+extern obj_class_t classes[];
 
-#define CLASS(obj) (classes[(obj)->class])
+#define CLASS(obj) (&classes[(obj)->class])
 
 /* Global Objects */
 obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
@@ -454,13 +447,6 @@ static int num_is_true(obj_t *o)
     return NUM_INT(n) ? 1 : 0;
 }
 
-obj_class_t num_class = {
-    .dump = num_dump,
-    .do_op = num_do_op,
-    .is_true = num_is_true,
-    .cast = num_cast,
-};
-
 obj_t *num_new_int(int v)
 {
     num_t *ret = (num_t *)obj_new_type(NUM_CLASS, num_t);
@@ -518,13 +504,6 @@ static obj_t *undefined_cast(obj_t *o, unsigned char class)
     return UNDEF;
 }
 
-obj_class_t undefined_class = {
-    .dump = undefined_dump,
-    .do_op = undefined_do_op,
-    .is_true = undefined_is_true,
-    .cast = undefined_cast,
-};
-
 /*** "null" Class ***/
 
 static void null_dump(printer_t *printer, obj_t *o)
@@ -556,13 +535,6 @@ static obj_t *null_cast(obj_t *o, unsigned char class)
 
     return UNDEF;
 }
-
-obj_class_t null_class = {
-    .dump = null_dump,
-    .do_op = null_do_op,
-    .is_true = null_is_true,
-    .cast = null_cast,
-};
 
 /*** "bool" Class ***/
 
@@ -612,13 +584,6 @@ static obj_t *bool_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     return UNDEF;
 }
 
-obj_class_t bool_class = {
-    .dump = bool_dump,
-    .do_op = bool_do_op,
-    .is_true = bool_is_true,
-    .cast = bool_cast,
-};
-
 /*** "function" class ***/
 
 static obj_t *function_cast(obj_t *o, unsigned char class)
@@ -666,13 +631,6 @@ static obj_t *function_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     }
     return ret;
 }
-
-obj_class_t function_class = {
-    .dump = function_dump,
-    .free = function_free,
-    .do_op = function_do_op,
-    .cast = function_cast,
-};
 
 obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope, 
     call_t call)
@@ -753,12 +711,6 @@ static obj_t *object_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     }
     return UNDEF;
 }
-
-obj_class_t object_class = {
-    .dump = object_dump,
-    .cast = object_cast,
-    .do_op = object_do_op,
-};
 
 obj_t *object_new(void)
 {
@@ -972,13 +924,6 @@ static void array_pre_var_create(obj_t *arr, const tstr_t *str)
     *len = num_new_int(idx + 1);
 }
 
-obj_class_t array_class = {
-    .dump = array_dump,
-    .cast = array_cast,
-    .do_op = array_do_op,
-    .pre_var_create = array_pre_var_create,
-};
-
 obj_t *array_new(void)
 {
     obj_t *ret = obj_new_type(ARRAY_CLASS, obj_t), **len_prop;
@@ -1004,10 +949,6 @@ static void env_dump(printer_t *printer, obj_t *o)
 
     tprintf(printer, " }");
 }
-
-obj_class_t env_class = {
-    .dump = env_dump,
-};
 
 obj_t *env_new(obj_t *env)
 {
@@ -1120,15 +1061,6 @@ static obj_t *string_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
     return string_new(tstr_dup(retval));
 }
 
-obj_class_t string_class = {
-    .dump = string_dump,
-    .free = string_free,
-    .do_op = string_do_op,
-    .cast = string_cast,
-    .is_true = string_is_true,
-    .get_own_property = string_get_own_property,
-};
-
 obj_t *string_new(tstr_t s)
 {
     string_t *ret = (string_t *)obj_new_type(STRING_CLASS, string_t);
@@ -1144,7 +1076,64 @@ obj_t *string_new(tstr_t s)
 }
 
 /*** Initialization Sequence Functions ***/
-void obj_class_set_prototype(obj_class_t *obj_class, obj_t *proto)
+void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {
+    obj_class_t *obj_class = &classes[class];
+
     obj_class->class_prototype = proto;
 }
+
+obj_class_t classes[] = {
+    [ NUM_CLASS ] = {
+	.dump = num_dump,
+	.do_op = num_do_op,
+	.is_true = num_is_true,
+	.cast = num_cast,
+    },
+    [ FUNCTION_CLASS ] = {
+	.dump = function_dump,
+	.free = function_free,
+	.do_op = function_do_op,
+	.cast = function_cast,
+    },
+    [ UNDEFINED_CLASS ] = {
+	.dump = undefined_dump,
+	.do_op = undefined_do_op,
+	.is_true = undefined_is_true,
+	.cast = undefined_cast,
+    },
+    [ NULL_CLASS ] = {
+	.dump = null_dump,
+	.do_op = null_do_op,
+	.is_true = null_is_true,
+	.cast = null_cast,
+    },
+    [ BOOL_CLASS ] = {
+	.dump = bool_dump,
+	.do_op = bool_do_op,
+	.is_true = bool_is_true,
+	.cast = bool_cast,
+    },
+    [ STRING_CLASS ] = {
+	.dump = string_dump,
+	.free = string_free,
+	.do_op = string_do_op,
+	.cast = string_cast,
+	.is_true = string_is_true,
+	.get_own_property = string_get_own_property,
+    },
+    [ OBJECT_CLASS ] = {
+	.dump = object_dump,
+	.cast = object_cast,
+	.do_op = object_do_op,
+    },
+    [ ARRAY_CLASS] = {
+	.dump = array_dump,
+	.cast = array_cast,
+	.do_op = array_do_op,
+	.pre_var_create = array_pre_var_create,
+    },
+    [ ENV_CLASS ] = {
+	.dump = env_dump,
+    },
+};

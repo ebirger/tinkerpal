@@ -1,4 +1,4 @@
-CLASS_PROTOTYPE("Array", array_prototype, object_prototype, array_class, {
+CLASS_PROTOTYPE("Array", array_prototype, object_prototype, ARRAY_CLASS, {
 })
 
 CONSTRUCTOR("Array", array_prototype, do_array_constructor)

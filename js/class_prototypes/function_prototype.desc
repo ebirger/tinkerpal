@@ -1,4 +1,4 @@
-CLASS_PROTOTYPE("Function", function_prototype, object_prototype, function_class, {
+CLASS_PROTOTYPE("Function", function_prototype, object_prototype, FUNCTION_CLASS, {
 })
 
 CONSTRUCTOR("Function", function_prototype, do_function_constructor)

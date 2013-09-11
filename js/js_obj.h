@@ -96,20 +96,10 @@ typedef struct {
     obj_t obj;
 } env_t;
 
-/* Global classes definitions */
-extern obj_class_t num_class;
-extern obj_class_t function_class;
-extern obj_class_t undefined_class;
-extern obj_class_t null_class;
-extern obj_class_t bool_class;
-extern obj_class_t string_class;
-extern obj_class_t object_class;
-extern obj_class_t array_class;
-/* env_class is a special class - it is not exposed as a JS type,
+/* Class types.
+ * Note: ENV_CLASS is a special class - it is not exposed as a JS type,
  * but shares a lot of common properties with other classes.
  */
-extern obj_class_t env_class;
-
 #define NUM_CLASS 1
 #define FUNCTION_CLASS 2
 #define UNDEFINED_CLASS 3
@@ -273,7 +263,7 @@ int array_iter_next(array_iter_t *iter);
 void array_iter_uninit(array_iter_t *iter);
 
 /* Initialization sequence functions */
-void obj_class_set_prototype(obj_class_t *class, obj_t *proto);
+void obj_class_set_prototype(unsigned char class, obj_t *proto);
 
 /* Utility functions for obj property manipulation */
 void _obj_set_property(obj_t *o, tstr_t property, obj_t *value);

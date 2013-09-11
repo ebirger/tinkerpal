@@ -1,4 +1,4 @@
-CLASS_PROTOTYPE("String", string_prototype, object_prototype, string_class, {
+CLASS_PROTOTYPE("String", string_prototype, object_prototype, STRING_CLASS, {
 })
 
 CONSTRUCTOR("String", string_prototype, do_string_constructor)
