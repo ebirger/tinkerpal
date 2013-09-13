@@ -25,6 +25,14 @@
 #include "util/tstr.h"
 #include "apps/history.h"
 
+struct history_t {
+    tstr_t current;
+    char *buf;
+    char *last;
+};
+
+history_t g_history; /* Singleton for now */
+
 void history_next(history_t *h)
 {
     line_desc_t *line;
@@ -79,4 +87,37 @@ void history_commit(history_t *h, tstr_t *l)
     /* Set history to new entry */
     h->current.value = h->last;
     h->current.len = l->len = 0;
+}
+
+int history_get(history_t *h, char *buf, int free_size)
+{
+    int size;
+    
+    size = MIN(h->current.len, free_size);
+    memcpy(buf, h->current.value, size);
+    return size;
+}
+
+int history_is_first(history_t *h)
+{
+    return h->current.value == h->buf;
+}
+
+int history_is_last(history_t *h)
+{
+    return h->current.value == h->last;
+}
+
+history_t *history_new(char *buf)
+{
+    history_t *h = &g_history;
+
+    h->buf = h->current.value = buf;
+    h->current.len = 0;
+    return h;
+}
+
+void history_free(history_t *h)
+{
+    /* Nothing for now. Singleton */
 }

@@ -46,7 +46,7 @@ static char cli_buf[CONFIG_CLI_HISTORY_BUFFER_SIZE];
 static char *buf, *read_buf;
 static int free_size = sizeof(cli_buf), size, cur_line_pos;
 static tstr_t cur_line = {};
-history_t history = {};
+history_t *history;
 
 #define BUF_START (cli_buf + sizeof(line_desc_t))
 
@@ -99,7 +99,7 @@ static void output_history(void)
 {
     roll_back();
     
-    size = history_get(&history, buf, free_size);
+    size = history_get(history, buf, free_size);
     
     console_write(buf, size);
     read_ack();
@@ -107,19 +107,19 @@ static void output_history(void)
 
 static void do_up(void)
 {
-    if (history_is_first(&history))
+    if (history_is_first(history))
 	return;
 
-    history_prev(&history);
+    history_prev(history);
     output_history();
 }
 
 static void do_down(void)
 {
-    if (history_is_last(&history))
+    if (history_is_last(history))
 	return;
 
-    history_next(&history);
+    history_next(history);
     output_history();
 }
 
@@ -201,6 +201,7 @@ static void app_quit(void)
 {
     event_timer_del_all();
     event_watch_del_all();
+    history_free(history);
 }
 
 static void do_esc(void)
@@ -300,7 +301,7 @@ static void on_event(event_watch_t *ew, int id)
     if (cur_line.len)
     {
 	cli_client_process_line(&cur_line);
-	history_commit(&history, &cur_line);
+	history_commit(history, &cur_line);
 	cur_line_pos = 0;
 	read_buf = buf = cur_line.value;
     }
@@ -316,7 +317,7 @@ void cli_start(void)
 {
     console_write(prompt, sizeof(prompt));
     read_buf = buf = cur_line.value = BUF_START;
-    history_init(&history, BUF_START);
+    history = history_new(BUF_START);
     TSTR_SET_ALLOCATED(&cur_line);
     console_event_watch_set(&cli_event_watch);
 }
