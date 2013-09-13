@@ -24,7 +24,7 @@ function build()
 {
     target=$1;
     binfile_suffix=$2
-    ./scripts/build_dist.sh $target $binfile_suffix $binpath $new
+    ./scripts/build_dist.sh $target $binpath $new $binfile_suffix
 }
 
 build lm4f120xl .bin
