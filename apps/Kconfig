@@ -38,7 +38,12 @@ config APP_STATIC_FILE_PATH
 config CLI_HISTORY_BUFFER_SIZE
 	int "History Buffer Size"
 	depends on CLI
-	default 2048
+	default 1536
+
+config CLI_BUFFER_SIZE
+	int "CLI Buffer Size"
+	depends on CLI
+	default 512
 
 config APP_JSCONSOLE_SYNTAX_HIGHLIGHTING
 	bool "JavaScript Syntax highlighting in JS Command Line application"

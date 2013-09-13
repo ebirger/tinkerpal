@@ -42,13 +42,12 @@ static char TERM_SAVE_CURSOR[] = { 0x1b, '[', 's' };
 static char TERM_RESTORE_CURSOR[] = { 0x1b, '[', 'u' };
 static char prompt[] = { 'T','i','n','k','e','r','P','a','l','>',' ' };
 
-static char cli_buf[CONFIG_CLI_HISTORY_BUFFER_SIZE];
+static char history_buf[CONFIG_CLI_HISTORY_BUFFER_SIZE];
+static char cli_buf[CONFIG_CLI_BUFFER_SIZE];
 static char *buf, *read_buf;
 static int free_size = sizeof(cli_buf), size, cur_line_pos;
 static tstr_t cur_line = {};
 history_t *history;
-
-#define BUF_START (cli_buf + sizeof(line_desc_t))
 
 static void reset_line(void)
 {
@@ -302,8 +301,8 @@ static void on_event(event_watch_t *ew, int id)
     {
 	cli_client_process_line(&cur_line);
 	history_commit(history, &cur_line);
-	cur_line_pos = 0;
-	read_buf = buf = cur_line.value;
+	cur_line.len = cur_line_pos = 0;
+	cur_line.value = read_buf = buf = cli_buf;
     }
 
     console_write(prompt, sizeof(prompt));
@@ -316,8 +315,8 @@ static event_watch_t cli_event_watch = {
 void cli_start(void)
 {
     console_write(prompt, sizeof(prompt));
-    read_buf = buf = cur_line.value = BUF_START;
-    history = history_new(BUF_START);
+    read_buf = buf = cur_line.value = cli_buf;
+    history = history_new(history_buf, sizeof(history_buf));
     TSTR_SET_ALLOCATED(&cur_line);
     console_event_watch_set(&cli_event_watch);
 }

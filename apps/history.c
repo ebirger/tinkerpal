@@ -22,12 +22,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "util/debug.h"
 #include "util/tstr.h"
 #include "apps/history.h"
+
+/* XXX: allow removing old entries upon:
+ *   1. newer entries
+ *   2. Memory shortage
+ */
+
+typedef struct {
+    char *next;
+    char *prev;
+    int len;
+} line_desc_t;
 
 struct history_t {
     tstr_t current;
     char *buf;
+    int free_size;
     char *last;
 };
 
@@ -66,11 +79,24 @@ void history_commit(history_t *h, tstr_t *l)
     line_desc_t *line;
     char *next, *cur;
     
-    cur = l->value;
+    if (l->len + sizeof(line_desc_t) > h->free_size)
+    {
+	/* XXX: Should overrun old entries */
+	tp_warn(("History: no more room\n"));
+	return;
+    }
+
+    /* Copy line content */
+    cur = h->current.value;
+    memcpy(cur, l->value, l->len);
+
+    /* Calculate next node 
+     * XXX: make sure we don't exceed our limit
+     */
     next = ALIGN4(cur + l->len + sizeof(line_desc_t));
 
     /* Set current node's next */
-    line = ((line_desc_t *)l->value) - 1;
+    line = ((line_desc_t *)cur) - 1;
     line->len = l->len;
     line->next = next;
 
@@ -81,12 +107,12 @@ void history_commit(history_t *h, tstr_t *l)
     /* Set next node's next */
     line->next = NULL;
 
-    /* Advance l */
-    h->last = l->value = next;
-
     /* Set history to new entry */
+    h->last = next;
     h->current.value = h->last;
-    h->current.len = l->len = 0;
+    h->current.len = 0;
+
+    h->free_size -= l->len + sizeof(line_desc_t);
 }
 
 int history_get(history_t *h, char *buf, int free_size)
@@ -108,11 +134,12 @@ int history_is_last(history_t *h)
     return h->current.value == h->last;
 }
 
-history_t *history_new(char *buf)
+history_t *history_new(char *buf, int size)
 {
     history_t *h = &g_history;
 
-    h->buf = h->current.value = buf;
+    h->buf = h->current.value = buf + sizeof(line_desc_t);
+    h->free_size = size - sizeof(line_desc_t);
     h->current.len = 0;
     return h;
 }

@@ -28,13 +28,6 @@
 #include "util/tstr.h"
 #include "util/tnum.h"
 
-/* XXX: this should be moved once cli buffer is decoupled from history buffer */
-typedef struct {
-    char *next;
-    char *prev;
-    int len;
-} line_desc_t;
-
 typedef struct history_t history_t;
 
 int history_get(history_t *h, char *buf, int free_size);
@@ -45,7 +38,7 @@ void history_next(history_t *h);
 void history_prev(history_t *h);
 void history_commit(history_t *h, tstr_t *l);
 
-history_t *history_new(char *buf);
+history_t *history_new(char *buf, int size);
 void history_free(history_t *h);
 
 #endif
