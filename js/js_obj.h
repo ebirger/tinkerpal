@@ -34,6 +34,8 @@ typedef struct var_t var_t;
 typedef struct obj_class_t obj_class_t;
 typedef struct function_t function_t;
 
+#define Sprototype S("prototype")
+
 struct obj_t {
     /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
      *   saves space.
@@ -48,7 +50,6 @@ struct obj_t {
     unsigned char class;
     char ref_count;
     unsigned char reserved;
-    obj_t *prototype;
     var_t *properties;
 };
 
@@ -126,7 +127,7 @@ extern bool_t false_obj;
 #define FALSE ((obj_t *)&false_obj)
 
 #define _STATIC_OBJ(c, f) { .ref_count = 1, .flags = OBJ_STATIC | f, \
-    .properties = NULL, .prototype = UNDEF, .class = c }
+    .properties = NULL, .class = c }
 
 #define STATIC_OBJ(c) _STATIC_OBJ(c, 0)
 
@@ -144,6 +145,7 @@ extern bool_t false_obj;
 /* Generic obj methods */
 obj_t *obj_cast(obj_t *o, unsigned char class);
 obj_t **obj_var_create(obj_t *o, tstr_t str);
+obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str);
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property);
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 obj_t *obj_new(unsigned char class, int size, char *type);
@@ -279,6 +281,7 @@ int obj_get_property_int(int *value, obj_t *o, tstr_t property);
 int obj_get_int(obj_t *o);
 double obj_get_fp(obj_t *o);
 tstr_t obj_get_str(obj_t *o);
+void obj_inherit(obj_t *son, obj_t *parent);
 
 /* General utility functions */
 static inline int obj_eq(obj_t *a, obj_t *b)

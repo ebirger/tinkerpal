@@ -62,7 +62,6 @@ bool_t false_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 0 };
 
 static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 double num_fp_value(num_t *n);
-static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str);
 
 /*** "vars" API ***/
 
@@ -126,7 +125,6 @@ void _obj_put(obj_t *o)
 {
     if (CLASS(o)->free)
 	CLASS(o)->free(o);
-    obj_put(o->prototype);
     vars_free(&o->properties);
     tp_debug(("%s: freeing %p\n", __FUNCTION__, o));
     if (!(o->flags & OBJ_STATIC))
@@ -135,14 +133,18 @@ void _obj_put(obj_t *o)
 
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
 {
-    obj_t **ref = NULL, *val = NULL;
+    obj_t **ref = NULL, *val = NULL, *proto;
 
     tp_debug(("Lookup %S in obj %p\n", &property, o));
     if ((val = obj_get_own_property(&ref, o, property)))
 	goto Exit;
 
-    if (o->prototype && o->prototype != UNDEF)
-	val = obj_get_property(&ref, o->prototype, property);
+    proto = obj_get_own_property(NULL, o, Sprototype);
+    if (proto && proto != UNDEF)
+    {
+	val = obj_get_property(&ref, proto, property);
+	obj_put(proto);
+    }
 
     /* If this is an env obj, there is nothing more we can do. */
     if (is_env(o))
@@ -180,7 +182,7 @@ int obj_true(obj_t *o)
     return CLASS(o)->is_true(o);
 }
 
-static obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
+obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
 {
     obj_t **ref;
 
@@ -240,7 +242,6 @@ obj_t *obj_new(unsigned char class, int size, char *type)
     obj_t *ret = tmalloc(size, type);
 
     ret->class = class;
-    ret->prototype = UNDEF;
     ret->properties = NULL;
     ret->ref_count = 1;
     ret->flags = 0;
@@ -312,6 +313,14 @@ int obj_get_property_int(int *value, obj_t *o, tstr_t property)
     *value = obj_get_int(p);
     obj_put(p);
     return 0;
+}
+
+void obj_inherit(obj_t *son, obj_t *parent)
+{
+    obj_t *func_proto;
+    
+    func_proto = obj_get_own_property(NULL, parent, Sprototype);
+    _obj_set_property(son, Sprototype, func_proto);
 }
 
 int throw_exception(obj_t **po, tstr_t *desc)
@@ -640,7 +649,7 @@ obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope,
     function_t *ret = (function_t *)obj_new_type(FUNCTION_CLASS, function_t);
 
     tp_assert(call);
-    ret->obj.prototype = object_new();
+    _obj_set_property(&ret->obj, Sprototype, object_new());
     ret->formal_params = params;
     ret->code = code;
     ret->scope = obj_get(scope);
@@ -654,7 +663,7 @@ int function_def_construct(obj_t **ret, function_t *func, obj_t *this_obj,
     int rc;
 
     this_obj = object_new();
-    this_obj->prototype = obj_get(func->obj.prototype);
+    obj_inherit(this_obj, &func->obj);
     rc = func->call(ret, func, this_obj, argc, argv);
     if (rc == COMPLETION_THROW)
 	return rc;
@@ -733,7 +742,7 @@ static void array_dump(printer_t *printer, obj_t *o)
 	/* XXX: must be in order */
 
 	/* Ugly hack, but saving flags on properties is expensive... */
-	if (!tstr_cmp(&p->str, &Slength))
+	if (!tstr_cmp(&p->str, &Slength) || !tstr_cmp(&p->str, &Sprototype))
 	    continue;
 
 	if (first)
@@ -911,7 +920,8 @@ static void array_pre_var_create(obj_t *arr, const tstr_t *str)
         NUMERIC_IS_FP(tnum_idx))
     {
 	/* XXX: is this the correct reaction ? */
-	tp_crit(("%s: setting non integer as array index", __FUNCTION__));
+	tp_crit(("%s: setting non integer '%S' as array index\n", __FUNCTION__, 
+	    str));
     }
     
     idx = NUMERIC_INT(tnum_idx);
@@ -956,7 +966,7 @@ obj_t *env_new(obj_t *env)
 {
     env_t *n = (env_t *)obj_new_type(ENV_CLASS, env_t);
 
-    n->obj.prototype = obj_get(env);
+    obj_set_property(&n->obj, Sprototype, env);
     return (obj_t *)n;
 }
 

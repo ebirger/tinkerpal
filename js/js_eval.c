@@ -327,8 +327,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     switch (tok)
     {
     case TOK_PROTOTYPE:
-	o->prototype = *po;
-	break;
+	property = Sprototype;
     case TOK_ID:
 	_obj_set_property(o, property, *po);
 	break;
@@ -417,8 +416,15 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
     case TOK_PROTOTYPE:
 	js_scan_next_token(scan);
 	tp_assert(obj);
-	ref->dst = &obj->prototype;
-	*po = obj_get(obj->prototype);
+	*po = obj_get_own_property(&ref->dst, obj, Sprototype);
+	if (!*po)
+	{
+	    obj_put(ref->field);
+	    ref->field = string_new(Sprototype);
+	    ref->base = obj;
+	    ref->dst = NULL;
+	    *po = UNDEF;
+	}
 	break;
     case TOK_OPEN_SCOPE:
 	rc = eval_object(po, scan);

@@ -71,7 +71,7 @@ int do_spi_constructor(obj_t **ret, function_t *func, obj_t *this,
 
     id = obj_get_int(argv[0]);
     *ret = object_new();
-    (*ret)->prototype = obj_get(func->obj.prototype);
+    obj_inherit(*ret, &func->obj);
     obj_set_property_int(*ret, Sspi_id, id);
     spi_init(id);
     return 0;

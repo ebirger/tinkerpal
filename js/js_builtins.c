@@ -86,14 +86,14 @@ void js_builtins_init(void)
 } while(0);
 #define CONSTRUCTOR(n, o, f, ...) do { \
     FUNCTION(n, global_env, f) \
-    f##_func.obj.prototype = o; \
+    _obj_set_property(&f##_func.obj, Sprototype, o); \
 } while(0);
 #define OBJECT(n, o, ...) do { \
     tstr_t oname = S(n); \
     _obj_set_property(global_env, oname, o); \
 } while(0);
 #define CLASS_PROTOTYPE(n, o, p, c, ...) do { \
-    o->prototype = p; \
+    _obj_set_property(o, Sprototype, p); \
     obj_class_set_prototype(c, o); \
 } while(0);
 #define CONST(n, o, c, v, ...) do { \

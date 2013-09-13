@@ -148,7 +148,7 @@ int do_serial_constructor(obj_t **ret, function_t *func, obj_t *this,
 
     id = obj_get_int(argv[0]);
     *ret = object_new();
-    (*ret)->prototype = obj_get(func->obj.prototype);
+    obj_inherit(*ret, &func->obj);
     obj_set_property_int(*ret, Sserial_id, id);
     serial_enable(id, 1);
     return 0;
