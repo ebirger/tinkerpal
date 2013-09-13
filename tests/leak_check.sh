@@ -15,6 +15,7 @@ fi
 for l in $list; do 
 	echo "============================"
 	lc $l;
+	grep "ERROR SUMMARY" $l.lc;
 	if [[ $? != 0 ]]; then
 		echo "Test $l failed";
 		break;
