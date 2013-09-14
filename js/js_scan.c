@@ -529,9 +529,9 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
 {
     scan_t *ret = js_scan_save(start);
 
+    ret->size = end->lpc - start->lpc;
     if (start->flags & SCAN_FLAG_ALLOCED)
     {
-	ret->size = end->lpc - start->lpc;
 	ret->sliced_buf = tmalloc(ret->size, "sliced scan");
 	memcpy(ret->sliced_buf, start->lpc, ret->size);
 	ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 
