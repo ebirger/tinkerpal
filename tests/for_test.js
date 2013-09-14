@@ -41,3 +41,11 @@ for (i in a)
     sum += a[i];
 }
 debug.assert(sum, 34);
+
+var a = { a : 1, b : 1 };
+a.prototype = { c : 2 };
+var b = [];
+for (i in a)
+    b.push(i);
+
+debug.assert(b[2], "c");

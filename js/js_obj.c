@@ -770,6 +770,7 @@ void object_iter_init(object_iter_t *iter, obj_t *obj)
 int object_iter_next(object_iter_t *iter)
 {
     var_t *cur_prop;
+    obj_t *proto;
 
     while ((cur_prop = *iter->priv))
     {
@@ -784,7 +785,14 @@ int object_iter_next(object_iter_t *iter)
 	return 1;
     }
 
-    return 0;
+    /* traverse our prototype */
+    proto = obj_get_own_property(NULL, iter->obj, Sprototype);
+    if (!proto || proto == UNDEF)
+	return 0;
+
+    object_iter_init(iter, proto);
+    obj_put(proto);
+    return object_iter_next(iter);
 }
 
 void object_iter_uninit(object_iter_t *iter)
