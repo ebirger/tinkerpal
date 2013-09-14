@@ -34,4 +34,10 @@ debug.assert(sum, 15);
 for (i in a) 
     sum += a[i];
 debug.assert(sum, 30);
-
+for (i in a)
+{
+    if (i == 1)
+	break;
+    sum += a[i];
+}
+debug.assert(sum, 34);
