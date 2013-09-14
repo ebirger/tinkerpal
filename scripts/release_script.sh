@@ -13,12 +13,9 @@ binpath=$where/tinkerpal-v$new;
 
 mkdir -p $binpath
 
-# Source tar.gz
-echo "git tag v$new"
-echo "git archive --prefix=tinkerpal-$new/ v$new | gzip -9 > $where/tinkerpal-$new.tar.gz"
-echo "git log --no-merges v$new ^v$last > $where/ChangeLog-$new"
-echo "git shortlog --no-merges v$new ^v$last > $where/ShortLog"
-echo "git diff --stat --summary -M v$last v$new > $where/diffstat-$new"
+git shortlog --no-merges v$last..v$new > $where/ShortLog
+git diff --stat --summary -M v$last..v$new > $where/diffstat-$new
+git archive --prefix=tinkerpal-$new/ v$new | gzip -9 > $where/tinkerpal-$new.tar.gz
 
 function build()
 {
