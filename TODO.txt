@@ -32,7 +32,6 @@ Apps
 
 Core
 ====
-- 1/2 = 0 (!)
 - Memory cache for objects
 - Builtinfs doesn't support file extensions
 - Execution break (CTRL-C)
@@ -73,7 +72,6 @@ Infrastructure/Coding
 - Improve builtin API
 - Build using ccs5 project/other IDEs
 - Allow building as library
-- Automatic binding functions init from .desc files
 
 Release
 =======
@@ -82,7 +80,6 @@ Release
 - Packaging
 - Web based IDE
 - Reference for all builtin functions
-- Proper licensing
 
 Debugging
 =========
