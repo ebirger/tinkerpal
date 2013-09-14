@@ -1347,14 +1347,12 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
 	if (valid_lval(&ref))
 	{
 	    dst = ref.dst;
-	    /* XXX: should obj_put(*dst); here, leads to
-	     * error though 
-	     */
+	    obj_put(*dst);
 	}
 	else
 	    dst = obj_var_create(ref.base, obj_get_str(ref.field));
 
-	*dst = string_new(*iter.key);
+	*dst = string_new(tstr_dup(*iter.key));
 	obj_put(lhs);
 	ref_invalidate(&ref);
 
