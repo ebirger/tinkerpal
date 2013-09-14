@@ -1317,7 +1317,7 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
 {
     scan_t *loop, *end;
     object_iter_t iter = {};
-    int rc;
+    int rc = 0;
 
     tp_info(("Iterating over %o\n", rh_exp));
     
