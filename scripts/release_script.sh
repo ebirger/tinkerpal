@@ -9,13 +9,13 @@ where="$1"
 last="$2"
 new="$3"
 
-binpath=$where/tinkerpal-v$new;
+binpath=$where/tinkerpal-v$new
 
 mkdir -p $binpath
 
-git shortlog --no-merges v$last..v$new > $where/ShortLog
-git diff --stat --summary -M v$last..v$new > $where/diffstat-$new
-git archive --prefix=tinkerpal-$new/ v$new | gzip -9 > $where/tinkerpal-$new.tar.gz
+git shortlog --no-merges v$last..v$new > $binpath/ShortLog
+git diff --stat --summary -M v$last..v$new > $binpath/diffstat-v$new
+git archive --prefix=tinkerpal-$new/ v$new | gzip -9 > $binpath/tinkerpal-v$new-src.tgz
 
 function build()
 {
