@@ -204,6 +204,31 @@ obj_t *obj_cast(obj_t *o, unsigned char class)
     return CLASS(o)->cast(o, class);
 }
 
+obj_t *obj_has_property(obj_t *o, tstr_t property)
+{
+    obj_t *ret, *prop;
+
+    prop = obj_get_property(NULL, o, property);
+    ret = prop ? TRUE : FALSE;
+    obj_put(prop);
+    return ret;
+}
+
+obj_t *obj_do_in_op(obj_t *oa, obj_t *ob)
+{
+    obj_t *ret;
+    tstr_t property;
+
+    property = obj_get_str(oa);
+    /* XXX: according to ECMAScript, ob must be an object, otherwise we need
+     * to throw an exception, but we don't support exceptions in expressions
+     * yet.
+     */
+    ret = obj_has_property(ob, property);
+    tstr_free(&property);
+    return ret;
+}
+
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
     obj_t *ret;
@@ -213,6 +238,9 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_NOT: ret = obj_true(ob) ? FALSE : TRUE; break;
     case TOK_LOG_AND: ret = obj_true(oa) && obj_true(ob) ? TRUE : FALSE; break;
     case TOK_LOG_OR: ret = obj_true(oa) || obj_true(ob) ? TRUE : FALSE; break;
+    case TOK_IN:
+	ret = obj_do_in_op(oa, ob);
+	break;
     case TOK_NOT_EQ_STRICT:
     case TOK_IS_EQ_STRICT:
 	if (CLASS(oa) != CLASS(ob))
@@ -220,6 +248,7 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 	    ret = op == TOK_NOT_EQ_STRICT ? TRUE : FALSE;
 	    break;
 	}
+	/* Fallthrough */
     default:
 	tp_assert(CLASS(oa)->do_op);
         ret = CLASS(oa)->do_op(op & ~STRICT, oa, ob);

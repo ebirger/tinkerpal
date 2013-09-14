@@ -52,3 +52,7 @@ var a = {};
 a.pre_inc = 5;
 ++a.pre_inc;
 debug.assert(a.pre_inc, 6);
+
+var in_obj_test = { a : 1, b : 2 };
+debug.assert_cond("a" in in_obj_test);
+debug.assert_cond(!("c" in in_obj_test));

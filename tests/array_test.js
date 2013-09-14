@@ -65,3 +65,6 @@ debug.assert(lklk[0], 1);
 debug.assert(lklk[3], "hello");
 var jh = Array(1, 2);
 debug.assert(jh[1], 2);
+var in_array_test = [ "a", "b", "c" ];
+debug.assert_cond(1 in in_array_test);
+debug.assert_cond(!(8 in in_array_test));

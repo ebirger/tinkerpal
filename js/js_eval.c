@@ -744,8 +744,8 @@ GEN_EVAL(eval_shifted_expression,
     (tok == TOK_SHL || tok == TOK_SHR || tok == TOK_SHRZ), 0,
     eval_term_expression)
 GEN_EVAL(eval_related_expression,
-    (tok == TOK_GR || tok == TOK_GE || tok == TOK_LT || tok == TOK_LE), 0,
-    eval_shifted_expression)
+    (tok == TOK_IN || tok == TOK_GR || tok == TOK_GE || tok == TOK_LT || 
+    tok == TOK_LE), 0, eval_shifted_expression)
 GEN_EVAL(eval_equalized_expression, 
     ((tok & ~STRICT) == TOK_IS_EQ || (tok & ~STRICT) == TOK_NOT_EQ), 0,
     eval_related_expression)
