@@ -341,6 +341,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
 	_obj_set_property(o, property, *po);
 	break;
     }
+    tstr_free(&property);
     return 0;
 }
 
