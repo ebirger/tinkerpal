@@ -26,3 +26,12 @@ for (x = 0; x < 10; x++)
 }
 
 debug.assert(z, 50);
+
+var i, a = [4, 5, 6], sum = 0;
+for (i in a) 
+    sum += a[i];
+debug.assert(sum, 15);
+for (i in a) 
+    sum += a[i];
+debug.assert(sum, 30);
+
