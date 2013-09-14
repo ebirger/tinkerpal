@@ -833,12 +833,18 @@ static int eval_assignment(obj_t **po, scan_t *scan, reference_t *ref)
     return 0;
 }
 
+static inline int eval_expression_ref(obj_t **po, scan_t *scan, 
+    reference_t *ref)
+{
+    return eval_ternary_expression(po, scan, ref); 
+}
+
 static int eval_expression(obj_t **po, scan_t *scan)
 {
     reference_t ref = {};
     int rc;
 
-    if ((rc = eval_ternary_expression(po, scan, &ref)))
+    if ((rc = eval_expression_ref(po, scan, &ref)))
 	goto Exit;
 
     if (is_assignment_tok(CUR_TOK(scan)))
@@ -1307,10 +1313,127 @@ ParseError:
     goto Exit;
 }
 
+static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
+{
+    scan_t *loop, *end;
+    object_iter_t iter = {};
+    int rc;
+
+    tp_info(("Iterating over %o\n", rh_exp));
+    
+    /* Body */
+    loop = js_scan_save(scan);
+    skip_statement(scan);
+    end = js_scan_save(scan);
+
+    /* Do the loop */
+    object_iter_init(&iter, rh_exp);
+    while (object_iter_next(&iter))
+    {
+	reference_t ref = {};
+	obj_t *lhs = UNDEF, **dst;
+
+	tp_info(("key %S\n", iter.key));
+	js_scan_restore(scan, in_lhs);
+	if ((rc = eval_expression_ref(&lhs, scan, &ref)))
+	{
+	    *ret = lhs;
+	    goto Exit;
+	}
+	
+	tp_info(("lhs %o\n", lhs));
+	
+	/* Replace lhs with current key */
+	if (valid_lval(&ref))
+	{
+	    dst = ref.dst;
+	    /* XXX: should obj_put(*dst); here, leads to
+	     * error though 
+	     */
+	}
+	else
+	    dst = obj_var_create(ref.base, obj_get_str(ref.field));
+
+	*dst = string_new(*iter.key);
+	obj_put(lhs);
+	ref_invalidate(&ref);
+
+	/* Eval loop body */
+	js_scan_restore(scan, loop);
+	rc = eval_statement(ret, scan);
+	if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
+	    goto Exit;
+
+	obj_put(*ret);
+	*ret = UNDEF;
+
+	if (rc == COMPLETION_BREAK)
+	{
+	    rc = 0;
+	    goto Exit;
+	}
+    }
+    object_iter_uninit(&iter);
+
+Exit:
+    js_scan_restore(scan, end);
+    js_scan_free(loop);
+    js_scan_free(end);
+    return rc;
+}
+
+static int parse_for_in(scan_t *scan, scan_t **lhs, obj_t **rh_exp)
+{
+    scan_t *last = NULL, *start = js_scan_save(scan);
+    int in_found = 0, end_stmnt = 0;
+
+    while (CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_EOF)
+    {
+	if ((end_stmnt = CUR_TOK(scan) == TOK_END_STATEMENT))
+	    break;
+	
+	if (CUR_TOK(scan) == TOK_OPEN_PAREN)
+	{
+	    js_scan_match(scan, TOK_OPEN_PAREN);
+	    skip_expression(scan);
+	    js_scan_match(scan, TOK_CLOSE_PAREN);
+	    continue;
+	}
+	
+	if (CUR_TOK(scan) == TOK_OPEN_MEMBER)
+	{
+	    js_scan_match(scan, TOK_OPEN_MEMBER);
+	    skip_expression(scan);
+	    js_scan_match(scan, TOK_CLOSE_MEMBER);
+	    continue;
+	}
+
+	if ((in_found = CUR_TOK(scan) == TOK_IN))
+	{
+	    *lhs = js_scan_slice(start, last);
+	    js_scan_match(scan, TOK_IN);
+	    eval_expression(rh_exp, scan);
+	    break;
+	}
+
+	js_scan_free(last);
+	last = js_scan_save(scan);
+	js_scan_next_token(scan);
+    }
+    if (!in_found || end_stmnt)
+	js_scan_restore(scan, start);
+    else
+	js_scan_match(scan, TOK_CLOSE_PAREN);
+    js_scan_free(start);
+    js_scan_free(last);
+    return in_found && !end_stmnt;
+}
+
 static int eval_for(obj_t **ret, scan_t *scan)
 {
-    scan_t *loop, *cond, *repeated, *end;
+    scan_t *in_lhs, *loop, *cond, *repeated, *end;
     int next = 1, rc = 0;
+    obj_t *rh_exp;
       
     *ret = UNDEF;
 
@@ -1318,6 +1441,18 @@ static int eval_for(obj_t **ret, scan_t *scan)
 
     /* Initializer */
     js_scan_match(scan, TOK_OPEN_PAREN);
+
+    if (parse_for_in(scan, &in_lhs, &rh_exp))
+    {
+	int rc;
+
+	tp_info(("For-in loop detected\n"));
+	rc = eval_for_in(ret, scan, in_lhs, rh_exp);
+	js_scan_free(in_lhs);
+	obj_put(rh_exp);
+	return rc;
+    }
+
     /* XXX: This is not the prettiest way to do this... */
     if (CUR_TOK(scan) == TOK_VAR)
     {
