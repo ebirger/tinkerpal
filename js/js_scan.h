@@ -156,6 +156,7 @@ token_group_t js_scan_get_token_group(scan_t *scan);
 
 scan_t *js_scan_save(scan_t *scan);
 void js_scan_restore(scan_t *dst, scan_t *src);
+scan_t *js_scan_slice(scan_t *start, scan_t *end);
 void js_scan_free(scan_t *scan);
 
 void js_scan_uninit(scan_t *scan);

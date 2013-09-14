@@ -278,6 +278,7 @@ static int eval_function_definition(tstr_t *fname, obj_t **po, scan_t *scan)
 {
     obj_t *o;
     tstr_list_t *params = NULL;
+    scan_t *start, *end;
 
     if (_js_scan_match(scan, TOK_OPEN_PAREN))
 	return parse_error(po);
@@ -293,9 +294,13 @@ static int eval_function_definition(tstr_t *fname, obj_t **po, scan_t *scan)
     if (_js_scan_match(scan, TOK_CLOSE_PAREN))
 	goto ParseError;
 
-    o = function_new(params, js_scan_save(scan), cur_env, 
-	call_evaluated_function);
+    start = js_scan_save(scan);
     skip_block(scan);
+    end = js_scan_save(scan);
+    o = function_new(params, js_scan_slice(start, end), cur_env, 
+	call_evaluated_function);
+    js_scan_free(start);
+    js_scan_free(end);
     *po = o;
     return 0;
 
