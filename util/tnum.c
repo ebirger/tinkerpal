@@ -29,9 +29,14 @@
 #include "util/tnum.h"
 #include "util/debug.h"
 
-static int is_oct_digit(char c)
+static inline int is_oct_digit(char c)
 {
     return c >= '0' && c <= '7';
+}
+
+static inline int is_bin_digit(char c)
+{
+    return c >= '0' && c <= '1';
 }
 
 int exp_power(int exp)
@@ -78,6 +83,11 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
 	    radix = 16;
 	    i++;
 	}
+	if (s->len > 2 && s->value[1] == 'b')
+	{
+	    radix = 2;
+	    i++;
+	}
     }
 
     for (; i < s->len; i++)
@@ -86,7 +96,8 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
 
 	if ((radix == 16 && !isxdigit((int)c)) ||
 	    (radix == 10 && (!isdigit((int)c) && c != '.' && c != 'e')) ||
-	    (radix == 8 && !is_oct_digit(c)))
+	    (radix == 8 && !is_oct_digit(c)) ||
+	    (radix == 2 && !is_bin_digit(c)))
 	{
 	    return -1;
 	}

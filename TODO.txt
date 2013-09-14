@@ -35,7 +35,6 @@ Core
 - Memory cache for objects
 - Builtinfs doesn't support file extensions
 - Execution break (CTRL-C)
-- binary number values (0b110011)
 - Formatting exceptions ("pinmod %s is not available")
 - Proper types (u8 ? uint8_t ?, ..)
 - Convert most assertions to exceptions
