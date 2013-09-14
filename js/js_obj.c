@@ -966,7 +966,8 @@ obj_t *env_new(obj_t *env)
 {
     env_t *n = (env_t *)obj_new_type(ENV_CLASS, env_t);
 
-    obj_set_property(&n->obj, Sprototype, env);
+    if (env)
+	obj_set_property(&n->obj, Sprototype, env);
     return (obj_t *)n;
 }
 
