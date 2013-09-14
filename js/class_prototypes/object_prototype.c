@@ -25,15 +25,14 @@
 #include "util/debug.h"
 #include "js/js_obj.h"
 
-int do_object_prototype_to_string(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_object_prototype_to_string(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
     *ret = obj_cast(this, STRING_CLASS);
     return 0;
 }
 
-int do_object_constructor(obj_t **ret, function_t *func, 
-    obj_t *this, int argc, obj_t *argv[])
+int do_object_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     *ret = object_new();
     return 0;

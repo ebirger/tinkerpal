@@ -54,10 +54,9 @@ function main()
 
 var kuku = function pupu() {
     debug.dump("kuku");
+    debug.assert_cond(kuku === pupu);
     return 1;
 };
 
 debug.assert(kuku(), 1);
-debug.assert(pupu(), 1);
-debug.assert_cond(kuku === pupu);
 main();

@@ -32,6 +32,7 @@ typedef struct {
     unsigned short len;
 #define TSTR_FLAG_ALLOCATED 0x0001
 #define TSTR_FLAG_ESCAPED 0x0002
+#define TSTR_FLAG_INTERNAL 0x0004
     unsigned short flags;
 } tstr_t;
 
@@ -39,7 +40,11 @@ typedef struct {
 #define TSTR_SET_ALLOCATED(t) ((t)->flags |= TSTR_FLAG_ALLOCATED)
 #define TSTR_IS_ESCAPED(t) ((t)->flags & TSTR_FLAG_ESCAPED)
 #define TSTR_SET_ESCAPED(t) ((t)->flags |= TSTR_FLAG_ESCAPED)
+#define TSTR_IS_INTERNAL(t) ((t)->flags & TSTR_FLAG_INTERNAL)
+#define TSTR_SET_INTERNAL(t) ((t)->flags |= TSTR_FLAG_INTERNAL)
 #define S(s) (tstr_t){ .value = (s), .len = sizeof(s) - 1, .flags = 0 }
+#define INTERNAL_S(s) (tstr_t){ .value = (s), .len = sizeof(s) - 1, \
+    .flags = TSTR_FLAG_INTERNAL }
 
 char digit_value(char c);
 

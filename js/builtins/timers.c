@@ -61,7 +61,7 @@ static void timeout_cb(event_timer_t *et)
     delayed_work_t *w = (delayed_work_t *)et;
     obj_t *o;
 
-    function_call(&o, to_function(w->func), w->this, 0, NULL);
+    function_call(&o, w->this, 1, &w->func);
 
     obj_put(o);
     delayed_work_free(et);
@@ -72,7 +72,7 @@ static void interval_cb(event_timer_t *et)
     delayed_work_t *w = (delayed_work_t *)et;
     obj_t *o;
 
-    if (function_call(&o, to_function(w->func), w->this, 0, NULL)) 
+    if (function_call(&o, w->this, 1, &w->func)) 
     {
 	event_timer_del(w->timer_id);
 	delayed_work_free(et);
@@ -81,34 +81,32 @@ static void interval_cb(event_timer_t *et)
     obj_put(o);
 }
 
-int do_set_timeout(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_set_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     delayed_work_t *w;
     int ms, tid;
 
-    tp_assert(argc == 2);
+    tp_assert(argc == 3);
 
-    w = delayed_work_new(argv[0], this, timeout_cb);
+    w = delayed_work_new(argv[1], this, timeout_cb);
 
-    ms = NUM_INT(to_num(argv[1]));
+    ms = NUM_INT(to_num(argv[2]));
 
     tid = event_timer_set(ms, &w->et);
     *ret = num_new_int(tid);
     return 0;
 }
   
-int do_set_interval(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     delayed_work_t *w;
     int ms, tid;
 
-    tp_assert(argc == 2);
+    tp_assert(argc == 3);
 
-    w = delayed_work_new(argv[0], this, interval_cb);
+    w = delayed_work_new(argv[1], this, interval_cb);
 
-    ms = NUM_INT(to_num(argv[1]));
+    ms = NUM_INT(to_num(argv[2]));
 
     tid = event_timer_set_period(ms, &w->et);
     w->timer_id = tid;
@@ -116,36 +114,32 @@ int do_set_interval(obj_t **ret, function_t *func, obj_t *this,
     return 0;
 }
 
-static int do_clear_timer(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+static int do_clear_timer(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 0 || argc == 1);
+    tp_assert(argc == 1 || argc == 2);
 
-    if (argc == 0)
+    if (argc == 1)
 	event_timer_del_all();
     else
     {
-	int id = NUM_INT(to_num(argv[0]));
+	int id = NUM_INT(to_num(argv[1]));
 
 	event_timer_del(id);
     }
     return 0;
 }
 
-int do_clear_interval(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_clear_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    return do_clear_timer(ret, func, this, argc, argv);
+    return do_clear_timer(ret, this, argc, argv);
 }
 
-int do_clear_timeout(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_clear_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    return do_clear_timer(ret, func, this, argc, argv);
+    return do_clear_timer(ret, this, argc, argv);
 }
 
-int do_get_time(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_get_time(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int ticks = platform.get_ticks_from_boot();
 

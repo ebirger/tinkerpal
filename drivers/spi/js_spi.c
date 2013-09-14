@@ -41,37 +41,34 @@ static int get_spi_id(obj_t *o)
     return ret;
 }
 
-int do_spi_receive(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_spi_receive(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     *ret = num_new_int(spi_receive(get_spi_id(this)));
     return 0;
 }
 
-int do_spi_send(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_spi_send(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     unsigned long data;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    data = obj_get_int(argv[0]);
+    data = obj_get_int(argv[1]);
 
     spi_send(get_spi_id(this), data);
     *ret = UNDEF;
     return 0;
 }
 
-int do_spi_constructor(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_spi_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int id;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    id = obj_get_int(argv[0]);
+    id = obj_get_int(argv[1]);
     *ret = object_new();
-    obj_inherit(*ret, &func->obj);
+    obj_inherit(*ret, argv[0]);
     obj_set_property_int(*ret, Sspi_id, id);
     spi_init(id);
     return 0;

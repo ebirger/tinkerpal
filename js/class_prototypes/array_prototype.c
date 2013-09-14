@@ -25,23 +25,21 @@
 #include "util/debug.h"
 #include "js/js_obj.h"
 
-int do_array_prototype_push(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int i;
     obj_t *obj = NULL;
 
-    tp_assert(argc > 0);
-    for (i = 0; i < argc; i++)
+    tp_assert(argc > 1);
+    for (i = 1; i < argc; i++)
 	obj = array_push(this, obj_get(argv[i]));
     *ret = obj_get(obj);
     return 0;
 }
 
-int do_array_prototype_pop(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_array_prototype_pop(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 0);
+    tp_assert(argc == 1);
     *ret = array_pop(this);
     return 0;
 }
@@ -50,27 +48,28 @@ static int array_cb_call(obj_t **ret, function_t *cb, obj_t *cb_this,
     obj_t *item, int index, obj_t *arr)
 {
     int rc;
-    obj_t *argv[3];
+    obj_t *argv[4];
 
-    argv[0] = item;
-    argv[1] = num_new_int(index);
-    argv[2] = arr;
-    rc = function_call(ret, cb, cb_this, 3, argv);
-    obj_put(argv[1]);
+    argv[0] = (obj_t *)cb;
+    argv[1] = item;
+    argv[2] = num_new_int(index);
+    argv[3] = arr;
+    rc = function_call(ret, cb_this, 4, argv);
+    obj_put(argv[2]);
     return rc;
 }
 
-int do_array_prototype_foreach(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_array_prototype_foreach(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
     function_t *cb;
     obj_t *cb_this;
     array_iter_t iter;
 
-    tp_assert(argc == 1 || argc == 2);
+    tp_assert(argc == 2 || argc == 3);
 
-    cb = to_function(argv[0]);
-    cb_this = argc == 2 ? argv[1] : UNDEF;
+    cb = to_function(argv[1]);
+    cb_this = argc == 3 ? argv[2] : UNDEF;
 
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))
@@ -85,18 +84,18 @@ int do_array_prototype_foreach(obj_t **ret, function_t *func, obj_t *this,
     return 0;
 }
 
-int do_array_prototype_indexof(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_array_prototype_indexof(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
     int start;
     obj_t *item;
     int is_eq = 0;
     array_iter_t iter;
 
-    tp_assert(argc == 1 || argc == 2);
+    tp_assert(argc == 2 || argc == 3);
 
-    item = argv[0];
-    start = argc == 2 ? NUM_INT(to_num(argv[1])) : 0;
+    item = argv[1];
+    start = argc == 3 ? NUM_INT(to_num(argv[2])) : 0;
 
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))
@@ -112,15 +111,14 @@ int do_array_prototype_indexof(obj_t **ret, function_t *func, obj_t *this,
     return 0;
 }
 
-int do_array_prototype_join(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *sep;
     tstr_t comma = S(",");
     obj_t *o = NULL;
     array_iter_t iter;
 
-    tp_assert(argc == 1 || argc == 0);
+    tp_assert(argc == 2 || argc == 1);
 
     array_iter_init(&iter, this, 0);
     if (iter.len == 0)
@@ -130,7 +128,7 @@ int do_array_prototype_join(obj_t **ret, function_t *func, obj_t *this,
 	goto Exit;
     }
 
-    sep = argc == 1 ? obj_get(argv[0]) : string_new(comma);
+    sep = argc == 2 ? obj_get(argv[1]) : string_new(comma);
 
     while (array_iter_next(&iter))
     {
@@ -154,16 +152,15 @@ Exit:
     return 0;
 }
 
-int do_array_prototype_map(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     function_t *cb;
     obj_t *cb_this, *new_arr;
     array_iter_t iter;
 
-    tp_assert(argc == 1 || argc == 2);
-    cb = to_function(argv[0]);
-    cb_this = argc == 2 ? argv[1] : UNDEF;
+    tp_assert(argc == 2 || argc == 3);
+    cb = to_function(argv[1]);
+    cb_this = argc == 3 ? argv[2] : UNDEF;
 
     *ret = new_arr = array_new();
 
@@ -187,24 +184,23 @@ Exit:
     return 0;
 }
 
-int do_array_constructor(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_array_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *a;
 
     a = array_new();
 
-    if (argc == 1)
+    if (argc == 2)
     {
 	int len;
 
-	if (!is_num(argv[0]))
+	if (!is_num(argv[1]))
 	{
-	    array_push(a, obj_get(argv[0]));
+	    array_push(a, obj_get(argv[1]));
 	    goto Exit;
 	}
 
-	len = obj_get_int(argv[0]);
+	len = obj_get_int(argv[1]);
 	if (len < 0)
 	{
 	    obj_put(a);
@@ -213,9 +209,9 @@ int do_array_constructor(obj_t **ret, function_t *func, obj_t *this,
 
 	array_length_set(a, len);
     }
-    else if (argc > 1)
+    else if (argc > 2)
     {
-	do_array_prototype_push(ret, func, a, argc, argv);
+	do_array_prototype_push(ret, a, argc, argv);
 	obj_put(*ret);
     }
 

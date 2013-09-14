@@ -53,8 +53,7 @@ struct obj_t {
     var_t *properties;
 };
 
-typedef int (*call_t)(obj_t **ret, function_t *func, obj_t *this, int argc, 
-    obj_t *argv[]);
+typedef int (*call_t)(obj_t **ret, obj_t *this, int argc, obj_t *argv[]);
 
 struct function_t {
     obj_t obj;
@@ -199,10 +198,8 @@ static inline num_t *to_num(obj_t *o)
 /* "function" objects methods */
 obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope, 
     call_t call);
-int function_call(obj_t **ret, function_t *func, obj_t *this_obj, int argc,
-    obj_t *argv[]);
-int function_call_construct(obj_t **ret, function_t *func, int argc,
-    obj_t *argv[]);
+int function_call(obj_t **ret, obj_t *this_obj, int argc, obj_t *argv[]);
+int function_call_construct(obj_t **ret, int argc, obj_t *argv[]);
 
 static inline int is_function(obj_t *o)
 {

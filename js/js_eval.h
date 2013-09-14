@@ -32,8 +32,8 @@ int js_eval(obj_t **ret, tstr_t *code);
 int js_eval_module(obj_t **ret, tstr_t *code);
 int js_eval_obj(obj_t **ret, obj_t *obj);
 
-int call_evaluated_function(obj_t **ret, function_t *func, 
-    obj_t *this_obj, int argc, obj_t *argv[]);
+int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
+    obj_t *argv[]);
 int parse_function_param_list(tstr_list_t **params, scan_t *scan);
 
 void js_eval_uninit(void);

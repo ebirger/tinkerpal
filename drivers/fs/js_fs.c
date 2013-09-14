@@ -29,15 +29,14 @@
 
 #define Sexception_path_not_found S("Exception: Path not found")
 
-int do_read_file_sync(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_read_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tstr_t content, path;
     int rc;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    path = obj_get_str(argv[0]);
+    path = obj_get_str(argv[1]);
 
     if (vfs_file_read(&content, &path, 0))
     {
@@ -61,16 +60,15 @@ static int readdir_cb(tstr_t *file_name, void *ctx)
     return 0;
 }
 
-int do_readdir_sync(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_readdir_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tstr_t path;
     obj_t *arr;
     int rc;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    path = obj_get_str(argv[0]);
+    path = obj_get_str(argv[1]);
     arr = array_new();
 
     if (vfs_readdir(&path, readdir_cb, arr))

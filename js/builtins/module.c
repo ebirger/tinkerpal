@@ -25,15 +25,14 @@
 #include "js/js_obj.h"
 #include "js/js_module.h"
 
-int do_require(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_require(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int rc;
     tstr_t mod_name;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    mod_name = obj_get_str(argv[0]);
+    mod_name = obj_get_str(argv[1]);
     rc = module_require(ret, &mod_name);
     tstr_free(&mod_name);
     if (rc == -1)

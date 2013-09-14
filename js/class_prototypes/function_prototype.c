@@ -28,28 +28,36 @@
 
 extern obj_t *global_env;
 
-static int do_null_function(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+static int do_null_function(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     *ret = UNDEF;
     return 0;
 }
 
-int do_function_prototype_call(obj_t **ret, function_t *func, 
-    obj_t *this, int argc, obj_t *argv[])
+int do_function_prototype_call(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
-    tp_assert(argc > 0);
+    int rc;
+    obj_t *saved_this;
 
-    return function_call(ret, to_function(this), argv[0], argc - 1, argv + 1);
+    tp_assert(argc > 1);
+
+    saved_this = argv[1];
+    argv[1] = this; /* this is the called function */
+    rc = function_call(ret, saved_this, argc - 1, argv + 1);
+    argv[1] = saved_this; /* restore it so it could be freed */
+    return rc;
 }
 
-int do_function_constructor(obj_t **ret, function_t *func, 
-    obj_t *this, int argc, obj_t *argv[])
+int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     scan_t *code = NULL;
     tstr_t body;
     tstr_list_t *params = NULL;
     call_t call;
+
+    argc--;
+    argv++;
 
     if (!argc)
     {
@@ -83,6 +91,7 @@ int do_function_constructor(obj_t **ret, function_t *func,
 
 	scanned_params = js_scan_init(&params_raw);
 
+	tstr_list_add(&params, INTERNAL_S("__constructed_func__"));
 	if (parse_function_param_list(&params, scanned_params))
 	{
 	    js_scan_uninit(scanned_params);

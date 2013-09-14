@@ -27,28 +27,26 @@
 #include "js/js_eval.h"
 #include <math.h>
 
-int do_eval(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_eval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    if (!argc)
+    if (argc == 1)
     {
 	*ret = UNDEF;
 	return 0;
     }
 
-    return js_eval_obj(ret, argv[0]);
+    return js_eval_obj(ret, argv[1]);
 }
 
-int do_to_integer(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_to_integer(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     num_t *n;
     int value = 0, sign;
 
-    if (!argc)
+    if (argc == 1)
 	goto Exit;
 
-    n = to_num(obj_cast(argv[0], NUM_CLASS));
+    n = to_num(obj_cast(argv[1], NUM_CLASS));
     if (!NUM_IS_FP(n))
     {
 	/* It is already an integer, just return our cast */
@@ -65,16 +63,15 @@ Exit:
     return 0;
 }
 
-int do_assert(obj_t **ret, function_t *func, obj_t *this, int argc, 
-    obj_t *argv[])
+int do_assert(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *lv, *rv, *cond;
     int failed;
 
-    tp_assert(argc == 2);
+    tp_assert(argc == 3);
 
-    lv = argv[0];
-    rv = argv[1];
+    lv = argv[1];
+    rv = argv[2];
     /* Keep a reference for rv,lv so we can print them */
     cond = obj_do_op(TOK_IS_EQ, obj_get(rv), obj_get(lv));
     failed = !obj_true(cond);
@@ -86,15 +83,14 @@ int do_assert(obj_t **ret, function_t *func, obj_t *this, int argc,
     return 0;
 }
 
-int do_assert_cond(obj_t **ret, function_t *func, obj_t *this, int argc,
-    obj_t *argv[])
+int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *cond;
     int failed;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    cond = argv[0];
+    cond = argv[1];
     failed = !obj_true(cond);
     if (failed)
 	tp_crit(("assertion failed: cond: %o\n", cond));
@@ -103,34 +99,28 @@ int do_assert_cond(obj_t **ret, function_t *func, obj_t *this, int argc,
     return 0;
 }
 
-int do_dump(obj_t **ret, function_t *func, obj_t *this, int argc, 
-    obj_t *argv[])
+int do_dump(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    tp_out(("%o\n", argv[0]));
+    tp_out(("%o\n", argv[1]));
     *ret = UNDEF;
     return 0;
 }
 
-int do_dump_env(obj_t **ret, function_t *func, obj_t *this, int argc, 
-    obj_t *argv[])
+int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     extern obj_t *global_env;
 
-    tp_assert(argc == 0);
+    tp_assert(argc == 1);
 
     tp_out(("%o\n", global_env));
     *ret = UNDEF;
     return 0;
 }
 
-int do_apply(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_apply(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    function_t *called;
-
-    tp_assert(argc >= 1);
-    called = to_function(argv[0]);
-    return function_call(ret, called, this, argc - 1, argv + 1);
+    tp_assert(argc > 1);
+    return function_call(ret, this, argc - 1, argv + 1);
 }

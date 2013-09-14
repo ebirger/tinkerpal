@@ -27,8 +27,7 @@
 #include "js/js_obj.h"
 #include "platform/platform.h"
 
-int do_meminfo(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_meminfo(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tmalloc_stats();
     platform_meminfo();

@@ -29,17 +29,16 @@
 #include "js/js_obj.h"
 #include "drivers/mmc/mmc.h"
 
-int do_mmc_constructor(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_mmc_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int spi_port, mosi, cs;
 
-    if (argc != 3)
+    if (argc != 4)
 	return COMPLETION_THROW;
 
-    spi_port = obj_get_int(argv[0]);
-    mosi = obj_get_int(argv[1]);
-    cs = obj_get_int(argv[2]);
+    spi_port = obj_get_int(argv[1]);
+    mosi = obj_get_int(argv[2]);
+    cs = obj_get_int(argv[3]);
 
     mmc_init(spi_port, mosi, cs);
     *ret = object_new();

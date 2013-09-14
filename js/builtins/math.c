@@ -29,19 +29,17 @@
 #include <stdlib.h> /* abs */
 
 #define MATH_FUNC1(type, name) \
-int do_##name(obj_t **ret, function_t *func, obj_t *this, \
-    int argc, obj_t *argv[]) \
+int do_##name(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
 { \
-    tp_assert(argc == 1); \
-    *ret = num_new_##type(name(obj_get_##type(argv[0]))); \
+    tp_assert(argc == 2); \
+    *ret = num_new_##type(name(obj_get_##type(argv[1]))); \
     return 0; \
 }
 #define MATH_FUNC2(type, name) \
-int do_##name(obj_t **ret, function_t *func, obj_t *this, \
-    int argc, obj_t *argv[]) \
+int do_##name(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
 { \
-    tp_assert(argc == 2); \
-    *ret = num_new_##type(name(obj_get_##type(argv[0]), obj_get_##type(argv[1]))); \
+    tp_assert(argc == 3); \
+    *ret = num_new_##type(name(obj_get_##type(argv[1]), obj_get_##type(argv[2]))); \
     return 0; \
 }
 

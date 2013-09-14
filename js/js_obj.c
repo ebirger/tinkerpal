@@ -614,7 +614,12 @@ static void function_dump(printer_t *printer, obj_t *o)
 
     tprintf(printer, "Function(");
     for (l = function->formal_params; l; l = l->next)
+    {
+	if (TSTR_IS_INTERNAL(&l->str))
+	    continue;
+
 	tprintf(printer, "%S%s", &l->str, l->next ? ", " : "");
+    }
 
     tprintf(printer, ")");
 }
@@ -657,14 +662,15 @@ obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope,
     return (obj_t *)ret;
 }
 
-int function_def_construct(obj_t **ret, function_t *func, obj_t *this_obj, 
-    int argc, obj_t *argv[])
+int function_def_construct(obj_t **ret, obj_t *this_obj, int argc, 
+    obj_t *argv[])
 {
     int rc;
+    function_t *func = to_function(argv[0]);
 
     this_obj = object_new();
     obj_inherit(this_obj, &func->obj);
-    rc = func->call(ret, func, this_obj, argc, argv);
+    rc = func->call(ret, this_obj, argc, argv);
     if (rc == COMPLETION_THROW)
 	return rc;
 
@@ -673,19 +679,19 @@ int function_def_construct(obj_t **ret, function_t *func, obj_t *this_obj,
     return rc;
 }
 
-int function_call_construct(obj_t **ret, function_t *func, int argc, 
-    obj_t *argv[])
+int function_call_construct(obj_t **ret, int argc, obj_t *argv[])
 {
+    function_t *func = to_function(argv[0]);
     call_t c = func->obj.flags & OBJ_FUNCTION_CONSTRUCTOR ? 
 	func->call : function_def_construct;
 
-    return c(ret, func, UNDEF, argc, argv);
+    return c(ret, UNDEF, argc, argv);
 }
 
-int function_call(obj_t **ret, function_t *func, obj_t *this_obj, int argc, 
-    obj_t *argv[])
+int function_call(obj_t **ret, obj_t *this_obj, int argc, obj_t *argv[])
 {
-    return func->call(ret, func, this_obj, argc, argv);
+    function_t *func = to_function(argv[0]);
+    return func->call(ret, this_obj, argc, argv);
 }
 
 /*** "object" Class ***/

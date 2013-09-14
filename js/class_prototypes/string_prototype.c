@@ -26,17 +26,16 @@
 #include "util/tstr.h"
 #include "js/js_obj.h"
 
-int do_string_prototype_split(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tstr_t cur, sep;
     int idx = 0;
 
-    tp_assert(argc == 1); /* XXX: support limit */
+    tp_assert(argc == 2); /* XXX: support limit */
 
     *ret = array_new();
 
-    sep = obj_get_str(argv[0]);
+    sep = obj_get_str(argv[1]);
     cur = obj_get_str(this);
     while (1)
     {
@@ -59,16 +58,16 @@ int do_string_prototype_split(obj_t **ret, function_t *func, obj_t *this,
     return 0;
 }
 
-int do_string_prototype_indexof(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_string_prototype_indexof(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
     tstr_t needle, haystack;
     int idx;
 
-    tp_assert(argc == 1); /* XXX: support position */
+    tp_assert(argc == 2); /* XXX: support position */
 
     haystack = obj_get_str(this);
-    needle = obj_get_str(argv[0]);
+    needle = obj_get_str(argv[1]);
 
     idx = tstr_find(&haystack, &needle);
 
@@ -78,18 +77,18 @@ int do_string_prototype_indexof(obj_t **ret, function_t *func, obj_t *this,
     return 0;
 }
 
-int do_string_prototype_substring(obj_t **ret, function_t *func, 
-    obj_t *this, int argc, obj_t *argv[])
+int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
     int start, end;
     tstr_t s, retval;
 
-    tp_assert(argc == 1 || argc == 2);
+    tp_assert(argc == 2 || argc == 3);
 
     retval = s = obj_get_str(this);
 
-    start = obj_get_int(argv[0]);
-    end = argc == 2 ? obj_get_int(argv[1]) : s.len;
+    start = obj_get_int(argv[1]);
+    end = argc == 3 ? obj_get_int(argv[2]) : s.len;
 
     /* We don't allow bad params here :) */
     tp_assert(start >= 0 && start < s.len);
@@ -102,15 +101,15 @@ int do_string_prototype_substring(obj_t **ret, function_t *func,
     return 0;
 }
 
-int do_string_prototype_char_at(obj_t **ret, function_t *func, obj_t *this, 
-    int argc, obj_t *argv[])
+int do_string_prototype_char_at(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
     int pos;
     tstr_t s, retval = S("");
 
     s = obj_get_str(this);
 
-    pos = !argc ? -1 : obj_get_int(argv[0]);
+    pos = argc == 1 ? -1 : obj_get_int(argv[1]);
 
     if (pos < 0 || pos >= s.len)
 	goto Exit;
@@ -125,8 +124,8 @@ Exit:
     return 0;
 }
 
-int do_string_prototype_char_code_at(obj_t **ret, function_t *func, 
-    obj_t *this, int argc, obj_t *argv[])
+int do_string_prototype_char_code_at(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
 {
     int pos;
     tstr_t s;
@@ -134,7 +133,7 @@ int do_string_prototype_char_code_at(obj_t **ret, function_t *func,
     *ret = NAN_OBJ;
     s = obj_get_str(this);
 
-    pos = !argc ? -1 : obj_get_int(argv[0]);
+    pos = argc == 1 ? -1 : obj_get_int(argv[1]);
 
     if (pos < 0 || pos >= s.len)
 	goto Exit;
@@ -146,13 +145,12 @@ Exit:
     return 0;
 }
 
-int do_string_constructor(obj_t **ret, function_t *func, 
-    obj_t *this_obj, int argc, obj_t *argv[])
+int do_string_constructor(obj_t **ret, obj_t *this_obj, int argc, obj_t *argv[])
 {
     tstr_t input = S("");
 
-    if (argc == 1)
-	input = obj_get_str(argv[0]);
+    if (argc == 2)
+	input = obj_get_str(argv[1]);
 
     *ret = string_new(tstr_dup(input));
     tstr_free(&input);

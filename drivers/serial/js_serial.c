@@ -62,7 +62,7 @@ static serial_work_t *serial_work_new(int id, obj_t *func, obj_t *this,
 static void serial_on_data_cb(event_watch_t *ew, int id)
 {
     serial_work_t *w = (serial_work_t *)ew;
-    obj_t *o, *data_obj;
+    obj_t *o, *argv[2], *data_obj;
     tstr_t data;
 
     /* XXX: read as much as possible */
@@ -73,7 +73,9 @@ static void serial_on_data_cb(event_watch_t *ew, int id)
     data_obj = object_new();
     obj_set_property_str(data_obj, S("data"), data);
 
-    function_call(&o, to_function(w->func), w->this, 1, &data_obj);
+    argv[0] = w->func;
+    argv[1] = data_obj;
+    function_call(&o, w->this, 2, argv);
 
     obj_put(o);
     obj_put(data_obj);
@@ -87,29 +89,26 @@ static int get_serial_id(obj_t *o)
     return ret;
 }
 
-int do_serial_enable(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_serial_enable(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     serial_enable(get_serial_id(this), 1);
     return 0;
 }
 
-int do_serial_disable(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_serial_disable(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     serial_enable(get_serial_id(this), 0);
     return 0;
 }
 
-int do_serial_on_data(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     serial_work_t *w;
     int event_id;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    w = serial_work_new(get_serial_id(this), argv[0], this, serial_on_data_cb);
+    w = serial_work_new(get_serial_id(this), argv[1], this, serial_on_data_cb);
 
     /* XXX: if event is already set, it should be cleared */
     event_id = event_watch_set(w->id, &w->ew);
@@ -117,38 +116,35 @@ int do_serial_on_data(obj_t **ret, function_t *func, obj_t *this,
     return 0;
 }
 
-int do_serial_print(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_serial_print(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     string_t *s;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    s = to_string(argv[0]);
+    s = to_string(argv[1]);
 
     serial_write(get_serial_id(this), s->value.value, s->value.len);
     *ret = UNDEF;
     return 0;
 }
 
-int do_serial_set_console(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_serial_set_console(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     console_set_id(get_serial_id(this));
     *ret = UNDEF;
     return 0;
 }
 
-int do_serial_constructor(obj_t **ret, function_t *func, obj_t *this,
-    int argc, obj_t *argv[])
+int do_serial_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int id;
 
-    tp_assert(argc == 1);
+    tp_assert(argc == 2);
 
-    id = obj_get_int(argv[0]);
+    id = obj_get_int(argv[1]);
     *ret = object_new();
-    obj_inherit(*ret, &func->obj);
+    obj_inherit(*ret, argv[0]);
     obj_set_property_int(*ret, Sserial_id, id);
     serial_enable(id, 1);
     return 0;

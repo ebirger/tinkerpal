@@ -56,7 +56,7 @@ static int eval_while(obj_t **ret, scan_t *scan);
 static int eval_for(obj_t **ret, scan_t *scan);
 static void skip_block(scan_t *scan);
 static void skip_expression(scan_t *scan);
-static int eval_function(obj_t **ret, scan_t *scan);
+static int eval_function(obj_t **ret, scan_t *scan, int stmnt);
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref);
 static int eval_statement_list(obj_t **ret, scan_t *scan);
 static int eval_switch(obj_t **ret, scan_t *scan);
@@ -84,12 +84,13 @@ static void function_args_bind(obj_t *env, tstr_list_t *params,
     }
 }
 
-int call_evaluated_function(obj_t **ret, function_t *func, 
-    obj_t *this_obj, int argc, obj_t *argv[])
+int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
+    obj_t *argv[])
 {
     scan_t *s;
     obj_t *saved_env;
     int rc;
+    function_t *func = to_function(argv[0]);
 
     saved_env = cur_env;
     cur_env = env_new(func->scope);
@@ -113,14 +114,15 @@ int call_evaluated_function(obj_t **ret, function_t *func,
     return rc;
 }
 
-static int eval_function_call(obj_t **po, scan_t *scan, function_t *func,
+static int eval_function_call(obj_t **po, scan_t *scan, obj_t *func,
     reference_t *ref)
 {
     obj_t **argv;
     int argc = 0, i, rc;
     obj_t *saved_this = this;
 
-    argv = tmalloc(CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *), "Args");
+    argv = tmalloc(1 + CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *), "Args");
+    argv[argc++] = func; /* argv[0] is our very own function */
     js_scan_match(scan, TOK_OPEN_PAREN);
     if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
     {
@@ -153,7 +155,7 @@ static int eval_function_call(obj_t **po, scan_t *scan, function_t *func,
     *po = UNDEF;
     if (ref && ref->construct)
     {
-	rc = function_call_construct(po, func, argc, argv);
+	rc = function_call_construct(po, argc, argv);
 	ref->construct = 0;
     }
     else
@@ -161,14 +163,14 @@ static int eval_function_call(obj_t **po, scan_t *scan, function_t *func,
 	obj_t *this_obj;
 
 	this_obj = ref->parent ? : UNDEF;
-	rc = function_call(po, func, this_obj, argc, argv);
+	rc = function_call(po, this_obj, argc, argv);
     }
     if (rc == COMPLETION_RETURN)
 	rc = 0;
 
 Exit:
     this = saved_this;
-    for (i = 0; i < argc; i++)
+    for (i = 1; i < argc; i++)
 	obj_put(argv[i]);
     tfree(argv);
     return rc;
@@ -272,13 +274,15 @@ static inline int valid_lval(reference_t *ref)
     return ref->dst ? 1 : 0;
 }
 
-static int eval_function_definition(obj_t **po, scan_t *scan)
+static int eval_function_definition(tstr_t *fname, obj_t **po, scan_t *scan)
 {
     obj_t *o;
     tstr_list_t *params = NULL;
 
     if (_js_scan_match(scan, TOK_OPEN_PAREN))
 	return parse_error(po);
+
+    tstr_list_add(&params, *fname);
 
     if (CUR_TOK(scan) == TOK_ID)
     {
@@ -433,7 +437,7 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
 	rc = eval_array(po, scan);
 	break;
     case TOK_FUNCTION:
-	rc = eval_function(po, scan);
+	rc = eval_function(po, scan, 0);
 	break;
     case TOK_NOT:
     case TOK_TILDE:
@@ -612,7 +616,7 @@ static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
 	    return COMPLETION_THROW;
 	}
 
-	rc = eval_function_call(po, scan, to_function(o_func), ref);
+	rc = eval_function_call(po, scan, o_func, ref);
 	obj_put(o_func);
 	if (rc)
 	    return rc;
@@ -975,7 +979,7 @@ static int eval_statement(obj_t **ret, scan_t *scan)
     case TOK_TRY:
 	return eval_try(ret, scan);
     case TOK_FUNCTION:
-	return eval_function(ret, scan);
+	return eval_function(ret, scan, 1);
     case TOK_SWITCH:
 	return eval_switch(ret, scan);
     case TOK_CASE:
@@ -1413,30 +1417,32 @@ static int eval_block(obj_t **ret, scan_t *scan)
     return 0;
 }
 
-static int eval_function(obj_t **ret, scan_t *scan)
+static int eval_function(obj_t **ret, scan_t *scan, int stmnt)
 {
-    tstr_t func_name;
-    obj_t *func;
-    int bind_to_var = 0, rc;
+    tstr_t func_name, *fname = &func_name;
+    int rc, bind_name;
 
     js_scan_match(scan, TOK_FUNCTION);
-    if (CUR_TOK(scan) == TOK_ID)
-    {
-	bind_to_var = 1;
-	js_scan_get_identifier(&func_name, scan);
-    }
-    if ((rc = eval_function_definition(ret, scan)))
+    
+    bind_name = CUR_TOK(scan) == TOK_ID;
+    if (bind_name)
+	js_scan_get_identifier(fname, scan);
+    else
+	fname = &S("__builtin_func__");
+    
+    TSTR_SET_INTERNAL(fname);
+
+    if ((rc = eval_function_definition(fname, ret, scan)))
 	return rc;
 
-    if (bind_to_var)
+    if (bind_name)
     {
-	/* XXX: this is not correct. The function name must only
-	 * be bound in the function's lexical environment and not
-	 * in the current environment
-	 */
-	func = *ret;
-	obj_set_property(cur_env, func_name, func);
-	tstr_free(&func_name);
+	if (stmnt)
+	{
+	    /* Statements require binding to environment */
+	    obj_set_property(cur_env, func_name, *ret);
+	}
+	tstr_free(fname);
     }
     return 0;
 }

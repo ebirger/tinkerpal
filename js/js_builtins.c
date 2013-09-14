@@ -28,10 +28,10 @@
 #include "js/js_obj.h"
 
 #define FUNCTION(n, o, f, ...) \
-    extern int f(obj_t **ret, function_t *func, obj_t *this, int argc, obj_t *argv[]); \
+    extern int f(obj_t **ret, obj_t *this, int argc, obj_t *argv[]); \
     static function_t f##_func = STATIC_FUNCTION(f);
 #define CONSTRUCTOR(n, o, f, ...) \
-    extern int f(obj_t **ret, function_t *func, obj_t *this, int argc, obj_t *argv[]); \
+    extern int f(obj_t **ret, obj_t *this, int argc, obj_t *argv[]); \
     static function_t f##_func = STATIC_CONSTRUCTOR(f);
 #define OBJECT(n, o, ...) static obj_t o##_obj = STATIC_OBJ(OBJECT_CLASS), *o = &o##_obj;
 #define CONST(n, o, c, v) static num_t o##c = v;
