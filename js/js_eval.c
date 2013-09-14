@@ -1435,14 +1435,10 @@ static int eval_function(obj_t **ret, scan_t *scan, int stmnt)
     if ((rc = eval_function_definition(fname, ret, scan)))
 	return rc;
 
-    if (bind_name)
+    if (bind_name && stmnt)
     {
-	if (stmnt)
-	{
-	    /* Statements require binding to environment */
-	    obj_set_property(cur_env, func_name, *ret);
-	}
-	tstr_free(fname);
+	/* Statements require binding to environment */
+	obj_set_property(cur_env, func_name, *ret);
     }
     return 0;
 }
