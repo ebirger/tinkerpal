@@ -179,7 +179,7 @@ Exit:
 static int eval_var_single(obj_t **ret, scan_t *scan)
 {
     tstr_t name;
-    obj_t *o;
+    obj_t *o = UNDEF;
     int rc = 0;
 
     *ret = UNDEF;
