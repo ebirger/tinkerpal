@@ -758,6 +758,43 @@ static obj_t *object_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     return UNDEF;
 }
 
+void object_iter_init(object_iter_t *iter, obj_t *obj)
+{
+    iter->obj = obj;
+    iter->key = NULL;
+    iter->val = UNDEF;
+    iter->priv = &obj->properties;
+}
+
+/* Returns 0 upon on the last element */
+int object_iter_next(object_iter_t *iter)
+{
+    var_t *cur_prop;
+
+    while ((cur_prop = *iter->priv))
+    {
+	iter->priv = &cur_prop->next;
+	iter->key = &cur_prop->str;
+	iter->val = cur_prop->obj;
+
+	/* XXX: Ugly. We should keep an 'enumerable' flag on keys */
+	if (!tstr_cmp(iter->key, &Slength) || !tstr_cmp(iter->key, &Sprototype))
+	    continue;
+
+	return 1;
+    }
+
+    return 0;
+}
+
+void object_iter_uninit(object_iter_t *iter)
+{
+    iter->obj = NULL;
+    iter->key = NULL;
+    iter->val = UNDEF;
+    iter->priv = NULL;
+}
+
 obj_t *object_new(void)
 {
     obj_t *ret = obj_new_type(OBJECT_CLASS, obj_t);

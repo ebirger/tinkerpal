@@ -229,6 +229,18 @@ static inline string_t *to_string(obj_t *o)
 /* "object" objects methods */
 obj_t *object_new(void);
 
+typedef struct {
+    obj_t *obj; /* Iterated object */
+    tstr_t *key; /* Key of the current interated item */
+    obj_t *val; /* The current iterated item */
+    var_t **priv;
+} object_iter_t;
+
+void object_iter_init(object_iter_t *iter, obj_t *obj);
+/* Returns 0 upon on the last element */
+int object_iter_next(object_iter_t *iter);
+void object_iter_uninit(object_iter_t *iter);
+
 /* "env" objects methods */
 /* env_new takes a reference to the parent env */
 obj_t *env_new(obj_t *env);
