@@ -1371,9 +1371,9 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
 	    goto Exit;
 	}
     }
-    object_iter_uninit(&iter);
 
 Exit:
+    object_iter_uninit(&iter);
     js_scan_restore(scan, end);
     js_scan_free(loop);
     js_scan_free(end);
