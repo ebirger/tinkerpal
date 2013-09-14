@@ -204,6 +204,7 @@ static inline token_type_t identifier_to_tok(const tstr_t *str)
 #define K(n, o) { .str = S(n), .tok = o }
 	/* Note: keywords are arranged by length for quick escape */
 	K("if", TOK_IF),
+	K("in", TOK_IN),
 	K("for", TOK_FOR),
 	K("var", TOK_VAR),
 	K("new", TOK_NEW),
@@ -490,6 +491,7 @@ token_group_t js_scan_get_token_group(scan_t *scan)
     case TOK_NULL:
     case TOK_UNDEFINED:
     case TOK_THROW:
+    case TOK_IN:
     case TOK_TRY:
     case TOK_CATCH:
 	return TOKEN_GRP_CONTROL;
