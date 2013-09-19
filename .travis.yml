@@ -1,8 +1,12 @@
 language: c
 before_install:
+ - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded
  - sudo apt-get update
  - sudo apt-get install gperf
  - sudo apt-get install valgrind
+ - sudo apt-get install -y gcc-arm-none-eabi
+before_script:
+ - arm-none-eabi-gcc --version
 compiler:
   - gcc
 script: make unix_sim_tests_defconfig && make && cd tests && ./run_tests.sh && ./leak_check.sh
