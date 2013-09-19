@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ $SKIP_TESTS ]; then
+    exit 0;
+fi
+
 function lc()
 {
     executable="../build.Linux/tp";
