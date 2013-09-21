@@ -23,7 +23,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "drivers/serial/serial.h"
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/frdm/MKL25Z4.h"
