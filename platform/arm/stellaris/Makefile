@@ -9,6 +9,19 @@ MK_SUBDIRS+=$(if $(CONFIG_LM4F120XL),lm4f120xl)
 MK_SUBDIRS+=$(if $(CONFIG_LM3S6965),lm3s6965)
 MK_SUBDIRS+=$(if $(CONFIG_LM3S6918),lm3s6918)
 
+ifneq ($(CONFIG_TI_CCS5),)
+  TI_COMPILER:=$(TI_CCS5)/tools/compiler/tms470_4.9.5
+  CC=$(TI_COMPILER)/bin/cl470
+  TI_OBJ2BIN_PATH:=$(TI_CCS5)/utils/tiobj2bin
+  OBJ2BIN=$(shell cygpath -u "$(TI_OBJ2BIN_PATH)/tiobj2bin.bat")
+
+  obj_to_bin=$(OBJ2BIN) $< $@ "$(TI_COMPILER)/bin/ofd470" \
+    "$(TI_COMPILER)/bin/hex470" "$(TI_OBJ2BIN_PATH)/mkhex4bin"
+  CFLAGS+=--abi=eabi -me --ual --include_path=$(STELLARISWARE_DIR)
+  LDFLAGS+=--abi=eabi -me --ual
+  LIBS+=-l"libc.a"
+endif
+
 ifneq ($(CONFIG_GCC),)
   ifeq ($(CROSS_COMPILE),)
     $(error Please set CROSS_COMPILE environment variable)

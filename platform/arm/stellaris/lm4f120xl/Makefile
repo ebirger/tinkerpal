@@ -6,11 +6,9 @@ endif
 
 ifneq ($(CONFIG_TI_CCS5),)
   LINKER_SCRIPT:=$(d)/lm4f120xl.cmd 
-  CFLAGS+=-mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me \
-  --define=PART_LM4F120H5QR --define=TARGET_IS_BLIZZARD_RA1 \
-  --include_path=$(STELLARISWARE_DIR)
-  LDFLAGS+=-mv7M4 --abi=eabi -me
-  LIBS+=-l"libc.a"
+  CFLAGS+=-mv7M4 --code_state=16 --float_support=FPv4SPD16 \
+    --define=PART_LM4F120H5QR --define=TARGET_IS_BLIZZARD_RA1
+  LDFLAGS+=-mv7M4
 endif
 
 ifneq ($(CONFIG_GCC),)

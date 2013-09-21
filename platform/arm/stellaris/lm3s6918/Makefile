@@ -5,12 +5,11 @@ ifeq ($(CONFIG_JS)$(CONFIG_MODULES),yy)
 endif
 
 ifneq ($(CONFIG_TI_CCS5),)
-  CFLAGS+=-mv7M3 --code_state=16 --abi=eabi -me --define=PART_LM3S6918 \
-    --include_path=$(STELLARISWARE_DIR)
-  LDFLAGS+=-mv7M3 --abi=eabi -me
+  CFLAGS+=-mv7M3 --code_state=16 --define=PART_LM3S6918
+  LDFLAGS+=-mv7M3
   LINKER_SCRIPT:=$(d)/lm3s6918.cmd
   # Currently require pre-compiled version of driverlib for ccs5
-  LIBS+=-l"libc.a" -l"$(STELLARISWARE_DIR)/driverlib/ccs-cm3/Debug/driverlib-cm3.lib"
+  LIBS+=-l"$(STELLARISWARE_DIR)/driverlib/ccs-cm3/Debug/driverlib-cm3.lib"
 endif
 
 ifneq ($(CONFIG_GCC),)
