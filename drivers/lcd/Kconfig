@@ -2,7 +2,7 @@ menu "LCD"
 
 config TEXT_LCD
 	bool "Support for Hitachi HD44780 like text LCD screens over GPIO"
-	depends on GPIO
+	depends on GPIO && JS
 	default y
 
 endmenu
