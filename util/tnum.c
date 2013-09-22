@@ -148,15 +148,15 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
     return 0;
 }
 
-tstr_t tnum_to_tstr(tnum_t v)
+static tstr_t tnum_to_tstr(tnum_t *v)
 {
     static char buf[32];
     tstr_t ret;
 
-    if (NUMERIC_IS_FP(v))
-	ret.len = snprintf(buf, sizeof(buf), "%f", NUMERIC_FP(v));
+    if (NUMERIC_IS_FP(*v))
+	ret.len = snprintf(buf, sizeof(buf), "%f", NUMERIC_FP(*v));
     else
-	ret.len = snprintf(buf, sizeof(buf), "%d", NUMERIC_INT(v));
+	ret.len = snprintf(buf, sizeof(buf), "%d", NUMERIC_INT(*v));
     ret.value = tmalloc(ret.len, "tnum str");
     memcpy(ret.value, buf, ret.len);
     TSTR_SET_ALLOCATED(&ret);
@@ -168,7 +168,7 @@ tstr_t int_to_tstr(int i)
     tnum_t n = {};
 
     NUMERIC_INT(n) = i;
-    return tnum_to_tstr(n);
+    return tnum_to_tstr(&n);
 }
 
 tstr_t double_to_tstr(double d)
@@ -177,5 +177,5 @@ tstr_t double_to_tstr(double d)
 
     n.flags = NUMERIC_FLAG_FP;
     NUMERIC_FP(n) = d;
-    return tnum_to_tstr(n);
+    return tnum_to_tstr(&n);
 }
