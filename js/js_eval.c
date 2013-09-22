@@ -283,7 +283,7 @@ static int eval_function_definition(tstr_t *fname, obj_t **po, scan_t *scan)
     if (_js_scan_match(scan, TOK_OPEN_PAREN))
 	return parse_error(po);
 
-    tstr_list_add(&params, *fname);
+    tstr_list_add(&params, fname);
 
     if (CUR_TOK(scan) == TOK_ID)
     {
