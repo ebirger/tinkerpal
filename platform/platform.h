@@ -78,7 +78,7 @@ typedef struct {
 } platform_t;
 
 #define platform_init() platform.init()
-#define platform_uninit() do { } while(0)
+static inline platform_uninit(void) { }
 
 /* The platform global is defined in each platform,
  * it's kinda icky, but I would like to avoid the pointer
