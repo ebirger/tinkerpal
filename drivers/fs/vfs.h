@@ -55,8 +55,8 @@ void vfs_uninit(void);
 
 #else
 
-#define vfs_init() do { } while(0)
-#define vfs_uninit() do { } while(0)
+static inline void vfs_init(void) { }
+static inline void vfs_uninit(void) { }
 
 #endif
 

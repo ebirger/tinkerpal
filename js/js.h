@@ -32,8 +32,8 @@ void js_init(void);
 
 #else
 
-#define js_init() do {} while(0)
-#define js_uninit() do {} while(0)
+static inline void js_uninit(void) { }
+static inline void js_init(void) { }
 
 #endif
 
