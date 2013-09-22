@@ -54,10 +54,10 @@ static void reset_line(void)
     int i;
 
     /* Clear to end of line */
-    for (i = cur_line_pos; i < cur_line.len; i++)
+    for (i = cur_line.len - cur_line_pos; i; i--)
 	CTRL(SPACE);
     /* Clear to start of line */
-    for (i = 0; i < cur_line.len; i++)
+    for (i = cur_line.len; i; i--)
 	CTRL(TERM_BS);
 }
 
