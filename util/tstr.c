@@ -55,11 +55,11 @@ void tstr_init(tstr_t *t, char *s)
     memcpy(t->value, s, len);
 }
 
-void tstr_list_add(tstr_list_t **l, tstr_t s)
+void tstr_list_add(tstr_list_t **l, tstr_t *s)
 {
     tstr_list_t *n = tmalloc_type(tstr_list_t), **iter;
     /* TODO: verify no double strs */
-    n->str = s;
+    n->str = *s;
     n->next = NULL;
     for (iter = l; *iter; iter = &(*iter)->next);
     *iter = n;

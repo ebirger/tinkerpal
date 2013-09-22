@@ -91,7 +91,7 @@ int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 	scanned_params = js_scan_init(&params_raw);
 
-	tstr_list_add(&params, INTERNAL_S("__constructed_func__"));
+	tstr_list_add(&params, &INTERNAL_S("__constructed_func__"));
 	if (parse_function_param_list(&params, scanned_params))
 	{
 	    js_scan_uninit(scanned_params);

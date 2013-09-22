@@ -58,7 +58,7 @@ void tstr_init(tstr_t *t, char *s);
 /* Allocate the data within the tstr */
 void tstr_alloc(tstr_t *t, int len);
 
-void tstr_list_add(tstr_list_t **l, tstr_t s);
+void tstr_list_add(tstr_list_t **l, tstr_t *s);
 void tstr_list_free(tstr_list_t **l);
 
 static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)

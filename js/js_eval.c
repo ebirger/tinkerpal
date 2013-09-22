@@ -243,7 +243,7 @@ int parse_function_param_list(tstr_list_t **params, scan_t *scan)
     if (js_scan_get_identifier(&param, scan))
 	return -1;
 
-    tstr_list_add(params, param);
+    tstr_list_add(params, &param);
 
     while (CUR_TOK(scan) == TOK_COMMA)
     {
@@ -254,7 +254,7 @@ int parse_function_param_list(tstr_list_t **params, scan_t *scan)
 	    return -1;
 	}
 
-	tstr_list_add(params, param);
+	tstr_list_add(params, &param);
     }
     return 0;
 }
