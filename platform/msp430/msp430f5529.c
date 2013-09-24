@@ -77,7 +77,7 @@ static void msp430f5529_init(void)
 {
     clock_init();
 
-    _enable_interrupts();
+    __bis_SR_register(GIE); /* Enable interrupts */
 }
 
 static int msp430f5529_serial_enable(int u, int enabled)
