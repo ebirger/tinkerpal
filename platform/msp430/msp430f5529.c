@@ -40,6 +40,7 @@ int main(void)
     extern int tp_main(int argc, char *argv[]);
 
     tp_main(0, NULL);
+    return 0;
 }
 
 static void clock_init(void)
