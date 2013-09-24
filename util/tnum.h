@@ -29,7 +29,6 @@
 
 typedef struct {
 #define NUMERIC_FLAG_FP 0x01
-#define NaN 0x7fffffff /* XXX: should be a flag */
     int flags;
     union {
 	int i;
