@@ -22,6 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "util/tp_types.h"
 #include "util/debug.h"
 #include "util/tprintf.h"
 #include "util/tnum.h"
@@ -134,7 +135,7 @@ again:
 	    break;
 	case 'p':
 	    base = 16;
-	    num = (unsigned long)va_arg(ap, void *);
+	    num = (uint_ptr_t)va_arg(ap, void *);
 	    print_integer(printer, num, base, 0);
 	    break;
 	case 'u':

@@ -22,6 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "util/tp_types.h"
 #include "util/debug.h"
 #include "util/tstr.h"
 #include "apps/history.h"
@@ -72,7 +73,8 @@ void history_prev(history_t *h)
     h->current.len = line->len;
 }
 
-#define ALIGN4(x) ((char *)(((unsigned long)(x) + 0x3) & ~0x3))
+#define PTR_SIZE (sizeof (char *))
+#define ALIGN(x) ((char *)(((uint_ptr_t)(x) + (PTR_SIZE-1)) & ~(PTR_SIZE-1)))
 
 void history_commit(history_t *h, tstr_t *l)
 {
@@ -93,7 +95,7 @@ void history_commit(history_t *h, tstr_t *l)
     /* Calculate next node 
      * XXX: make sure we don't exceed our limit
      */
-    next = ALIGN4(cur + l->len + sizeof(line_desc_t));
+    next = ALIGN(cur + l->len + sizeof(line_desc_t));
 
     /* Set current node's next */
     line = ((line_desc_t *)cur) - 1;
