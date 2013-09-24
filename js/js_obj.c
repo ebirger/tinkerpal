@@ -56,7 +56,7 @@ static obj_t *class_prototypes[CLASS_LAST+1];
 obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
 obj_t null_obj = STATIC_OBJ(NULL_CLASS);
 num_t zero_obj = STATIC_NUM(0);
-num_t nan_obj = STATIC_NUM(0xfeedbeef); /* No meaning to value of the NaN object */
+num_t nan_obj = STATIC_NUM(0xfeed); /* No meaning to value of the NaN object */
 bool_t true_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 1 };
 bool_t false_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 0 };
 
