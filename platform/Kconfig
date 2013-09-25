@@ -119,6 +119,7 @@ config FRDM_KL25Z
 config MSP430F5529_EXP
 	bool "TI MSP430F5529 Experimenter Board"
 	select MSP430F5529
+	select PLAT_HAS_GCC
 	select PLAT_HAS_TI_CCS5
 	select PLAT_HAS_MALLOC
 	select PLAT_HAS_SERIAL
@@ -128,6 +129,10 @@ endchoice
 
 if UNIX
 source "platform/unix/Kconfig"
+endif
+
+if MSP430
+source "platform/msp430/Kconfig"
 endif
 
 source "platform/Kconfig.toolchain"
