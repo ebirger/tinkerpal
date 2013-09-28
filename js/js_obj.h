@@ -48,8 +48,7 @@ struct obj_t {
 #define OBJ_FUNCTION_CONSTRUCTOR 0x0004
     unsigned char flags;
     unsigned char class;
-    char ref_count;
-    unsigned char reserved;
+    short ref_count;
     var_t *properties;
 };
 
@@ -155,10 +154,6 @@ static inline obj_t *obj_get(obj_t *o)
     if (!o)
 	return NULL;
 
-    /* We save up space by using a single byte for ref_count,
-     * XXX: static objects may have negative ref_count (?)
-     */
-    tp_assert(o->ref_count < 255 || o->flags & OBJ_STATIC);
     o->ref_count++;
     return o;
 }
