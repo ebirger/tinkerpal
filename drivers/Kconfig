@@ -32,4 +32,12 @@ if LCD
 source "drivers/lcd/Kconfig"
 endif
 
+config GRAPHICS
+	bool "Graphics support"
+	default n
+
+if GRAPHICS
+source "drivers/graphics/Kconfig"
+endif
+
 endmenu

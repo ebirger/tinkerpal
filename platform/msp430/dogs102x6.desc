@@ -1,9 +1,11 @@
+#include "drivers/graphics/painter.desc"
+
 PROTOTYPE("dogs102x6", dogs102x6, {
 })
 
 CONSTRUCTOR("Dogs102x6", dogs102x6, do_dogs102x6_constructor)
 
-FUNCTION("pixelDraw", dogs102x6, do_dogs102x6_pixel_draw, {
+FUNCTION(TpixelDraw, dogs102x6, do_dogs102x6_pixel_draw, {
     .params = {
         { .name = "x" , .description = "X coordinate" },
         { .name = "y" , .description = "Y coordinate" },

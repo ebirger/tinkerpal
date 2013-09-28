@@ -1,0 +1,17 @@
+PROTOTYPE("Text", text, {
+})
+
+CONSTRUCTOR("Text", text, do_text_constructor)
+
+FUNCTION("stringDraw", text, do_text_string_draw, {
+    .params = {
+        { .name = "x" , .description = "X coordinate" },
+        { .name = "y" , .description = "Y coordinate" },
+        { .name = "str" , .description = "String to be drawn" }
+    },
+    .description = "Prints string on LCD",
+    .return_value = "None",
+    .example = "var lcd = new Dogs102x6();\n"
+        "var s = new Text(lcd);\n"
+        "s.stringDraw(0, 0, 'Hello World!');",
+})
