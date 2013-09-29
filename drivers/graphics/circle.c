@@ -22,48 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/tmalloc.h"
-#include "util/event.h"
-#include "util/debug.h"
-#include "main/console.h"
-#include "js/js_obj.h"
-#include "drivers/graphics/text.h"
 #include "drivers/graphics/circle.h"
-#include "drivers/graphics/js_painter.h"
 
-int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+/* Uses Bresenham Algorithm.
+ * Adapted from http://en.wikipedia.org/wiki/Midpoint_circle_algorithm 
+ */
+
+void circle_draw(int x0, int y0, int radius, 
+	void (*pixel_draw)(int x, int y, int enable, void *ctx), void *ctx)
 {
-    int x, y, radius;
+    int error = 1 - radius;
+    int errorY = 1;
+    int errorX = -2 * radius;
+    int x = radius, y = 0;
 
-    tp_assert(argc == 4);
-    x = obj_get_int(argv[1]);
-    y = obj_get_int(argv[2]);
-    radius = obj_get_int(argv[3]);
+    pixel_draw(x0, y0 + radius, 1, ctx);
+    pixel_draw(x0, y0 - radius, 1, ctx);
+    pixel_draw(x0 + radius, y0, 1, ctx);
+    pixel_draw(x0 - radius, y0, 1, ctx);
 
-    circle_draw(x, y, radius, js_painter_pixel_draw, js_painter_ctx(this));
-    return 0;
-}
-
-int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    int x, y;
-    string_t *s;
-
-    tp_assert(argc == 4);
-    x = obj_get_int(argv[1]);
-    y = obj_get_int(argv[2]);
-    s = to_string(argv[3]);
-
-    string_draw(x, y, &s->value, js_painter_pixel_draw, js_painter_ctx(this));
-    return 0;
-}
-
-int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    tp_assert(argc == 2);
-
-    *ret = object_new();
-    obj_inherit(*ret, argv[0]);
-    js_painter_init(*ret, argv[1]);
-    return 0;
+    while (y < x)
+    {
+	if (error > 0)
+	{ 
+	    /* >= 0 produces a slimmer circle. 
+	     * =0 produces the circle at radius 11
+	     */
+	    x--;
+	    errorX += 2;
+	    error += errorX;
+	}
+	y++;
+	errorY += 2;
+	error += errorY;    
+	pixel_draw(x0 + x, y0 + y, 1, ctx);
+	pixel_draw(x0 - x, y0 + y, 1, ctx);
+	pixel_draw(x0 + x, y0 - y, 1, ctx);
+	pixel_draw(x0 - x, y0 - y, 1, ctx);
+	pixel_draw(x0 + y, y0 + x, 1, ctx);
+	pixel_draw(x0 - y, y0 + x, 1, ctx);
+	pixel_draw(x0 + y, y0 - x, 1, ctx);
+	pixel_draw(x0 - y, y0 - x, 1, ctx);
+    }
 }

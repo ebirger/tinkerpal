@@ -22,48 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/tmalloc.h"
-#include "util/event.h"
-#include "util/debug.h"
-#include "main/console.h"
-#include "js/js_obj.h"
-#include "drivers/graphics/text.h"
-#include "drivers/graphics/circle.h"
-#include "drivers/graphics/js_painter.h"
 
-int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    int x, y, radius;
+#ifndef __CIRCLE_H__
+#define __CIRCLE_H__
 
-    tp_assert(argc == 4);
-    x = obj_get_int(argv[1]);
-    y = obj_get_int(argv[2]);
-    radius = obj_get_int(argv[3]);
+void circle_draw(int x0, int y0, int radius, 
+    void (*pixel_draw)(int x, int y, int enable, void *ctx), void *ctx);
 
-    circle_draw(x, y, radius, js_painter_pixel_draw, js_painter_ctx(this));
-    return 0;
-}
-
-int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    int x, y;
-    string_t *s;
-
-    tp_assert(argc == 4);
-    x = obj_get_int(argv[1]);
-    y = obj_get_int(argv[2]);
-    s = to_string(argv[3]);
-
-    string_draw(x, y, &s->value, js_painter_pixel_draw, js_painter_ctx(this));
-    return 0;
-}
-
-int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    tp_assert(argc == 2);
-
-    *ret = object_new();
-    obj_inherit(*ret, argv[0]);
-    js_painter_init(*ret, argv[1]);
-    return 0;
-}
+#endif

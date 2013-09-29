@@ -15,3 +15,16 @@ FUNCTION("stringDraw", graphics, do_graphics_string_draw, {
         "var g = new Graphics(lcd);\n"
         "g.stringDraw(0, 0, 'Hello World!');",
 })
+
+FUNCTION("circleDraw", graphics, do_graphics_circle_draw, {
+    .params = {
+        { .name = "x" , .description = "X coordinate" },
+        { .name = "y" , .description = "Y coordinate" },
+        { .name = "radius" , .description = "Circle Radius" }
+    },
+    .description = "Draws a circle on LCD",
+    .return_value = "None",
+    .example = "var lcd = new Dogs102x6();\n"
+        "var g = new Graphics(lcd);\n"
+        "g.circleDraw(20, 20, 10);",
+})
