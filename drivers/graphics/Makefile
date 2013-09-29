@@ -1,2 +1,2 @@
-MK_OBJS+=text.o $(if $(CONFIG_JS),js_text.o js_painter.o)
-MK_DESCS=text.desc
+MK_OBJS+=text.o circle.o $(if $(CONFIG_JS),js_graphics.o js_painter.o)
+MK_DESCS=graphics.desc
