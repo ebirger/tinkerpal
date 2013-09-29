@@ -1,9 +1,9 @@
-PROTOTYPE("Text", text, {
+PROTOTYPE("Graphics", graphics, {
 })
 
-CONSTRUCTOR("Text", text, do_text_constructor)
+CONSTRUCTOR("Graphics", graphics, do_graphics_constructor)
 
-FUNCTION("stringDraw", text, do_text_string_draw, {
+FUNCTION("stringDraw", graphics, do_graphics_string_draw, {
     .params = {
         { .name = "x" , .description = "X coordinate" },
         { .name = "y" , .description = "Y coordinate" },
@@ -12,6 +12,6 @@ FUNCTION("stringDraw", text, do_text_string_draw, {
     .description = "Prints string on LCD",
     .return_value = "None",
     .example = "var lcd = new Dogs102x6();\n"
-        "var s = new Text(lcd);\n"
-        "s.stringDraw(0, 0, 'Hello World!');",
+        "var g = new Graphics(lcd);\n"
+        "g.stringDraw(0, 0, 'Hello World!');",
 })

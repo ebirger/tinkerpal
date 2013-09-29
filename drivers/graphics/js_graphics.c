@@ -30,7 +30,7 @@
 #include "drivers/graphics/text.h"
 #include "drivers/graphics/js_painter.h"
 
-int do_text_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int x, y;
     string_t *s;
@@ -44,7 +44,7 @@ int do_text_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
-int do_text_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tp_assert(argc == 2);
 
