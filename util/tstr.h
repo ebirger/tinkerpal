@@ -70,6 +70,7 @@ static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
 
 int tstr_find(tstr_t *haystack, tstr_t *needle);
 tstr_t tstr_dup(tstr_t s);
+tstr_t tstr_slice(tstr_t s, int index, int count);
 void tstr_free(tstr_t *s);
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b);
 void tstr_unescape(tstr_t *dst, tstr_t *src);

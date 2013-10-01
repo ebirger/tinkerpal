@@ -117,6 +117,16 @@ tstr_t tstr_dup(tstr_t s)
     return ret;
 }
 
+tstr_t tstr_slice(tstr_t s, int index, int count)
+{
+    tstr_t ret;
+
+    ret = s;
+    ret.value += index;
+    ret.len = count;
+    return tstr_dup(ret);
+}
+
 void tstr_free(tstr_t *s)
 {
     if (TSTR_IS_ALLOCATED(s))

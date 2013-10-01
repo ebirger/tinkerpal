@@ -85,7 +85,7 @@ int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc,
 
     tp_assert(argc == 2 || argc == 3);
 
-    retval = s = obj_get_str(this);
+    s = obj_get_str(this);
 
     start = obj_get_int(argv[1]);
     end = argc == 3 ? obj_get_int(argv[2]) : s.len;
@@ -94,9 +94,8 @@ int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc,
     tp_assert(start >= 0 && start < s.len);
     tp_assert(end > start && end <= s.len);
 
-    retval.value += start;
-    retval.len = end - start;
-    *ret = string_new(tstr_dup(retval));
+    retval = tstr_slice(s, start, end - start);
+    *ret = string_new(retval);
     tstr_free(&s);
     return 0;
 }
@@ -114,12 +113,10 @@ int do_string_prototype_char_at(obj_t **ret, obj_t *this, int argc,
     if (pos < 0 || pos >= s.len)
 	goto Exit;
 
-    retval = s;
-    retval.value += pos;
-    retval.len = 1;
+    retval = tstr_slice(s, pos, 1);
 
 Exit:
-    *ret = string_new(tstr_dup(retval));
+    *ret = string_new(retval);
     tstr_free(&s);
     return 0;
 }

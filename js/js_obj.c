@@ -1138,7 +1138,7 @@ static obj_t *string_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
     tnum_t tidx;
     int idx;
     string_t *s = to_string(o);
-    tstr_t retval = S("");
+    tstr_t retval;
 
     if (tstr_to_tnum(&tidx, &str))
 	return NULL;
@@ -1148,12 +1148,10 @@ static obj_t *string_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
     if (s->value.len <= idx)
 	return NULL;
 
-    retval = s->value;
-    retval.value += idx;
-    retval.len = 1;
+    retval = tstr_slice(s->value, idx, 1);
     if (lval)
 	*lval = NULL;
-    return string_new(tstr_dup(retval));
+    return string_new(retval);
 }
 
 obj_t *string_new(tstr_t s)
