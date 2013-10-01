@@ -49,7 +49,7 @@ int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 	array_push(*ret, string_new(tstr_dup(n)));
 	idx += sep.len;
 	cur.len -= idx;
-	cur.value += idx;
+	TPTR(&cur) += idx;
     }
     if (cur.len)
 	array_push(*ret, string_new(tstr_dup(cur)));
@@ -135,7 +135,7 @@ int do_string_prototype_char_code_at(obj_t **ret, obj_t *this, int argc,
     if (pos < 0 || pos >= s.len)
 	goto Exit;
 
-    *ret = num_new_int(*(s.value + pos));
+    *ret = num_new_int(*(TPTR(&s) + pos));
 
 Exit:
     tstr_free(&s);

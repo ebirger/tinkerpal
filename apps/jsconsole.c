@@ -70,7 +70,7 @@ void cli_client_syntax_hightlight(tstr_t *line)
 	}
 
 	offset = line->len - js_scan_get_remaining(s);
-	console_write(line->value + last_offset, offset - last_offset);
+	console_write(TPTR(line) + last_offset, offset - last_offset);
 	CTRL(TERM_COLOR_RESET);
 	last_offset = offset;
 	js_scan_next_token(s);

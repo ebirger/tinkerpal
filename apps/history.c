@@ -52,11 +52,11 @@ void history_next(history_t *h)
     line_desc_t *line;
 
     /* Advance to the next node */
-    line = ((line_desc_t *)h->current.value) - 1;
-    h->current.value = line->next;
+    line = ((line_desc_t *)TPTR(&h->current)) - 1;
+    TPTR(&h->current) = line->next;
 
     /* Extract length */
-    line = ((line_desc_t *)h->current.value) - 1;
+    line = ((line_desc_t *)TPTR(&h->current)) - 1;
     h->current.len = line->len;
 }
 
@@ -65,11 +65,11 @@ void history_prev(history_t *h)
     line_desc_t *line;
 
     /* Go back to the previous node */
-    line = ((line_desc_t *)h->current.value) - 1;
-    h->current.value = line->prev;
+    line = ((line_desc_t *)TPTR(&h->current)) - 1;
+    TPTR(&h->current) = line->prev;
 
     /* Extract length */
-    line = ((line_desc_t *)h->current.value) - 1;
+    line = ((line_desc_t *)TPTR(&h->current)) - 1;
     h->current.len = line->len;
 }
 
@@ -89,8 +89,8 @@ void history_commit(history_t *h, tstr_t *l)
     }
 
     /* Copy line content */
-    cur = h->current.value;
-    memcpy(cur, l->value, l->len);
+    cur = TPTR(&h->current);
+    memcpy(cur, TPTR(l), l->len);
 
     /* Calculate next node 
      * XXX: make sure we don't exceed our limit
@@ -111,7 +111,7 @@ void history_commit(history_t *h, tstr_t *l)
 
     /* Set history to new entry */
     h->last = next;
-    h->current.value = h->last;
+    TPTR(&h->current) = h->last;
     h->current.len = 0;
 
     h->free_size -= l->len + sizeof(line_desc_t);
@@ -122,25 +122,25 @@ int history_get(history_t *h, char *buf, int free_size)
     int size;
     
     size = MIN(h->current.len, free_size);
-    memcpy(buf, h->current.value, size);
+    memcpy(buf, TPTR(&h->current), size);
     return size;
 }
 
 int history_is_first(history_t *h)
 {
-    return h->current.value == h->buf;
+    return TPTR(&h->current) == h->buf;
 }
 
 int history_is_last(history_t *h)
 {
-    return h->current.value == h->last;
+    return TPTR(&h->current) == h->last;
 }
 
 history_t *history_new(char *buf, int size)
 {
     history_t *h = &g_history;
 
-    h->buf = h->current.value = buf + sizeof(line_desc_t);
+    h->buf = TPTR(&h->current) = buf + sizeof(line_desc_t);
     h->free_size = size - sizeof(line_desc_t);
     h->current.len = 0;
     return h;

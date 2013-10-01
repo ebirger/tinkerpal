@@ -89,7 +89,7 @@ static void read_ack(void)
 static void roll_back(void)
 {
     free_size += cur_line.len;
-    read_buf = buf = cur_line.value;
+    read_buf = buf = TPTR(&cur_line);
     reset_line();
     cur_line_pos = cur_line.len = 0;
 }
@@ -139,7 +139,7 @@ static void do_right(void)
 	return;
 
     /* Write current character */
-    b = *(cur_line.value + cur_line_pos);
+    b = *(TPTR(&cur_line) + cur_line_pos);
     console_write(&b, 1);
     cur_line_pos++;
 }
@@ -157,7 +157,7 @@ static void do_bs(void)
     delta = cur_line.len - cur_line_pos;
     if (delta)
     {
-	char *cur = cur_line.value + cur_line_pos;
+	char *cur = TPTR(&cur_line) + cur_line_pos;
 
 	memmove(cur - 1, cur, delta);
 	console_write(cur - 1, delta);
@@ -302,7 +302,7 @@ static void on_event(event_watch_t *ew, int id)
 	cli_client_process_line(&cur_line);
 	history_commit(history, &cur_line);
 	cur_line.len = cur_line_pos = 0;
-	cur_line.value = read_buf = buf = cli_buf;
+	TPTR(&cur_line) = read_buf = buf = cli_buf;
     }
 
     console_write(prompt, sizeof(prompt));
@@ -315,7 +315,7 @@ static event_watch_t cli_event_watch = {
 void cli_start(void)
 {
     console_write(prompt, sizeof(prompt));
-    read_buf = buf = cur_line.value = cli_buf;
+    read_buf = buf = TPTR(&cur_line) = cli_buf;
     history = history_new(history_buf, sizeof(history_buf));
     TSTR_SET_ALLOCATED(&cur_line);
     console_event_watch_set(&cli_event_watch);

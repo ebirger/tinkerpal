@@ -44,7 +44,7 @@ void app_start(int argc, char *argv[])
     if (!(fp = fopen(argv[1], "r")))
 	tp_crit(("Error reading file %s\n", argv[1]));
 
-    code.value = buf;
+    TPTR(&code) = buf;
     code.len = fread(buf, 1, sizeof(buf), fp);
     fclose(fp);
 

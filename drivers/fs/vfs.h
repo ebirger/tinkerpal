@@ -41,8 +41,8 @@ typedef struct {
 
 static inline int vfs_is_root_path(tstr_t *path)
 {
-    return path->len == 0 || (path->len == 1 && (path->value[0] == '.' || 
-        path->value[0] == '/'));
+    return path->len == 0 || (path->len == 1 && (TPTR(path)[0] == '.' || 
+        TPTR(path)[0] == '/'));
 }
 
 #define VFS_FLAGS_ANY_FS 0x1

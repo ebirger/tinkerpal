@@ -45,6 +45,6 @@ void string_draw(int x, int y, tstr_t *str,
     for (i = 0; i < end; i++)
     {
 	for (j = 0; j < 7; j++)
-	    pixel_draw(i + x, j + y, text_point(i, j, str->value), ctx);
+	    pixel_draw(i + x, j + y, text_point(i, j, TPTR(str)), ctx);
     }
 }

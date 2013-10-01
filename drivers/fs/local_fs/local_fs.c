@@ -50,7 +50,7 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
     rewind(fp);
 
     tstr_alloc(content, fsize);
-    nread = fread(content->value, 1, fsize, fp);
+    nread = fread(TPTR(content), 1, fsize, fp);
     if (nread != fsize)
     {
 	tp_err(("Read %d/%d from file %S\n", nread, content->len, file_name));

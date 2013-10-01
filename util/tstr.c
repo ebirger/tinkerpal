@@ -42,7 +42,7 @@ char digit_value(char c)
 
 void tstr_alloc(tstr_t *t, int len)
 {
-    t->value = tmalloc(len, "TSTR");
+    TPTR(t) = tmalloc(len, "TSTR");
     t->len = len;
     TSTR_SET_ALLOCATED(t);
 }
@@ -52,7 +52,7 @@ void tstr_init(tstr_t *t, char *s)
     int len = strlen(s);
 
     tstr_alloc(t, len);
-    memcpy(t->value, s, len);
+    memcpy(TPTR(t), s, len);
 }
 
 void tstr_list_add(tstr_list_t **l, tstr_t *s)
@@ -95,7 +95,7 @@ int tstr_find(tstr_t *haystack, tstr_t *needle)
 
 	for (j = 0; j < needle->len && !diff; j++)
 	{
-	    if (haystack->value[i + j] != needle->value[j])
+	    if (TPTR(haystack)[i + j] != TPTR(needle)[j])
 		diff = 1;
 	}
 	if (!diff)
@@ -111,8 +111,8 @@ tstr_t tstr_dup(tstr_t s)
     ret = s;
     if (TSTR_IS_ALLOCATED(&s))
     {
-	ret.value = tmalloc(ret.len, "dupped str");
-	memcpy(ret.value, s.value, ret.len);
+	TPTR(&ret) = tmalloc(ret.len, "dupped str");
+	memcpy(TPTR(&ret), TPTR(&s), ret.len);
     }
     return ret;
 }
@@ -122,7 +122,7 @@ tstr_t tstr_slice(tstr_t s, int index, int count)
     tstr_t ret;
 
     ret = s;
-    ret.value += index;
+    TPTR(&ret) += index;
     ret.len = count;
     return tstr_dup(ret);
 }
@@ -130,15 +130,15 @@ tstr_t tstr_slice(tstr_t s, int index, int count)
 void tstr_free(tstr_t *s)
 {
     if (TSTR_IS_ALLOCATED(s))
-	tfree(s->value);
+	tfree(TPTR(s));
 }
 
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b)
 {
     dst->len = a->len + b->len;
-    dst->value = tmalloc(dst->len, "string");
-    memcpy(dst->value, a->value, a->len);
-    memcpy(dst->value + a->len, b->value, b->len);
+    TPTR(dst) = tmalloc(dst->len, "string");
+    memcpy(TPTR(dst), TPTR(a), a->len);
+    memcpy(TPTR(dst) + a->len, TPTR(b), b->len);
     TSTR_SET_ALLOCATED(dst);
 }
 
@@ -147,10 +147,9 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
     unsigned short left;
     char *in, *out;
 
-    out = dst->value = tmalloc(src->len, "Unescaped string");
-    in = src->value;
+    out = TPTR(dst) = tmalloc(src->len, "Unescaped string");
 
-    for (in = src->value; (left = src->len - (in - src->value)) > 0; in++)
+    for (in = TPTR(src); (left = src->len - (in - TPTR(src))) > 0; in++)
     {
 	if (*in != '\\')
 	{
@@ -191,7 +190,7 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
 	    break;
 	}
     }
-    dst->len = out - dst->value;
+    dst->len = out - TPTR(dst);
     TSTR_SET_ALLOCATED(dst);
 }
 
@@ -214,10 +213,10 @@ tstr_t tstr_cut(tstr_t *t, char delim)
     tstr_t ret;
 
     ret = *t;
-    for (i = 0; i < t->len && t->value[i] != delim; i++);
+    for (i = 0; i < t->len && TPTR(t)[i] != delim; i++);
     if (i == t->len)
     {
-	t->value = NULL;
+	TPTR(t) = NULL;
 	t->len = 0;
 	return ret;
     }
@@ -233,7 +232,7 @@ char *tstr_to_strz(tstr_t *t)
     char *ret;
 
     ret = tmalloc(t->len + 1, "Null terminated string");
-    memcpy(ret, t->value, t->len);
+    memcpy(ret, TPTR(t), t->len);
     ret[t->len] = '\0';
     return ret;
 }

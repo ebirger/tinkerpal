@@ -66,9 +66,8 @@ static void serial_on_data_cb(event_watch_t *ew, int id)
     tstr_t data;
 
     /* XXX: read as much as possible */
-    data.value = tmalloc(30, "serial_data");
-    data.len = serial_read(w->id, data.value, 30);
-    TSTR_SET_ALLOCATED(&data);
+    tstr_alloc(&data, 30);
+    data.len = serial_read(w->id, TPTR(&data), 30);
 
     data_obj = object_new();
     obj_set_property_str(data_obj, S("data"), data);
@@ -124,7 +123,7 @@ int do_serial_print(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     s = to_string(argv[1]);
 
-    serial_write(get_serial_id(this), s->value.value, s->value.len);
+    serial_write(get_serial_id(this), TPTR(&s->value), s->value.len);
     *ret = UNDEF;
     return 0;
 }

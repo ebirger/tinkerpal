@@ -78,7 +78,7 @@ static void str_dump(printer_t *printer, void *o)
 
     for (i = 0; i < s->len; i++)
     {
-	char c = s->value[i];
+	char c = TPTR(s)[i];
 
 	if (c == '\n')
 	    tprintf(printer, "\\n");

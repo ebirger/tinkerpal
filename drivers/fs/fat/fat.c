@@ -104,7 +104,7 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
     }
 
     tstr_alloc(content, info.fsize);
-    rc = f_read(&fp, content->value, content->len, &br);
+    rc = f_read(&fp, TPTR(content), content->len, &br);
     if (rc != FR_OK || br != content->len)
     {
 	tp_err(("Read %d/%d from file %S rc %d\n", br, content->len, 

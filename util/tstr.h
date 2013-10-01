@@ -28,22 +28,23 @@
 #include <string.h> /* memcmp */
 
 typedef struct {
-    char *value;
     unsigned short len;
 #define TSTR_FLAG_ALLOCATED 0x0001
 #define TSTR_FLAG_ESCAPED 0x0002
 #define TSTR_FLAG_INTERNAL 0x0004
     unsigned short flags;
+    char *ptr;
 } tstr_t;
 
+#define TPTR(t) ((t)->ptr)
 #define TSTR_IS_ALLOCATED(t) ((t)->flags & TSTR_FLAG_ALLOCATED)
 #define TSTR_SET_ALLOCATED(t) ((t)->flags |= TSTR_FLAG_ALLOCATED)
 #define TSTR_IS_ESCAPED(t) ((t)->flags & TSTR_FLAG_ESCAPED)
 #define TSTR_SET_ESCAPED(t) ((t)->flags |= TSTR_FLAG_ESCAPED)
 #define TSTR_IS_INTERNAL(t) ((t)->flags & TSTR_FLAG_INTERNAL)
 #define TSTR_SET_INTERNAL(t) ((t)->flags |= TSTR_FLAG_INTERNAL)
-#define S(s) (tstr_t){ .value = (s), .len = sizeof(s) - 1, .flags = 0 }
-#define INTERNAL_S(s) (tstr_t){ .value = (s), .len = sizeof(s) - 1, \
+#define S(s) (tstr_t){ .ptr = (s), .len = sizeof(s) - 1, .flags = 0 }
+#define INTERNAL_S(s) (tstr_t){ .ptr = (s), .len = sizeof(s) - 1, \
     .flags = TSTR_FLAG_INTERNAL }
 
 char digit_value(char c);
@@ -63,9 +64,8 @@ void tstr_list_free(tstr_list_t **l);
 
 static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
 {
-    return a->len != b->len || (b->len && 
-	(*a->value != *b->value)) || 
-	memcmp(a->value, b->value, b->len);
+    return a->len != b->len || (b->len && (*TPTR(a) != *TPTR(b))) ||
+	memcmp(TPTR(a), TPTR(b), b->len);
 }
 
 int tstr_find(tstr_t *haystack, tstr_t *needle);
@@ -85,7 +85,7 @@ char *tstr_to_strz(tstr_t *t);
 
 static inline void tstr_advance(tstr_t *t, int amount)
 {
-    t->value += amount;
+    TPTR(t) += amount;
     t->len -= amount;
 }
 

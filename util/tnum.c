@@ -57,7 +57,7 @@ static int is_fp(const tstr_t *s)
 
     for (i = 0; i < s->len; i++)
     {
-	if (s->value[i] == '.')
+	if (TPTR(s)[i] == '.')
 	    return 1;
     }
     return 0;
@@ -68,22 +68,22 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
     int i = 0, fp = 0, e = 0, exp = 0, radix = 10, sign = 1;
     tnum_t v = {};
 
-    if (s->value[i] == '-')
+    if (TPTR(s)[i] == '-')
     {
 	sign = -1;
 	i++;
     }
 
-    if (s->len > 2 && s->value[i] == '0' && !is_fp(s))
+    if (s->len > 2 && TPTR(s)[i] == '0' && !is_fp(s))
     {
 	radix = 8;
 	i++;
-	if (s->len > 2 && s->value[1] == 'x')
+	if (s->len > 2 && TPTR(s)[1] == 'x')
 	{
 	    radix = 16;
 	    i++;
 	}
-	if (s->len > 2 && s->value[1] == 'b')
+	if (s->len > 2 && TPTR(s)[1] == 'b')
 	{
 	    radix = 2;
 	    i++;
@@ -92,7 +92,7 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
 
     for (; i < s->len; i++)
     {
-	char c = s->value[i];
+	char c = TPTR(s)[i];
 
 	if ((radix == 16 && !isxdigit((int)c)) ||
 	    (radix == 10 && (!isdigit((int)c) && c != '.' && c != 'e')) ||
@@ -154,12 +154,10 @@ static tstr_t tnum_to_tstr(tnum_t *v)
     tstr_t ret;
 
     if (NUMERIC_IS_FP(*v))
-	ret.len = snprintf(buf, sizeof(buf), "%f", NUMERIC_FP(*v));
+	snprintf(buf, sizeof(buf), "%f", NUMERIC_FP(*v));
     else
-	ret.len = snprintf(buf, sizeof(buf), "%d", NUMERIC_INT(*v));
-    ret.value = tmalloc(ret.len, "tnum str");
-    memcpy(ret.value, buf, ret.len);
-    TSTR_SET_ALLOCATED(&ret);
+	snprintf(buf, sizeof(buf), "%d", NUMERIC_INT(*v));
+    tstr_init(&ret, buf);
     return ret;
 }
 

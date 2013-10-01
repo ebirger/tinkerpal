@@ -158,7 +158,7 @@ static inline tstr_t extract_string(scan_t *scan)
     token_type_t delim = scan->look;
 
     _get_char(scan); /* skip enclosure */
-    ret.value = scan->lpc;
+    TPTR(&ret) = scan->lpc;
     ret.flags = 0;
     while (scan->look != delim && !IS_EOF(scan))
     {
@@ -172,7 +172,7 @@ static inline tstr_t extract_string(scan_t *scan)
 	_get_char(scan);
     }
 
-    ret.len = scan->lpc - ret.value;
+    ret.len = scan->lpc - TPTR(&ret);
     if (IS_ALLOCED(scan))
 	TSTR_SET_ALLOCATED(&ret);
     _get_char(scan); /* skip enclosure */
@@ -184,11 +184,11 @@ static inline tstr_t extract_identifier(scan_t *scan)
 {
     tstr_t ret = {};
 
-    ret.value = scan->lpc;
+    TPTR(&ret) = scan->lpc;
     while (is_valid_identifier_non_first_letter(scan->look))
 	_get_char(scan);
 
-    ret.len = scan->lpc - ret.value;
+    ret.len = scan->lpc - TPTR(&ret);
     if (IS_ALLOCED(scan))
 	TSTR_SET_ALLOCATED(&ret);
     skip_white(scan);
@@ -252,10 +252,10 @@ static inline tnum_t extract_num(scan_t *scan)
     tnum_t ret;
 
     s.flags = 0;
-    s.value = scan->lpc;
+    TPTR(&s) = scan->lpc;
     while (is_number_letter(scan->look))
 	_get_char(scan);
-    s.len = scan->lpc - s.value;
+    s.len = scan->lpc - TPTR(&s);
     skip_white(scan);
 
     if (tstr_to_tnum(&ret, &s))
@@ -565,7 +565,7 @@ scan_t *js_scan_init(tstr_t *data)
 {
     scan_t *scan = tmalloc_type(scan_t);
 
-    scan->last_token_start = scan->trace_point = scan->pc = data->value;
+    scan->last_token_start = scan->trace_point = scan->pc = TPTR(data);
     scan->size = data->len + 1;
     scan->look = 255;
     scan->flags = TSTR_IS_ALLOCATED(data) ? SCAN_FLAG_ALLOCED : 0;
