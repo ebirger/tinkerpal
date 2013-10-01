@@ -1,4 +1,4 @@
-MK_OBJS=msp430f5529.o
+MK_OBJS=msp430f5529.o $(if $(CONFIG_GPIO),msp430f5529_gpio.o)
 
 ifneq ($(CONFIG_DOGS102X6),)
   MK_OBJS+=dogs102x6.o $(if $(CONFIG_JS),js_dogs102x6.o)

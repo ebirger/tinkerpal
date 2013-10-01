@@ -24,6 +24,7 @@
  */
 #include <msp430.h>
 #include "platform/platform.h"
+#include "platform/msp430/msp430f5529_gpio.h"
 #include "drivers/serial/serial.h"
 
 /* We need to disable the WDT before system start since buffer initialization
@@ -145,6 +146,15 @@ const platform_t platform = {
 	.irq_enable = msp430f5529_serial_irq_enable,
 	.default_console_id = 0,
     },
+#ifdef CONFIG_GPIO
+    .gpio = {
+	.digital_write = msp430f5529_gpio_digital_write,
+	.digital_read = msp430f5529_gpio_digital_read,
+	.analog_write = NULL,
+	.analog_read = NULL,
+	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
+    },
+#endif
     .init = msp430f5529_init,
     .meminfo = NULL,
     .panic = NULL,

@@ -124,6 +124,7 @@ config MSP430F5529_EXP
 	select PLAT_HAS_MALLOC
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
+	select PLAT_HAS_GPIO
 
 endchoice
 
