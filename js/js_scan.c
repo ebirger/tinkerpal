@@ -155,26 +155,25 @@ static void skip_white(scan_t *scan)
 static inline tstr_t extract_string(scan_t *scan)
 {
     tstr_t ret = {};
+    unsigned short tflags = IS_ALLOCED(scan) ? TSTR_IS_ALLOCATED : 0;
+    char *start;
     token_type_t delim = scan->look;
 
     _get_char(scan); /* skip enclosure */
-    TPTR(&ret) = scan->lpc;
-    ret.flags = 0;
+    start = scan->lpc;
     while (scan->look != delim && !IS_EOF(scan))
     {
 	if (is_newline(scan->look))
 	    tp_crit(("Newlines are not allowed in strings\n"));
 
 	if (scan->look == '\\')
-	    TSTR_SET_ESCAPED(&ret);
+	    tflags |= TSTR_IS_ESCAPED;
 
 	/* XXX: allow escaping the delimiter */
 	_get_char(scan);
     }
 
-    ret.len = scan->lpc - TPTR(&ret);
-    if (IS_ALLOCED(scan))
-	TSTR_SET_ALLOCATED(&ret);
+    tstr_init(&ret, start, scan->lpc - start, tflags);
     _get_char(scan); /* skip enclosure */
     skip_white(scan);
     return ret;
