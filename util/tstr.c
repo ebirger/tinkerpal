@@ -47,7 +47,7 @@ void tstr_alloc(tstr_t *t, int len)
     TSTR_SET_ALLOCATED(t);
 }
 
-void tstr_init(tstr_t *t, char *s)
+void tstr_cpy_str(tstr_t *t, char *s)
 {
     int len = strlen(s);
 

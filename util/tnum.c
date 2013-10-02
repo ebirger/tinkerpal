@@ -157,7 +157,7 @@ static tstr_t tnum_to_tstr(tnum_t *v)
 	snprintf(buf, sizeof(buf), "%f", NUMERIC_FP(*v));
     else
 	snprintf(buf, sizeof(buf), "%d", NUMERIC_INT(*v));
-    tstr_init(&ret, buf);
+    tstr_cpy_str(&ret, buf);
     return ret;
 }
 
