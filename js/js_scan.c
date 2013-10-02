@@ -182,14 +182,14 @@ static inline tstr_t extract_string(scan_t *scan)
 static inline tstr_t extract_identifier(scan_t *scan)
 {
     tstr_t ret = {};
+    unsigned short tflags = IS_ALLOCED(scan) ? TSTR_IS_ALLOCATED : 0;
+    char *start;
 
-    TPTR(&ret) = scan->lpc;
+    start = scan->lpc;
     while (is_valid_identifier_non_first_letter(scan->look))
 	_get_char(scan);
 
-    ret.len = scan->lpc - TPTR(&ret);
-    if (IS_ALLOCED(scan))
-	TSTR_SET_ALLOCATED(&ret);
+    tstr_init(&ret, start, scan->lpc - start, tflags);
     skip_white(scan);
     return ret;
 }
@@ -249,12 +249,12 @@ static inline tnum_t extract_num(scan_t *scan)
 {
     tstr_t s;
     tnum_t ret;
+    char *start;
 
-    s.flags = 0;
-    TPTR(&s) = scan->lpc;
+    start = scan->lpc;
     while (is_number_letter(scan->look))
 	_get_char(scan);
-    s.len = scan->lpc - TPTR(&s);
+    tstr_init(&s, start, scan->lpc - start, 0);
     skip_white(scan);
 
     if (tstr_to_tnum(&ret, &s))
