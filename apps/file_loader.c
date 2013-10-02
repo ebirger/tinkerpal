@@ -37,6 +37,7 @@ void app_start(int argc, char *argv[])
 {
     obj_t *o = NULL;
     tstr_t code = {};
+    int len;
     
     if (argc != 2)
 	tp_crit(("Usage %s <file>\n", argv[0]));
@@ -44,8 +45,8 @@ void app_start(int argc, char *argv[])
     if (!(fp = fopen(argv[1], "r")))
 	tp_crit(("Error reading file %s\n", argv[1]));
 
-    TPTR(&code) = buf;
-    code.len = fread(buf, 1, sizeof(buf), fp);
+    len = fread(buf, 1, sizeof(buf), fp);
+    tstr_init(&code, buf, len, 0);
     fclose(fp);
 
     if (js_eval(&o, &code) == COMPLETION_THROW)
