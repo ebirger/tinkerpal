@@ -28,7 +28,7 @@
 
 int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tstr_t cur, sep;
+    tstr_t orig, cur, sep;
     int idx = 0;
 
     tp_assert(argc == 2); /* XXX: support limit */
@@ -36,7 +36,7 @@ int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     *ret = array_new();
 
     sep = obj_get_str(argv[1]);
-    cur = obj_get_str(this);
+    orig = cur = obj_get_str(this);
     while (1)
     {
 	tstr_t n = cur;
@@ -48,13 +48,12 @@ int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 	n.len = idx;
 	array_push(*ret, string_new(tstr_dup(n)));
 	idx += sep.len;
-	cur.len -= idx;
-	TPTR(&cur) += idx;
+	tstr_advance(&cur, idx);
     }
     if (cur.len)
 	array_push(*ret, string_new(tstr_dup(cur)));
     tstr_free(&sep);
-    tstr_free(&cur);
+    tstr_free(&orig);
     return 0;
 }
 
