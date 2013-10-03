@@ -32,7 +32,6 @@ CONFIG_GCC=y
 #
 # Application
 #
-CONFIG_HAVE_CMDLINE=y
 CONFIG_APP_CLI=y
 # CONFIG_APP_FILE_LOADER is not set
 # CONFIG_APP_STATIC_FILE is not set

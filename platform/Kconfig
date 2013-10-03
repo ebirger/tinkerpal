@@ -41,7 +41,6 @@ config PLAT_HAS_BLK
 config UNIX
 	bool
 	select PLAT_HAS_MALLOC
-	select HAVE_CMDLINE
 	select PLAT_HAS_GCC
 
 config LM3S6918
