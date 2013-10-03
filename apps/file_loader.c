@@ -22,35 +22,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdio.h>
 #include "util/tstr.h"
 #include "util/debug.h"
+#include "drivers/fs/vfs.h"
 #include "js/js_types.h"
 #include "js/js_eval.h"
 #include "js/js.h"
 
-/* XXX: this should come from platform layer */
-static FILE *fp;
-static char buf[128*1024];
-
 void app_start(int argc, char *argv[])
 {
     obj_t *o = NULL;
-    tstr_t code = {};
-    int len;
+    tstr_t code, file;
     
     if (argc != 2)
 	tp_crit(("Usage %s <file>\n", argv[0]));
 
-    if (!(fp = fopen(argv[1], "r")))
+    tstr_init(&file, argv[1], strlen(argv[1]), 0);
+    if (vfs_file_read(&code, &file, VFS_FLAGS_ANY_FS))
 	tp_crit(("Error reading file %s\n", argv[1]));
-
-    len = fread(buf, 1, sizeof(buf), fp);
-    tstr_init(&code, buf, len, 0);
-    fclose(fp);
 
     if (js_eval(&o, &code) == COMPLETION_THROW)
     	tp_crit(("Evaluation resulted in exception %o\n", o));
 
+    tstr_free(&code);
+    tstr_free(&file);
     obj_put(o);
 }

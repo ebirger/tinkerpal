@@ -20,7 +20,7 @@ config APP_ECHO_CONSOLE
 
 config APP_FILE_LOADER
 	bool "Application accepting a source file via command line"
-	depends on HAVE_CMDLINE && JS
+	depends on HAVE_CMDLINE && JS && VFS
 
 config APP_STATIC_FILE
 	bool "Static File Application"
