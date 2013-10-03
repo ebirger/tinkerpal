@@ -44,7 +44,7 @@ void app_start(int argc, char *argv[])
     if (js_eval(&o, &code) == COMPLETION_THROW)
     	tp_crit(("Evaluation resulted in exception %o\n", o));
 
+    obj_put(o);
     tstr_free(&code);
     tstr_free(&file);
-    obj_put(o);
 }
