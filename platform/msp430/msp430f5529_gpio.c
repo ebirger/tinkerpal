@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <msp430.h>
+#include "util/tp_bits.h"
 #include "drivers/gpio/gpio.h"
 #include "platform/msp430/msp430f5529_gpio.h"
 
@@ -52,9 +53,6 @@ static const msp430f5529_gpio_t msp430f5529_gpio_ports[] = {
     [GPIO_PORT_H] = P(P8),
 #undef P
 };
-
-#define bit_set(x, bit, val) x = (val) ? x | (bit) : x & ~(bit)
-#define bit_get(x, bit) (!!((x) & (bit)))
 
 static inline void msp430f5529_gpio_function(int port, int bit, int non_io)
 {
