@@ -41,7 +41,7 @@ struct scan_t {
     char *pc;
     char *trace_point;
     char *last_token_start;
-    char *sliced_buf;
+    char *internal_buf;
     int size; /* should be size_t */
     char look;
 #define SCAN_FLAG_EOF 0x0001
@@ -512,16 +512,16 @@ scan_t *js_scan_save(scan_t *scan)
     scan_t *copy = tmalloc_type(scan_t);
 
     *copy = *scan;
-    copy->sliced_buf = NULL; /* Only one is in-charge of a sliced buf */
+    copy->internal_buf = NULL; /* Only one is in-charge of a sliced buf */
     return copy;
 }
 
 void js_scan_restore(scan_t *dst, scan_t *src)
 {
-    char *sliced_buf = dst->sliced_buf;
+    char *internal_buf = dst->internal_buf;
 
     *dst = *src;
-    dst->sliced_buf = sliced_buf;
+    dst->internal_buf = internal_buf;
 }
 
 scan_t *js_scan_slice(scan_t *start, scan_t *end)
@@ -531,10 +531,10 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
     ret->size = end->lpc - start->lpc;
     if (start->flags & SCAN_FLAG_ALLOCED)
     {
-	ret->sliced_buf = tmalloc(ret->size, "sliced scan");
-	memcpy(ret->sliced_buf, start->lpc, ret->size);
+	ret->internal_buf = tmalloc(ret->size, "scan internal buffer");
+	memcpy(ret->internal_buf, start->lpc, ret->size);
 	ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 
-	    ret->sliced_buf; 
+	    ret->internal_buf; 
 	ret->pc += start->pc - start->lpc;
     }
     return ret;
@@ -545,8 +545,8 @@ void js_scan_free(scan_t *scan)
     if (!scan)
 	return;
 
-    if (scan->sliced_buf)
-	tfree(scan->sliced_buf);
+    if (scan->internal_buf)
+	tfree(scan->internal_buf);
     tfree(scan);
 }
 
@@ -560,7 +560,7 @@ void js_scan_uninit(scan_t *scan)
     js_scan_free(scan);
 }
 
-scan_t *js_scan_init(tstr_t *data)
+scan_t *_js_scan_init(tstr_t *data, int own_data)
 {
     scan_t *scan = tmalloc_type(scan_t);
 
@@ -568,7 +568,7 @@ scan_t *js_scan_init(tstr_t *data)
     scan->size = data->len + 1;
     scan->look = 255;
     scan->flags = TSTR_IS_ALLOCATED(data) ? SCAN_FLAG_ALLOCED : 0;
-    scan->sliced_buf = NULL;
+    scan->internal_buf = own_data ? TPTR(data) : NULL;
     _get_char(scan);
     skip_white(scan);
     js_scan_next_token(scan);

@@ -161,7 +161,11 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end);
 void js_scan_free(scan_t *scan);
 
 void js_scan_uninit(scan_t *scan);
-scan_t *js_scan_init(tstr_t *data);
+scan_t *_js_scan_init(tstr_t *data, int own_data);
+static inline scan_t *js_scan_init(tstr_t *data)
+{
+    return _js_scan_init(data, 0);
+}
 
 /* Global initialization function, not tied to a scan_t instance.
  * cb returns 0 if s matches a known constant, the constant's value
