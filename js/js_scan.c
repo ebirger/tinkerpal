@@ -208,49 +208,92 @@ static inline tstr_t extract_identifier(scan_t *scan)
     return ret;
 }
 
+/* Hash table for keywords based on length.
+ * GCC offers an extremely nice way to do this using anonymous members 
+ * but TI CCS5 doesn't support it. sigh...
+ */
+typedef struct {
+    const tstr_t str;
+    const token_type_t tok;
+} keyword_t;
+
+#define K(n, o) { .str = S(n), .tok = o }
+
+static const keyword_t keywords2[] = {
+    K("if", TOK_IF), 
+    K("in", TOK_IN), 
+    {} 
+};
+
+static const keyword_t keywords3[] = {
+    K("for", TOK_FOR), 
+    K("var", TOK_VAR), 
+    K("new", TOK_NEW), 
+    K("try", TOK_TRY), 
+    {} 
+};
+
+static const keyword_t keywords4[] = {
+    K("else", TOK_ELSE), 
+    K("this", TOK_THIS), 
+    K("true", TOK_TRUE), 
+    K("null", TOK_NULL), 
+    K("case", TOK_CASE), 
+    {} 
+};
+
+static const keyword_t keywords5[] = {
+    K("while", TOK_WHILE),
+    K("break", TOK_BREAK),
+    K("false", TOK_FALSE),
+    K("throw", TOK_THROW),
+    K("catch", TOK_CATCH),
+    {}
+};
+
+static const keyword_t keywords6[] = {
+    K("switch", TOK_SWITCH),
+    K("return", TOK_RETURN),
+    {}
+};
+
+static const keyword_t keywords7[] = {
+    K("default", TOK_DEFAULT),
+    {}
+};
+
+static const keyword_t keywords8[] = {
+    K("function", TOK_FUNCTION),
+    K("continue", TOK_CONTINUE),
+    {}
+};
+
+static const keyword_t keywords9[] = {
+    K("prototype", TOK_PROTOTYPE),
+    K("undefined", TOK_UNDEFINED),
+    {}
+};
+
+static const keyword_t *keywords[] = {
+    [2] = keywords2,
+    [3] = keywords3,
+    [4] = keywords4,
+    [5] = keywords5,
+    [6] = keywords6,
+    [7] = keywords7,
+    [8] = keywords8,
+    [9] = keywords9,
+};
+
 static inline token_type_t identifier_to_tok(const tstr_t *str)
 {
-    struct {
-	tstr_t str;
-	token_type_t tok;
-    } *k, keywords[] = {
-#define K(n, o) { .str = S(n), .tok = o }
-	/* Note: keywords are arranged by length for quick escape */
-	K("if", TOK_IF),
-	K("in", TOK_IN),
-	K("for", TOK_FOR),
-	K("var", TOK_VAR),
-	K("new", TOK_NEW),
-	K("try", TOK_TRY),
-	K("else", TOK_ELSE),
-	K("this", TOK_THIS),
-	K("true", TOK_TRUE),
-	K("null", TOK_NULL),
-	K("case", TOK_CASE),
-	K("while", TOK_WHILE),
-	K("break", TOK_BREAK),
-	K("false", TOK_FALSE),
-	K("throw", TOK_THROW),
-	K("catch", TOK_CATCH),
-	K("switch", TOK_SWITCH),
-	K("return", TOK_RETURN),
-	K("default", TOK_DEFAULT),
-	K("function", TOK_FUNCTION),
-	K("continue", TOK_CONTINUE),
-	K("prototype", TOK_PROTOTYPE),
-	K("undefined", TOK_UNDEFINED),
-	{}
-    };
+    const keyword_t *k;
 
-    for (k = keywords; k->tok; k++)
+    if (str->len < 2 || str->len > 9)
+	return TOK_ID;
+
+    for (k = keywords[str->len]; k->tok; k++)
     {
-	/* Quick escape - keywords are arranged by length. No need
-	 * to bother comparing if we are already shorter than the current
-	 * keyword.
-	 */
-	if (k->str.len > str->len)
-	    return TOK_ID;
-
 	/* Exit on exact match */
 	if (!tstr_cmp(&k->str, str))
 	    return k->tok;
