@@ -26,6 +26,7 @@
 #include "util/tmalloc.h"
 #include "util/event.h"
 #include "util/debug.h"
+#include "util/tp_bits.h"
 #include "platform/platform.h"
 #include "js/js.h"
 
@@ -35,9 +36,16 @@ typedef struct event_watch_internal_t {
     event_watch_t *ew;
     int resource_id;
     int watch_id;
-    int is_on;
-    int deleted;
+#define EW_FLAG_ON 0x0001
+#define EW_FLAG_DELETED 0x0002
+    int flags;
 } event_watch_internal_t;
+
+#define EW_IS_ON(e) ((e)->flags & EW_FLAG_ON)
+#define EW_ON(e) bit_set((e)->flags, EW_FLAG_ON, 1)
+#define EW_OFF(e) bit_set((e)->flags, EW_FLAG_ON, 0)
+#define EW_IS_DELETED(e) ((e)->flags & EW_FLAG_DELETED)
+#define EW_SET_DELETED(e) bit_set((e)->flags, EW_FLAG_DELETED, 1)
 
 typedef struct event_timer_internal_t {
     struct event_timer_internal_t *next;
@@ -178,7 +186,7 @@ static void event_mark_on(int resource_id)
     if (!(e = watch_lookup(resource_id)))
 	return;
 
-    e->is_on = 1;
+    EW_ON(e);
 }
 
 static int event_is_active(int resource_id)
@@ -200,9 +208,8 @@ int event_watch_set(int resource_id, event_watch_t *ew)
     n->watch_id = g_watch_id++;
     n->resource_id = resource_id;
     n->ew = ew;
-    n->is_on = 0;
     n->next = watches;
-    n->deleted = 0;
+    n->flags = 0;
     watches = n;
     return n->watch_id;
 }
@@ -214,7 +221,7 @@ void event_watch_del(int watch_id)
     watches_foreach(e)
     {
 	if (e->watch_id == watch_id)
-	    e->deleted = 1;
+	    EW_SET_DELETED(e);
     }
 }
 
@@ -223,7 +230,7 @@ void event_watch_del_all(void)
     event_watch_internal_t *e;
 
     watches_foreach(e)
-	e->deleted = 1;
+	EW_SET_DELETED(e);
 }
 
 void event_purge_deleted(void)
@@ -232,7 +239,7 @@ void event_purge_deleted(void)
 
     while ((e = *iter))
     {
-	if (e->deleted)
+	if (EW_IS_DELETED(e))
 	{
 	    *iter = (*iter)->next;
 
@@ -251,11 +258,11 @@ static void watches_process(void)
 
     watches_foreach(e)
     {
-	if (!e->is_on)
+	if (!(EW_IS_ON(e)))
 	    continue;
 
 	e->ew->watch_event(e->ew, e->resource_id);
-	e->is_on = 0;
+	EW_OFF(e);
     }
 }
 
