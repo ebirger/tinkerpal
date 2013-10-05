@@ -811,7 +811,11 @@ static int eval_assignment(obj_t **po, scan_t *scan, reference_t *ref)
     if (valid_lval(ref))
 	dst = ref->dst;
     else
-	dst = obj_var_create(ref->base, obj_get_str(ref->field));
+    {
+	tstr_t field_str = obj_get_str(ref->field);
+	dst = obj_var_create(ref->base, field_str);
+	tstr_free(&field_str);
+    }
 
     old_object = *dst;
     switch (tok)
@@ -1350,7 +1354,11 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
 	    obj_put(*dst);
 	}
 	else
-	    dst = obj_var_create(ref.base, obj_get_str(ref.field));
+	{
+	    tstr_t field_tstr = obj_get_str(ref.field);
+	    dst = obj_var_create(ref.base, field_tstr);
+	    tstr_free(&field_tstr);
+	}
 
 	*dst = string_new(tstr_dup(*iter.key));
 	obj_put(lhs);

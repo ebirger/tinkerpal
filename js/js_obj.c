@@ -127,7 +127,7 @@ static obj_t **var_create(var_t **vars, tstr_t key)
     {
 	/* Create new */
 	*iter = tmalloc_type(var_t);
-	(*iter)->key = key;
+	(*iter)->key = tstr_dup(key);
 	(*iter)->next = NULL;
 	(*iter)->obj = NULL;
     }
@@ -296,7 +296,7 @@ void _obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 {
     obj_t **dst;
 
-    dst = obj_var_create(o, tstr_dup(property));
+    dst = obj_var_create(o, property);
     *dst = value;
 }
 
@@ -898,13 +898,16 @@ obj_t *array_push(obj_t *arr, obj_t *item)
 {
     obj_t **len, **dst;
     int idx;
+    tstr_t idx_str;
     
     len = array_length_get(&idx, arr);
 
     /* shortcut: we call var_create directly in order not to trigger
      * array_pre_var_create hook.
      */
-    dst = var_create(&arr->properties, int_to_tstr(idx));
+    idx_str = int_to_tstr(idx);
+    dst = var_create(&arr->properties, idx_str);
+    tstr_free(&idx_str);
     *dst = item;
 
     /* Release old length */
