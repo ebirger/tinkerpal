@@ -142,7 +142,7 @@ extern bool_t false_obj;
 
 /* Generic obj methods */
 obj_t *obj_cast(obj_t *o, unsigned char class);
-obj_t **obj_var_create(obj_t *o, tstr_t str);
+obj_t **obj_var_create(obj_t *o, tstr_t *str);
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str);
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property);
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob);

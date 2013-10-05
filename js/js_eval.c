@@ -813,7 +813,7 @@ static int eval_assignment(obj_t **po, scan_t *scan, reference_t *ref)
     else
     {
 	tstr_t field_str = obj_get_str(ref->field);
-	dst = obj_var_create(ref->base, field_str);
+	dst = obj_var_create(ref->base, &field_str);
 	tstr_free(&field_str);
     }
 
@@ -1356,7 +1356,7 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
 	else
 	{
 	    tstr_t field_tstr = obj_get_str(ref.field);
-	    dst = obj_var_create(ref.base, field_tstr);
+	    dst = obj_var_create(ref.base, &field_tstr);
 	    tstr_free(&field_tstr);
 	}
 

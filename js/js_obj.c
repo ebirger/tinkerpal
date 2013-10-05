@@ -111,11 +111,11 @@ static obj_t **var_get(var_t *vars, tstr_t key)
     return &iter->obj;
 }
 
-static obj_t **var_create(var_t **vars, tstr_t key)
+static obj_t **var_create(var_t **vars, tstr_t *key)
 {
     var_t **iter;
 
-    for (iter = vars; *iter && var_key_cmp(&(*iter)->key, &key); 
+    for (iter = vars; *iter && var_key_cmp(&(*iter)->key, key); 
 	iter = &(*iter)->next);
     if (*iter)
     {
@@ -127,7 +127,7 @@ static obj_t **var_create(var_t **vars, tstr_t key)
     {
 	/* Create new */
 	*iter = tmalloc_type(var_t);
-	(*iter)->key = tstr_dup(key);
+	(*iter)->key = tstr_dup(*key);
 	(*iter)->next = NULL;
 	(*iter)->obj = NULL;
     }
@@ -274,10 +274,10 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     return ret;
 }
 
-obj_t **obj_var_create(obj_t *o, tstr_t key)
+obj_t **obj_var_create(obj_t *o, tstr_t *key)
 {
     if (CLASS(o)->pre_var_create)
-	CLASS(o)->pre_var_create(o, &key);
+	CLASS(o)->pre_var_create(o, key);
     return var_create(&o->properties, key);
 }
 
@@ -296,7 +296,7 @@ void _obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 {
     obj_t **dst;
 
-    dst = obj_var_create(o, property);
+    dst = obj_var_create(o, &property);
     *dst = value;
 }
 
@@ -906,7 +906,7 @@ obj_t *array_push(obj_t *arr, obj_t *item)
      * array_pre_var_create hook.
      */
     idx_str = int_to_tstr(idx);
-    dst = var_create(&arr->properties, idx_str);
+    dst = var_create(&arr->properties, &idx_str);
     tstr_free(&idx_str);
     *dst = item;
 
@@ -1048,7 +1048,7 @@ obj_t *array_new(void)
     obj_t *ret = obj_new_type(ARRAY_CLASS, obj_t), **len_prop;
 
     /* Add length property */
-    len_prop = var_create(&ret->properties, Slength);
+    len_prop = var_create(&ret->properties, &Slength);
     *len_prop = num_new_int(0);
     return ret;
 }
@@ -1187,7 +1187,7 @@ obj_t *string_new(tstr_t s)
     ret->value = s;
 
     /* Add length property */
-    len_prop = var_create(&ret->obj.properties, Slength);
+    len_prop = var_create(&ret->obj.properties, &Slength);
     *len_prop = num_new_int(s.len);
 
     return (obj_t *)ret;
