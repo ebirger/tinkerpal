@@ -827,23 +827,39 @@ obj_t *object_new(void)
 
 /*** "array" Class ***/
 
+static obj_t **array_length_get(int *length, obj_t *arr);
+static obj_t *array_lookup(obj_t *arr, int index);
+
 static void array_dump(printer_t *printer, obj_t *o)
 {
-    int first = 1;
-    array_iter_t iter;
+    int first = 1, len, k, undef_streak = 0;
 
+    array_length_get(&len, o);
     tprintf(printer, "[ ");
-    array_iter_init(&iter, o, 0);
-    while (array_iter_next(&iter))
+    for (k = 0; k < len; k++)
     {
+	obj_t *item;
+
+	if (!(item = array_lookup(o, k)))
+	{
+	    undef_streak++;
+	    continue;
+	}
+
 	if (first)
 	    first = 0;
 	else
 	    tprintf(printer, ", ");
 
-	tprintf(printer, "%o", iter.obj);
+	if (undef_streak)
+	{
+	    tprintf(printer, "undefined x %d, ", undef_streak);
+	    undef_streak = 0;
+	}
+
+	obj_dump(printer, item);
+	obj_put(item);
     }
-    array_iter_uninit(&iter);
     tprintf(printer, " ]");
 }
 
