@@ -87,7 +87,7 @@ typedef struct {
 
 struct var_t {
     var_t *next;
-    tstr_t str; /* XXX: rename (key?) */
+    tstr_t key;
     obj_t *obj;
 };
 

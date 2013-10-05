@@ -65,11 +65,26 @@ double num_fp_value(num_t *n);
 
 /*** "vars" API ***/
 
+static inline void var_key_free(tstr_t *key)
+{
+    tstr_free(key);
+}
+
+static inline int var_key_cmp(tstr_t *keya, tstr_t *keyb)
+{
+    return tstr_cmp(keya, keyb);
+}
+
+static inline int var_key_is_internal(tstr_t *key)
+{
+    return TSTR_IS_INTERNAL(key);
+}
+
 static void var_free(var_t *v)
 {
     tp_debug(("freeing %p\n", v));
     obj_put(v->obj);
-    tstr_free(&v->str);
+    var_key_free(&v->key);
     tfree(v);
 }
 
@@ -84,11 +99,11 @@ static void vars_free(var_t **vars)
     }
 }
 
-static obj_t **var_get(var_t *vars, tstr_t str)
+static obj_t **var_get(var_t *vars, tstr_t key)
 {
     var_t *iter;
 
-    for (iter = vars; iter && tstr_cmp(&iter->str, &str); iter = iter->next);
+    for (iter = vars; iter && var_key_cmp(&iter->key, &key); iter = iter->next);
     if (!iter)
 	return NULL;
 
@@ -96,11 +111,11 @@ static obj_t **var_get(var_t *vars, tstr_t str)
     return &iter->obj;
 }
 
-static obj_t **var_create(var_t **vars, tstr_t str)
+static obj_t **var_create(var_t **vars, tstr_t key)
 {
     var_t **iter;
 
-    for (iter = vars; *iter && tstr_cmp(&(*iter)->str, &str); 
+    for (iter = vars; *iter && var_key_cmp(&(*iter)->key, &key); 
 	iter = &(*iter)->next);
     if (*iter)
     {
@@ -112,7 +127,7 @@ static obj_t **var_create(var_t **vars, tstr_t str)
     {
 	/* Create new */
 	*iter = tmalloc_type(var_t);
-	(*iter)->str = str;
+	(*iter)->key = key;
 	(*iter)->next = NULL;
 	(*iter)->obj = NULL;
     }
@@ -182,11 +197,11 @@ int obj_true(obj_t *o)
     return CLASS(o)->is_true(o);
 }
 
-obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
+obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t key)
 {
     obj_t **ref;
 
-    if ((ref = var_get(o->properties, str)))
+    if ((ref = var_get(o->properties, key)))
     {
 	if (lval)
 	    *lval = ref;
@@ -194,7 +209,7 @@ obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
     }
 
     if (CLASS(o)->get_own_property)
-	return CLASS(o)->get_own_property(lval, o, str);
+	return CLASS(o)->get_own_property(lval, o, key);
 
     return NULL;
 }
@@ -259,11 +274,11 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     return ret;
 }
 
-obj_t **obj_var_create(obj_t *o, tstr_t str)
+obj_t **obj_var_create(obj_t *o, tstr_t key)
 {
     if (CLASS(o)->pre_var_create)
-	CLASS(o)->pre_var_create(o, &str);
-    return var_create(&o->properties, str);
+	CLASS(o)->pre_var_create(o, &key);
+    return var_create(&o->properties, key);
 }
 
 obj_t *obj_new(unsigned char class, int size, char *type)
@@ -646,7 +661,7 @@ static void function_dump(printer_t *printer, obj_t *o)
     tprintf(printer, "Function(");
     for (l = function->formal_params; l; l = l->next)
     {
-	if (TSTR_IS_INTERNAL(&l->str))
+	if (var_key_is_internal(&l->str))
 	    continue;
 
 	tprintf(printer, "%S%s", &l->str, l->next ? ", " : "");
@@ -733,7 +748,7 @@ static void object_dump(printer_t *printer, obj_t *o)
 
     tprintf(printer, "{ ");
     for (p = o->properties; p; p = p->next)
-	tprintf(printer, "%S : %o%s", &p->str, p->obj, p->next ?  ", " : "");
+	tprintf(printer, "%S : %o%s", &p->key, p->obj, p->next ?  ", " : "");
 
     tprintf(printer, " }");
 }
@@ -777,12 +792,15 @@ int object_iter_next(object_iter_t *iter)
     while ((cur_prop = *iter->priv))
     {
 	iter->priv = &cur_prop->next;
-	iter->key = &cur_prop->str;
+	iter->key = &cur_prop->key;
 	iter->val = cur_prop->obj;
 
 	/* XXX: Ugly. We should keep an 'enumerable' flag on keys */
-	if (!tstr_cmp(iter->key, &Slength) || !tstr_cmp(iter->key, &Sprototype))
+	if (!var_key_cmp(iter->key, &Slength) || 
+	    !var_key_cmp(iter->key, &Sprototype))
+	{
 	    continue;
+	}
 
 	return 1;
     }
@@ -824,8 +842,11 @@ static void array_dump(printer_t *printer, obj_t *o)
 	/* XXX: must be in order */
 
 	/* Ugly hack, but saving flags on properties is expensive... */
-	if (!tstr_cmp(&p->str, &Slength) || !tstr_cmp(&p->str, &Sprototype))
+	if (!var_key_cmp(&p->key, &Slength) || 
+            !var_key_cmp(&p->key, &Sprototype))
+	{
 	    continue;
+	}
 
 	if (first)
 	    first = 0;
@@ -908,7 +929,7 @@ obj_t *array_pop(obj_t *arr)
     idx_id = int_to_tstr(idx);
 
     /* Lookup the last item */
-    for (iter = &arr->properties; *iter && tstr_cmp(&(*iter)->str, &idx_id); 
+    for (iter = &arr->properties; *iter && var_key_cmp(&(*iter)->key, &idx_id); 
 	iter = &(*iter)->next);
 
     /* Release search str */
@@ -1037,7 +1058,7 @@ static void env_dump(printer_t *printer, obj_t *o)
     tprintf(printer, "{ ");
     for (p = o->properties; p; p = p->next)
     {
-	tprintf(printer, "%S : %o [refs %d]%s", &p->str, p->obj, 
+	tprintf(printer, "%S : %o [refs %d]%s", &p->key, p->obj, 
 	    p->obj->ref_count, p->next ?  ", " : "");
     }
 
