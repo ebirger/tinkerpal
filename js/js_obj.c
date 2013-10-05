@@ -302,16 +302,12 @@ void _obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 
 void obj_set_property_str(obj_t *o, tstr_t property, tstr_t value)
 {
-    obj_t *s = string_new(value);
-    obj_set_property(o, property, s);
-    obj_put(s);
+    _obj_set_property(o, property, string_new(value));
 }
 
 void obj_set_property_int(obj_t *o, tstr_t property, int value)
 {
-    obj_t *n = num_new_int(value);
-    obj_set_property(o, property, n);
-    obj_put(n);
+    _obj_set_property(o, property, num_new_int(value));
 }
 
 int obj_get_int(obj_t *o)
