@@ -38,7 +38,7 @@ typedef struct event_watch_internal_t {
     int watch_id;
 #define EW_FLAG_ON 0x0001
 #define EW_FLAG_DELETED 0x0002
-    int flags;
+    unsigned int flags;
 } event_watch_internal_t;
 
 #define EW_IS_ON(e) ((e)->flags & EW_FLAG_ON)
