@@ -829,24 +829,21 @@ obj_t *object_new(void)
 
 static void array_dump(printer_t *printer, obj_t *o)
 {
-    var_t *p;
     int first = 1;
+    array_iter_t iter;
 
     tprintf(printer, "[ ");
-    for (p = o->properties; p; p = p->next)
+    array_iter_init(&iter, o, 0);
+    while (array_iter_next(&iter))
     {
-	/* XXX: must be in order */
-
-	if (var_key_is_internal(&p->key))
-	    continue;
-
 	if (first)
 	    first = 0;
 	else
 	    tprintf(printer, ", ");
 
-	obj_dump(printer, p->obj);
+	tprintf(printer, "%o", iter.obj);
     }
+    array_iter_uninit(&iter);
     tprintf(printer, " ]");
 }
 
