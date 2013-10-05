@@ -22,7 +22,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <ctype.h>
 #include "util/tmalloc.h"
 #include "util/tnum.h"
 #include "util/debug.h"
@@ -57,19 +56,34 @@ static get_constants_cb_t g_get_constants_cb;
 #define SET_EOF(scan) ((scan)->flags |= SCAN_FLAG_EOF)
 #define IS_ALLOCED(scan) ((scan)->flags & SCAN_FLAG_ALLOCED)
 
+static inline int is_digit(char c)
+{
+    return c >= '0' && c <= '9';
+}
+
+static inline int is_x_digit(char c)
+{
+    return is_digit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
+
 static inline int is_number_letter(char c)
 {
-    return isxdigit((int)c) || c == '.' || c == 'e' || c == 'x';
+    return is_x_digit((int)c) || c == '.' || c == 'e' || c == 'x';
+}
+
+static inline int is_alpha(char c)
+{
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
 static inline int is_valid_identifier_first_letter(char c)
 {
-    return isalpha((int)c) || c == '_' || c == '$';
+    return is_alpha((int)c) || c == '_' || c == '$';
 }
 
 static inline int is_valid_identifier_non_first_letter(char c)
 {
-    return is_valid_identifier_first_letter(c) || isdigit((int)c);
+    return is_valid_identifier_first_letter(c) || is_digit(c);
 }
 
 static inline int is_newline(char c)
@@ -336,7 +350,7 @@ void js_scan_next_token(scan_t *scan)
 		scan->value.identifier = id;
 	}
     }
-    else if (isdigit((int)scan->look)) 
+    else if (is_digit(scan->look)) 
     {
 	scan->tok = TOK_NUM;
 	scan->value.num = extract_num(scan);
