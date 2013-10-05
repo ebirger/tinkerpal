@@ -103,7 +103,7 @@ int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     }
 
     body = obj_get_str(argv[0]);
-    code = js_scan_init(&body);
+    code = _js_scan_init(&body, 1);
     call = call_evaluated_function;
 
 Exit:
