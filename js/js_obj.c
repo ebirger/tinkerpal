@@ -30,7 +30,7 @@
 #include "js/js_obj.h"
 #include "js/js_types.h"
 
-#define Slength S("length")
+#define Slength INTERNAL_S("length")
 
 struct obj_class_t {
     void (*dump)(printer_t *printer, obj_t *o);
@@ -795,12 +795,8 @@ int object_iter_next(object_iter_t *iter)
 	iter->key = &cur_prop->key;
 	iter->val = cur_prop->obj;
 
-	/* XXX: Ugly. We should keep an 'enumerable' flag on keys */
-	if (!var_key_cmp(iter->key, &Slength) || 
-	    !var_key_cmp(iter->key, &Sprototype))
-	{
+	if (var_key_is_internal(iter->key))
 	    continue;
-	}
 
 	return 1;
     }
@@ -841,12 +837,8 @@ static void array_dump(printer_t *printer, obj_t *o)
     {
 	/* XXX: must be in order */
 
-	/* Ugly hack, but saving flags on properties is expensive... */
-	if (!var_key_cmp(&p->key, &Slength) || 
-            !var_key_cmp(&p->key, &Sprototype))
-	{
+	if (var_key_is_internal(&p->key))
 	    continue;
-	}
 
 	if (first)
 	    first = 0;

@@ -34,7 +34,7 @@ typedef struct var_t var_t;
 typedef struct obj_class_t obj_class_t;
 typedef struct function_t function_t;
 
-#define Sprototype S("prototype")
+#define Sprototype INTERNAL_S("prototype")
 
 struct obj_t {
     /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
