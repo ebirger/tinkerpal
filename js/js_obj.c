@@ -1011,12 +1011,12 @@ static void array_pre_var_create(obj_t *arr, const tstr_t *str)
     obj_t **len;
     tnum_t tnum_idx;
     
-    if (tstr_to_tnum(&tnum_idx, str) || 
-        NUMERIC_IS_FP(tnum_idx))
+    if (tstr_to_tnum(&tnum_idx, str) || NUMERIC_IS_FP(tnum_idx))
     {
-	/* XXX: is this the correct reaction ? */
-	tp_crit(("%s: setting non integer '%S' as array index\n", __FUNCTION__, 
-	    str));
+	/* Nothing better to do, it's ok to set a random property
+	 * on an array instance.
+	 */
+	return;
     }
     
     idx = NUMERIC_INT(tnum_idx);
