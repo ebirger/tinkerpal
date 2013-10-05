@@ -44,6 +44,7 @@ void tstr_alloc(tstr_t *t, int len)
 {
     TPTR(t) = tmalloc(len, "TSTR");
     t->len = len;
+    t->flags = 0;
     TSTR_SET_ALLOCATED(t);
 }
 
