@@ -1566,26 +1566,40 @@ static int eval_block(obj_t **ret, scan_t *scan)
 
 static int eval_function(obj_t **ret, scan_t *scan, int stmnt)
 {
-    tstr_t func_name, *fname = &func_name;
-    int rc, bind_name;
+    tstr_t func_name, *fname = &INTERNAL_S("__builtin_func__");
+    int rc, have_func_name;
 
     js_scan_match(scan, TOK_FUNCTION);
     
-    bind_name = CUR_TOK(scan) == TOK_ID;
-    if (bind_name)
-	js_scan_get_identifier(fname, scan);
-    else
-	fname = &S("__builtin_func__");
+    have_func_name = CUR_TOK(scan) == TOK_ID;
+
+    if (have_func_name)
+    {
+	/* Have function name */
+
+	js_scan_get_identifier(&func_name, scan);
+	if (!stmnt)
+	{
+	    /* Function expressions require binding to the function's lexical
+	     * scope.
+	     * fname will be owned by the function object.
+	     */
+	    fname = &func_name;
+	    TSTR_SET_INTERNAL(fname);
+	}
+    }
     
-    TSTR_SET_INTERNAL(fname);
-
     if ((rc = eval_function_definition(fname, ret, scan)))
+    {
+	tstr_free(fname);
 	return rc;
+    }
 
-    if (bind_name && stmnt)
+    if (have_func_name && stmnt)
     {
 	/* Statements require binding to environment */
 	obj_set_property(cur_env, func_name, *ret);
+	tstr_free(&func_name);
     }
     return 0;
 }

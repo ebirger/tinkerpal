@@ -59,4 +59,5 @@ var kuku = function pupu() {
 };
 
 debug.assert(kuku(), 1);
+debug.assert(pupu, undefined);
 main();
