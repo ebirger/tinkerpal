@@ -375,8 +375,9 @@ void js_scan_next_token(scan_t *scan)
     {
 	scan->tok = TOK_STRING;
 	scan->value.string = extract_string(scan);
+	return;
     }
-    else if (is_valid_identifier_first_letter(scan->look))
+    if (is_valid_identifier_first_letter(scan->look))
     {
 	int constant;
 	tstr_t id = extract_identifier(scan);
@@ -392,25 +393,28 @@ void js_scan_next_token(scan_t *scan)
 	    if (scan->tok == TOK_ID)
 		scan->value.identifier = id;
 	}
+	return;
     }
-    else if (is_digit(scan->look)) 
+    if (is_digit(scan->look)) 
     {
 	scan->tok = TOK_NUM;
 	scan->value.num = extract_num(scan);
+	return;
     }
-    else if (is_control_char(scan->look))
+    if (is_control_char(scan->look))
     {
 	scan->tok = scan->look;
 	_get_char(scan);
 	skip_white(scan);
+	return;
     }
-    else if (IS_EOF(scan))
-	scan->tok = TOK_EOF;
-    else
+    if (IS_EOF(scan))
     {
-	/* Unknown character, just skip it */
-	_get_char(scan);
+	scan->tok = TOK_EOF;
+	return;
     }
+    /* Unknown character, just skip it */
+    _get_char(scan);
 }
 
 static char *tok_to_str(token_type_t tok)
