@@ -330,12 +330,6 @@ void js_scan_next_token(scan_t *scan)
     scan->tok = 0;
     scan->flags &= ~SCAN_FLAG_INVALID;
     scan->last_token_start = scan->lpc;
-    if (scan->size > 1)
-    {
-	next = *scan->pc;
-	if (scan->size > 2)
-	    next2 = *(scan->pc + 1);
-    }
     if (is_control_char(scan->look))
     {
 	scan->tok = scan->look;
@@ -348,6 +342,12 @@ void js_scan_next_token(scan_t *scan)
 	scan->tok = TOK_NUM;
 	scan->value.num = extract_num(scan);
 	return;
+    }
+    if (scan->size > 1)
+    {
+	next = *scan->pc;
+	if (scan->size > 2)
+	    next2 = *(scan->pc + 1);
     }
     switch (scan->look)
     {
