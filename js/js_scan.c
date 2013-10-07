@@ -336,6 +336,19 @@ void js_scan_next_token(scan_t *scan)
 	if (scan->size > 2)
 	    next2 = *(scan->pc + 1);
     }
+    if (is_control_char(scan->look))
+    {
+	scan->tok = scan->look;
+	_get_char(scan);
+	skip_white(scan);
+	return;
+    }
+    if (is_digit(scan->look)) 
+    {
+	scan->tok = TOK_NUM;
+	scan->value.num = extract_num(scan);
+	return;
+    }
     switch (scan->look)
     {
     case '+':
@@ -393,19 +406,6 @@ void js_scan_next_token(scan_t *scan)
 	    if (scan->tok == TOK_ID)
 		scan->value.identifier = id;
 	}
-	return;
-    }
-    if (is_digit(scan->look)) 
-    {
-	scan->tok = TOK_NUM;
-	scan->value.num = extract_num(scan);
-	return;
-    }
-    if (is_control_char(scan->look))
-    {
-	scan->tok = scan->look;
-	_get_char(scan);
-	skip_white(scan);
 	return;
     }
     if (IS_EOF(scan))
