@@ -32,7 +32,7 @@
 
 #define Slength INTERNAL_S("length")
 
-struct obj_class_t {
+typedef struct {
     void (*dump)(printer_t *printer, obj_t *o);
     void (*free)(obj_t *o);
     obj_t *(*do_op)(token_type_t op, obj_t *oa, obj_t *ob);
@@ -40,7 +40,7 @@ struct obj_class_t {
     obj_t *(*cast)(obj_t *o, unsigned char class);
     void (*pre_var_create)(obj_t *o, const tstr_t *str);
     obj_t *(*get_own_property)(obj_t ***lval, obj_t *o, tstr_t str);
-};
+} obj_class_t;
 
 /* classes is defined at the bottom of this file.
  * It 'extern' instead of 'static' to avoid a mass of forward declarations

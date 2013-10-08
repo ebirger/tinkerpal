@@ -29,14 +29,11 @@
 #include "util/tprintf.h"
 #include "util/debug.h"
 
-typedef struct obj_t obj_t;
 typedef struct var_t var_t;
-typedef struct obj_class_t obj_class_t;
-typedef struct function_t function_t;
 
 #define Sprototype INTERNAL_S("prototype")
 
-struct obj_t {
+typedef struct {
     /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
      *   saves space.
      */
@@ -50,17 +47,17 @@ struct obj_t {
     unsigned char class;
     short ref_count;
     var_t *properties;
-};
+} obj_t;
 
 typedef int (*call_t)(obj_t **ret, obj_t *this, int argc, obj_t *argv[]);
 
-struct function_t {
+typedef struct {
     obj_t obj;
     call_t call;
     scan_t *code;
     obj_t *scope;
     tstr_list_t *formal_params;
-};
+} function_t;
 
 typedef struct {
     obj_t obj;
