@@ -92,6 +92,8 @@ typedef struct {
     obj_t obj;
 } env_t;
 
+typedef string_t array_buffer_t;
+
 /* Class types.
  * Note: ENV_CLASS is a special class - it is not exposed as a JS type,
  * but shares a lot of common properties with other classes.
@@ -105,7 +107,8 @@ typedef struct {
 #define OBJECT_CLASS 7
 #define ARRAY_CLASS 8
 #define ENV_CLASS 9
-#define CLASS_LAST ENV_CLASS
+#define ARRAY_BUFFER_CLASS 10
+#define CLASS_LAST ARRAY_BUFFER_CLASS
 
 /* Global objects */
 extern obj_t undefind_obj;
@@ -265,6 +268,20 @@ void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse);
 /* Returns 0 upon on the last element */
 int array_iter_next(array_iter_t *iter);
 void array_iter_uninit(array_iter_t *iter);
+
+/* typed arrays objects methods */
+obj_t *array_buffer_new(int length);
+
+static inline int is_array_buffer(obj_t *o)
+{
+    return o && o->class == ARRAY_BUFFER_CLASS;
+}
+
+static inline array_buffer_t *to_array_buffer(obj_t *o)
+{
+    tp_assert(is_array_buffer(o));
+    return (array_buffer_t *)o;
+}
 
 /* Initialization sequence functions */
 void obj_class_set_prototype(unsigned char class, obj_t *proto);

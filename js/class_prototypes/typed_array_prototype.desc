@@ -1,0 +1,5 @@
+CLASS_PROTOTYPE("ArrayBuffer", array_buffer_prototype, object_prototype,
+    ARRAY_BUFFER_CLASS, {
+})
+
+CONSTRUCTOR("ArrayBuffer", array_buffer_prototype, do_array_buffer_constructor)

@@ -1193,6 +1193,47 @@ obj_t *string_new(tstr_t s)
     return (obj_t *)ret;
 }
 
+/*** "typed arrays" classes ***/
+
+#define SbyteLength S("byteLength")
+
+static obj_t *array_buffer_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
+{
+    array_buffer_t *b = to_array_buffer(o);
+
+    if (!tstr_cmp(&str, &SbyteLength))
+    {
+	if (lval)
+	    *lval = NULL;
+	return num_new_int(b->value.len);
+    }
+
+    return NULL;
+}
+
+static void array_buffer_dump(printer_t *printer, obj_t *o)
+{
+    array_buffer_t *b = to_array_buffer(o);
+
+    tprintf(printer, "ArrayBuffer(%d)", b->value.len);
+}
+
+static void array_buffer_free(obj_t *o)
+{
+    array_buffer_t *b = to_array_buffer(o);
+
+    tstr_free(&b->value);
+}
+
+obj_t *array_buffer_new(int length)
+{
+    array_buffer_t *ret = (array_buffer_t *)obj_new_type(ARRAY_BUFFER_CLASS, 
+	array_buffer_t);
+    
+    tstr_alloc(&ret->value, length);
+    return (obj_t *)ret;
+}
+
 /*** Initialization Sequence Functions ***/
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {
@@ -1251,5 +1292,10 @@ const obj_class_t classes[] = {
     },
     [ ENV_CLASS ] = {
 	.dump = env_dump,
+    },
+    [ ARRAY_BUFFER_CLASS ] = {
+	.dump = array_buffer_dump,
+	.free = array_buffer_free,
+	.get_own_property = array_buffer_get_own_property,
     },
 };
