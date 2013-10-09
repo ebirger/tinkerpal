@@ -48,6 +48,12 @@ void tstr_alloc(tstr_t *t, int len)
     TSTR_SET_ALLOCATED(t);
 }
 
+void tstr_zalloc(tstr_t *t, int len)
+{
+    tstr_alloc(t, len);
+    memset(TPTR(t), 0, len);
+}
+
 void tstr_init(tstr_t *t, char *data, int len, unsigned short flags)
 {
     TPTR(t) = data;

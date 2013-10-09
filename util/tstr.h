@@ -58,6 +58,7 @@ void tstr_cpy_str(tstr_t *t, char *s);
 
 /* Allocate the data within the tstr */
 void tstr_alloc(tstr_t *t, int len);
+void tstr_zalloc(tstr_t *t, int len);
 
 void tstr_init(tstr_t *t, char *data, int len, unsigned short flags);
 
