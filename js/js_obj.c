@@ -714,10 +714,21 @@ int function_def_construct(obj_t **ret, obj_t *this_obj, int argc,
     obj_inherit(this_obj, &func->obj);
     rc = func->call(ret, this_obj, argc, argv);
     if (rc == COMPLETION_THROW)
+    {
+	obj_put(this_obj);
 	return rc;
+    }
 
-    obj_put(*ret);
-    *ret = this_obj;
+    if (is_function(*ret) || is_object(*ret) || is_array(*ret))
+    {
+	/* Functions and Objects are returned as-is by constructors */
+	obj_put(this_obj);
+    }
+    else
+    {
+	obj_put(*ret);
+	*ret = this_obj;
+    }
     return rc;
 }
 

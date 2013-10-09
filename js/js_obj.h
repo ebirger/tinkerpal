@@ -224,6 +224,11 @@ static inline string_t *to_string(obj_t *o)
 /* "object" objects methods */
 obj_t *object_new(void);
 
+static inline int is_object(obj_t *o)
+{
+    return o && o->class == OBJECT_CLASS;
+}
+
 typedef struct {
     obj_t *obj; /* Iterated object */
     tstr_t *key; /* Key of the current interated item */
