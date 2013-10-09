@@ -108,6 +108,11 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
     else
 	rc = eval_statement_list(ret, s);
 
+    if (rc == COMPLETION_NORNAL)
+    {
+	obj_put(*ret);
+	*ret = UNDEF;
+    }
     obj_put(cur_env);
     cur_env = saved_env;
     js_scan_free(s);
