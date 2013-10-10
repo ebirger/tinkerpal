@@ -986,9 +986,9 @@ static obj_t *array_lookup(obj_t *arr, int index)
 
 void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
 {
-    int len;
+    int len = 0;
 
-    array_length_get(&len, arr);
+    obj_get_property_int(&len, arr, Slength);
     iter->len = len;
     iter->reverse = reverse;
     iter->k = reverse ? iter->len : -1;
