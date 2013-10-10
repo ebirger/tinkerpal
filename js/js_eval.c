@@ -814,31 +814,45 @@ static int eval_assignment(obj_t **po, scan_t *scan, reference_t *ref)
 	return rc;
     
     if (valid_lval(ref))
+    {
 	dst = ref->dst;
+	old_object = *dst;
+	switch (tok)
+	{
+	case TOK_EQ:
+	    /* Release the previously stored reference */
+	    obj_put(old_object);
+	    *dst = obj_get(*po);
+	    /* Release the reference we got for old value as no one needs it */
+	    obj_put(old_object);
+	    break;
+	default:
+	    /* Keep old reference as we are returning it */
+	    o = old_object;
+	    *dst = obj_do_op(tok & ~EQ, old_object, *po);
+	    *po = o;
+	    break;
+	}
+    }
     else
     {
-	tstr_t field_str = obj_get_str(ref->field);
-	dst = obj_var_create(ref->base, &field_str);
-	tstr_free(&field_str);
+	tstr_t property = obj_get_str(ref->field);
+	switch (tok)
+	{
+	case TOK_EQ:
+	    obj_set_property(ref->base, property, *po);
+	    break;
+	default:
+	    old_object = obj_get_property(NULL, ref->base, property);
+	    /* Keep old reference as we are returning it */
+	    o = obj_get(old_object);
+	    _obj_set_property(ref->base, property, 
+		obj_do_op(tok & ~EQ, old_object, *po));
+	    break;
+	}
+	tstr_free(&property);
     }
 
-    old_object = *dst;
-    switch (tok)
-    {
-    case TOK_EQ:
-	/* Release the previously stored reference */
-	obj_put(old_object);
-	*dst = obj_get(*po);
-	/* Release the reference we got for old value as no one needs it */
-	obj_put(old_object);
-	break;
-    default:
-	/* Keep old reference as we are returning it */
-	o = old_object;
-	*dst = obj_do_op(tok & ~EQ, old_object, *po);
-	*po = o;
-	break;
-    }
     return 0;
 }
 
