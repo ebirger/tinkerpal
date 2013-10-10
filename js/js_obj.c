@@ -841,7 +841,12 @@ static void array_dump(printer_t *printer, obj_t *o)
 {
     int first = 1, len, k, undef_streak = 0;
 
-    array_length_get(&len, o);
+    if (obj_get_property_int(&len, o, Slength))
+    {
+	tprintf(printer, "Unknown length array");
+	return;
+    }
+
     tprintf(printer, "[ ");
     for (k = 0; k < len; k++)
     {
