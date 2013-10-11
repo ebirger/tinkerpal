@@ -1263,21 +1263,21 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
     tstr_t str)
 {
     tnum_t tidx;
-    int idx, multiplier, shift, retval;
+    int idx, multiplier, retval;
     array_buffer_view_t *v = to_array_buffer_view(o);
     tstr_t *buf, bval;
 
     buf = &v->array_buffer->value;
-    shift = v->flags & ABV_SHIFT_MASK;
+    multiplier = array_buffer_view_multiplier(v->flags);
 
     if (!tstr_cmp(&str, &Slength))
     {
-	retval = buf->len >> shift;
+	retval = array_buffer_view_length(v);
 	goto Ok;
     }
     if (!tstr_cmp(&str, &S("BYTES_PER_ELEMENT")))
     {
-	retval = 1 << shift;
+	retval = multiplier;
 	goto Ok;
     }
 
@@ -1285,7 +1285,6 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 	return NULL;
 
     idx = NUMERIC_INT(tidx);
-    multiplier = 1 << shift;
     if (buf->len <= idx * multiplier)
 	return NULL;
 
@@ -1324,7 +1323,7 @@ static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
     obj_t *value)
 {
     tnum_t tidx;
-    int idx, multiplier, shift, val;
+    int idx, multiplier, val;
     array_buffer_view_t *v = to_array_buffer_view(o);
     tstr_t *buf, bval;
 
@@ -1334,9 +1333,8 @@ static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
     idx = NUMERIC_INT(tidx);
 
     buf = &v->array_buffer->value;
-    shift = v->flags & ABV_SHIFT_MASK;
 
-    multiplier = 1 << shift;
+    multiplier = array_buffer_view_multiplier(v->flags);
     if (buf->len <= idx * multiplier)
 	return -1;
 

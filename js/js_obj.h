@@ -312,6 +312,16 @@ static inline array_buffer_view_t *to_array_buffer_view(obj_t *o)
     return (array_buffer_view_t *)o;
 }
 
+static inline int array_buffer_view_multiplier(unsigned int flags)
+{
+    return 1 << (flags & ABV_SHIFT_MASK);
+}
+
+static inline int array_buffer_view_length(array_buffer_view_t *v)
+{
+    return v->array_buffer->value.len >> (v->flags & ABV_SHIFT_MASK);
+}
+
 /* Initialization sequence functions */
 void obj_class_set_prototype(unsigned char class, obj_t *proto);
 
