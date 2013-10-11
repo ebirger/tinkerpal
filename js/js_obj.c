@@ -24,6 +24,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include "util/tp_types.h"
 #include "util/tmalloc.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
@@ -1258,6 +1259,125 @@ obj_t *array_buffer_new(int length)
     return (obj_t *)ret;
 }
 
+static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o, 
+    tstr_t str)
+{
+    tnum_t tidx;
+    int idx, multiplier, shift;
+    array_buffer_view_t *v = to_array_buffer_view(o);
+    tstr_t *buf, bval;
+
+    buf = &v->array_buffer->value;
+    shift = v->flags & ABV_SHIFT_MASK;
+
+    if (!tstr_cmp(&str, &Slength))
+    {
+	if (lval)
+	    *lval = NULL;
+	return num_new_int(buf->len >> shift);
+    }
+
+    if (tstr_to_tnum(&tidx, &str))
+	return NULL;
+
+    idx = NUMERIC_INT(tidx);
+    multiplier = 1 << shift;
+    if (buf->len <= idx * multiplier)
+	return NULL;
+
+    bval = tstr_piece(*buf, idx * multiplier, multiplier);
+    if (lval)
+	*lval = NULL;
+    switch (multiplier)
+    {
+    case 1:
+	if (v->flags & ABV_FLAG_UNSIGNED)
+	    return num_new_int(*(u8 *)TPTR(&bval));
+	else
+	    return num_new_int(*(s8 *)TPTR(&bval));
+    case 2:
+	if (v->flags & ABV_FLAG_UNSIGNED)
+	    return num_new_int(*((u16 *)TPTR(&bval)));
+	else
+	    return num_new_int(*((s16 *)TPTR(&bval)));
+    case 4:
+	if (v->flags & ABV_FLAG_UNSIGNED)
+	    return num_new_int(*(u32 *)TPTR(&bval));
+	else
+	    return num_new_int(*(s32 *)TPTR(&bval));
+    default:
+	return NULL;
+    }
+    return 0;
+}
+
+static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
+    obj_t *value)
+{
+    tnum_t tidx;
+    int idx, multiplier, shift, val;
+    array_buffer_view_t *v = to_array_buffer_view(o);
+    tstr_t *buf, bval;
+
+    if (tstr_to_tnum(&tidx, &str))
+	return -1;
+
+    idx = NUMERIC_INT(tidx);
+
+    buf = &v->array_buffer->value;
+    shift = v->flags & ABV_SHIFT_MASK;
+
+    multiplier = 1 << shift;
+    if (buf->len <= idx * multiplier)
+	return -1;
+
+    bval = tstr_piece(*buf, idx * multiplier, multiplier);
+    val = obj_get_int(value);
+    switch (multiplier)
+    {
+    case 1:
+	if (v->flags & ABV_FLAG_UNSIGNED)
+	    *(u8 *)TPTR(&bval) = (u8)val;
+	else
+	    *(s8 *)TPTR(&bval) = (s8)val;
+	break;
+    case 2:
+	if (v->flags & ABV_FLAG_UNSIGNED)
+	    *(u16 *)TPTR(&bval) = (u16)val;
+	else
+	    *(s16 *)TPTR(&bval) = (s16)val;
+	break;
+    case 4:
+	if (v->flags & ABV_FLAG_UNSIGNED)
+	    *(u32 *)TPTR(&bval) = (u32)val;
+	else
+	    *(s32 *)TPTR(&bval) = (s32)val;
+	break;
+    default:
+	return -1;
+    }
+    /* value is no longer needed. We do not really store a reference to it */
+    obj_put(value);
+    return 0;
+}
+
+static void array_buffer_view_free(obj_t *o)
+{
+    array_buffer_view_t *v = to_array_buffer_view(o);
+
+    obj_put((obj_t *)v->array_buffer);
+}
+
+obj_t *array_buffer_view_new(obj_t *array_buffer, unsigned int flags)
+{
+    array_buffer_view_t *ret = (array_buffer_view_t *)obj_new_type(
+        ARRAY_BUFFER_VIEW_CLASS, array_buffer_view_t);
+
+    ret->array_buffer = (array_buffer_t *)obj_get(array_buffer);
+    ret->flags = flags;
+    return (obj_t *)ret;
+}
+
 /*** Initialization Sequence Functions ***/
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {
@@ -1321,5 +1441,11 @@ const obj_class_t classes[] = {
 	.dump = array_buffer_dump,
 	.free = array_buffer_free,
 	.get_own_property = array_buffer_get_own_property,
+    },
+    [ ARRAY_BUFFER_VIEW_CLASS ] = {
+	.dump = array_dump,
+	.free = array_buffer_view_free,
+	.get_own_property = array_buffer_view_get_own_property,
+	.set_own_property = array_buffer_view_set_own_property,
     },
 };

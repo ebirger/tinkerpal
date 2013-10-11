@@ -94,6 +94,17 @@ typedef struct {
 
 typedef string_t array_buffer_t;
 
+typedef struct {
+    obj_t obj;
+    array_buffer_t *array_buffer;
+#define ABV_SHIFT_8_BIT 0
+#define ABV_SHIFT_16_BIT 0x01
+#define ABV_SHIFT_32_BIT 0x02
+#define ABV_SHIFT_MASK 0x03
+#define ABV_FLAG_UNSIGNED 0x04
+    unsigned int flags;
+} array_buffer_view_t;
+
 /* Class types.
  * Note: ENV_CLASS is a special class - it is not exposed as a JS type,
  * but shares a lot of common properties with other classes.
@@ -108,7 +119,8 @@ typedef string_t array_buffer_t;
 #define ARRAY_CLASS 8
 #define ENV_CLASS 9
 #define ARRAY_BUFFER_CLASS 10
-#define CLASS_LAST ARRAY_BUFFER_CLASS
+#define ARRAY_BUFFER_VIEW_CLASS 11
+#define CLASS_LAST ARRAY_BUFFER_VIEW_CLASS
 
 /* Global objects */
 extern obj_t undefind_obj;
@@ -276,6 +288,7 @@ void array_iter_uninit(array_iter_t *iter);
 
 /* typed arrays objects methods */
 obj_t *array_buffer_new(int length);
+obj_t *array_buffer_view_new(obj_t *array_buffer, unsigned int flags);
 
 static inline int is_array_buffer(obj_t *o)
 {
@@ -286,6 +299,17 @@ static inline array_buffer_t *to_array_buffer(obj_t *o)
 {
     tp_assert(is_array_buffer(o));
     return (array_buffer_t *)o;
+}
+
+static inline int is_array_buffer_view(obj_t *o)
+{
+    return o && o->class == ARRAY_BUFFER_VIEW_CLASS;
+}
+
+static inline array_buffer_view_t *to_array_buffer_view(obj_t *o)
+{
+    tp_assert(is_array_buffer_view(o));
+    return (array_buffer_view_t *)o;
 }
 
 /* Initialization sequence functions */

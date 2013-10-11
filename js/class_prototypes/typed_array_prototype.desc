@@ -2,4 +2,15 @@ CLASS_PROTOTYPE("ArrayBuffer", array_buffer_prototype, object_prototype,
     ARRAY_BUFFER_CLASS, {
 })
 
+CLASS_PROTOTYPE("ArrayBufferView", array_buffer_view_prototype, object_prototype,
+    ARRAY_BUFFER_VIEW_CLASS, {
+})
+
 CONSTRUCTOR("ArrayBuffer", array_buffer_prototype, do_array_buffer_constructor)
+
+CONSTRUCTOR("Int8Array", array_buffer_view_prototype, do_int8array_constructor)
+CONSTRUCTOR("UInt8Array", array_buffer_view_prototype, do_uint8array_constructor)
+CONSTRUCTOR("Int16Array", array_buffer_view_prototype, do_int16array_constructor)
+CONSTRUCTOR("UInt16Array", array_buffer_view_prototype, do_uint16array_constructor)
+CONSTRUCTOR("Int32Array", array_buffer_view_prototype, do_int32array_constructor)
+CONSTRUCTOR("UInt32Array", array_buffer_view_prototype, do_uint32array_constructor)

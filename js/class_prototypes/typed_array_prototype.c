@@ -39,3 +39,24 @@ int do_array_buffer_constructor(obj_t **ret, obj_t *this, int argc,
     *ret = array_buffer_new(len);
     return 0;
 }
+
+static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[], unsigned short flags)
+{
+    *ret = array_buffer_view_new(argv[1], flags);
+    return 0;
+}
+
+#define TYPED_ARRAY_CONSTRUCTOR(name, flags) \
+int do_##name##_constructor(obj_t **ret, obj_t *this, int argc, \
+    obj_t *argv[]) \
+{ \
+    return array_buffer_view_constructor(ret, this, argc, argv, flags); \
+}
+
+TYPED_ARRAY_CONSTRUCTOR(int8array, ABV_SHIFT_8_BIT)
+TYPED_ARRAY_CONSTRUCTOR(uint8array, ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED)
+TYPED_ARRAY_CONSTRUCTOR(int16array, ABV_SHIFT_16_BIT)
+TYPED_ARRAY_CONSTRUCTOR(uint16array, ABV_SHIFT_16_BIT | ABV_FLAG_UNSIGNED)
+TYPED_ARRAY_CONSTRUCTOR(int32array, ABV_SHIFT_32_BIT)
+TYPED_ARRAY_CONSTRUCTOR(uint32array, ABV_SHIFT_32_BIT | ABV_FLAG_UNSIGNED)
