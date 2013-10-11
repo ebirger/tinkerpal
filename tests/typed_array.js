@@ -36,3 +36,10 @@ for (var i = 0; i < 4; i++)
 var arr = [].map.call(k, function(x) { return x; });
 debug.assert(arr.length, 4);
 debug.assert(arr[3], 3);
+
+var k = new Int8Array(8);
+k[3] = 5;
+debug.assert(k[3],5);
+var k = new Int16Array(8);
+k[6] = 5;
+debug.assert(k[6],5);
