@@ -27,9 +27,23 @@
 
 #ifdef CONFIG_MSP430
 
+typedef char s8;
+typedef unsigned char u8;
+typedef short s16;
+typedef unsigned short u16;
+typedef long s32;
+typedef unsigned long u32;
+
 typedef unsigned int uint_ptr_t;
 
 #else
+
+typedef char s8;
+typedef unsigned char u8;
+typedef short s16;
+typedef unsigned short u16;
+typedef int s32;
+typedef unsigned int u32;
 
 typedef unsigned long uint_ptr_t;
 
