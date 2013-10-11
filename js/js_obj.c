@@ -1276,6 +1276,12 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 	    *lval = NULL;
 	return num_new_int(buf->len >> shift);
     }
+    if (!tstr_cmp(&str, &S("BYTES_PER_ELEMENT")))
+    {
+	if (lval)
+	    *lval = NULL;
+	return num_new_int(1 << shift);
+    }
 
     if (tstr_to_tnum(&tidx, &str))
 	return NULL;

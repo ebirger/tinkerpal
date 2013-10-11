@@ -40,6 +40,13 @@ debug.assert(arr[3], 3);
 var k = new Int8Array(8);
 k[3] = 5;
 debug.assert(k[3],5);
-var k = new Int16Array(8);
-k[6] = 5;
-debug.assert(k[6],5);
+var k16 = new Int16Array(8);
+k16[6] = 5;
+debug.assert(k16[6],5);
+var k32 = new Int32Array(8);
+k32[6] = 5;
+debug.assert(k32[6],5);
+
+debug.assert(k.BYTES_PER_ELEMENT, 1);
+debug.assert(k16.BYTES_PER_ELEMENT, 2);
+debug.assert(k32.BYTES_PER_ELEMENT, 4);
