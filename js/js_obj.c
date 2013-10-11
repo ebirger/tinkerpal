@@ -1263,7 +1263,7 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
     tstr_t str)
 {
     tnum_t tidx;
-    int idx, multiplier, shift;
+    int idx, multiplier, shift, retval;
     array_buffer_view_t *v = to_array_buffer_view(o);
     tstr_t *buf, bval;
 
@@ -1272,15 +1272,13 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 
     if (!tstr_cmp(&str, &Slength))
     {
-	if (lval)
-	    *lval = NULL;
-	return num_new_int(buf->len >> shift);
+	retval = buf->len >> shift;
+	goto Ok;
     }
     if (!tstr_cmp(&str, &S("BYTES_PER_ELEMENT")))
     {
-	if (lval)
-	    *lval = NULL;
-	return num_new_int(1 << shift);
+	retval = 1 << shift;
+	goto Ok;
     }
 
     if (tstr_to_tnum(&tidx, &str))
@@ -1292,29 +1290,34 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 	return NULL;
 
     bval = tstr_piece(*buf, idx * multiplier, multiplier);
-    if (lval)
-	*lval = NULL;
     switch (multiplier)
     {
     case 1:
 	if (v->flags & ABV_FLAG_UNSIGNED)
-	    return num_new_int(*(u8 *)TPTR(&bval));
+	    retval = *(u8 *)TPTR(&bval);
 	else
-	    return num_new_int(*(s8 *)TPTR(&bval));
+	    retval = *(s8 *)TPTR(&bval);
+	goto Ok;
     case 2:
 	if (v->flags & ABV_FLAG_UNSIGNED)
-	    return num_new_int(*((u16 *)TPTR(&bval)));
+	    retval = *((u16 *)TPTR(&bval));
 	else
-	    return num_new_int(*((s16 *)TPTR(&bval)));
+	    retval = *((s16 *)TPTR(&bval));
+	goto Ok;
     case 4:
 	if (v->flags & ABV_FLAG_UNSIGNED)
-	    return num_new_int(*(u32 *)TPTR(&bval));
+	    retval = *(u32 *)TPTR(&bval);
 	else
-	    return num_new_int(*(s32 *)TPTR(&bval));
+	    retval = *(s32 *)TPTR(&bval);
+	goto Ok;
     default:
 	return NULL;
     }
-    return 0;
+
+Ok:
+    if (lval)
+	*lval = NULL;
+    return num_new_int(retval);
 }
 
 static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
