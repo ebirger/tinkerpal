@@ -40,6 +40,7 @@ typedef struct {
     obj_t *(*cast)(obj_t *o, unsigned char class);
     void (*pre_var_create)(obj_t *o, const tstr_t *str);
     obj_t *(*get_own_property)(obj_t ***lval, obj_t *o, tstr_t str);
+    int (*set_own_property)(obj_t *o, tstr_t str, obj_t *value);
 } obj_class_t;
 
 /* classes is defined at the bottom of this file.
@@ -295,6 +296,13 @@ obj_t *obj_new(unsigned char class, int size, char *type)
 void _obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 {
     obj_t **dst;
+
+    if (CLASS(o)->set_own_property && 
+        !CLASS(o)->set_own_property(o, property, value))
+    {
+	/* Handled */
+	return;
+    }
 
     dst = obj_var_create(o, &property);
     *dst = value;
