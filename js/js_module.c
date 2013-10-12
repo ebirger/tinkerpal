@@ -49,7 +49,7 @@ static js_module_t *module_load_vfs(tstr_t *mod_name)
 
     mod = tmalloc_type(js_module_t);
     mod->code = code;
-    mod->name = *mod_name;
+    mod->name = tstr_dup(*mod_name);
     mod->exports = NULL;
     mod->next = NULL;
     return mod;
