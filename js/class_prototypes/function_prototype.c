@@ -26,6 +26,9 @@
 #include "js/js_obj.h"
 #include "js/js_eval.h"
 
+#define Sbound_func INTERNAL_S("bound_func")
+#define Sbound_this INTERNAL_S("bound_this")
+
 extern obj_t *global_env;
 
 static int do_null_function(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
@@ -48,6 +51,52 @@ int do_function_prototype_call(obj_t **ret, obj_t *this, int argc,
     argv[1] = saved_this; /* restore it so it could be freed */
     return rc;
 }
+
+static int function_bind_call(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
+{
+    int rc = 0;
+    obj_t *bound_func, *bound_this, *wrapper_env, *saved_func;
+
+    wrapper_env = to_function(argv[0])->scope;
+
+    bound_func = obj_get_own_property(NULL, wrapper_env, Sbound_func);
+    bound_this = obj_get_own_property(NULL, wrapper_env, Sbound_this);
+    if (!bound_func || bound_func == UNDEF || !bound_this || 
+	bound_this == UNDEF)
+    {
+	rc = throw_exception(ret, &S("Exception: invalid bound fountion"));
+	goto Exit;
+
+    }
+
+    saved_func = argv[0];
+    argv[0] = bound_func;
+    rc = function_call(ret, bound_this, argc, argv);
+    argv[0] = saved_func; /* restore it so it could be freed */
+
+Exit:
+    obj_put(bound_func);
+    obj_put(bound_this);
+    return rc;
+}
+
+int do_function_prototype_bind(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
+{
+    obj_t *wrapper_env;
+
+    tp_assert(argc > 1);
+
+    wrapper_env = env_new(NULL);
+    obj_set_property(wrapper_env, Sbound_func, this);
+    obj_set_property(wrapper_env, Sbound_this, argv[1]);
+
+    *ret = function_new(NULL, NULL, wrapper_env, function_bind_call);
+    obj_put(wrapper_env);
+    return 0;
+}
+
 
 int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {

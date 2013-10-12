@@ -5,7 +5,7 @@ CONSTRUCTOR("Function", function_prototype, do_function_constructor)
 
 FUNCTION("call", function_prototype, do_function_prototype_call, { 
     .params = { 
-       { .name = "this", .description = "The 'this' value on function invokation" },
+       { .name = "thisArg", .description = "The 'this' value on function invokation" },
        { .name = "arg1, arg2, ...", .description = "[optional] arguments to "
            "pass to function" },
      },
@@ -15,4 +15,16 @@ FUNCTION("call", function_prototype, do_function_prototype_call, {
         "var obj = {};\n"
 	"fun.call(obj);\n"
 	"obj; // { prop : 'prop' }",
+})
+
+FUNCTION("bind", function_prototype, do_function_prototype_bind, { 
+    .params = { 
+       { .name = "thisArg", .description = "The 'this' value on function invokation" },
+     },
+    .description = "Returns a new Function object based on the current "
+      "function object, but the 'this' value is bound to thisArg",
+    .return_value = "A new Function object",
+    .example = "function fun() { return this.prop; }\n"
+        "var f = fun.bind({ prop : 1});\n"
+	"f(); // 1\n",
 })
