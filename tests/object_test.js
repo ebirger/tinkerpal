@@ -56,3 +56,7 @@ debug.assert(a.pre_inc, 6);
 var in_obj_test = { a : 1, b : 2 };
 debug.assert_cond("a" in in_obj_test);
 debug.assert_cond(!("c" in in_obj_test));
+
+function o() { this.a = 1; this.b = { aa : this.a }; }
+var oo = new o();
+debug.assert(oo.b.aa, 1);

@@ -354,12 +354,8 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
 static int eval_object(obj_t **po, scan_t *scan)
 {
     obj_t *o = object_new();
-    /* XXX: verify that this should be set */
-    obj_t *saved_this = this;
     int rc;
 
-    this = o;
-    
     js_scan_match(scan, TOK_OPEN_SCOPE);
 
     while (CUR_TOK(scan) != TOK_CLOSE_SCOPE)
@@ -376,7 +372,6 @@ static int eval_object(obj_t **po, scan_t *scan)
 	js_scan_next_token(scan);
     }
 
-    this = saved_this;
     if ((_js_scan_match(scan, TOK_CLOSE_SCOPE)))
     {
 	obj_put(o);
