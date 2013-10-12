@@ -53,6 +53,7 @@ static int eval_expression(obj_t **po, scan_t *scan);
 static int eval_block(obj_t **ret, scan_t *scan);
 static int eval_if(obj_t **ret, scan_t *scan);
 static int eval_while(obj_t **ret, scan_t *scan);
+static int eval_do_while(obj_t **ret, scan_t *scan);
 static int eval_for(obj_t **ret, scan_t *scan);
 static void skip_block(scan_t *scan);
 static void skip_expression(scan_t *scan);
@@ -1025,6 +1026,8 @@ static int eval_statement(obj_t **ret, scan_t *scan)
 	return eval_if(ret, scan);
     case TOK_WHILE:
 	return eval_while(ret, scan);
+    case TOK_DO:
+	return eval_do_while(ret, scan);
     case TOK_FOR:
 	return eval_for(ret, scan);
     case TOK_VAR:
@@ -1259,6 +1262,51 @@ static int eval_while(obj_t **ret, scan_t *scan)
     }
     *ret = UNDEF;
     js_scan_free(start);
+    return rc;
+}
+
+static int eval_do_while(obj_t **ret, scan_t *scan)
+{
+    scan_t *start, *end;
+    int rc = 0;
+    
+    js_scan_match(scan, TOK_DO);
+    start = js_scan_save(scan);
+    skip_statement(scan);
+    end = js_scan_save(scan);
+    js_scan_restore(scan, start);
+
+    while (1)
+    {
+	int next = 0;
+
+	rc = eval_statement(ret, scan);
+	if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
+	    goto Exit;
+
+	obj_put(*ret);
+	*ret = UNDEF;
+
+	if (rc == COMPLETION_BREAK || rc == COMPLETION_CONTINUE)
+	    js_scan_restore(scan, end);
+
+	js_scan_match(scan, TOK_WHILE);
+
+	if ((rc = eval_parenthesized_condition(ret, &next, 
+	    rc == COMPLETION_BREAK, scan)))
+	{
+	    return rc;
+	}
+
+	if (!next)
+	    break;
+
+	js_scan_restore(scan, start);
+    }
+
+Exit:
+    js_scan_free(start);
+    js_scan_free(end);
     return rc;
 }
 

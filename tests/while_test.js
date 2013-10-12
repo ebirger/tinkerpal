@@ -47,4 +47,36 @@ function main()
     debug.assert(x, 3);
 }
 
+var i = 10;
+
+do debug.dump(i); while(--i);
+
+debug.assert(i, 0);
+
+var a = 0;
+do { a++; } while (a < 10);
+
+debug.assert(a, 10);
+
+var a = 0;
+do
+{
+    a++;
+    if (a > 5)
+	break; 
+} while (a < 10);
+
+debug.assert(a, 6);
+
+var a = 0, c = 0;
+do
+{
+    a++;
+    if (a < 5)
+	continue; 
+    c++;
+} while (a < 10);
+
+debug.assert(c, 6);
+
 main();
