@@ -693,7 +693,7 @@ static int eval_pre_fix(obj_t **po, scan_t *scan, reference_t *ref)
 {
     token_type_t tok = CUR_TOK(scan);
     obj_t *old_object, *o;
-    int rc = 0;
+    int rc = 0, is_valid_lval;
 
     if (tok != TOK_PLUS_PLUS && tok != TOK_MINUS_MINUS)
 	return eval_postfix(po, scan, ref);
@@ -702,18 +702,31 @@ static int eval_pre_fix(obj_t **po, scan_t *scan, reference_t *ref)
     if ((rc = eval_postfix(&o, scan, ref)))
 	goto Exit;
 
-    if (!valid_lval(ref))
+    is_valid_lval = valid_lval(ref);
+    if (!is_valid_lval && (!o || o == UNDEF || !ref->base))
     {
 	obj_put(o);
 	return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
     }
 
-    /* Calculate and store new value */
+    /* Calculate new value */
     old_object = o;
     o = obj_do_op(tok, old_object, ZERO);
-    /* Release old value */
-    obj_put(old_object);
-    *ref->dst = obj_get(o);
+
+    if (!is_valid_lval)
+    {
+	tstr_t property = obj_get_str(ref->field);
+	obj_set_property(ref->base, property, o);
+	tstr_free(&property);
+    }
+    else
+    {
+	*ref->dst = obj_get(o);
+	/* Release stored copy of old value */
+	obj_put(old_object);
+
+    }
+
     /* We are no longer a valid lvalue */
     ref_invalidate(ref);
 
