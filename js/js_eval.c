@@ -651,24 +651,38 @@ static int eval_postfix(obj_t **po, scan_t *scan, reference_t *ref)
 	goto Exit;
 
     tok = CUR_TOK(scan);
-    if (tok == TOK_PLUS_PLUS || tok == TOK_MINUS_MINUS)
+    if (tok != TOK_PLUS_PLUS && tok != TOK_MINUS_MINUS)
+	goto Exit;
+
+    if (!valid_lval(ref))
     {
-	if (!valid_lval(ref))
+	tstr_t property;
+
+	if (!o || o == UNDEF || !ref->base)
 	{
 	    obj_put(o);
 	    return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
 	}
 
-	js_scan_next_token(scan);
-	/* its ok to release o in obj_do_op as we are taking the 
+	property = obj_get_str(ref->field);
+	_obj_set_property(ref->base, property, obj_do_op(tok, obj_get(o), 
+            ZERO));
+	tstr_free(&property);
+    }
+    else
+    {
+	/* its ok to release o in obj_do_op as we are taking the stored
 	 * reference and overriding it with the new_value.
 	 */
 	*ref->dst = obj_do_op(tok, o, ZERO);
-	/* Invalidate returned reference as we are no longer a valid 
-	 * lvalue 
-	 */
-	ref_invalidate(ref);
     }
+
+    js_scan_next_token(scan);
+
+    /* Invalidate returned reference as we are no longer a valid 
+     * lvalue 
+     */
+    ref_invalidate(ref);
 
 Exit:
     *po = o;

@@ -50,3 +50,7 @@ debug.assert(k32[6],5);
 debug.assert(k.BYTES_PER_ELEMENT, 1);
 debug.assert(k16.BYTES_PER_ELEMENT, 2);
 debug.assert(k32.BYTES_PER_ELEMENT, 4);
+
+var k = new Int8Array(16);
+k[14]++;
+debug.assert(k[14],1);
