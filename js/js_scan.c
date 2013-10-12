@@ -222,6 +222,7 @@ typedef struct {
 static const keyword_t keywords2[] = {
     K("if", TOK_IF), 
     K("in", TOK_IN), 
+    K("do", TOK_DO), 
     {} 
 };
 
