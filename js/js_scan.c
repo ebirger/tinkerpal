@@ -366,6 +366,7 @@ void js_scan_next_token(scan_t *scan)
     case '%':
     case '~':
     case '!':
+    case '^':
 	scan->tok |= scan->look;
 	if (next == '=' && scan->look != '=')
 	    scan->tok |= EQ;

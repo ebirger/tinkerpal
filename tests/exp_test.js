@@ -143,6 +143,15 @@ debug.dump("+++++++++++++++++++++++");
 var jj = 1;
 var yy;
 
+debug.assert(1^1, 0);
+debug.assert(1^0, 1);
+debug.assert(0^1, 1);
+debug.assert(0^0, 0);
+
+var a = 0b1100;
+a^=0b1111;
+debug.assert(a, 0b0011);
+
 yy = 1 == 1 ? jj++ : 0;
 debug.assert(yy, 1);
 debug.assert(jj, 2);
