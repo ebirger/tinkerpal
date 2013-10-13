@@ -1263,43 +1263,38 @@ static int eval_while(obj_t **ret, scan_t *scan)
 static int eval_do_while(obj_t **ret, scan_t *scan)
 {
     scan_t *start, *end;
-    int rc = 0;
+    int rc, next = 0;
     
     js_scan_match(scan, TOK_DO);
     start = js_scan_save(scan);
     skip_statement(scan);
+    js_scan_match(scan, TOK_WHILE);
+    js_scan_match(scan, TOK_OPEN_PAREN);
+    skip_expression(scan);
+    js_scan_match(scan, TOK_CLOSE_PAREN);
     end = js_scan_save(scan);
-    js_scan_restore(scan, start);
 
-    while (1)
+    do
     {
-	int next = 0;
-
+	js_scan_restore(scan, start);
 	rc = eval_statement(ret, scan);
 	if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
-	    goto Exit;
+	    break;
 
 	obj_put(*ret);
 	*ret = UNDEF;
 
 	if (rc == COMPLETION_BREAK || rc == COMPLETION_CONTINUE)
-	    js_scan_restore(scan, end);
+	    break;
 
 	js_scan_match(scan, TOK_WHILE);
 
-	if ((rc = eval_parenthesized_condition(ret, &next, 
-	    rc == COMPLETION_BREAK, scan)))
-	{
-	    return rc;
-	}
+	if ((rc = eval_parenthesized_condition(ret, &next, 0, scan)))
+	    next = 0;
 
-	if (!next)
-	    break;
+    } while (next);
 
-	js_scan_restore(scan, start);
-    }
-
-Exit:
+    js_scan_restore(scan, end);
     js_scan_free(start);
     js_scan_free(end);
     return rc;
