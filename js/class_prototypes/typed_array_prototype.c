@@ -50,6 +50,8 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
 	array_buffer = obj_get(argv[1]);
     else if (is_num(argv[1]))
 	array_buffer = array_buffer_new(obj_get_int(argv[1]) << multiplier);
+    else
+	return throw_exception(ret, &S("Invalid arguments"));
 
     *ret = array_buffer_view_new(array_buffer, flags);
 
