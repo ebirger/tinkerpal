@@ -28,7 +28,6 @@
 #include "util/tstr.h"
 #include "drivers/fs/vfs.h"
 #include <stdio.h>
-#include <string.h> /* memcpy */
 
 static int local_file_read(tstr_t *content, tstr_t *file_name)
 {
