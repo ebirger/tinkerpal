@@ -148,32 +148,22 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
     return 0;
 }
 
-static tstr_t tnum_to_tstr(tnum_t *v)
+tstr_t int_to_tstr(int i)
 {
     static char buf[32];
     tstr_t ret;
 
-    if (NUMERIC_IS_FP(*v))
-	tsnprintf(buf, sizeof(buf), "%f", NUMERIC_FP(*v));
-    else
-	tsnprintf(buf, sizeof(buf), "%d", NUMERIC_INT(*v));
+    tsnprintf(buf, sizeof(buf), "%d", i);
     tstr_cpy_str(&ret, buf);
     return ret;
 }
 
-tstr_t int_to_tstr(int i)
-{
-    tnum_t n = {};
-
-    NUMERIC_INT(n) = i;
-    return tnum_to_tstr(&n);
-}
-
 tstr_t double_to_tstr(double d)
 {
-    tnum_t n = {};
+    static char buf[32];
+    tstr_t ret;
 
-    n.flags = NUMERIC_FLAG_FP;
-    NUMERIC_FP(n) = d;
-    return tnum_to_tstr(&n);
+    tsnprintf(buf, sizeof(buf), "%f", d);
+    tstr_cpy_str(&ret, buf);
+    return ret;
 }
