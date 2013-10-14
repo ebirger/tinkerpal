@@ -22,11 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "util/tmalloc.h"
 #include "util/tnum.h"
+#include "util/tprintf.h"
 #include "util/debug.h"
 
 static inline int is_oct_digit(char c)
@@ -154,9 +154,9 @@ static tstr_t tnum_to_tstr(tnum_t *v)
     tstr_t ret;
 
     if (NUMERIC_IS_FP(*v))
-	snprintf(buf, sizeof(buf), "%f", NUMERIC_FP(*v));
+	tsnprintf(buf, sizeof(buf), "%f", NUMERIC_FP(*v));
     else
-	snprintf(buf, sizeof(buf), "%d", NUMERIC_INT(*v));
+	tsnprintf(buf, sizeof(buf), "%d", NUMERIC_INT(*v));
     tstr_cpy_str(&ret, buf);
     return ret;
 }

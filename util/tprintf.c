@@ -173,6 +173,58 @@ again:
     }
 }
 
+typedef struct {
+    printer_t printer;
+    char *buf;
+    int count;
+    int max;
+} tsnprintf_ctx_t;
+
+static int tsnprintf_print(printer_t *printer, char *buf, int size)
+{
+    tsnprintf_ctx_t *ctx = (tsnprintf_ctx_t *)printer;
+
+    while (size--)
+    {
+	if (ctx->max > 0)
+	{
+	    ctx->buf[ctx->count] = *buf++;
+	    ctx->max--;
+	}
+	ctx->count++;
+    }
+    return 0;
+}
+
+int vtsnprintf(char *buf, int n, char *fmt, va_list ap)
+{
+    tsnprintf_ctx_t ctx;
+
+    ctx.printer.print = tsnprintf_print;
+    ctx.buf = buf;
+    ctx.count = 0;
+    ctx.max = n;
+
+    vtprintf(&ctx.printer, fmt, ap);
+
+    /* NULL terminate */
+    if (ctx.max)
+	ctx.buf[ctx.count] = '\0';
+
+    return ctx.count;
+}
+
+int tsnprintf(char *buf, int n, char *fmt, ...)
+{
+    va_list ap;
+    int ret;
+
+    va_start(ap, fmt);
+    ret = vtsnprintf(buf, n, fmt, ap);
+    va_end(ap);
+    return ret;
+}
+
 void tprintf(printer_t *printer, char *fmt, ...)
 {
     va_list ap;
