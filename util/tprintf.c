@@ -41,7 +41,7 @@ static int num_tprintf_handlers = 0;
     printer->print(printer, b, 1); \
 } while (0)
 
-static void print_num(printer_t *printer, int num, int base, int min_digits)
+void tprint_integer(printer_t *printer, int num, int base, int min_digits)
 {
     char nbuf[40], *p = nbuf;
     char const hex2ascii[] = "0123456789abcdef";
@@ -82,12 +82,12 @@ static void print_fp(printer_t *printer, double num, unsigned dec_digits)
     frac = (unsigned int)((num - integer) * mult);
 
     /* print integer portion */
-    print_num(printer, integer, 10, 0);
+    tprint_integer(printer, integer, 10, 0);
 
     PRINT_SINGLE('.');
 
     /* print fractional portion */
-    print_num(printer, frac, 10, dec_digits);
+    tprint_integer(printer, frac, 10, dec_digits);
 }
 
 static void print_integer(printer_t *printer, int num, int base, int sign)
@@ -98,7 +98,7 @@ static void print_integer(printer_t *printer, int num, int base, int sign)
 	PRINT_SINGLE('-');
     }
 
-    print_num(printer, num, base, 0);
+    tprint_integer(printer, num, base, 0);
 }
 
 void vtprintf(printer_t *printer, char *fmt, va_list ap)

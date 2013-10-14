@@ -31,6 +31,7 @@ typedef struct printer_t {
     int (*print)(struct printer_t *printer, char *buf, int size);
 } printer_t;
 
+void tprint_integer(printer_t *printer, int num, int base, int min_digits);
 void vtprintf(printer_t *printer, char *fmt, va_list ap);
 void tprintf(printer_t *printer, char *fmt, ...);
 
