@@ -27,9 +27,8 @@
 
 #include <stdarg.h>
 
-typedef struct {
-    int (*print)(char *buf, int size);
-    void *context;
+typedef struct printer_t {
+    int (*print)(struct printer_t *printer, char *buf, int size);
 } printer_t;
 
 void vtprintf(printer_t *printer, char *fmt, va_list ap);

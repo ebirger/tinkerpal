@@ -35,7 +35,11 @@ static struct {
 
 static int num_tprintf_handlers = 0;
 
-#define PRINT_SINGLE(c) do { char b[1]; b[0] = c; printer->print(b, 1); } while (0)
+#define PRINT_SINGLE(c) do { \
+    char b[1]; \
+    b[0] = c; \
+    printer->print(printer, b, 1); \
+} while (0)
 
 static void print_num(printer_t *printer, int num, int base, int min_digits)
 {
@@ -126,7 +130,7 @@ again:
 	    p = va_arg(ap, char *);
 	    if (p == NULL)
 		p = "(null)";
-	    printer->print(p, strlen(p));
+	    printer->print(printer, p, strlen(p));
 	    break;
 	case 'd':
 	    base = 10;
@@ -159,7 +163,7 @@ again:
 		/* No format handler was found. Ignore modifiers for
 		 * the reset of the fmt string.
 		 */
-		printer->print(percent, fmt - percent);
+		printer->print(printer, percent, fmt - percent);
 		ignore_modifiers = 1;
 		break;
 	    }

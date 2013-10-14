@@ -54,12 +54,17 @@ int console_write(char *buf, int size)
         if (*buf == '\n')
 	{
 	    char b = '\r';
-	    console_write(&b, 1);
+	    serial_write(console_id, &b, 1);
 	}
 
 	serial_write(console_id, buf, 1);
     }
     return 0;
+}
+
+static int console_printer_write(printer_t *printer, char *buf, int size)
+{
+    return console_write(buf, size);
 }
 
 void console_event_watch_set(event_watch_t *ew)
@@ -108,7 +113,7 @@ void console_set_id(int id)
 }
 
 static printer_t console_printer = {
-    .print = console_write,
+    .print = console_printer_write,
 };
 
 void console_printf(char *fmt, ...)
