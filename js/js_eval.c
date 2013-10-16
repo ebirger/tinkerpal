@@ -589,13 +589,20 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
 
 static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 {
+    int rc, is_new = 0;;
+
     if (CUR_TOK(scan) == TOK_NEW)
     {
+	is_new = 1;
 	js_scan_next_token(scan);
-	/* XXX: shouldn't use ref for this */
-	ref->construct = 1;
     }
-    return eval_member(po, scan, NULL, ref);
+
+    rc = eval_member(po, scan, NULL, ref);
+
+    if (is_new)
+	ref->construct = 1;
+
+    return rc;
 }
 
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
