@@ -59,3 +59,6 @@ debug.dump("=====17====");
 bla.testit();
 debug.assert(bla.babi, "babi");
 debug.dump("=====18====");
+function cons() { this.kuku = 3; }
+var x = new cons;
+debug.assert(x.kuku, 3);

@@ -589,7 +589,7 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
 
 static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 {
-    int rc, is_new = 0;;
+    int rc, is_new = 0;
 
     if (CUR_TOK(scan) == TOK_NEW)
     {
@@ -597,12 +597,25 @@ static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 	js_scan_next_token(scan);
     }
 
-    rc = eval_member(po, scan, NULL, ref);
+    if ((rc = eval_member(po, scan, NULL, ref)))
+	return rc;
 
-    if (is_new)
-	ref->construct = 1;
+    if (!is_new)
+	return 0;
 
-    return rc;
+    if (CUR_TOK(scan) != TOK_OPEN_PAREN)
+    {
+	obj_t *argv = *po;
+
+	/* 'new' expression with no arguments - Evaluated as a constructor */
+	rc = function_call_construct(po, 1, &argv);
+	obj_put(argv);
+	return rc;
+    }
+
+    /* Function call. Object will be constructed in eval_functions() */
+    ref->construct = 1;
+    return 0;
 }
 
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
