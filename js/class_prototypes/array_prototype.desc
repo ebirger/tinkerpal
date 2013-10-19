@@ -41,7 +41,7 @@ FUNCTION("forEach", array_prototype, do_array_prototype_foreach, {
     .description = "Calls cb once for each element present in the "
           "array, in ascending order",
     .return_value = "undefined",
-    .example = "var a = [ 1, 2, 3];\n"
+    .example = "var a = [ 1, 2, 3 ];\n"
 	"a.forEach(function(value, k, obj) { debug.dump(value + ' [' + k + '] ' + ' @ ' + obj); });",
 })
 
@@ -53,7 +53,7 @@ FUNCTION("indexOf", array_prototype, do_array_prototype_indexof, {
     .description = "Searches for searchElement in the elements of the array",
     .return_value = "if found at one or more positions, returns the index of "
          "the first such position (zero based); otherwise, -1 is returned",
-    .example = "var a = [ 1, 2, 3];\n"
+    .example = "var a = [ 1, 2, 3 ];\n"
 	"var one = a.indexOf(2);\n",
 })
 
@@ -66,7 +66,7 @@ FUNCTION("join", array_prototype, do_array_prototype_join, {
         "separated by occurrences of the separator",
     .return_value = "The resulted string",
          "the first such position (zero based); otherwise, -1 is returned",
-    .example = "var a = [ 1, 2, 3];\n"
+    .example = "var a = [ 1, 2, 3 ];\n"
 	"debug.assert(a.join('-'), '1-2-3');\n",
 })
 
@@ -89,7 +89,7 @@ FUNCTION("map", array_prototype, do_array_prototype_map, {
     .description = "Calls cb once for each element present in the array, "
         "in ascending order, and constructs a new Array from the results",
     .return_value = "The constructed array",
-    .example = "var a = [ 1, 2, 3];\n"
+    .example = "var a = [ 1, 2, 3 ];\n"
 	"var b = a.map(function(value, k, obj) { return value + 1 });\n"
 	"debug.assert(b, [ 2, 3, 4]);",
 })
