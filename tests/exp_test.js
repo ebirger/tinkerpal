@@ -173,3 +173,6 @@ debug.assert(toInteger(1.1), 1);
 debug.assert(toInteger(1.9), 1);
 debug.assert(toInteger(-1.9), -1);
 debug.assert(toInteger("-1.9"), -1);
+
+/* Multiple ternary expressions */
+debug.assert(0?0:1+0?1:2+3?1:0,1);

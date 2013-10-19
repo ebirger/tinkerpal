@@ -1119,25 +1119,27 @@ static void skip_statement_list(scan_t *scan)
 
 static void skip_expression(scan_t *scan)
 {
-    if (CUR_TOK(scan) == TOK_OPEN_PAREN)
-    {
-	js_scan_next_token(scan);
-	skip_expression(scan);
-	js_scan_match(scan, TOK_CLOSE_PAREN);
-    }
-
-    if (CUR_TOK(scan) == TOK_QUESTION)
-    {
-	js_scan_next_token(scan);
-	skip_expression(scan);
-	js_scan_match(scan, TOK_COLON);
-	skip_expression(scan);
-    }
-
     while (CUR_TOK(scan) != TOK_END_STATEMENT && 
 	CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_COMMA && 
 	CUR_TOK(scan) != TOK_COLON && CUR_TOK(scan) != TOK_EOF)
     {
+	if (CUR_TOK(scan) == TOK_OPEN_PAREN)
+	{
+	    js_scan_next_token(scan);
+	    skip_expression(scan);
+	    js_scan_match(scan, TOK_CLOSE_PAREN);
+	    continue;
+	}
+
+	if (CUR_TOK(scan) == TOK_QUESTION)
+	{
+	    js_scan_next_token(scan);
+	    skip_expression(scan);
+	    js_scan_match(scan, TOK_COLON);
+	    skip_expression(scan);
+	    continue;
+	}
+
 	js_scan_next_token(scan);
     }
 }
