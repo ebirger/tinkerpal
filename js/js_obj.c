@@ -1261,12 +1261,12 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
     tstr_t str)
 {
     tnum_t tidx;
-    int idx, multiplier, retval;
+    int idx, shift, retval;
     array_buffer_view_t *v = to_array_buffer_view(o);
     tstr_t *buf, bval;
 
     buf = &v->array_buffer->value;
-    multiplier = array_buffer_view_multiplier(v->flags);
+    shift = v->flags & ABV_SHIFT_MASK;
 
     if (!tstr_cmp(&str, &Slength))
     {
@@ -1275,7 +1275,7 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
     }
     if (!tstr_cmp(&str, &S("BYTES_PER_ELEMENT")))
     {
-	retval = multiplier;
+	retval = 1 << shift;
 	goto Ok;
     }
 
@@ -1283,25 +1283,25 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 	return NULL;
 
     idx = NUMERIC_INT(tidx);
-    if (buf->len <= idx * multiplier)
+    if (buf->len <= idx << shift)
 	return NULL;
 
-    bval = tstr_piece(*buf, idx * multiplier, multiplier);
-    switch (multiplier)
+    bval = tstr_piece(*buf, idx << shift, 1 << shift);
+    switch (shift)
     {
-    case 1:
+    case 0:
 	if (v->flags & ABV_FLAG_UNSIGNED)
 	    retval = *(u8 *)TPTR(&bval);
 	else
 	    retval = *(s8 *)TPTR(&bval);
 	goto Ok;
-    case 2:
+    case 1:
 	if (v->flags & ABV_FLAG_UNSIGNED)
 	    retval = *((u16 *)TPTR(&bval));
 	else
 	    retval = *((s16 *)TPTR(&bval));
 	goto Ok;
-    case 4:
+    case 2:
 	if (v->flags & ABV_FLAG_UNSIGNED)
 	    retval = *(u32 *)TPTR(&bval);
 	else
@@ -1321,7 +1321,7 @@ static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
     obj_t *value)
 {
     tnum_t tidx;
-    int idx, multiplier, val;
+    int idx, shift, val;
     array_buffer_view_t *v = to_array_buffer_view(o);
     tstr_t *buf, bval;
 
@@ -1332,27 +1332,27 @@ static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
 
     buf = &v->array_buffer->value;
 
-    multiplier = array_buffer_view_multiplier(v->flags);
-    if (buf->len <= idx * multiplier)
+    shift = v->flags & ABV_SHIFT_MASK;
+    if (buf->len <= idx << shift)
 	return -1;
 
-    bval = tstr_piece(*buf, idx * multiplier, multiplier);
+    bval = tstr_piece(*buf, idx << shift, 1 << shift);
     val = obj_get_int(value);
-    switch (multiplier)
+    switch (shift)
     {
-    case 1:
+    case 0:
 	if (v->flags & ABV_FLAG_UNSIGNED)
 	    *(u8 *)TPTR(&bval) = (u8)val;
 	else
 	    *(s8 *)TPTR(&bval) = (s8)val;
 	break;
-    case 2:
+    case 1:
 	if (v->flags & ABV_FLAG_UNSIGNED)
 	    *(u16 *)TPTR(&bval) = (u16)val;
 	else
 	    *(s16 *)TPTR(&bval) = (s16)val;
 	break;
-    case 4:
+    case 2:
 	if (v->flags & ABV_FLAG_UNSIGNED)
 	    *(u32 *)TPTR(&bval) = (u32)val;
 	else

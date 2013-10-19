@@ -56,3 +56,6 @@ k[14]++;
 debug.assert(k[14],1);
 ++k[14];
 debug.assert(k[14],2);
+
+var k32 = new Uint32Array(64);
+debug.assert(k32.length, 64);
