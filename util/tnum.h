@@ -49,4 +49,10 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s);
 tstr_t int_to_tstr(int i);
 tstr_t double_to_tstr(double d);
 
+static inline tstr_t tnum_to_tstr(const tnum_t *n)
+{
+    return NUMERIC_IS_FP(*n) ?  double_to_tstr(NUMERIC_FP(*n)) :
+	int_to_tstr(NUMERIC_INT(*n));
+}
+
 #endif
