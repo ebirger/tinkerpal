@@ -52,6 +52,34 @@ int do_function_prototype_call(obj_t **ret, obj_t *this, int argc,
     return rc;
 }
 
+int do_function_prototype_apply(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
+{
+    int rc, i;
+    function_args_t args;
+
+    tp_assert(argc > 1);
+
+    function_args_init(&args, this);
+
+    if (argc == 3)
+    {
+	array_iter_t iter;
+
+	array_iter_init(&iter, argv[2], 0);
+	while (array_iter_next(&iter))
+	    function_args_add(&args, obj_get(iter.obj));
+	array_iter_uninit(&iter);
+    }
+
+    rc = function_call(ret, argv[1], args.argc, args.argv);
+
+    for (i = 1; i < args.argc; i++)
+	obj_put(args.argv[i]);
+    function_args_uninit(&args);
+    return rc;
+}
+
 static int function_bind_call(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[])
 {
