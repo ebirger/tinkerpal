@@ -60,6 +60,7 @@ static int eval_function(obj_t **ret, scan_t *scan, int stmnt);
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref);
 static int eval_statement_list(obj_t **ret, scan_t *scan);
 static int eval_switch(obj_t **ret, scan_t *scan);
+static int eval_assert_is_function(obj_t **po, scan_t *scan);
 
 static int parse_error(obj_t **po)
 {
@@ -125,6 +126,9 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
     obj_t **argv;
     int argc = 0, i, rc;
     obj_t *saved_this = this, *o_func = *po;
+
+    if ((rc = eval_assert_is_function(po, scan)))
+	return rc;
 
     argv = tmalloc(1 + CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *), "Args");
     argv[argc++] = o_func; /* argv[0] is our very own function */
@@ -622,14 +626,10 @@ static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
     if ((rc = eval_member(po, scan, NULL, ref)))
 	return rc;
 
-    if (!is_new)
-	return 0;
+    if (is_new)
+	return eval_function_call(po, scan, ref, 1);
 
-    if ((rc = eval_assert_is_function(po, scan)))
-	return rc;
-
-    rc = eval_function_call(po, scan, ref, 1);
-    return rc;
+    return 0;
 }
 
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
@@ -640,11 +640,7 @@ static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
 
     while (!rc && CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
-	if ((rc = eval_assert_is_function(po, scan)))
-	    return rc;
-
-	rc = eval_function_call(po, scan, ref, 0);
-	if (rc)
+	if ((rc = eval_function_call(po, scan, ref, 0)))
 	    return rc;
 
 	/* Function calls do not return references */
