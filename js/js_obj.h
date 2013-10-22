@@ -28,6 +28,7 @@
 #include "js/js_scan.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
+#include "util/tmalloc.h"
 
 typedef struct var_t var_t;
 
@@ -207,6 +208,35 @@ obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope,
     call_t call);
 int function_call(obj_t **ret, obj_t *this_obj, int argc, obj_t *argv[]);
 int function_call_construct(obj_t **ret, int argc, obj_t *argv[]);
+
+typedef struct {
+    int argc;
+    obj_t **argv;
+} function_args_t;
+
+static inline void function_args_init(function_args_t *args, obj_t *func)
+{
+    args->argc = 0;
+    args->argv = tmalloc(1 + CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *),
+	"Args");
+    args->argv[args->argc++] = func; /* argv[0] is our very own function */
+}
+
+static inline void function_args_add(function_args_t *args, obj_t *obj)
+{
+    args->argv[args->argc++] = obj;
+    if (args->argc == CONFIG_MAX_FUNCTION_CALL_ARGS)
+    {
+	tp_crit(("Exceeded maximal function call arguments.\n"
+	    "You can refine this behavior by increasing "
+	    "CONFIG_MAX_FUNCTION_CALL_ARGS\n"));
+    }
+}
+
+static inline void function_args_uninit(function_args_t *args)
+{
+    tfree(args->argv);
+}
 
 static inline int is_function(obj_t *o)
 {

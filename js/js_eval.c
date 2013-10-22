@@ -123,15 +123,14 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
 static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
     int construct)
 {
-    obj_t **argv;
-    int argc = 0, i, rc;
+    function_args_t args;
+    int i, rc;
     obj_t *saved_this = this, *o_func = *po;
 
     if ((rc = eval_assert_is_function(po, scan)))
 	return rc;
 
-    argv = tmalloc(1 + CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *), "Args");
-    argv[argc++] = o_func; /* argv[0] is our very own function */
+    function_args_init(&args, o_func);
 
     /* Arguments are optional in constructors calls */
     if (!construct || CUR_TOK(scan) == TOK_OPEN_PAREN)
@@ -142,7 +141,7 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
 	    if ((rc = eval_expression(po, scan)))
 		goto Exit;
 
-	    argv[argc++] = *po;
+	    function_args_add(&args, *po);
 
 	    while (CUR_TOK(scan) == TOK_COMMA)
 	    {
@@ -150,13 +149,7 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
 		if ((rc = eval_expression(po, scan)))
 		    goto Exit;
 
-		argv[argc++] = *po;
-		if (argc == CONFIG_MAX_FUNCTION_CALL_ARGS)
-		{
-		    tp_crit(("Exceeded maximal function call arguments.\n"
-			"You can refine this behavior by increasing "
-			"CONFIG_MAX_FUNCTION_CALL_ARGS\n"));
-		}
+		function_args_add(&args, *po);
 	    }
 	}
 	if (_js_scan_match(scan, TOK_CLOSE_PAREN))
@@ -168,22 +161,22 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
 
     *po = UNDEF;
     if (construct)
-	rc = function_call_construct(po, argc, argv);
+	rc = function_call_construct(po, args.argc, args.argv);
     else
     {
 	obj_t *this_obj;
 
 	this_obj = ref->parent ? : UNDEF;
-	rc = function_call(po, this_obj, argc, argv);
+	rc = function_call(po, this_obj, args.argc, args.argv);
     }
     if (rc == COMPLETION_RETURN)
 	rc = 0;
 
 Exit:
     this = saved_this;
-    for (i = 1; i < argc; i++)
-	obj_put(argv[i]);
-    tfree(argv);
+    for (i = 1; i < args.argc; i++)
+	obj_put(args.argv[i]);
+    function_args_uninit(&args);
     obj_put(o_func);
     return rc;
 }
