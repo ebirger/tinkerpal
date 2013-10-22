@@ -335,6 +335,9 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     case TOK_ID:
 	js_scan_get_identifier(&property, scan);
 	break;
+    case TOK_STRING:
+	js_scan_get_string(&property, scan);
+	break;
     default:
 	return parse_error(po);
     }
@@ -350,6 +353,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     case TOK_PROTOTYPE:
 	property = Sprototype;
     case TOK_ID:
+    case TOK_STRING:
 	_obj_set_property(o, property, *po);
 	break;
     }
