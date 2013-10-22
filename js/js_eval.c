@@ -640,9 +640,13 @@ static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 	return rc;
 
     if (is_new)
-	return eval_function_call(po, scan, ref, 1);
+    {
+	rc = eval_function_call(po, scan, ref, 1);
+	/* constructed objects are not valid lvalues */
+	ref_invalidate(ref);
+    }
 
-    return 0;
+    return rc;
 }
 
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
