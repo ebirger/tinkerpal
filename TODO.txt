@@ -36,7 +36,6 @@ Core
 - Builtinfs doesn't support file extensions
 - Execution break (CTRL-C)
 - Formatting exceptions ("pinmod %s is not available")
-- Proper types (u8 ? uint8_t ?, ..)
 - Convert most assertions to exceptions
 - Exceptions within expressions
 - Assertion fail on long "while" loops
@@ -50,11 +49,8 @@ Core
 - Garbage collection - fix function vars mess - example:
     var kuku = {};
     kuku.pupu = function() {};
-- Various objects as objects prototypes in literal definitions (e.g. { "xxx" : "yyy" }
-  instead of { xxx : "yyy" }, { 1 : "yy" })
 - Additional keywords (arguments, constructor, do, with, throw, typeof, delete)
 - Error objects
-- Typed arrays
 - Regexps
 - Rename var_t
 - Multi instance
@@ -78,7 +74,7 @@ Release
 - OpenWRT/Buildroot?
 - Packaging
 - Web based IDE
-- Reference for all builtin functions
+- Reference for all builtin functions and constructors
 
 Debugging
 =========
