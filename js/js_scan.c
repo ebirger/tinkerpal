@@ -471,7 +471,7 @@ int _js_scan_match(scan_t *scan, token_type_t tok)
     return 0;
 }
 
-int js_scan_get_identifier(tstr_t *id, scan_t *scan)
+int js_scan_get_identifier(scan_t *scan, tstr_t *id)
 {
     if (scan->tok != TOK_ID)
 	return scan_failure(scan, TOK_ID);

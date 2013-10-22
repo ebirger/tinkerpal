@@ -196,7 +196,7 @@ static int eval_var_single(obj_t **ret, scan_t *scan)
 
     *ret = UNDEF;
 
-    if (js_scan_get_identifier(&name, scan))
+    if (js_scan_get_identifier(scan, &name))
 	return parse_error(ret);
 
     if (CUR_TOK(scan) == TOK_EQ)
@@ -252,7 +252,7 @@ int parse_function_param_list(tstr_list_t **params, scan_t *scan)
 {
     tstr_t param;
 
-    if (js_scan_get_identifier(&param, scan))
+    if (js_scan_get_identifier(scan, &param))
 	return -1;
 
     tstr_list_add(params, &param);
@@ -260,7 +260,7 @@ int parse_function_param_list(tstr_list_t **params, scan_t *scan)
     while (CUR_TOK(scan) == TOK_COMMA)
     {
 	js_scan_next_token(scan);
-	if (js_scan_get_identifier(&param, scan))
+	if (js_scan_get_identifier(scan, &param))
 	{
 	    tstr_list_free(params);
 	    return -1;
@@ -333,7 +333,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
 	js_scan_next_token(scan);
 	break;
     case TOK_ID:
-	js_scan_get_identifier(&property, scan);
+	js_scan_get_identifier(scan, &property);
 	break;
     case TOK_STRING:
 	js_scan_get_string(&property, scan);
@@ -510,7 +510,7 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
 	{
 	    tstr_t id;
 
-	    if (js_scan_get_identifier(&id, scan))
+	    if (js_scan_get_identifier(scan, &id))
 		return parse_error(po);
 
 	    *po = string_new(id);
@@ -1006,7 +1006,7 @@ static int eval_try(obj_t **ret, scan_t *scan)
 	js_scan_next_token(scan);
 	js_scan_match(scan, TOK_OPEN_PAREN);
 	tp_assert(CUR_TOK(scan) == TOK_ID);
-	js_scan_get_identifier(&id, scan);
+	js_scan_get_identifier(scan, &id);
 	js_scan_match(scan, TOK_CLOSE_PAREN);
 	if (rc == COMPLETION_THROW)
 	{
@@ -1702,7 +1702,7 @@ static int eval_function(obj_t **ret, scan_t *scan, int stmnt)
     {
 	/* Have function name */
 
-	js_scan_get_identifier(&func_name, scan);
+	js_scan_get_identifier(scan, &func_name);
 	if (!stmnt)
 	{
 	    /* Function expressions require binding to the function's lexical
