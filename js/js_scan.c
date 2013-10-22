@@ -482,22 +482,22 @@ int js_scan_get_identifier(tstr_t *id, scan_t *scan)
     return 0;
 }
 
-tstr_t js_scan_get_string(scan_t *scan)
+int js_scan_get_string(tstr_t *str, scan_t *scan)
 {
-    tstr_t ret, *src;
+    tstr_t *src;
 
     if (scan->tok != TOK_STRING)
-	tp_crit(("expected string, got %x:%c\n", scan->tok, scan->tok));
+	return scan_failure(scan, TOK_STRING);
 
     src = &scan->value.string;
 
     if (TSTR_IS_ESCAPED(src))
-	tstr_unescape(&ret, src);
+	tstr_unescape(str, src);
     else
-	ret = tstr_dup(*src);
+	*str = tstr_dup(*src);
 
     js_scan_next_token(scan);
-    return ret;
+    return 0;
 }
 
 int js_scan_get_num(scan_t *scan, tnum_t *ret)

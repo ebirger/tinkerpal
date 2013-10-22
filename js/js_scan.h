@@ -127,7 +127,7 @@ typedef enum {
 #define CUR_TOK(s) (*((token_type_t *)(s)))
 
 int js_scan_get_identifier(tstr_t *id, scan_t *scan);
-tstr_t js_scan_get_string(scan_t *scan);
+int js_scan_get_string(tstr_t *str, scan_t *scan);
 int js_scan_get_num(scan_t *scan, tnum_t *ret);
 int js_scan_get_constant(scan_t *scan);
 

@@ -484,7 +484,14 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
 	*po = UNDEF;
 	break;
     case TOK_STRING:
-	*po = string_new(js_scan_get_string(scan));
+	{
+	    tstr_t str;
+
+	    if (js_scan_get_string(&str, scan))
+		return parse_error(po);
+
+	    *po = string_new(str);
+	}
 	break;
     case TOK_ID:
 	{
