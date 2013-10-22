@@ -336,7 +336,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
 	js_scan_get_identifier(scan, &property);
 	break;
     case TOK_STRING:
-	js_scan_get_string(&property, scan);
+	js_scan_get_string(scan, &property);
 	break;
     case TOK_NUM:
 	{
@@ -500,7 +500,7 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
 	{
 	    tstr_t str;
 
-	    if (js_scan_get_string(&str, scan))
+	    if (js_scan_get_string(scan, &str))
 		return parse_error(po);
 
 	    *po = string_new(str);

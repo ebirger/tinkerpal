@@ -482,7 +482,7 @@ int js_scan_get_identifier(scan_t *scan, tstr_t *id)
     return 0;
 }
 
-int js_scan_get_string(tstr_t *str, scan_t *scan)
+int js_scan_get_string(scan_t *scan, tstr_t *str)
 {
     tstr_t *src;
 
