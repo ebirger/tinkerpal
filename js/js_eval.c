@@ -119,15 +119,15 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
     return rc;
 }
 
-static int eval_function_call(obj_t **po, scan_t *scan, obj_t *func,
-    reference_t *ref, int construct)
+static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
+    int construct)
 {
     obj_t **argv;
     int argc = 0, i, rc;
-    obj_t *saved_this = this;
+    obj_t *saved_this = this, *o_func = *po;
 
     argv = tmalloc(1 + CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *), "Args");
-    argv[argc++] = func; /* argv[0] is our very own function */
+    argv[argc++] = o_func; /* argv[0] is our very own function */
 
     /* Arguments are optional in constructors calls */
     if (!construct || CUR_TOK(scan) == TOK_OPEN_PAREN)
@@ -180,6 +180,7 @@ Exit:
     for (i = 1; i < argc; i++)
 	obj_put(argv[i]);
     tfree(argv);
+    obj_put(o_func);
     return rc;
 }
 
@@ -611,7 +612,6 @@ static int eval_assert_is_function(obj_t **po, scan_t *scan)
 static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 {
     int rc, is_new = 0;
-    obj_t *o_func;
 
     if (CUR_TOK(scan) == TOK_NEW)
     {
@@ -628,9 +628,7 @@ static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
     if ((rc = eval_assert_is_function(po, scan)))
 	return rc;
 
-    o_func = *po;
-    rc = eval_function_call(po, scan, o_func, ref, 1);
-    obj_put(o_func);
+    rc = eval_function_call(po, scan, ref, 1);
     return rc;
 }
 
@@ -642,13 +640,10 @@ static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
 
     while (!rc && CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
-	obj_t *o_func = *po;
-
 	if ((rc = eval_assert_is_function(po, scan)))
 	    return rc;
 
-	rc = eval_function_call(po, scan, o_func, ref, 0);
-	obj_put(o_func);
+	rc = eval_function_call(po, scan, ref, 0);
 	if (rc)
 	    return rc;
 
