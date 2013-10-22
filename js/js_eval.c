@@ -37,7 +37,6 @@
     S("Exception: Requested object is undefined")
 
 typedef struct {
-    int construct;
     obj_t **dst;
     obj_t *parent;
     obj_t *field;
@@ -121,7 +120,7 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
 }
 
 static int eval_function_call(obj_t **po, scan_t *scan, obj_t *func,
-    reference_t *ref)
+    reference_t *ref, int construct)
 {
     obj_t **argv;
     int argc = 0, i, rc;
@@ -129,41 +128,43 @@ static int eval_function_call(obj_t **po, scan_t *scan, obj_t *func,
 
     argv = tmalloc(1 + CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *), "Args");
     argv[argc++] = func; /* argv[0] is our very own function */
-    js_scan_match(scan, TOK_OPEN_PAREN);
-    if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
+
+    /* Arguments are optional in constructors calls */
+    if (!construct || CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
-	if ((rc = eval_expression(po, scan)))
-	    goto Exit;
-
-	argv[argc++] = *po;
-
-	while (CUR_TOK(scan) == TOK_COMMA)
+	js_scan_match(scan, TOK_OPEN_PAREN);
+	if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
 	{
-	    js_scan_next_token(scan);
 	    if ((rc = eval_expression(po, scan)))
 		goto Exit;
 
 	    argv[argc++] = *po;
-	    if (argc == CONFIG_MAX_FUNCTION_CALL_ARGS)
+
+	    while (CUR_TOK(scan) == TOK_COMMA)
 	    {
-		tp_crit(("Exceeded maximal function call arguments.\n"
-		   "You can refine this behavior by increasing "
-		   "CONFIG_MAX_FUNCTION_CALL_ARGS\n"));
+		js_scan_next_token(scan);
+		if ((rc = eval_expression(po, scan)))
+		    goto Exit;
+
+		argv[argc++] = *po;
+		if (argc == CONFIG_MAX_FUNCTION_CALL_ARGS)
+		{
+		    tp_crit(("Exceeded maximal function call arguments.\n"
+			"You can refine this behavior by increasing "
+			"CONFIG_MAX_FUNCTION_CALL_ARGS\n"));
+		}
 	    }
 	}
-    }
-    if (_js_scan_match(scan, TOK_CLOSE_PAREN))
-    {
-	rc = parse_error(po);
-	goto Exit;
+	if (_js_scan_match(scan, TOK_CLOSE_PAREN))
+	{
+	    rc = parse_error(po);
+	    goto Exit;
+	}
     }
 
     *po = UNDEF;
-    if (ref && ref->construct)
-    {
+    if (construct)
 	rc = function_call_construct(po, argc, argv);
-	ref->construct = 0;
-    }
     else
     {
 	obj_t *this_obj;
@@ -610,6 +611,7 @@ static int eval_assert_is_function(obj_t **po, scan_t *scan)
 static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 {
     int rc, is_new = 0;
+    obj_t *o_func;
 
     if (CUR_TOK(scan) == TOK_NEW)
     {
@@ -626,19 +628,10 @@ static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
     if ((rc = eval_assert_is_function(po, scan)))
 	return rc;
 
-    if (CUR_TOK(scan) != TOK_OPEN_PAREN)
-    {
-	obj_t *argv = *po;
-
-	/* 'new' expression with no arguments - Evaluated as a constructor */
-	rc = function_call_construct(po, 1, &argv);
-	obj_put(argv);
-	return rc;
-    }
-
-    /* Function call. Object will be constructed in eval_functions() */
-    ref->construct = 1;
-    return 0;
+    o_func = *po;
+    rc = eval_function_call(po, scan, o_func, ref, 1);
+    obj_put(o_func);
+    return rc;
 }
 
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
@@ -654,7 +647,7 @@ static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
 	if ((rc = eval_assert_is_function(po, scan)))
 	    return rc;
 
-	rc = eval_function_call(po, scan, o_func, ref);
+	rc = eval_function_call(po, scan, o_func, ref, 0);
 	obj_put(o_func);
 	if (rc)
 	    return rc;
