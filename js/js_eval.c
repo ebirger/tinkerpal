@@ -587,6 +587,26 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
     return rc;
 }
 
+static int eval_assert_is_function(obj_t **po, scan_t *scan)
+{
+    obj_t *o_func = *po;
+    tstr_t *error = NULL;
+
+    if (o_func == UNDEF)
+	error = &S("Exception: Object is undefined, not a function");
+    else if (!is_function(o_func))
+	error = &S("Exception: Object is not a function");
+
+    if (error)
+    {
+	js_scan_trace(scan);
+	/* Not a valid function. Throw exception */
+	return throw_exception(po, error);
+    }
+
+    return 0;
+}
+
 static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 {
     int rc, is_new = 0;
@@ -602,6 +622,9 @@ static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 
     if (!is_new)
 	return 0;
+
+    if ((rc = eval_assert_is_function(po, scan)))
+	return rc;
 
     if (CUR_TOK(scan) != TOK_OPEN_PAREN)
     {
@@ -627,21 +650,9 @@ static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
     while (!rc && CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
 	obj_t *o_func = *po;
-	tstr_t *error = NULL;
 
-	if (o_func == UNDEF)
-	    error = &S("Exception: Object is undefined, not a function");
-	else if (!is_function(o_func))
-	    error = &S("Exception: Object is not a function");
-
-	if (error)
-	{
-	    js_scan_trace(scan);
-	    /* Not a valid function. Throw exception */
-	    obj_put(o_func);
-	    *po = string_new(*error);
-	    return COMPLETION_THROW;
-	}
+	if ((rc = eval_assert_is_function(po, scan)))
+	    return rc;
 
 	rc = eval_function_call(po, scan, o_func, ref);
 	obj_put(o_func);
