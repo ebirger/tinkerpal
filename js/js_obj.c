@@ -762,7 +762,12 @@ static void object_dump(printer_t *printer, obj_t *o)
 
     tprintf(printer, "{ ");
     for (p = o->properties; p; p = p->next)
+    {
+	if (var_key_is_internal(&p->key))
+	    continue;
+
 	tprintf(printer, "%S : %o%s", &p->key, p->obj, p->next ?  ", " : "");
+    }
 
     tprintf(printer, " }");
 }
