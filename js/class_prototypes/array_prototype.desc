@@ -91,5 +91,5 @@ FUNCTION("map", array_prototype, do_array_prototype_map, {
     .return_value = "The constructed array",
     .example = "var a = [ 1, 2, 3 ];\n"
 	"var b = a.map(function(value, k, obj) { return value + 1 });\n"
-	"debug.assert(b, [ 2, 3, 4]);",
+	"debug.assert(b, [ 2, 3, 4 ]);",
 })
