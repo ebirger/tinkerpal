@@ -59,3 +59,17 @@ debug.assert(k[14],2);
 
 var k32 = new Uint32Array(64);
 debug.assert(k32.length, 64);
+for (var i = 0; i < k32.length; i++) k32[i] = (i+1)*2;
+
+var s32 = k32.subarray(1);
+debug.assert(s32[0], k32[1]);
+debug.assert(s32.length, k32.length - 1);
+s32 = k32.subarray(1, -1);
+debug.assert(s32[61], k32[62]);
+debug.assert(s32.length, k32.length - 2);
+s32_2 = s32.subarray(1, -1);
+debug.assert(s32_2.length, k32.length - 4);
+debug.assert(s32_2[0], k32[2]);
+debug.assert(s32_2[59], k32[61]);
+s32_3 = s32.subarray(3, 5);
+debug.assert(s32_3[1], s32[4]);
