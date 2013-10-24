@@ -1110,6 +1110,26 @@ static void skip_block(scan_t *scan)
     js_scan_match(scan, TOK_CLOSE_SCOPE);
 }
 
+static void skip_for(scan_t *scan)
+{
+    js_scan_match(scan, TOK_FOR);
+    js_scan_match(scan, TOK_OPEN_PAREN);
+    skip_expression(scan);
+    if (CUR_TOK(scan) == TOK_CLOSE_PAREN)
+    {
+	/* Probably for-in loop. finish up */
+	goto Exit;
+    }
+
+    js_scan_match(scan, TOK_END_STATEMENT);
+    skip_expression(scan);
+    js_scan_match(scan, TOK_END_STATEMENT);
+    skip_expression(scan);
+
+Exit:
+    js_scan_next_token(scan); /* ) */
+}
+
 static void skip_statement(scan_t *scan)
 {
     if (CUR_TOK(scan) == TOK_OPEN_SCOPE)
@@ -1117,6 +1137,9 @@ static void skip_statement(scan_t *scan)
 	skip_block(scan);
 	return;
     }
+
+    if (CUR_TOK(scan) == TOK_FOR)
+	skip_for(scan);
 
     while (CUR_TOK(scan) != TOK_END_STATEMENT && CUR_TOK(scan) != TOK_EOF)
 	js_scan_next_token(scan);

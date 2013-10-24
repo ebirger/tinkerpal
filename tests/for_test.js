@@ -49,3 +49,9 @@ for (i in a)
     b.push(i);
 
 debug.assert(b[2], "c");
+
+var i, j;
+
+for (i = 0; i < 10; i++)
+    for (j = 0; j < 10; j++)
+        debug.dump("(" + i + ", " + j + ")");
