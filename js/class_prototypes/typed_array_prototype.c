@@ -74,26 +74,32 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[], unsigned short flags)
 {
     obj_t *array_buffer;
-    int bytelen;
+    int length, offset = 0;
 
-    if (argc != 2)
+    if (argc < 2)
 	return throw_exception(ret, &S("Wrong number of arguments"));
 
     if (is_array_buffer(argv[1]))
     {
 	array_buffer = obj_get(argv[1]);
-	bytelen = ((array_buffer_t *)array_buffer)->value.len;
+	length = ((array_buffer_t *)array_buffer)->value.len >> 
+	    (flags & ABV_SHIFT_MASK);
+	if (argc > 2)
+	{
+	    offset = obj_get_int(argv[2]);
+	    if (argc == 4)
+		length = obj_get_int(argv[3]);
+	}
     }
     else if (is_num(argv[1]))
     {
-	bytelen = obj_get_int(argv[1]) << (flags & ABV_SHIFT_MASK);
-	array_buffer = array_buffer_new(bytelen);
+	length = obj_get_int(argv[1]);
+	array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
     }
     else
 	return throw_exception(ret, &S("Invalid arguments"));
 
-    *ret = array_buffer_view_new(array_buffer, flags, 0,
-	bytelen >> (flags & ABV_SHIFT_MASK));
+    *ret = array_buffer_view_new(array_buffer, flags, offset, length);
 
     obj_put(array_buffer);
     return 0;

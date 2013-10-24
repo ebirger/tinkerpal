@@ -73,3 +73,11 @@ debug.assert(s32_2[0], k32[2]);
 debug.assert(s32_2[59], k32[61]);
 s32_3 = s32.subarray(3, 5);
 debug.assert(s32_3[1], s32[4]);
+
+var a = new ArrayBuffer(16);
+var k8 = new Int8Array(a, 0, 16);
+var k8_2 = new Int8Array(a, 1, 5);
+for (var i = 0; i < 16; i++)
+    k8[i] = (i + 1) * 2;
+for (var i = 0; i < 5; i++)
+    debug.assert(k8_2[i], k8[i+1]);
