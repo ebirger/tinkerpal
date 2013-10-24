@@ -14,3 +14,23 @@ CONSTRUCTOR("Int16Array", array_buffer_view_prototype, do_int16array_constructor
 CONSTRUCTOR("Uint16Array", array_buffer_view_prototype, do_uint16array_constructor)
 CONSTRUCTOR("Int32Array", array_buffer_view_prototype, do_int32array_constructor)
 CONSTRUCTOR("Uint32Array", array_buffer_view_prototype, do_uint32array_constructor)
+
+FUNCTION("subarray", array_buffer_view_prototype, do_array_buffer_view_subarray, {
+    .params = { 
+        { 
+            .name = "begin",
+            .description = "Start offset (inclusive)"
+        },
+        { 
+            .name = "end",
+	    .description = "(Optional) End offset (exclusive)"
+        },
+    },
+    .description = "Return a partial typed array based on the typed array"
+        "If end is unspecified, the subarray contains all elements from begin "
+	"to the end of the TypedArray. If either begin or end are negative, "
+	"they are calculated from the end of the array",
+    .return_value = "ArrayBufferView object pointing to [begin,end)",
+    .example = "var a = new Int8Array(16);\n"
+	"var b = a.subarray(1, 5);\n"
+})

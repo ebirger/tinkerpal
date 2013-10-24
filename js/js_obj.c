@@ -1288,9 +1288,10 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 	return NULL;
 
     idx = NUMERIC_INT(tidx);
-    if (buf->len <= idx << shift)
+    if (v->length < idx)
 	return NULL;
 
+    idx += v->offset;
     bval = tstr_piece(*buf, idx << shift, 1 << shift);
     switch (shift)
     {
@@ -1334,13 +1335,13 @@ static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
 	return -1;
 
     idx = NUMERIC_INT(tidx);
+    if (v->length < idx)
+	return -1;
 
     buf = &v->array_buffer->value;
 
     shift = v->flags & ABV_SHIFT_MASK;
-    if (buf->len <= idx << shift)
-	return -1;
-
+    idx += v->offset;
     bval = tstr_piece(*buf, idx << shift, 1 << shift);
     val = obj_get_int(value);
     switch (shift)
@@ -1378,13 +1379,16 @@ static void array_buffer_view_free(obj_t *o)
     obj_put((obj_t *)v->array_buffer);
 }
 
-obj_t *array_buffer_view_new(obj_t *array_buffer, unsigned int flags)
+obj_t *array_buffer_view_new(obj_t *array_buffer, u32 flags, u32 offset,
+    int length)
 {
     array_buffer_view_t *ret = (array_buffer_view_t *)obj_new_type(
         ARRAY_BUFFER_VIEW_CLASS, array_buffer_view_t);
 
     ret->array_buffer = (array_buffer_t *)obj_get(array_buffer);
     ret->flags = flags;
+    ret->offset = offset;
+    ret->length = length;
     return (obj_t *)ret;
 }
 

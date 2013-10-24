@@ -29,6 +29,7 @@
 #include "util/tprintf.h"
 #include "util/debug.h"
 #include "util/tmalloc.h"
+#include "util/tp_types.h"
 
 typedef struct var_t var_t;
 
@@ -103,7 +104,9 @@ typedef struct {
 #define ABV_SHIFT_32_BIT 0x02
 #define ABV_SHIFT_MASK 0x03
 #define ABV_FLAG_UNSIGNED 0x04
-    unsigned int flags;
+    u32 flags;
+    u32 offset; /* in view units */
+    u32 length; /* in view units */
 } array_buffer_view_t;
 
 /* Class types.
@@ -318,7 +321,8 @@ void array_iter_uninit(array_iter_t *iter);
 
 /* typed arrays objects methods */
 obj_t *array_buffer_new(int length);
-obj_t *array_buffer_view_new(obj_t *array_buffer, unsigned int flags);
+obj_t *array_buffer_view_new(obj_t *array_buffer, unsigned int flags, 
+    u32 offset, int length);
 
 static inline int is_array_buffer(obj_t *o)
 {
@@ -344,7 +348,7 @@ static inline array_buffer_view_t *to_array_buffer_view(obj_t *o)
 
 static inline int array_buffer_view_length(array_buffer_view_t *v)
 {
-    return v->array_buffer->value.len >> (v->flags & ABV_SHIFT_MASK);
+    return v->length;
 }
 
 /* Initialization sequence functions */

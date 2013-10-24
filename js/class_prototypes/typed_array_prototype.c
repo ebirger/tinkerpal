@@ -40,23 +40,60 @@ int do_array_buffer_constructor(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
+int do_array_buffer_view_subarray(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
+{
+    array_buffer_view_t *v = to_array_buffer_view(this);
+    int begin, end;
+
+    if (argc != 2 && argc != 3)
+	return throw_exception(ret, &S("Wrong number of arguments"));
+
+    if ((begin = obj_get_int(argv[1])) < 0)
+	begin += v->length;
+    begin += v->offset;
+
+    if (argc == 3)
+    {
+	if ((end = obj_get_int(argv[2])) < 0)
+	    end += v->length;
+	end += v->offset;
+    }
+    else
+	end = v->offset + v->length;
+
+    if (begin < 0 || end < 0 || end < begin)
+	end = begin = 0;
+
+    *ret = array_buffer_view_new((obj_t *)v->array_buffer, v->flags, begin, 
+	end - begin);
+    return 0;
+}
+
 static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[], unsigned short flags)
 {
     obj_t *array_buffer;
+    int bytelen;
+
+    if (argc != 2)
+	return throw_exception(ret, &S("Wrong number of arguments"));
 
     if (is_array_buffer(argv[1]))
+    {
 	array_buffer = obj_get(argv[1]);
+	bytelen = ((array_buffer_t *)array_buffer)->value.len;
+    }
     else if (is_num(argv[1]))
     {
-	int bytelen = obj_get_int(argv[1]) << (flags & ABV_SHIFT_MASK);
-
+	bytelen = obj_get_int(argv[1]) << (flags & ABV_SHIFT_MASK);
 	array_buffer = array_buffer_new(bytelen);
     }
     else
 	return throw_exception(ret, &S("Invalid arguments"));
 
-    *ret = array_buffer_view_new(array_buffer, flags);
+    *ret = array_buffer_view_new(array_buffer, flags, 0,
+	bytelen >> (flags & ABV_SHIFT_MASK));
 
     obj_put(array_buffer);
     return 0;
