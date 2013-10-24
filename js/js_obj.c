@@ -1275,7 +1275,7 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 
     if (!tstr_cmp(&str, &Slength))
     {
-	retval = array_buffer_view_length(v);
+	retval = v->length;
 	goto Ok;
     }
     if (!tstr_cmp(&str, &S("BYTES_PER_ELEMENT")))
