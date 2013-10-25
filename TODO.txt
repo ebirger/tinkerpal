@@ -42,7 +42,7 @@ Core
 - Reduce memory footprint
 - Memory leaks
 - Minimize stack usage
-- additional operators (<<=, >>=, comma)
+- additional operators (comma)
 - reduce libc dependency
 - Concise "this" semantics
 - Strict mode
