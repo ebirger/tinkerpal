@@ -233,7 +233,8 @@ static inline int is_assignment_tok(token_type_t tok)
 {
     return tok == TOK_PLUS_EQ || tok == TOK_MINUS_EQ || tok == TOK_MULT_EQ || 
 	tok == TOK_DIV_EQ || tok == TOK_AND_EQ || tok == TOK_OR_EQ ||
-	tok == TOK_XOR_EQ || tok == TOK_MOD_EQ || tok == TOK_EQ;
+	tok == TOK_XOR_EQ || tok == TOK_MOD_EQ || tok == TOK_EQ ||
+	tok == TOK_SHR_EQ || tok == TOK_SHL_EQ || tok == TOK_SHRZ_EQ;
 }
 
 static inline int is_member_tok(token_type_t tok)

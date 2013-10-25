@@ -108,8 +108,11 @@
 #define TOK_LT '<'
 #define TOK_LE ('<' | EQ)
 #define TOK_SHR ('>' | DOUBLE)
+#define TOK_SHR_EQ ('>' | DOUBLE | EQ)
 #define TOK_SHRZ ('>' | DOUBLE | TRIPPLE)
+#define TOK_SHRZ_EQ ('>' | DOUBLE | TRIPPLE | EQ)
 #define TOK_SHL ('<' | DOUBLE)
+#define TOK_SHL_EQ ('<' | DOUBLE | EQ)
 
 typedef int token_type_t;
 typedef struct scan_t scan_t;

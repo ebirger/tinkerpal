@@ -326,7 +326,7 @@ static inline tnum_t extract_num(scan_t *scan)
 
 void js_scan_next_token(scan_t *scan)
 {
-    char next = 0, next2 = 0;
+    char next = 0, next2 = 0, next3 = 0;
 
     scan->tok = 0;
     scan->flags &= ~SCAN_FLAG_INVALID;
@@ -348,7 +348,11 @@ void js_scan_next_token(scan_t *scan)
     {
 	next = *scan->pc;
 	if (scan->size > 2)
+	{
 	    next2 = *(scan->pc + 1);
+	    if (scan->size > 3)
+		next3 = *(scan->pc + 2);
+	}
     }
     switch (scan->look)
     {
@@ -378,11 +382,23 @@ void js_scan_next_token(scan_t *scan)
 	if (scan->tok == TOK_SHR && next2 == '>')
 	    scan->tok |= TRIPPLE;
 
+	if ((scan->tok == TOK_SHR || scan->tok == TOK_SHL) && next2 == '=')
+	    scan->tok |= EQ;
+	if (scan->tok == TOK_SHRZ && next3 == '=')
+	    scan->tok |= EQ;
+
 	_get_char(scan);
 	if (scan->tok & (DOUBLE | EQ))
 	    _get_char(scan);
-	if (scan->tok & (STRICT | TRIPPLE))
+	if (scan->tok & (STRICT | TRIPPLE) ||
+            ((scan->tok & (DOUBLE | EQ)) == (DOUBLE | EQ)))
+	{
 	    _get_char(scan);
+	}
+
+	if ((scan->tok & (TRIPPLE | DOUBLE | EQ)) == (TRIPPLE | DOUBLE | EQ))
+	    _get_char(scan);
+
 	skip_white(scan);
 	return;
     }
