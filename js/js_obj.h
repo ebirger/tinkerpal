@@ -321,8 +321,8 @@ void array_iter_uninit(array_iter_t *iter);
 
 /* typed arrays objects methods */
 obj_t *array_buffer_new(int length);
-obj_t *array_buffer_view_new(obj_t *array_buffer, unsigned int flags, 
-    u32 offset, int length);
+obj_t *array_buffer_view_new(obj_t *array_buffer, u32 flags, u32 offset, 
+    int length);
 
 static inline int is_array_buffer(obj_t *o)
 {
