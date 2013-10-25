@@ -1284,6 +1284,12 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
 	goto Ok;
     }
 
+    if (!tstr_cmp(&str, &S("buffer")))
+    {
+	*lval = NULL;
+	return obj_get((obj_t *)v->array_buffer);
+    }
+
     if (tstr_to_tnum(&tidx, &str))
 	return NULL;
 
