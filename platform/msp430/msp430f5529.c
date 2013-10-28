@@ -83,9 +83,6 @@ void msp430f5529_init(void)
 
 int msp430f5529_serial_enable(int u, int enabled)
 {
-    P4SEL = BIT4 + BIT5; /* P4.4,5 = USCI_A1 TXD/RXD */
-    P4DIR |= (1<<4); /* Set P4.4 to output direction */
-    P5DIR &= ~(1<<5); /* Set P4.5 to input direction */
     UCA1CTL1 |= UCSWRST; /* Put state machine in reset */
     UCA1CTL0 = 0x00;
     UCA1CTL1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
