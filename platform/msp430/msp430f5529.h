@@ -25,7 +25,7 @@
 #ifndef __MSP430F5529_CONSTS_H__
 #define __MSP430F5529_CONSTS_H__
 
-#define NUM_UARTS 1 /* XXX: temporary */
+#define NUM_UARTS 2
 
 #define GPIO(port, pin) (((port) << 3) + (pin))
 #define GPIO_BIT(p) (1 << ((p) & 0x7))
@@ -40,6 +40,9 @@ int msp430f5529_serial_write(int u, char *buf, int size);
 void msp430f5529_serial_irq_enable(int u, int enabled);
 int msp430f5529_select(int ms, int (*is_active)(int id), 
     void (*mark_on)(int id));
+
+#define UART0 0
+#define UART1 1
 
 #define PA0 0x00 
 #define PA1 0x01 

@@ -43,7 +43,7 @@ const platform_t platform = {
 	.read = buffered_serial_read,
 	.write = msp430f5529_serial_write,
 	.irq_enable = msp430f5529_serial_irq_enable,
-	.default_console_id = 0,
+	.default_console_id = UART1,
     },
 #ifdef CONFIG_GPIO
     .gpio = {

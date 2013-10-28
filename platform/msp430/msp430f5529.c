@@ -81,16 +81,40 @@ void msp430f5529_init(void)
     __bis_SR_register(GIE); /* Enable interrupts */
 }
 
+typedef struct {
+    volatile unsigned char *ctl0;
+    volatile unsigned char *ctl1;
+    volatile unsigned char *br0;
+    volatile unsigned char *br1;
+    volatile unsigned char *mctl;
+    volatile unsigned char *ie;
+} msp430f5529_uart_t;
+
+static msp430f5529_uart_t msp430f5529_uarts[] = {
+#define U(uca) { \
+    .ctl0 = &uca##CTL0, \
+    .ctl1 = &uca##CTL1, \
+    .br0 = &uca##BR0, \
+    .br1 = &uca##BR1, \
+    .mctl = &uca##MCTL, \
+    .ie = &uca##IE \
+}
+    [UART0] = U(UCA0),
+    [UART1] = U(UCA1),
+#undef U
+};
+
 int msp430f5529_serial_enable(int u, int enabled)
 {
-    UCA1CTL1 |= UCSWRST; /* Put state machine in reset */
-    UCA1CTL0 = 0x00;
-    UCA1CTL1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
-    UCA1BR0 = 0xe2; /* 9600 Baud */
-    UCA1BR1 = 0x04;
-    UCA1MCTL = UCBRF_0; /* Modulation UCBRFx=0 */
-    UCA1CTL1 &= ~UCSWRST; /* Initialize USCI state machine */
-    UCA1IE &= ~UCTXIE;
+    msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+    *uca->ctl1 |= UCSWRST; /* Put state machine in reset */
+    *uca->ctl0 = 0x00;
+    *uca->ctl1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
+    *uca->br0 = 0xe2; /* 9600 Baud */
+    *uca->br1 = 0x04;
+    *uca->mctl = UCBRF_0; /* Modulation UCBRFx=0 */
+    *uca->ctl1 &= ~UCSWRST; /* Initialize USCI state machine */
+    *uca->ie &= ~UCTXIE;
     return 0;
 }
 
