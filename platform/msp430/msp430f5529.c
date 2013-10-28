@@ -74,14 +74,14 @@ static void clock_init(void)
     } while (SFRIFG1&OFIFG); /* Test oscillator fault flag */
 }
 
-static void msp430f5529_init(void)
+void msp430f5529_init(void)
 {
     clock_init();
 
     __bis_SR_register(GIE); /* Enable interrupts */
 }
 
-static int msp430f5529_serial_enable(int u, int enabled)
+int msp430f5529_serial_enable(int u, int enabled)
 {
     P4SEL = BIT4 + BIT5; /* P4.4,5 = USCI_A1 TXD/RXD */
     P4DIR |= (1<<4); /* Set P4.4 to output direction */
@@ -97,7 +97,7 @@ static int msp430f5529_serial_enable(int u, int enabled)
     return 0;
 }
 
-static int msp430f5529_serial_write(int u, char *buf, int size)
+int msp430f5529_serial_write(int u, char *buf, int size)
 {
     while (size-- > 0)
     {
@@ -114,7 +114,7 @@ __interrupt void uscia1rx_isr(void)
     buffered_serial_push(0, UCA1RXBUF & 0xff);
 }
 
-static void msp430f5529_serial_irq_enable(int u, int enabled)
+void msp430f5529_serial_irq_enable(int u, int enabled)
 {
     if (enabled)
 	UCA1IE |= UCRXIE;
@@ -122,7 +122,7 @@ static void msp430f5529_serial_irq_enable(int u, int enabled)
 	UCA1IE &= ~UCRXIE;
 }
 
-static int msp430f5529_select(int ms, int (*is_active)(int id), 
+int msp430f5529_select(int ms, int (*is_active)(int id), 
     void (*mark_on)(int id))
 {
     int event = 0;
@@ -136,30 +136,3 @@ static int msp430f5529_select(int ms, int (*is_active)(int id),
 
     return event;
 }
-
-const platform_t platform = {
-    .desc = "TI MSP430F5529 USB Experimenter Board",
-    .serial = {
-	.enable = msp430f5529_serial_enable,
-	.read = buffered_serial_read,
-	.write = msp430f5529_serial_write,
-	.irq_enable = msp430f5529_serial_irq_enable,
-	.default_console_id = 0,
-    },
-#ifdef CONFIG_GPIO
-    .gpio = {
-	.digital_write = msp430f5529_gpio_digital_write,
-	.digital_read = msp430f5529_gpio_digital_read,
-	.analog_write = NULL,
-	.analog_read = NULL,
-	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
-    },
-#endif
-    .init = msp430f5529_init,
-    .meminfo = NULL,
-    .panic = NULL,
-    .select = msp430f5529_select,
-    .get_ticks_from_boot = NULL,
-    .get_system_clock = NULL,
-    .msleep = NULL,
-};
