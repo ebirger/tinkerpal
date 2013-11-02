@@ -25,9 +25,16 @@
 #ifndef __MEM_H__
 #define __MEM_H__
 
+typedef struct mem_squeezer_t {
+    struct mem_squeezer_t *next;
+    int (*squeeze)(struct mem_squeezer_t *squeezer, int size);
+} mem_squeezer_t;
+
 void *tmalloc(int sz, char *type);
 #define tmalloc_type(type) tmalloc(sizeof(type), #type)
 void tmalloc_stats(void);
+void tmalloc_register_squeezer(mem_squeezer_t *squeezer);
+void tmalloc_unregister_squeezer(mem_squeezer_t *squeezer);
 void tfree(void *p);
 
 void tmalloc_init(void);

@@ -25,6 +25,8 @@
 #include "util/tmalloc.h"
 #include "util/debug.h"
 
+static mem_squeezer_t *squeezers;
+
 #ifdef CONFIG_DLMALLOC
 
 #include "util/dlmalloc.h"
@@ -137,7 +139,7 @@ void tmalloc_uninit(void)
 #endif
 }
 
-void *tmalloc(int sz, char *type)
+static inline void *_tmalloc(int sz, char *type)
 {
     unsigned long *p;
 
@@ -168,7 +170,6 @@ void *tmalloc(int sz, char *type)
 
 Error:
     tmalloc_uninit();
-    tp_crit(("allocation error\n"));
     return NULL;
 }
 
@@ -190,12 +191,12 @@ void tfree(void *data)
 
 #else
 
-void *tmalloc(int sz, char *type)
+static inline void *_tmalloc(int sz, char *type)
 {
     void *p;
 
     if (!(p = tmalloc_real(sz)))
-	tp_crit(("allocation error\n"));
+	return NULL;
 
     tp_debug(("Allocated %p %d %s\n", p, sz, type));
     return p;
@@ -219,6 +220,44 @@ void tmalloc_uninit(void)
 }
 
 #endif
+
+void *tmalloc(int sz, char *type)
+{
+    void *p;
+    int need_squeeze;
+    mem_squeezer_t *s;
+
+    if ((p = _tmalloc(sz, type)))
+	return p;
+
+    need_squeeze = sz;
+    tp_debug(("Squeezing, need %d\n", sz));
+    for (s = squeezers; s && need_squeeze > 0; s = s->next)
+    {
+	need_squeeze -= s->squeeze(s, need_squeeze);
+	tp_debug(("Squeezed %d so far\n", sz - need_squeeze));
+    }
+
+    if (need_squeeze > 0 || !(p = _tmalloc(sz, type)))
+	tp_crit(("allocation error\n"));
+    
+    return p;
+}
+
+void tmalloc_register_squeezer(mem_squeezer_t *squeezer)
+{
+    squeezer->next = squeezers;
+    squeezers = squeezer;
+}
+
+void tmalloc_unregister_squeezer(mem_squeezer_t *squeezer)
+{
+    mem_squeezer_t **s;
+
+    for (s = &squeezers; *s != squeezer; s = &(*s)->next);
+    (*s) = squeezer->next;
+    squeezer->next = NULL;
+}
 
 void tmalloc_init(void)
 {

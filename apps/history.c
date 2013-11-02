@@ -42,6 +42,7 @@ typedef struct history_item_t {
 } history_item_t;
 
 struct history_t {
+    mem_squeezer_t squeezer;
     history_item_t *items;
     history_item_t *current;
 };
@@ -95,10 +96,51 @@ int history_get(history_t *h, char *buf, int free_size)
     return size;
 }
 
+static void history_item_free(history_item_t *i)
+{
+    tstr_free(&i->str);
+    tfree(i);
+}
+
+static int history_squeeze(mem_squeezer_t *squeezer, int size)
+{
+    history_t *h = (history_t *)squeezer;
+    history_item_t *item = h->items;
+    int orig_size = size;
+
+    tp_debug(("history squeeze: asked to squeeze %d\n", size));
+    while (item->next != item && size > 0)
+    {
+	history_item_t *tmp = item;
+	
+	item = item->next;
+	if (!TSTR_IS_ALLOCATED(&tmp->str))
+	    continue;
+
+	if (tmp == h->items)
+	{
+	    tmp->next->prev = tmp->next;
+	    h->items = tmp->next;
+	}
+	else
+	{
+	    tmp->next->prev = tmp->prev;
+	    tmp->prev->next = tmp->next;
+	}
+
+	size -= tmp->str.len;
+	history_item_free(tmp);
+    }
+
+    return orig_size - size;
+}
+
 history_t *history_new(void)
 {
     /* Add dummy tail */
     history_commit(&g_history, &S(""));
+    g_history.squeezer.squeeze = history_squeeze;
+    tmalloc_register_squeezer(&g_history.squeezer);
     return &g_history;
 }
 
@@ -106,10 +148,10 @@ void history_free(history_t *h)
 {
     history_item_t *tmp;
 
+    tmalloc_unregister_squeezer(&g_history.squeezer);
     while ((tmp = h->items))
     {
 	h->items = tmp->next == tmp ? NULL : tmp->next;
-	tstr_free(&tmp->str);
-	tfree(tmp);
+	history_item_free(tmp);
     }
 }
