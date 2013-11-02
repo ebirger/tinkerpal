@@ -22,25 +22,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __PLATFORM_CONSTS_H__
-#define __PLATFORM_CONSTS_H__
-
-#ifdef CONFIG_PLATFORM_EMULATION
-#include "platform/unix/sim.h"
-#elif defined(CONFIG_LM4F120XL)
-#include "platform/arm/stellaris/lm4f120xl/lm4f120xl.h"
-#elif defined(CONFIG_LM3S6965)
-#include "platform/arm/stellaris/lm3s6965/lm3s6965.h"
-#elif defined(CONFIG_LM3S6918)
-#include "platform/arm/stellaris/lm3s6918/lm3s6918.h"
-#elif defined(CONFIG_STM32F3DISCOVERY)
-#include "platform/arm/stm32/stm32f3discovery/stm32f3discovery.h"
-#elif defined(CONFIG_FRDM_KL25Z)
-#include "platform/arm/frdm/kl25z.h"
-#elif defined(CONFIG_MSP430F5529)
+#include <msp430.h>
+#include "platform/platform.h"
+#include "platform/msp430/msp430f5529_gpio.h"
 #include "platform/msp430/msp430f5529.h"
-#else
-#error Platform constants not defined
-#endif
+#include "drivers/serial/serial.h"
 
+int msp430f5529_launch_serial_enable(int u, int enabled)
+{
+    P4SEL = BIT4 + BIT5; /* P4.4,5 = USCI_A1 TXD/RXD */
+    P4DIR |= (1<<4); /* Set P4.4 to output direction */
+    P4DIR &= ~(1<<5); /* Set P4.5 to input direction */
+    return msp430f5529_serial_enable(u, enabled);
+}
+
+const platform_t platform = {
+    .desc = "TI MSP430F5529 Launchpad",
+    .serial = {
+	.enable = msp430f5529_launch_serial_enable,
+	.read = buffered_serial_read,
+	.write = msp430f5529_serial_write,
+	.irq_enable = msp430f5529_serial_irq_enable,
+	.default_console_id = UART1,
+    },
+#ifdef CONFIG_GPIO
+    .gpio = {
+	.digital_write = msp430f5529_gpio_digital_write,
+	.digital_read = msp430f5529_gpio_digital_read,
+	.analog_write = NULL,
+	.analog_read = NULL,
+	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
+    },
 #endif
+    .init = msp430f5529_init,
+    .meminfo = NULL,
+    .panic = NULL,
+    .select = msp430f5529_select,
+    .get_ticks_from_boot = NULL,
+    .get_system_clock = NULL,
+    .msleep = NULL,
+};

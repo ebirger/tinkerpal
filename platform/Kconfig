@@ -125,6 +125,16 @@ config MSP430F5529_EXP
 	select BUFFERED_SERIAL
 	select PLAT_HAS_GPIO
 
+config MSP430F5529_LAUNCHPAD
+	bool "TI MSP430F5529 Launchpad"
+	select MSP430F5529
+	select PLAT_HAS_GCC
+	select PLAT_HAS_TI_CCS5
+	select PLAT_HAS_MALLOC
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+	select PLAT_HAS_GPIO
+
 endchoice
 
 if UNIX
