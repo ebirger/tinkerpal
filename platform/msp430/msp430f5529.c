@@ -88,16 +88,20 @@ typedef struct {
     volatile unsigned char *br1;
     volatile unsigned char *mctl;
     volatile unsigned char *ie;
+    volatile unsigned char *txbuf;
+    volatile unsigned char *ifg;
 } msp430f5529_uart_t;
 
-static msp430f5529_uart_t msp430f5529_uarts[] = {
+static const msp430f5529_uart_t msp430f5529_uarts[] = {
 #define U(uca) { \
     .ctl0 = &uca##CTL0, \
     .ctl1 = &uca##CTL1, \
     .br0 = &uca##BR0, \
     .br1 = &uca##BR1, \
     .mctl = &uca##MCTL, \
-    .ie = &uca##IE \
+    .ie = &uca##IE, \
+    .txbuf = &uca##TXBUF, \
+    .ifg = &uca##IFG, \
 }
     [UART0] = U(UCA0),
     [UART1] = U(UCA1),
@@ -106,7 +110,8 @@ static msp430f5529_uart_t msp430f5529_uarts[] = {
 
 int msp430f5529_serial_enable(int u, int enabled)
 {
-    msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+    const msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+
     *uca->ctl1 |= UCSWRST; /* Put state machine in reset */
     *uca->ctl0 = 0x00;
     *uca->ctl1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
@@ -120,27 +125,37 @@ int msp430f5529_serial_enable(int u, int enabled)
 
 int msp430f5529_serial_write(int u, char *buf, int size)
 {
+    const msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+
     while (size-- > 0)
     {
 	/* Wait until transmit buffer is empty */
-	while (!(UCA1IFG & UCTXIFG));
-	UCA1TXBUF = *buf++;
+	while (!(*uca->ifg & UCTXIFG));
+	*uca->txbuf = *buf++;
     }
     return 0;
+}
+
+#pragma vector = USCI_A0_VECTOR
+__interrupt void uscia0rx_isr(void)
+{
+    buffered_serial_push(UART0, UCA0RXBUF & 0xff);
 }
 
 #pragma vector = USCI_A1_VECTOR
 __interrupt void uscia1rx_isr(void)
 {
-    buffered_serial_push(0, UCA1RXBUF & 0xff);
+    buffered_serial_push(UART1, UCA1RXBUF & 0xff);
 }
 
 void msp430f5529_serial_irq_enable(int u, int enabled)
 {
+    const msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+
     if (enabled)
-	UCA1IE |= UCRXIE;
+	*uca->ie |= UCRXIE;
     else
-	UCA1IE &= ~UCRXIE;
+	*uca->ie &= ~UCRXIE;
 }
 
 int msp430f5529_select(int ms, int (*is_active)(int id), 
