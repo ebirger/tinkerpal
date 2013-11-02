@@ -25,128 +25,91 @@
 #include "util/tp_types.h"
 #include "util/debug.h"
 #include "util/tstr.h"
+#include "util/tmalloc.h"
 #include "apps/history.h"
 
-/* XXX: allow removing old entries upon:
- *   1. newer entries
- *   2. Memory shortage
+/* XXX: allow removing old entries upon memory shortage */
+
+/* History is kept in a double linked list. There is always one empty item at
+ * the end of the list.
+ * First item->prev and last item->next point to themselves.
  */
 
-typedef struct {
-    char *next;
-    char *prev;
-    int len;
-} line_desc_t;
+typedef struct history_item_t {
+    struct history_item_t *next;
+    struct history_item_t *prev;
+    tstr_t str;
+} history_item_t;
 
 struct history_t {
-    tstr_t current;
-    char *buf;
-    int free_size;
-    char *last;
+    history_item_t *items;
+    history_item_t *current;
 };
 
 history_t g_history; /* Singleton for now */
 
 void history_next(history_t *h)
 {
-    line_desc_t *line;
-
-    /* Advance to the next node */
-    line = ((line_desc_t *)TPTR(&h->current)) - 1;
-    TPTR(&h->current) = line->next;
-
-    /* Extract length */
-    line = ((line_desc_t *)TPTR(&h->current)) - 1;
-    h->current.len = line->len;
+    h->current = h->current->next;
 }
 
 void history_prev(history_t *h)
 {
-    line_desc_t *line;
-
-    /* Go back to the previous node */
-    line = ((line_desc_t *)TPTR(&h->current)) - 1;
-    TPTR(&h->current) = line->prev;
-
-    /* Extract length */
-    line = ((line_desc_t *)TPTR(&h->current)) - 1;
-    h->current.len = line->len;
+    h->current = h->current->prev;
 }
-
-#define PTR_SIZE (sizeof (char *))
-#define ALIGN(x) ((char *)(((uint_ptr_t)(x) + (PTR_SIZE-1)) & ~(PTR_SIZE-1)))
 
 void history_commit(history_t *h, tstr_t *l)
 {
-    line_desc_t *line;
-    char *next, *cur;
-    
-    if (l->len + sizeof(line_desc_t) > h->free_size)
+    history_item_t *item = tmalloc_type(history_item_t), *last;
+
+    item->str = tstr_dup(*l);
+
+    if (!h->items)
     {
-	/* XXX: Should overrun old entries */
-	tp_warn(("History: no more room\n"));
+	item->next = item->prev = h->items = h->current = item;
 	return;
     }
 
-    /* Copy line content */
-    cur = TPTR(&h->current);
-    memcpy(cur, TPTR(l), l->len);
-
-    /* Calculate next node 
-     * XXX: make sure we don't exceed our limit
-     */
-    next = ALIGN(cur + l->len + sizeof(line_desc_t));
-
-    /* Set current node's next */
-    line = ((line_desc_t *)cur) - 1;
-    line->len = l->len;
-    line->next = next;
-
-    /* Set next node's prev */
-    line = ((line_desc_t *)next) - 1;
-    line->prev = cur;
-
-    /* Set next node's next */
-    line->next = NULL;
-
-    /* Set history to new entry */
-    h->last = next;
-    TPTR(&h->current) = h->last;
-    h->current.len = 0;
-
-    h->free_size -= l->len + sizeof(line_desc_t);
+    for (last = h->items; last->next != last; last = last->next);
+    if (last == h->items)
+    {
+	h->items = item;
+	item->prev = item;
+    }
+    else
+    {
+	item->prev = last->prev;
+	last->prev->next = item;
+    }
+    last->prev = item;
+    item->next = last;
+    h->current = last;
 }
 
 int history_get(history_t *h, char *buf, int free_size)
 {
     int size;
     
-    size = MIN(h->current.len, free_size);
-    memcpy(buf, TPTR(&h->current), size);
+    size = MIN(h->current->str.len, free_size);
+    memcpy(buf, TPTR(&h->current->str), size);
     return size;
 }
 
-int history_is_first(history_t *h)
+history_t *history_new(void)
 {
-    return TPTR(&h->current) == h->buf;
-}
-
-int history_is_last(history_t *h)
-{
-    return TPTR(&h->current) == h->last;
-}
-
-history_t *history_new(char *buf, int size)
-{
-    history_t *h = &g_history;
-
-    h->buf = TPTR(&h->current) = buf + sizeof(line_desc_t);
-    h->free_size = size - sizeof(line_desc_t);
-    h->current.len = 0;
-    return h;
+    /* Add dummy tail */
+    history_commit(&g_history, &S(""));
+    return &g_history;
 }
 
 void history_free(history_t *h)
 {
-    /* Nothing for now. Singleton */
+    history_item_t *tmp;
+
+    while ((tmp = h->items))
+    {
+	h->items = tmp->next == tmp ? NULL : tmp->next;
+	tstr_free(&tmp->str);
+	tfree(tmp);
+    }
 }

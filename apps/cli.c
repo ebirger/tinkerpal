@@ -42,7 +42,6 @@ static char TERM_SAVE_CURSOR[] = { 0x1b, '[', 's' };
 static char TERM_RESTORE_CURSOR[] = { 0x1b, '[', 'u' };
 static char prompt[] = { 'T','i','n','k','e','r','P','a','l','>',' ' };
 
-static char history_buf[CONFIG_CLI_HISTORY_BUFFER_SIZE];
 static char cli_buf[CONFIG_CLI_BUFFER_SIZE];
 static char *buf, *read_buf;
 static int free_size = sizeof(cli_buf), size, cur_line_pos;
@@ -106,18 +105,12 @@ static void output_history(void)
 
 static void do_up(void)
 {
-    if (history_is_first(history))
-	return;
-
     history_prev(history);
     output_history();
 }
 
 static void do_down(void)
 {
-    if (history_is_last(history))
-	return;
-
     history_next(history);
     output_history();
 }
@@ -316,7 +309,7 @@ void cli_start(void)
 {
     console_write(prompt, sizeof(prompt));
     read_buf = buf = TPTR(&cur_line) = cli_buf;
-    history = history_new(history_buf, sizeof(history_buf));
+    history = history_new();
     TSTR_SET_ALLOCATED(&cur_line);
     console_event_watch_set(&cli_event_watch);
 }

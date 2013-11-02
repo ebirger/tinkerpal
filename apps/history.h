@@ -31,14 +31,12 @@
 typedef struct history_t history_t;
 
 int history_get(history_t *h, char *buf, int free_size);
-int history_is_first(history_t *h);
-int history_is_last(history_t *h);
 
 void history_next(history_t *h);
 void history_prev(history_t *h);
 void history_commit(history_t *h, tstr_t *l);
 
-history_t *history_new(char *buf, int size);
+history_t *history_new(void);
 void history_free(history_t *h);
 
 #endif
