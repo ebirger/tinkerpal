@@ -31,6 +31,12 @@
 
 #define Slength INTERNAL_S("length")
 
+struct var_t {
+    var_t *next;
+    tstr_t key;
+    obj_t *obj;
+};
+
 typedef struct {
     void (*dump)(printer_t *printer, obj_t *o);
     void (*free)(obj_t *o);

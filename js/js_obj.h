@@ -84,12 +84,6 @@ typedef struct {
     int is_true;
 } bool_t;
 
-struct var_t {
-    var_t *next;
-    tstr_t key;
-    obj_t *obj;
-};
-
 typedef struct {
     obj_t obj;
 } env_t;

@@ -91,5 +91,4 @@ void js_init(void)
     OSIZE(function_t);
     OSIZE(num_t);
     OSIZE(string_t);
-    OSIZE(var_t);
 }
