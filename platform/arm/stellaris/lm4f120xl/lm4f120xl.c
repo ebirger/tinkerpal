@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "inc/hw_memmap.h"
+#include "inc/hw_sysctl.h"
 #include "inc/hw_types.h"
 #include "inc/hw_ints.h"
 #include "inc/hw_gpio.h"
@@ -262,9 +263,9 @@ static void lm4f120xl_init(void)
      */
     ROM_FPULazyStackingEnable();
 
-    /* Set the clocking to run directly from the crystal at 50 MHz */
-    ROM_SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ |
-	SYSCTL_OSC_MAIN);
+    /* Set the clocking to run directly from the crystal at 80 MHz */
+    ROM_SysCtlClockSet(SYSCTL_RCC2_DIV400 | SYSCTL_SYSDIV_2_5 |
+	SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
                        
     stellaris_systick_init();
     buttons_init(); 
