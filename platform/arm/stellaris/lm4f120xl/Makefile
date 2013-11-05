@@ -21,7 +21,7 @@ ifneq ($(CONFIG_GCC),)
     LIBC_DIR:=$(LIBC_DIR)/float-abi-hard/fpuv4-sp-d16/
     LIBGCC_DIR:=$(LIBGCC_DIR)/float-abi-hard/fpuv4-sp-d16/
   endif
-  CFLAGS+=-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=$(FPU) -Os \
+  CFLAGS+=-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=$(FPU) -O3 \
     -ffunction-sections -fdata-sections -DPART_LM4F120H5QR \
     -I$(STELLARISWARE_DIR) -DTARGET_IS_BLIZZARD_RA1 -Dgcc -fsingle-precision-constant
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib

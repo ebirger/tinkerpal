@@ -20,7 +20,7 @@ ifneq ($(CONFIG_GCC),)
   MK_OBJS+=entry_gcc.o $(BSP_SRCS:%.c=%.o)
 
   LINKER_SCRIPT:=$(BUILD)/$(d)/lm3s6965.ld
-  CFLAGS+=-mthumb -mcpu=cortex-m3 -Os \
+  CFLAGS+=-mthumb -mcpu=cortex-m3 -O3 \
     -ffunction-sections -fdata-sections -DPART_LM3S6965 \
     -I$(STELLARISWARE_DIR) -Dgcc -fsingle-precision-constant
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
