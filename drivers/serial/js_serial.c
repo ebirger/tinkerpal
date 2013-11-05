@@ -84,7 +84,7 @@ static int get_serial_id(obj_t *o)
 {
     int ret = -1;
     
-    tp_assert(!obj_get_property_int(&ret, o, Sserial_id));
+    tp_assert(!obj_get_property_int(&ret, o, &Sserial_id));
     return ret;
 }
 

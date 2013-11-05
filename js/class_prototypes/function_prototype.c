@@ -88,8 +88,8 @@ static int function_bind_call(obj_t **ret, obj_t *this, int argc,
 
     wrapper_env = to_function(argv[0])->scope;
 
-    bound_func = obj_get_own_property(NULL, wrapper_env, Sbound_func);
-    bound_this = obj_get_own_property(NULL, wrapper_env, Sbound_this);
+    bound_func = obj_get_own_property(NULL, wrapper_env, &Sbound_func);
+    bound_this = obj_get_own_property(NULL, wrapper_env, &Sbound_this);
     if (!bound_func || bound_func == UNDEF || !bound_this || 
 	bound_this == UNDEF)
     {

@@ -153,8 +153,8 @@ extern bool_t false_obj;
 /* Generic obj methods */
 obj_t *obj_cast(obj_t *o, unsigned char class);
 obj_t **obj_var_create(obj_t *o, tstr_t *str);
-obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t str);
-obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property);
+obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *str);
+obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property);
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 obj_t *obj_new(unsigned char class, int size, char *type);
 #define obj_new_type(c, type) obj_new(c, sizeof(type), #type)
@@ -352,7 +352,7 @@ static inline void obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 
 void obj_set_property_str(obj_t *o, tstr_t property, tstr_t value);
 void obj_set_property_int(obj_t *o, tstr_t property, int value);
-int obj_get_property_int(int *value, obj_t *o, tstr_t property);
+int obj_get_property_int(int *value, obj_t *o, const tstr_t *property);
 int obj_get_int(obj_t *o);
 double obj_get_fp(obj_t *o);
 tstr_t obj_get_str(obj_t *o);

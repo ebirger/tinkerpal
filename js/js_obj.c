@@ -44,7 +44,7 @@ typedef struct {
     int (*is_true)(obj_t *o);
     obj_t *(*cast)(obj_t *o, unsigned char class);
     void (*pre_var_create)(obj_t *o, const tstr_t *str);
-    obj_t *(*get_own_property)(obj_t ***lval, obj_t *o, tstr_t str);
+    obj_t *(*get_own_property)(obj_t ***lval, obj_t *o, const tstr_t *str);
     int (*set_own_property)(obj_t *o, tstr_t str, obj_t *value);
 } obj_class_t;
 
@@ -76,7 +76,7 @@ static inline void var_key_free(tstr_t *key)
     tstr_free(key);
 }
 
-static inline int var_key_cmp(tstr_t *keya, tstr_t *keyb)
+static inline int var_key_cmp(const tstr_t *keya, const tstr_t *keyb)
 {
     return tstr_cmp(keya, keyb);
 }
@@ -105,11 +105,11 @@ static void vars_free(var_t **vars)
     }
 }
 
-static obj_t **var_get(var_t *vars, tstr_t key)
+static obj_t **var_get(var_t *vars, const tstr_t *key)
 {
     var_t *iter;
 
-    for (iter = vars; iter && var_key_cmp(&iter->key, &key); iter = iter->next);
+    for (iter = vars; iter && var_key_cmp(&iter->key, key); iter = iter->next);
     if (!iter)
 	return NULL;
 
@@ -152,7 +152,7 @@ void _obj_put(obj_t *o)
 	tfree(o);
 }
 
-obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
+obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)
 {
     obj_t **ref = NULL, *val = NULL, *proto;
 
@@ -160,7 +160,7 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, tstr_t property)
     if ((val = obj_get_own_property(&ref, o, property)))
 	goto Exit;
 
-    proto = obj_get_own_property(NULL, o, Sprototype);
+    proto = obj_get_own_property(NULL, o, &Sprototype);
     if (proto && proto != UNDEF)
     {
 	val = obj_get_property(&ref, proto, property);
@@ -203,7 +203,7 @@ int obj_true(obj_t *o)
     return CLASS(o)->is_true(o);
 }
 
-obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, tstr_t key)
+obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)
 {
     obj_t **ref;
 
@@ -225,7 +225,7 @@ obj_t *obj_cast(obj_t *o, unsigned char class)
     return CLASS(o)->cast(o, class);
 }
 
-obj_t *obj_has_property(obj_t *o, tstr_t property)
+obj_t *obj_has_property(obj_t *o, const tstr_t *property)
 {
     obj_t *ret, *prop;
 
@@ -245,7 +245,7 @@ obj_t *obj_do_in_op(obj_t *oa, obj_t *ob)
      * to throw an exception, but we don't support exceptions in expressions
      * yet.
      */
-    ret = obj_has_property(ob, property);
+    ret = obj_has_property(ob, &property);
     tstr_free(&property);
     return ret;
 }
@@ -356,7 +356,7 @@ tstr_t obj_get_str(obj_t *o)
     return ret;
 }
 
-int obj_get_property_int(int *value, obj_t *o, tstr_t property)
+int obj_get_property_int(int *value, obj_t *o, const tstr_t *property)
 {
     obj_t *p = obj_get_own_property(NULL, o, property);
 
@@ -372,7 +372,7 @@ void obj_inherit(obj_t *son, obj_t *parent)
 {
     obj_t *func_proto;
     
-    func_proto = obj_get_own_property(NULL, parent, Sprototype);
+    func_proto = obj_get_own_property(NULL, parent, &Sprototype);
     _obj_set_property(son, Sprototype, func_proto);
 }
 
@@ -827,7 +827,7 @@ int object_iter_next(object_iter_t *iter)
     }
 
     /* traverse our prototype */
-    proto = obj_get_own_property(NULL, iter->obj, Sprototype);
+    proto = obj_get_own_property(NULL, iter->obj, &Sprototype);
     if (!proto || proto == UNDEF)
 	return 0;
 
@@ -859,7 +859,7 @@ static void array_dump(printer_t *printer, obj_t *o)
 {
     int first = 1, len, k, undef_streak = 0;
 
-    if (obj_get_property_int(&len, o, Slength))
+    if (obj_get_property_int(&len, o, &Slength))
     {
 	tprintf(printer, "Unknown length array");
 	return;
@@ -909,7 +909,7 @@ static obj_t **array_length_get(int *length, obj_t *arr)
 {
     obj_t **ret;
 
-    ret = var_get(arr->properties, Slength);
+    ret = var_get(arr->properties, &Slength);
     *length = NUM_INT(to_num(*ret));
     obj_put(*ret);
     return ret;
@@ -997,7 +997,7 @@ static obj_t *array_lookup(obj_t *arr, int index)
     obj_t *ret;
 
     lookup_id = int_to_tstr(index);
-    ret = obj_get_own_property(NULL, arr, lookup_id);
+    ret = obj_get_own_property(NULL, arr, &lookup_id);
     tstr_free(&lookup_id);
     return ret;
 }
@@ -1006,7 +1006,7 @@ void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
 {
     int len = 0;
 
-    obj_get_property_int(&len, arr, Slength);
+    obj_get_property_int(&len, arr, &Slength);
     iter->len = len;
     iter->reverse = reverse;
     iter->k = reverse ? iter->len : -1;
@@ -1192,14 +1192,15 @@ static int string_is_true(obj_t *o)
     return string_cast(o, BOOL_CLASS) == TRUE;
 }
 
-static obj_t *string_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
+static obj_t *string_get_own_property(obj_t ***lval, obj_t *o,
+    const tstr_t *str)
 {
     tnum_t tidx;
     int idx;
     string_t *s = to_string(o);
     tstr_t retval;
 
-    if (tstr_to_tnum(&tidx, &str))
+    if (tstr_to_tnum(&tidx, str))
 	return NULL;
 
     /* XXX: tstr_to_int? */
@@ -1231,11 +1232,12 @@ obj_t *string_new(tstr_t s)
 
 #define SbyteLength S("byteLength")
 
-static obj_t *array_buffer_get_own_property(obj_t ***lval, obj_t *o, tstr_t str)
+static obj_t *array_buffer_get_own_property(obj_t ***lval, obj_t *o, 
+    const tstr_t *str)
 {
     array_buffer_t *b = to_array_buffer(o);
 
-    if (!tstr_cmp(&str, &SbyteLength))
+    if (!tstr_cmp(str, &SbyteLength))
     {
 	if (lval)
 	    *lval = NULL;
@@ -1269,7 +1271,7 @@ obj_t *array_buffer_new(int length)
 }
 
 static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o, 
-    tstr_t str)
+    const tstr_t *str)
 {
     tnum_t tidx;
     int idx, shift, retval;
@@ -1279,24 +1281,24 @@ static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o,
     buf = &v->array_buffer->value;
     shift = v->flags & ABV_SHIFT_MASK;
 
-    if (!tstr_cmp(&str, &Slength))
+    if (!tstr_cmp(str, &Slength))
     {
 	retval = v->length;
 	goto Ok;
     }
-    if (!tstr_cmp(&str, &S("BYTES_PER_ELEMENT")))
+    if (!tstr_cmp(str, &S("BYTES_PER_ELEMENT")))
     {
 	retval = 1 << shift;
 	goto Ok;
     }
 
-    if (!tstr_cmp(&str, &S("buffer")))
+    if (!tstr_cmp(str, &S("buffer")))
     {
 	*lval = NULL;
 	return obj_get((obj_t *)v->array_buffer);
     }
 
-    if (tstr_to_tnum(&tidx, &str))
+    if (tstr_to_tnum(&tidx, str))
 	return NULL;
 
     idx = NUMERIC_INT(tidx);

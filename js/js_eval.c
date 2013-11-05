@@ -440,7 +440,7 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
     case TOK_PROTOTYPE:
 	js_scan_next_token(scan);
 	tp_assert(obj);
-	*po = obj_get_own_property(&ref->dst, obj, Sprototype);
+	*po = obj_get_own_property(&ref->dst, obj, &Sprototype);
 	if (!*po)
 	{
 	    obj_put(ref->field);
@@ -537,7 +537,7 @@ static obj_t *get_property(obj_t *obj, obj_t *property, reference_t *ref)
 	ref->base = global_env;
     }
 
-    o = obj_get_property(&ref->dst, obj, prop_name);
+    o = obj_get_property(&ref->dst, obj, &prop_name);
 
     obj_put(ref->field);
     ref->field = property;
