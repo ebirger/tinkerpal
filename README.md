@@ -5,10 +5,13 @@ Lightweight JavaScript engine and ecosystem for embedded platforms
 Platforms
 ---------
 All supported platform provide serial support, some provide GPIO and SPI support
-- TI Stellaris Launchpad (LM4F120XL)
+- TI Stellaris LM4F120XL (“Stellaris Launchpad”)
 - TI Stellaris LM3S6965
-- TI Stellaris LM3S6918
-- STM32F3Discovery
+- TI Stellaris LM3S6918 (“RDK-IDM”)
+- TI MSP-EXP430F5529 (“MSP430F5529 USB Experimenter’s Board”)
+- TI MSP-EXP430F5529LP (“MSP430F5529 Launchpad”)
+- ST STM32F3Discovery
+- ST STM32F4Discovery
 - Freescale FRDM-KL25Z
 - Linux/Cygwin
 
