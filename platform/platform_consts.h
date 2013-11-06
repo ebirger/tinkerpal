@@ -35,6 +35,8 @@
 #include "platform/arm/stellaris/lm3s6918/lm3s6918.h"
 #elif defined(CONFIG_STM32F3DISCOVERY)
 #include "platform/arm/stm32/stm32f3discovery/stm32f3discovery.h"
+#elif defined(CONFIG_STM32F4DISCOVERY)
+#include "platform/arm/stm32/stm32f4discovery/stm32f4discovery.h"
 #elif defined(CONFIG_FRDM_KL25Z)
 #include "platform/arm/frdm/kl25z.h"
 #elif defined(CONFIG_MSP430F5529)
