@@ -64,95 +64,95 @@ void (*const vector[])(void) =
     default_isr, /* MemManage_Handler */
     default_isr, /* BusFault_Handler */
     default_isr, /* UsageFault_Handler */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* SVC_Handler */
-    default_isr, /* DebugMon_Handler */
-    default_isr, /* 0 */
-    default_isr, /* PendSV_Handler */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* SVCall Handler */
+    default_isr, /* Debug Monitor Handler */
+    default_isr, /* Reserved */
+    default_isr, /* PendSV Handler */
     cortex_m_systick_isr, /* SysTick_Handler */
-    default_isr, /* WWDG_IRQHandler */
-    default_isr, /* PVD_IRQHandler */
-    default_isr, /* TAMPER_STAMP_IRQHandler */
-    default_isr, /* RTC_WKUP_IRQHandler */
-    default_isr, /* FLASH_IRQHandler */
-    default_isr, /* RCC_IRQHandler */
-    default_isr, /* EXTI0_IRQHandler */
-    default_isr, /* EXTI1_IRQHandler */
-    default_isr, /* EXTI2_TS_IRQHandler */
-    default_isr, /* EXTI3_IRQHandler */
-    default_isr, /* EXTI4_IRQHandler */
-    default_isr, /* DMA1_Channel1_IRQHandler */
-    default_isr, /* DMA1_Channel2_IRQHandler */
-    default_isr, /* DMA1_Channel3_IRQHandler */
-    default_isr, /* DMA1_Channel4_IRQHandler */
-    default_isr, /* DMA1_Channel5_IRQHandler */
-    default_isr, /* DMA1_Channel6_IRQHandler */
-    default_isr, /* DMA1_Channel7_IRQHandler */
-    default_isr, /* ADC1_2_IRQHandler */
-    default_isr, /* USB_HP_CAN1_TX_IRQHandler */
-    default_isr, /* USB_LP_CAN1_RX0_IRQHandler */
-    default_isr, /* CAN1_RX1_IRQHandler */
-    default_isr, /* CAN1_SCE_IRQHandler */
-    default_isr, /* EXTI9_5_IRQHandler */
-    default_isr, /* TIM1_BRK_TIM15_IRQHandler */
-    default_isr, /* TIM1_UP_TIM16_IRQHandler */
-    default_isr, /* TIM1_TRG_COM_TIM17_IRQHandler */
-    default_isr, /* TIM1_CC_IRQHandler */
-    default_isr, /* TIM2_IRQHandler */
-    default_isr, /* TIM3_IRQHandler */
-    default_isr, /* TIM4_IRQHandler */
-    default_isr, /* I2C1_EV_IRQHandler */
-    default_isr, /* I2C1_ER_IRQHandler */
-    default_isr, /* I2C2_EV_IRQHandler */
-    default_isr, /* I2C2_ER_IRQHandler */
-    default_isr, /* SPI1_IRQHandler */
-    default_isr, /* SPI2_IRQHandler */
-    default_isr, /* USART1_IRQHandler */
-    usart_isr, /* USART2_IRQHandler */
-    default_isr, /* USART3_IRQHandler */
-    default_isr, /* EXTI15_10_IRQHandler */
-    default_isr, /* RTC_Alarm_IRQHandler */
-    default_isr, /* USBWakeUp_IRQHandler */
-    default_isr, /* TIM8_BRK_IRQHandler */
-    default_isr, /* TIM8_UP_IRQHandler */
-    default_isr, /* TIM8_TRG_COM_IRQHandler */
-    default_isr, /* TIM8_CC_IRQHandler */
-    default_isr, /* ADC3_IRQHandler */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* SPI3_IRQHandler */
-    default_isr, /* UART4_IRQHandler */
-    default_isr, /* UART5_IRQHandler */
-    default_isr, /* TIM6_DAC_IRQHandler */
-    default_isr, /* TIM7_IRQHandler */
-    default_isr, /* DMA2_Channel1_IRQHandler */
-    default_isr, /* DMA2_Channel2_IRQHandler */
-    default_isr, /* DMA2_Channel3_IRQHandler */
-    default_isr, /* DMA2_Channel4_IRQHandler */
-    default_isr, /* DMA2_Channel5_IRQHandler */
-    default_isr, /* ADC4_IRQHandler */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* COMP1_2_3_IRQHandler */
-    default_isr, /* COMP4_5_6_IRQHandler */
-    default_isr, /* COMP7_IRQHandler */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* USB_HP_IRQHandler */
-    default_isr, /* USB_LP_IRQHandler */
-    default_isr, /* USBWakeUp_RMP_IRQHandler */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* 0 */
-    default_isr, /* FPU_IRQHandler */
+    default_isr, /* Window WatchDog */
+    default_isr, /* PVD through EXTI Line detection */
+    default_isr, /* Tamper and TimeStamps through the EXTI line */
+    default_isr, /* RTC Wakeup through the EXTI line */
+    default_isr, /* FLASH */
+    default_isr, /* RCC */
+    default_isr, /* EXTI Line0 */
+    default_isr, /* EXTI Line1 */
+    default_isr, /* EXTI Line2 */
+    default_isr, /* EXTI Line3 */
+    default_isr, /* EXTI Line4 */
+    default_isr, /* DMA1 Stream 0 */
+    default_isr, /* DMA1 Stream 1 */
+    default_isr, /* DMA1 Stream 2 */
+    default_isr, /* DMA1 Stream 3 */
+    default_isr, /* DMA1 Stream 4 */
+    default_isr, /* DMA1 Stream 5 */
+    default_isr, /* DMA1 Stream 6 */
+    default_isr, /* ADC1 */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* External Line[9:5]s */
+    default_isr, /* TIM1 Break and TIM9 */
+    default_isr, /* TIM1 Update and TIM10 */
+    default_isr, /* TIM1 Trigger and Commutation and TIM11 */
+    default_isr, /* TIM1 Capture Compare */
+    default_isr, /* TIM2 */
+    default_isr, /* TIM3 */
+    default_isr, /* TIM4 */
+    default_isr, /* I2C1 Event */
+    default_isr, /* I2C1 Error */
+    default_isr, /* I2C2 Event */
+    default_isr, /* I2C2 Error */
+    default_isr, /* SPI1 */
+    default_isr, /* SPI2 */
+    default_isr, /* USART1 */
+    usart_isr, /* USART2 */
+    default_isr, /* Reserved */
+    default_isr, /* External Line[15:10]s */
+    default_isr, /* RTC Alarm (A and B) through EXTI Line */
+    default_isr, /* USB OTG FS Wakeup through EXTI line */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* DMA1 Stream7 */
+    default_isr, /* Reserved */
+    default_isr, /* SDIO */
+    default_isr, /* TIM5 */
+    default_isr, /* SPI3 */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* DMA2 Stream 0 */
+    default_isr, /* DMA2 Stream 1 */
+    default_isr, /* DMA2 Stream 2 */
+    default_isr, /* DMA2 Stream 3 */
+    default_isr, /* DMA2 Stream 4 */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* USB OTG FS */
+    default_isr, /* DMA2 Stream 5 */
+    default_isr, /* DMA2 Stream 6 */
+    default_isr, /* DMA2 Stream 7 */
+    default_isr, /* USART6 */
+    default_isr, /* I2C3 event */
+    default_isr, /* I2C3 error */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* Reserved */
+    default_isr, /* FPU */
 };
