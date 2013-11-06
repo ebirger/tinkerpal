@@ -3,22 +3,6 @@ menu "Platform"
 config ARM
 	bool
 
-config STELLARIS
-	bool
-
-config FRDM
-	bool
-
-config STM32
-	bool
-
-config MSP430
-	bool
-
-config MSP430F5529
-	bool
-	select MSP430
-
 config PLAT_HAS_GPIO
 	bool
 
@@ -38,15 +22,9 @@ config BUFFERED_SERIAL
 config PLAT_HAS_BLK
 	bool
 
-config UNIX
-	bool
-	select PLAT_HAS_MALLOC
-	select PLAT_HAS_GCC
-
-config LM3S6918
+config STELLARIS
 	bool
 	select ARM
-	select STELLARIS
 	select PLAT_HAS_GCC
 	select PLAT_HAS_TI_CCS5
 	select PLAT_HAS_GPIO
@@ -54,6 +32,39 @@ config LM3S6918
 	select BUFFERED_SERIAL
 	select PLAT_HAS_SPI
 	select PLAT_HAS_MALLOC
+
+config FRDM
+	bool
+	select ARM
+	select PLAT_HAS_GCC
+	select PLAT_HAS_MALLOC
+
+config STM32
+	bool
+	select ARM
+	select PLAT_HAS_GCC
+	select PLAT_HAS_MALLOC
+
+config MSP430
+	bool
+	select PLAT_HAS_TI_CCS5
+	select PLAT_HAS_MALLOC
+
+config UNIX
+	bool
+	select PLAT_HAS_MALLOC
+	select PLAT_HAS_GCC
+
+config MSP430F5529
+	bool
+	select MSP430
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+
+config LM3S6918
+	bool
+	select STELLARIS
 
 choice 
 
@@ -69,28 +80,12 @@ config PLATFORM_EMULATION
 
 config LM4F120XL
 	bool "TI LM4F120XL (Stellaris Launchpad)"
-	select ARM
 	select STELLARIS
-	select PLAT_HAS_GCC
-	select PLAT_HAS_TI_CCS5
-	select PLAT_HAS_GPIO
 	select PLAT_HAS_GPIO_INTERRUPTS
-	select PLAT_HAS_SERIAL
-	select BUFFERED_SERIAL
-	select PLAT_HAS_MALLOC
-	select PLAT_HAS_SPI
 
 config LM3S6965
 	bool "TI LM3S6965"
-	select ARM
 	select STELLARIS
-	select PLAT_HAS_GCC
-	select PLAT_HAS_TI_CCS5
-	select PLAT_HAS_GPIO
-	select PLAT_HAS_SERIAL
-	select BUFFERED_SERIAL
-	select PLAT_HAS_SPI
-	select PLAT_HAS_MALLOC
 
 config RDK_IDM
 	bool "TI RDK-IDM (LM3S6918)"
@@ -98,42 +93,24 @@ config RDK_IDM
 
 config STM32F3DISCOVERY
 	bool "ST Micro STM32F3 Discovery board"
-	select ARM
 	select STM32
-	select PLAT_HAS_GCC
-	select PLAT_HAS_MALLOC
 	select PLAT_HAS_GPIO
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
 
 config FRDM_KL25Z
 	bool "Freescale FRDM-KL25Z"
-	select ARM
 	select FRDM
-	select PLAT_HAS_GCC
-	select PLAT_HAS_MALLOC
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
 
 config MSP430F5529_EXP
 	bool "TI MSP430F5529 Experimenter Board"
 	select MSP430F5529
-	select PLAT_HAS_GCC
-	select PLAT_HAS_TI_CCS5
-	select PLAT_HAS_MALLOC
-	select PLAT_HAS_SERIAL
-	select BUFFERED_SERIAL
-	select PLAT_HAS_GPIO
 
 config MSP430F5529_LAUNCHPAD
 	bool "TI MSP430F5529 Launchpad"
 	select MSP430F5529
-	select PLAT_HAS_GCC
-	select PLAT_HAS_TI_CCS5
-	select PLAT_HAS_MALLOC
-	select PLAT_HAS_SERIAL
-	select BUFFERED_SERIAL
-	select PLAT_HAS_GPIO
 
 endchoice
 
