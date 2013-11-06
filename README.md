@@ -4,7 +4,7 @@ Lightweight JavaScript engine and ecosystem for embedded platforms
 
 Platforms
 ---------
-All supported platform provide serial support, some provide GPIO and SPI support
+All supported platform provide a serial console, some provide GPIO and SPI support
 - TI Stellaris LM4F120XL (“Stellaris Launchpad”)
 - TI Stellaris LM3S6965
 - TI Stellaris LM3S6918 (“RDK-IDM”)
