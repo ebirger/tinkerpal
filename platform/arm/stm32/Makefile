@@ -1,5 +1,5 @@
 MK_SUBDIRS+=$(if $(CONFIG_STM32F3DISCOVERY),stm32f3discovery)
-MK_SUBDIRS+=$(if $(CONFIG_STM32F3DISCOVERY),stm32f4discovery)
+MK_SUBDIRS+=$(if $(CONFIG_STM32F4DISCOVERY),stm32f4discovery)
 
 ifneq ($(CONFIG_GCC),)
   ifeq ($(CROSS_COMPILE),)
