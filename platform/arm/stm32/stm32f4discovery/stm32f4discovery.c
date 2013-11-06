@@ -22,15 +22,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "stm32f30x_gpio.h"
-#include "stm32f30x_usart.h"
-#include "stm32f30x_rcc.h"
-#include "stm32f30x_misc.h"
+#include "stm32f4xx_gpio.h"
+#include "stm32f4xx_usart.h"
+#include "stm32f4xx_rcc.h"
+#include "misc.h"
 #include "util/debug.h"
 #include "util/tstr.h"
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
-#include "platform/arm/stm32/stm32f3discovery/stm32f3discovery.h"
+#include "platform/arm/stm32/stm32f4discovery/stm32f4discovery.h"
 #include "drivers/serial/serial.h"
 
 extern uint32_t SystemCoreClock;
@@ -39,15 +39,15 @@ static const struct {
     unsigned long periph;
     GPIO_TypeDef *port;
 } gpio_port[] = {
-    [GPIO_PORT_A] = { RCC_AHBPeriph_GPIOA, GPIOA },
-    [GPIO_PORT_B] = { RCC_AHBPeriph_GPIOB, GPIOB },
-    [GPIO_PORT_C] = { RCC_AHBPeriph_GPIOC, GPIOC },
-    [GPIO_PORT_D] = { RCC_AHBPeriph_GPIOD, GPIOD },
-    [GPIO_PORT_E] = { RCC_AHBPeriph_GPIOE, GPIOE },
-    [GPIO_PORT_F] = { RCC_AHBPeriph_GPIOF, GPIOF }
+    [GPIO_PORT_A] = { RCC_AHB1Periph_GPIOA, GPIOA },
+    [GPIO_PORT_B] = { RCC_AHB1Periph_GPIOB, GPIOB },
+    [GPIO_PORT_C] = { RCC_AHB1Periph_GPIOC, GPIOC },
+    [GPIO_PORT_D] = { RCC_AHB1Periph_GPIOD, GPIOD },
+    [GPIO_PORT_E] = { RCC_AHB1Periph_GPIOE, GPIOE },
+    [GPIO_PORT_F] = { RCC_AHB1Periph_GPIOF, GPIOF }
 };
 
-#define PERIPH_ENABLE(p) RCC_AHBPeriphClockCmd(p, ENABLE)
+#define PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
 #define GPIO_PERIPH(p) (gpio_port[((p) >> 4)].periph)
 #define GPIO_PORT(p) (gpio_port[((p) >> 4)].port)
 #define GPIO_BIT(p) (1 << ((p) & 0xf))
@@ -91,33 +91,10 @@ static int stm32_serial_write(int u, char *buf, int size)
 
 static void stm32_gpio_digital_write(int pin, int value)
 {
-    if (value)
-	GPIO_PORT(pin)->BSRR |= GPIO_BIT(pin);
-    else
-	GPIO_PORT(pin)->BRR |= GPIO_BIT(pin);
 }
 
 static int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-    PERIPH_ENABLE(GPIO_PERIPH(pin));
-
-    switch (mode)
-    {
-    case GPIO_PM_OUTPUT:
-	/* XXX: not all pins are actually available */
-	GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
-	break;
-    default:
-	tp_err(("Pinmode %d is not supported yet\n", mode));
-	return -1;
-    }
     return 0;
 }
 
@@ -156,7 +133,7 @@ static void usarts_init(void)
     USART_InitTypeDef USART_InitStructure;
 
     /* GPIO Clock */
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
     /* USART Clock */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
@@ -173,10 +150,10 @@ static void usarts_init(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     /* Map USART2 TX to A.02 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_7);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
 
     /* Map USART2 PX to A.03 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_7);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
     /* Initialize USART */
     USART_InitStructure.USART_BaudRate = 115200;
@@ -194,14 +171,14 @@ static void usarts_init(void)
     USART_Cmd(USART2, ENABLE);
 }
 
-static void stm32f3discovery_init(void)
+static void stm32f4discovery_init(void)
 {
     usarts_init();
     timers_init();
 }
 
 const platform_t platform = {
-    .desc = "STM32F3Discovery",
+    .desc = "STM32F4Discovery",
     .serial = {
 	.enable = stm32_serial_enable,
 	.read = buffered_serial_read,
@@ -213,7 +190,7 @@ const platform_t platform = {
 	.digital_write = stm32_gpio_digital_write,
 	.set_pin_mode = stm32_gpio_set_pin_mode,
     },
-    .init = stm32f3discovery_init,
+    .init = stm32f4discovery_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = stm32_select,
