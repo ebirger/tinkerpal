@@ -91,10 +91,33 @@ static int stm32_serial_write(int u, char *buf, int size)
 
 static void stm32_gpio_digital_write(int pin, int value)
 {
+    if (value)
+	GPIO_SetBits(GPIO_PORT(pin), GPIO_BIT(pin));
+    else
+	GPIO_ResetBits(GPIO_PORT(pin), GPIO_BIT(pin));
 }
 
 static int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    PERIPH_ENABLE(GPIO_PERIPH(pin));
+
+    switch (mode)
+    {
+    case GPIO_PM_OUTPUT:
+	/* XXX: not all pins are actually available */
+	GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
+	break;
+    default:
+	tp_err(("Pinmode %d is not supported yet\n", mode));
+	return -1;
+    }
     return 0;
 }
 
