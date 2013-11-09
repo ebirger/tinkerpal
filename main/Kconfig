@@ -21,6 +21,17 @@ config DLMALLOC
 
 endchoice
 
+config MEM_CACHE
+	bool "Memory cache - pool memory resources"
+	default y
+	help
+		Reduce allocation overhead by grouping similar objects 
+		allocations.
+		Note: on very small memory platforms (~8KB), the cache overhead
+		is larger than the allocation overhead.
+		When not enabled, the mem_cache API reduces to standard allocation
+		If in doubt, say y
+
 config MEM_PROFILING
 	bool "Allow profiling of used memory"
 	help
