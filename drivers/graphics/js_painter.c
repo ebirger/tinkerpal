@@ -35,7 +35,7 @@ void js_painter_pixel_draw(int x, int y, int enable, void *ctx)
     obj_t *argv[4], *painter = ctx;
     obj_t *ret = UNDEF;
 
-    argv[0] = obj_get_property(NULL, painter, SpixelDraw);
+    argv[0] = obj_get_property(NULL, painter, &SpixelDraw);
     argv[1] = num_new_int(x);
     argv[2] = num_new_int(y);
     argv[3] = num_new_int(enable);
@@ -56,7 +56,7 @@ void *js_painter_ctx(obj_t *o)
 {
     obj_t *painter;
     
-    tp_assert((painter = obj_get_property(NULL, o, Spainter)));
+    tp_assert((painter = obj_get_property(NULL, o, &Spainter)));
     obj_put(painter); /* Return our reference. No need for a new one */
     return (void *)painter;
 }
