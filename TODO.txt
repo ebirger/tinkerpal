@@ -32,7 +32,6 @@ Apps
 
 Core
 ====
-- Memory cache for objects
 - Builtinfs doesn't support file extensions
 - Execution break (CTRL-C)
 - Formatting exceptions ("pinmod %s is not available")
