@@ -232,9 +232,9 @@ void *tmalloc(int sz, char *type)
 
     need_squeeze = sz;
     tp_debug(("Squeezing, need %d\n", sz));
-    for (s = squeezers; s && need_squeeze > 0; s = s->next)
+    for (s = squeezers; s; s = s->next)
     {
-	need_squeeze -= s->squeeze(s, need_squeeze);
+	need_squeeze -= s->squeeze(s, need_squeeze >= 0 ? need_squeeze : 0);
 	tp_debug(("Squeezed %d so far\n", sz - need_squeeze));
     }
 
