@@ -156,8 +156,6 @@ obj_t **obj_var_create(obj_t *o, tstr_t *str);
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *str);
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property);
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob);
-obj_t *obj_new(unsigned char class, int size, char *type);
-#define obj_new_type(c, type) obj_new(c, sizeof(type), #type)
 
 static inline obj_t *obj_get(obj_t *o)
 {
@@ -371,5 +369,8 @@ static inline int obj_eq(obj_t *a, obj_t *b)
 }
 
 int throw_exception(obj_t **po, tstr_t *desc);
+
+void js_obj_uninit(void);
+void js_obj_init(void);
 
 #endif

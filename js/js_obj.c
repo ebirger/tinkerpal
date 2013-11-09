@@ -24,6 +24,7 @@
  */
 #include "util/tp_types.h"
 #include "util/tmalloc.h"
+#include "util/mem_cache.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
 #include "js/js_obj.h"
@@ -54,6 +55,8 @@ typedef struct {
 extern const obj_class_t classes[];
 
 static obj_t *class_prototypes[CLASS_LAST+1];
+static mem_cache_t *obj_cache[CLASS_LAST];
+static mem_cache_t *var_cache;
 
 #define CLASS(obj) (&classes[(obj)->class])
 #define CLASS_PROTOTYPE(obj) (class_prototypes[(obj)->class])
@@ -91,7 +94,7 @@ static void var_free(var_t *v)
     tp_debug(("freeing %p\n", v));
     obj_put(v->obj);
     var_key_free(&v->key);
-    tfree(v);
+    mem_cache_free(var_cache, v);
 }
 
 static void vars_free(var_t **vars)
@@ -132,7 +135,7 @@ static obj_t **var_create(var_t **vars, tstr_t *key)
     else
     {
 	/* Create new */
-	*iter = tmalloc_type(var_t);
+	*iter = mem_cache_alloc(var_cache);
 	(*iter)->key = tstr_dup(*key);
 	(*iter)->next = NULL;
 	(*iter)->obj = NULL;
@@ -149,7 +152,7 @@ void _obj_put(obj_t *o)
     vars_free(&o->properties);
     tp_debug(("%s: freeing %p\n", __FUNCTION__, o));
     if (!(o->flags & OBJ_STATIC))
-	tfree(o);
+	mem_cache_free(obj_cache[o->class - 1], o);
 }
 
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)
@@ -287,9 +290,9 @@ obj_t **obj_var_create(obj_t *o, tstr_t *key)
     return var_create(&o->properties, key);
 }
 
-obj_t *obj_new(unsigned char class, int size, char *type)
+static obj_t *obj_new(unsigned char class)
 {
-    obj_t *ret = tmalloc(size, type);
+    obj_t *ret = mem_cache_alloc(obj_cache[class - 1]);
 
     ret->class = class;
     ret->properties = NULL;
@@ -515,7 +518,7 @@ static int num_is_true(obj_t *o)
 
 obj_t *num_new_int(int v)
 {
-    num_t *ret = (num_t *)obj_new_type(NUM_CLASS, num_t);
+    num_t *ret = (num_t *)obj_new(NUM_CLASS);
 
     NUM_INT(ret) = v;
     return (obj_t *)ret;
@@ -523,7 +526,7 @@ obj_t *num_new_int(int v)
 
 obj_t *num_new_fp(double v)
 {
-    num_t *ret = (num_t *)obj_new_type(NUM_CLASS, num_t);
+    num_t *ret = (num_t *)obj_new(NUM_CLASS);
 
     NUM_SET_FP(ret);
     NUM_FP(ret) = v;
@@ -706,7 +709,7 @@ static obj_t *function_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope, 
     call_t call)
 {
-    function_t *ret = (function_t *)obj_new_type(FUNCTION_CLASS, function_t);
+    function_t *ret = (function_t *)obj_new(FUNCTION_CLASS);
 
     tp_assert(call);
     _obj_set_property(&ret->obj, Sprototype, object_new());
@@ -846,7 +849,7 @@ void object_iter_uninit(object_iter_t *iter)
 
 obj_t *object_new(void)
 {
-    obj_t *ret = obj_new_type(OBJECT_CLASS, obj_t);
+    obj_t *ret = obj_new(OBJECT_CLASS);
     return ret;
 }
 
@@ -1079,7 +1082,7 @@ static void array_pre_var_create(obj_t *arr, const tstr_t *str)
 
 obj_t *array_new(void)
 {
-    obj_t *ret = obj_new_type(ARRAY_CLASS, obj_t), **len_prop;
+    obj_t *ret = obj_new(ARRAY_CLASS), **len_prop;
 
     /* Add length property */
     len_prop = var_create(&ret->properties, &Slength);
@@ -1105,7 +1108,7 @@ static void env_dump(printer_t *printer, obj_t *o)
 
 obj_t *env_new(obj_t *env)
 {
-    env_t *n = (env_t *)obj_new_type(ENV_CLASS, env_t);
+    env_t *n = (env_t *)obj_new(ENV_CLASS);
 
     if (env)
 	obj_set_property(&n->obj, Sprototype, env);
@@ -1216,7 +1219,7 @@ static obj_t *string_get_own_property(obj_t ***lval, obj_t *o,
 
 obj_t *string_new(tstr_t s)
 {
-    string_t *ret = (string_t *)obj_new_type(STRING_CLASS, string_t);
+    string_t *ret = (string_t *)obj_new(STRING_CLASS);
     obj_t **len_prop;
 
     ret->value = s;
@@ -1263,8 +1266,7 @@ static void array_buffer_free(obj_t *o)
 
 obj_t *array_buffer_new(int length)
 {
-    array_buffer_t *ret = (array_buffer_t *)obj_new_type(ARRAY_BUFFER_CLASS, 
-	array_buffer_t);
+    array_buffer_t *ret = (array_buffer_t *)obj_new(ARRAY_BUFFER_CLASS);
     
     tstr_zalloc(&ret->value, length);
     return (obj_t *)ret;
@@ -1396,8 +1398,8 @@ static void array_buffer_view_free(obj_t *o)
 obj_t *array_buffer_view_new(obj_t *array_buffer, u32 flags, u32 offset,
     int length)
 {
-    array_buffer_view_t *ret = (array_buffer_view_t *)obj_new_type(
-        ARRAY_BUFFER_VIEW_CLASS, array_buffer_view_t);
+    array_buffer_view_t *ret = (array_buffer_view_t *)obj_new(
+        ARRAY_BUFFER_VIEW_CLASS);
 
     ret->array_buffer = (array_buffer_t *)obj_get(array_buffer);
     ret->flags = flags;
@@ -1410,6 +1412,33 @@ obj_t *array_buffer_view_new(obj_t *array_buffer, u32 flags, u32 offset,
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {
     class_prototypes[class] = proto;
+}
+
+void js_obj_uninit(void)
+{
+    int i;
+
+    for (i = 0; i < CLASS_LAST; i++)
+    {
+	if (obj_cache[i])
+	    mem_cache_destroy(obj_cache[i]);
+    }
+    mem_cache_destroy(var_cache);
+}
+
+void js_obj_init(void)
+{
+    var_cache = mem_cache_create(sizeof(var_t));
+#define OBJ_CACHE_INIT(type, class) \
+    obj_cache[class - 1] = mem_cache_create(sizeof(type))
+    OBJ_CACHE_INIT(num_t, NUM_CLASS);
+    OBJ_CACHE_INIT(function_t, FUNCTION_CLASS);
+    OBJ_CACHE_INIT(string_t, STRING_CLASS);
+    OBJ_CACHE_INIT(obj_t, OBJECT_CLASS);
+    OBJ_CACHE_INIT(obj_t, ARRAY_CLASS);
+    OBJ_CACHE_INIT(env_t, ENV_CLASS);
+    OBJ_CACHE_INIT(array_buffer_t, ARRAY_BUFFER_CLASS);
+    OBJ_CACHE_INIT(array_buffer_view_t, ARRAY_BUFFER_VIEW_CLASS);
 }
 
 const obj_class_t classes[] = {

@@ -25,6 +25,7 @@
 #include <stdio.h> /* For NULL */
 #include "util/tmalloc.h"
 #include "util/tprintf.h"
+#include "util/mem_cache.h"
 #include "main/console.h"
 #include "js/js.h"
 #include "js/js_eval.h"
@@ -76,10 +77,12 @@ void js_uninit(void)
     _obj_put(global_env);
     js_builtins_uninit();
     js_eval_uninit();
+    js_obj_uninit();
 }
 
 void js_init(void)
 {
+    js_obj_init();
     tprintf_register_handler('o', obj_tprintf_handler);
     js_scan_set_constants_cb(js_get_constants_cb);
     global_env = env_new(NULL);
