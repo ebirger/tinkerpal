@@ -41,7 +41,7 @@ struct mem_cache_t {
     mem_cache_block_t *head;
 };
 
-static void mem_cache_block_uninit(mem_cache_block_t *block)
+static void mem_cache_block_destroy(mem_cache_block_t *block)
 {
     mem_cache_block_t *tmp;
 
@@ -52,7 +52,7 @@ static void mem_cache_block_uninit(mem_cache_block_t *block)
     }
 }
 
-static mem_cache_block_t *mem_cache_block_init(int item_size)
+static mem_cache_block_t *mem_cache_block_create(int item_size)
 {
     mem_cache_block_t *block = tmalloc(sizeof(mem_cache_block_t) +
 	(item_size * NUM_ITEMS), "mem cache block");
@@ -100,7 +100,7 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
 
 	block->next = next->next;
 	next->next = NULL;
-	mem_cache_block_uninit(next);
+	mem_cache_block_destroy(next);
 	freed += sizeof(mem_cache_block_t) + (cache->item_size * NUM_ITEMS);
     }
 
@@ -112,7 +112,7 @@ mem_cache_t *mem_cache_create(int item_size)
 {
     mem_cache_t *cache = tmalloc_type(mem_cache_t);
 
-    cache->head = mem_cache_block_init(item_size);
+    cache->head = mem_cache_block_create(item_size);
     cache->item_size = item_size;
     cache->squeezer.squeeze = mem_cache_squeeze;
     tmalloc_register_squeezer(&cache->squeezer);
@@ -122,7 +122,7 @@ mem_cache_t *mem_cache_create(int item_size)
 void mem_cache_destroy(mem_cache_t *cache)
 {
     tmalloc_unregister_squeezer(&cache->squeezer);
-    mem_cache_block_uninit(cache->head);
+    mem_cache_block_destroy(cache->head);
     tfree(cache);
 }
 
@@ -140,7 +140,7 @@ void *mem_cache_alloc(mem_cache_t *cache)
 	if (*iter && (*iter)->free_list)
 	    block = *iter;
 	else
-	    block = *iter = mem_cache_block_init(cache->item_size);
+	    block = *iter = mem_cache_block_create(cache->item_size);
 	item = block->free_list;
     }
 
