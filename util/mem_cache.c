@@ -30,36 +30,38 @@
 
 #define NUM_ITEMS 10
 
+typedef struct mem_cache_block_t {
+    struct mem_cache_block_t *next;
+    char *free_list;
+} mem_cache_block_t;
+
 struct mem_cache_t {
     mem_squeezer_t squeezer; /* must be first */
-    mem_cache_t *next;
     int item_size;
-    char *free_list;
+    mem_cache_block_t *head;
 };
 
-static void mem_cache_uninit(mem_cache_t *cache)
+static void mem_cache_block_uninit(mem_cache_block_t *block)
 {
-    mem_cache_t *tmp;
+    mem_cache_block_t *tmp;
 
-    while ((tmp = cache))
+    while ((tmp = block))
     {
-	cache = cache->next;
+	block = block->next;
 	tfree(tmp);
     }
 }
 
-static mem_cache_t *mem_cache_init(int item_size)
+static mem_cache_block_t *mem_cache_block_init(int item_size)
 {
-    mem_cache_t *cache = tmalloc(sizeof(mem_cache_t)+(item_size * NUM_ITEMS), 
-	"mem cache");
+    mem_cache_block_t *block = tmalloc(sizeof(mem_cache_block_t) +
+	(item_size * NUM_ITEMS), "mem cache block");
     char *item;
     int i;
 
-    tp_debug(("Created mem cache %p, item size %d\n", cache, item_size));
-    cache->next = NULL;
-    cache->squeezer.squeeze = NULL;
-    cache->item_size = item_size;
-    cache->free_list = item = (char *)(cache + 1);
+    tp_debug(("Created mem cache block %p, item size %d\n", block, item_size));
+    block->next = NULL;
+    block->free_list = item = (char *)(block + 1);
     for (i = 0; i < NUM_ITEMS; i++)
     {
 	char *next;
@@ -69,13 +71,13 @@ static mem_cache_t *mem_cache_init(int item_size)
 	tp_debug(("current item %p, next %p\n", item, next));
 	item = next;
     }
-    return cache;
+    return block;
 }
 
-static inline int mem_cache_is_unused(mem_cache_t *cache)
+static inline int mem_cache_block_is_unused(mem_cache_block_t *block)
 {
     int num_free;
-    uint_ptr_t *next = (uint_ptr_t *)cache->free_list;
+    uint_ptr_t *next = (uint_ptr_t *)block->free_list;
 
     for (num_free = 0; next; next = (uint_ptr_t *)*next, num_free++);
     return num_free == NUM_ITEMS;
@@ -83,22 +85,23 @@ static inline int mem_cache_is_unused(mem_cache_t *cache)
 
 static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
 {
-    mem_cache_t *cache = (mem_cache_t *)squeezer, *next;
+    mem_cache_t *cache = (mem_cache_t *)squeezer;
+    mem_cache_block_t *block = cache->head, *next;
     int freed = 0;
 
     tp_info(("mem_cache_squeeze: requested to free %d bytes\n", size));
-    while ((next = cache->next))
+    while ((next = block->next))
     {
-	if (!mem_cache_is_unused(next))
+	if (!mem_cache_block_is_unused(next))
 	{
-	    cache = next;
+	    block = next;
 	    continue;
 	}
 
-	cache->next = next->next;
+	block->next = next->next;
 	next->next = NULL;
-	mem_cache_uninit(next);
-	freed += sizeof(mem_cache_t) + (next->item_size * NUM_ITEMS);
+	mem_cache_block_uninit(next);
+	freed += sizeof(mem_cache_block_t) + (cache->item_size * NUM_ITEMS);
     }
 
     tp_info(("mem_cache_squeeze: freed %d bytes\n", freed));
@@ -107,8 +110,10 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
 
 mem_cache_t *mem_cache_create(int item_size)
 {
-    mem_cache_t *cache = mem_cache_init(item_size);
+    mem_cache_t *cache = tmalloc_type(mem_cache_t);
 
+    cache->head = mem_cache_block_init(item_size);
+    cache->item_size = item_size;
     cache->squeezer.squeeze = mem_cache_squeeze;
     tmalloc_register_squeezer(&cache->squeezer);
     return cache;
@@ -117,51 +122,57 @@ mem_cache_t *mem_cache_create(int item_size)
 void mem_cache_destroy(mem_cache_t *cache)
 {
     tmalloc_unregister_squeezer(&cache->squeezer);
-    mem_cache_uninit(cache);
+    mem_cache_block_uninit(cache->head);
+    tfree(cache);
 }
 
 void *mem_cache_alloc(mem_cache_t *cache)
 {
     char *item, *next;
+    mem_cache_block_t *block = cache->head;
 
-    if (!(item = cache->free_list))
+    if (!(item = block->free_list))
     {
-	mem_cache_t **iter;
+	mem_cache_block_t **iter;
 
-	for (iter = &cache->next; *iter && !(*iter)->free_list; 
+	for (iter = &block->next; *iter && !(*iter)->free_list; 
 	    iter = &(*iter)->next);
 	if (*iter && (*iter)->free_list)
-	    cache = *iter;
+	    block = *iter;
 	else
-	    cache = *iter = mem_cache_init(cache->item_size);
-	item = cache->free_list;
+	    block = *iter = mem_cache_block_init(cache->item_size);
+	item = block->free_list;
     }
 
     next = (char *)*((uint_ptr_t *)item);
-    cache->free_list = next;
+    block->free_list = next;
     tp_debug(("Allocated %p\n", item));
     return (void *)item;
 }
 
-static inline int is_in_cache(mem_cache_t *cache, void *ptr)
+static inline int is_in_cache_block(mem_cache_block_t *block, void *ptr,
+    int item_size)
 {
-    char *item = ptr, *start = (char *)(cache + 1);
+    char *item = ptr, *start = (char *)(block + 1);
 
-    return item >= start && item < (start + cache->item_size * NUM_ITEMS);
+    return item >= start && item < (start + item_size * NUM_ITEMS);
 }
 
-static inline mem_cache_t *mem_cache_find(mem_cache_t *cache, void *ptr)
+static inline mem_cache_block_t *mem_cache_block_find(mem_cache_block_t *block,
+    void *ptr, int item_size)
 {
-    for (; cache && !is_in_cache(cache, ptr); cache = cache->next);
-    return cache;
+    for (; block && !is_in_cache_block(block, ptr, item_size); 
+	block = block->next);
+    return block;
 }
 
 void mem_cache_free(mem_cache_t *cache, void *ptr)
 {
     char *item = ptr;
+    mem_cache_block_t *block;
 
-    cache = mem_cache_find(cache, ptr);
+    block = mem_cache_block_find(cache->head, ptr, cache->item_size);
     tp_debug(("freeing %p from cache %p\n", item, cache));
-    *((uint_ptr_t *)item) = (uint_ptr_t)cache->free_list;
-    cache->free_list = item;
+    *((uint_ptr_t *)item) = (uint_ptr_t)block->free_list;
+    block->free_list = item;
 }
