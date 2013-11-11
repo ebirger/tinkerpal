@@ -28,8 +28,6 @@
 #include "util/tmalloc.h"
 #include "apps/history.h"
 
-/* XXX: allow removing old entries upon memory shortage */
-
 /* History is kept in a double linked list. There is always one empty item at
  * the end of the list.
  * First item->prev and last item->next point to themselves.
