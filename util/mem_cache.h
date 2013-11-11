@@ -25,11 +25,13 @@
 #ifndef __MEM_CACHE_H__
 #define __MEM_CACHE_H__
 
+#define mem_cache_create_type(typ) mem_cache_create(sizeof(typ), #typ "_cache")
+
 #ifdef CONFIG_MEM_CACHE
 
 typedef struct mem_cache_t mem_cache_t;
 
-mem_cache_t *mem_cache_create(int item_size);
+mem_cache_t *mem_cache_create(int item_size, char *name);
 void mem_cache_destroy(mem_cache_t *cache);
 
 void *mem_cache_alloc(mem_cache_t *cache);
@@ -42,7 +44,7 @@ void mem_cache_free(mem_cache_t *cache, void *ptr);
 
 typedef void mem_cache_t;
 
-static inline mem_cache_t *mem_cache_create(int item_size) 
+static inline mem_cache_t *mem_cache_create(int item_size, char *name) 
 { 
     return (mem_cache_t *)item_size; 
 }

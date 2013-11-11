@@ -1428,9 +1428,9 @@ void js_obj_uninit(void)
 
 void js_obj_init(void)
 {
-    var_cache = mem_cache_create(sizeof(var_t));
+    var_cache = mem_cache_create_type(var_t);
 #define OBJ_CACHE_INIT(type, class) \
-    obj_cache[class - 1] = mem_cache_create(sizeof(type))
+    obj_cache[class - 1] = mem_cache_create_type(type)
     OBJ_CACHE_INIT(num_t, NUM_CLASS);
     OBJ_CACHE_INIT(function_t, FUNCTION_CLASS);
     OBJ_CACHE_INIT(string_t, STRING_CLASS);

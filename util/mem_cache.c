@@ -38,6 +38,7 @@ typedef struct mem_cache_block_t {
 struct mem_cache_t {
     mem_squeezer_t squeezer; /* must be first */
     int item_size;
+    char *name;
     mem_cache_block_t *head;
 };
 
@@ -109,13 +110,14 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
     return freed;
 }
 
-mem_cache_t *mem_cache_create(int item_size)
+mem_cache_t *mem_cache_create(int item_size, char *name)
 {
     mem_cache_t *cache = tmalloc_type(mem_cache_t);
 
     cache->head = mem_cache_block_create(item_size);
     cache->item_size = item_size;
     cache->squeezer.squeeze = mem_cache_squeeze;
+    cache->name = name;
     tmalloc_register_squeezer(&cache->squeezer);
     return cache;
 }
