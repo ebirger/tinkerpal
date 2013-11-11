@@ -23,8 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
+#include "util/mem_cache.h"
 #include "js/js_obj.h"
 #include "js/js_eval.h"
+#include "platform/platform.h"
 #include <math.h>
 
 int do_eval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
@@ -123,4 +125,12 @@ int do_apply(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tp_assert(argc > 1);
     return function_call(ret, this, argc - 1, argv + 1);
+}
+
+int do_meminfo(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    tmalloc_stats();
+    mem_cache_stats();
+    platform_meminfo();
+    return 0;
 }

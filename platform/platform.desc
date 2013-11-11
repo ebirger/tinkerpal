@@ -1,6 +1,0 @@
-FUNCTION("meminfo", global_env, do_meminfo, {
-    .params = { },
-    .description = "Prints platform dependent memory information",
-    .return_value = "None",
-    .example = "meminfo()",
-})

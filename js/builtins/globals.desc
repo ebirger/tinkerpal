@@ -54,3 +54,10 @@ FUNCTION("dump_env", debug, do_dump_env, {
     .return_value = "None",
     .example = "debug.dump_env();",
 })
+
+FUNCTION("meminfo", global_env, do_meminfo, {
+    .params = { },
+    .description = "Prints platform dependent memory information",
+    .return_value = "None",
+    .example = "meminfo()",
+})
