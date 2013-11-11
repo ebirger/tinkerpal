@@ -188,3 +188,20 @@ void mem_cache_free(mem_cache_t *cache, void *ptr)
     *((uint_ptr_t *)item) = (uint_ptr_t)block->free_list;
     block->free_list = item;
 }
+
+void mem_cache_stats(void)
+{
+    mem_cache_t *cache;
+    
+    for (cache = mem_cache_head; cache; cache = cache->next)
+    {
+	mem_cache_block_t *block;
+
+	tp_out(("%s (%p):\n", cache->name, cache));
+	for (block = cache->head; block; block = block->next)
+	{
+	    tp_out(("\tblock %p free %d\n", block, 
+		mem_cache_block_num_free(block)));
+	}
+    }
+}

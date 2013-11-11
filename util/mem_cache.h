@@ -36,6 +36,7 @@ void mem_cache_destroy(mem_cache_t *cache);
 
 void *mem_cache_alloc(mem_cache_t *cache);
 void mem_cache_free(mem_cache_t *cache, void *ptr);
+void mem_cache_stats(void);
 
 #else
 
@@ -60,6 +61,8 @@ static inline void mem_cache_free(mem_cache_t *cache, void *ptr)
 {
     tfree(ptr);
 }
+
+static inline void mem_cache_stats(void) { }
 
 #endif
 

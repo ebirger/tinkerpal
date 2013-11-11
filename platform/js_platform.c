@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/tmalloc.h"
+#include "util/mem_cache.h"
 #include "util/debug.h"
 #include "js/js_obj.h"
 #include "platform/platform.h"
@@ -30,6 +31,7 @@
 int do_meminfo(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tmalloc_stats();
+    mem_cache_stats();
     platform_meminfo();
     return 0;
 }
