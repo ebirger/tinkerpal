@@ -79,13 +79,13 @@ static mem_cache_block_t *mem_cache_block_create(int item_size)
     return block;
 }
 
-static inline int mem_cache_block_is_unused(mem_cache_block_t *block)
+static inline int mem_cache_block_num_free(mem_cache_block_t *block)
 {
     int num_free;
     uint_ptr_t *next = (uint_ptr_t *)block->free_list;
 
     for (num_free = 0; next; next = (uint_ptr_t *)*next, num_free++);
-    return num_free == NUM_ITEMS;
+    return num_free;
 }
 
 static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
@@ -97,7 +97,7 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
     tp_info(("mem_cache_squeeze: requested to free %d bytes\n", size));
     while ((next = block->next))
     {
-	if (!mem_cache_block_is_unused(next))
+	if (mem_cache_block_num_free(next) != NUM_ITEMS)
 	{
 	    block = next;
 	    continue;
