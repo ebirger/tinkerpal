@@ -28,19 +28,20 @@
 #include "js/js_obj.h"
 #include "platform/platform.h"
 
+#define Stimer_func S("timer_func")
+#define Stimer_this S("timer_this")
+#define Stimer_id S("timer_id")
+
 typedef struct {
     event_timer_t et; /* Must be first */
-    obj_t *func;
-    obj_t *this;
-    int timer_id;
+    obj_t *timer_obj;
 } delayed_work_t;
 
 static void delayed_work_free(event_timer_t *et)
 {
     delayed_work_t *w = (delayed_work_t *)et;
 
-    obj_put(w->func);
-    obj_put(w->this);
+    obj_put(w->timer_obj);
     tfree(w);
 }
 
@@ -49,11 +50,27 @@ static delayed_work_t *delayed_work_new(obj_t *func, obj_t *this,
 {
     delayed_work_t *w = tmalloc_type(delayed_work_t);
 
-    w->func = obj_get(func);
-    w->this = obj_get(this);
+    w->timer_obj = object_new();
+    obj_set_property(w->timer_obj, Stimer_func, func);
+    obj_set_property(w->timer_obj, Stimer_this, this);
     w->et.expired = expired;
     w->et.free = delayed_work_free;
     return w;
+}
+
+static int timer_function_call(obj_t **po, obj_t *timer_obj)
+{
+    obj_t *this, *func;
+    int ret;
+
+    func = obj_get_property(NULL, timer_obj, &Stimer_func);
+    this = obj_get_property(NULL, timer_obj, &Stimer_this);
+
+    ret = function_call(po, this, 1, &func);
+
+    obj_put(this);
+    obj_put(func);
+    return ret;
 }
 
 static void timeout_cb(event_timer_t *et)
@@ -61,7 +78,7 @@ static void timeout_cb(event_timer_t *et)
     delayed_work_t *w = (delayed_work_t *)et;
     obj_t *o;
 
-    function_call(&o, w->this, 1, &w->func);
+    timer_function_call(&o, w->timer_obj);
 
     obj_put(o);
     delayed_work_free(et);
@@ -72,9 +89,14 @@ static void interval_cb(event_timer_t *et)
     delayed_work_t *w = (delayed_work_t *)et;
     obj_t *o;
 
-    if (function_call(&o, w->this, 1, &w->func)) 
+    if (timer_function_call(&o, w->timer_obj)) 
     {
-	event_timer_del(w->timer_id);
+	int tid;
+
+	if (obj_get_property_int(&tid, w->timer_obj, &Stimer_id))
+	    tp_warn(("Weird, cannot find timer id\n"));
+	else
+	    event_timer_del(tid);
 	delayed_work_free(et);
     }
 
@@ -109,8 +131,8 @@ int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     ms = NUM_INT(to_num(argv[2]));
 
     tid = event_timer_set_period(ms, &w->et);
-    w->timer_id = tid;
-    *ret = num_new_int(w->timer_id);
+    *ret = num_new_int(tid);
+    obj_set_property(w->timer_obj, Stimer_id, *ret);
     return 0;
 }
 
