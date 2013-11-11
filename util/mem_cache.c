@@ -41,6 +41,8 @@ struct mem_cache_t {
     mem_cache_block_t *head;
 };
 
+#define BLOCK_SZ(item_sz) (sizeof(mem_cache_block_t) + (item_sz) * NUM_ITEMS)
+
 static void mem_cache_block_destroy(mem_cache_block_t *block)
 {
     mem_cache_block_t *tmp;
@@ -54,8 +56,7 @@ static void mem_cache_block_destroy(mem_cache_block_t *block)
 
 static mem_cache_block_t *mem_cache_block_create(int item_size)
 {
-    mem_cache_block_t *block = tmalloc(sizeof(mem_cache_block_t) +
-	(item_size * NUM_ITEMS), "mem cache block");
+    mem_cache_block_t *block = tmalloc(BLOCK_SZ(item_size), "mem cache block");
     char *item;
     int i;
 
@@ -101,7 +102,7 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
 	block->next = next->next;
 	next->next = NULL;
 	mem_cache_block_destroy(next);
-	freed += sizeof(mem_cache_block_t) + (cache->item_size * NUM_ITEMS);
+	freed += BLOCK_SZ(cache->item_size);
     }
 
     tp_info(("mem_cache_squeeze: freed %d bytes\n", freed));
