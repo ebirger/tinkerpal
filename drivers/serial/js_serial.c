@@ -30,29 +30,27 @@
 #include "drivers/serial/serial.h"
 
 #define Sserial_id S("serial_id")
+#define Son_data_cb S("on_data_cb")
 
 typedef struct {
     event_watch_t ew; /* Must be first */
-    obj_t *func;
     obj_t *this;
 } serial_work_t;
 
 static void serial_work_free(event_watch_t *ew)
 {
     serial_work_t *w = (serial_work_t *)ew;
-    obj_put(w->func);
     obj_put(w->this);
     tfree(w);
 }
 
-static serial_work_t *serial_work_new(obj_t *func, obj_t *this, 
+static serial_work_t *serial_work_new(obj_t *this, 
     void (*watch_event)(event_watch_t *ew, int resource_id))
 {
     serial_work_t *w = tmalloc_type(serial_work_t);
 
     w->ew.watch_event = watch_event;
     w->ew.free = serial_work_free;
-    w->func = obj_get(func);
     w->this = obj_get(this);
     return w;
 }
@@ -70,10 +68,11 @@ static void serial_on_data_cb(event_watch_t *ew, int id)
     data_obj = object_new();
     obj_set_property_str(data_obj, S("data"), data);
 
-    argv[0] = w->func;
+    argv[0] = obj_get_property(NULL, w->this, &Son_data_cb);
     argv[1] = data_obj;
     function_call(&o, w->this, 2, argv);
 
+    obj_put(argv[0]);
     obj_put(o);
     obj_put(data_obj);
 }
@@ -105,7 +104,8 @@ int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     tp_assert(argc == 2);
 
-    w = serial_work_new(argv[1], this, serial_on_data_cb);
+    obj_set_property(this, Son_data_cb, argv[1]);
+    w = serial_work_new(this, serial_on_data_cb);
 
     /* XXX: if event is already set, it should be cleared */
     event_id = event_watch_set(get_serial_id(this), &w->ew);
