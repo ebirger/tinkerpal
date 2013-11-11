@@ -33,7 +33,6 @@
 
 typedef struct {
     event_watch_t ew; /* Must be first */
-    int id;
     obj_t *func;
     obj_t *this;
 } serial_work_t;
@@ -46,14 +45,13 @@ static void serial_work_free(event_watch_t *ew)
     tfree(w);
 }
 
-static serial_work_t *serial_work_new(int id, obj_t *func, obj_t *this, 
+static serial_work_t *serial_work_new(obj_t *func, obj_t *this, 
     void (*watch_event)(event_watch_t *ew, int resource_id))
 {
     serial_work_t *w = tmalloc_type(serial_work_t);
 
     w->ew.watch_event = watch_event;
     w->ew.free = serial_work_free;
-    w->id = id;
     w->func = obj_get(func);
     w->this = obj_get(this);
     return w;
@@ -67,7 +65,7 @@ static void serial_on_data_cb(event_watch_t *ew, int id)
 
     /* XXX: read as much as possible */
     tstr_alloc(&data, 30);
-    data.len = serial_read(w->id, TPTR(&data), 30);
+    data.len = serial_read(id, TPTR(&data), 30);
 
     data_obj = object_new();
     obj_set_property_str(data_obj, S("data"), data);
@@ -107,10 +105,10 @@ int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     tp_assert(argc == 2);
 
-    w = serial_work_new(get_serial_id(this), argv[1], this, serial_on_data_cb);
+    w = serial_work_new(argv[1], this, serial_on_data_cb);
 
     /* XXX: if event is already set, it should be cleared */
-    event_id = event_watch_set(w->id, &w->ew);
+    event_id = event_watch_set(get_serial_id(this), &w->ew);
     *ret = num_new_int(event_id);
     return 0;
 }
