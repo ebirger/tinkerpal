@@ -38,6 +38,7 @@
 #define CLASS_PROTOTYPE(n, o, p, c...) OBJECT(n, o)
 #define PROTOTYPE(n, o, ...) OBJECT(n, o)
 #define CATEGORY(n, o, ...) static obj_t *n;
+#define CATEGORY_INIT(init, uninit, ...)
 
 #include "descs.h"
 
@@ -48,6 +49,7 @@
 #undef PROTOTYPE
 #undef CONST
 #undef CATEGORY
+#undef CATEGORY_INIT
 
 void js_builtins_uninit(void)
 {
@@ -60,6 +62,9 @@ void js_builtins_uninit(void)
 #define CLASS_PROTOTYPE(n, o, p, c, ...) \
     obj_class_set_prototype(c, NULL); \
     obj_put(o);
+#define CATEGORY_INIT(init, uninit, ...) \
+    extern void uninit(void); \
+    uninit();
 
 #include "descs.h"
 
@@ -70,11 +75,7 @@ void js_builtins_uninit(void)
 #undef PROTOTYPE
 #undef CONST
 #undef CATEGORY
-
-#ifdef CONFIG_MODULES
-    extern void modules_uninit(void);
-    modules_uninit();
-#endif
+#undef CATEGORY_INIT
 }
 
 void js_builtins_init(void)
@@ -102,6 +103,9 @@ void js_builtins_init(void)
 } while(0);
 #define PROTOTYPE(...)
 #define CATEGORY(n, o, ...) n = o;
+#define CATEGORY_INIT(init, uninit, ...) \
+    extern void init(void); \
+    init();
 
 #include "descs.h"
 
@@ -112,4 +116,5 @@ void js_builtins_init(void)
 #undef PROTOTYPE
 #undef CONST
 #undef CATEGORY
+#undef CATEGORY_INIT
 }

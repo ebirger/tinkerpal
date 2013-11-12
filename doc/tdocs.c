@@ -31,6 +31,7 @@ static FILE *fp;
 
 #define CONST(...)
 #define CONSTRUCTOR(...)
+#define CATEGORY_INIT(...)
 
 static doc_object_t global_env_desc = {
     .name = "global",

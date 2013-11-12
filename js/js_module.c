@@ -102,3 +102,7 @@ void modules_uninit(void)
 	tfree(mod);
     }
 }
+
+void modules_init(void)
+{
+}

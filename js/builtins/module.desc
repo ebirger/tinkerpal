@@ -3,6 +3,8 @@ CATEGORY(module, global_env, {
     .display_name = "Module",
 })
 
+CATEGORY_INIT(modules_init, modules_uninit)
+
 FUNCTION("require", module, do_require, {
     .params = { 
        { .name = "module_name", .description = "String containing module name to load" },
