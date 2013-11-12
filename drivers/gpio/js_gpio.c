@@ -199,7 +199,6 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 typedef struct {
     event_watch_t ew; /* Must be first */
-    int id;
     obj_t *func;
     obj_t *this;
 } set_watch_work_t;
@@ -212,14 +211,13 @@ static void delayed_work_free(event_watch_t *ew)
     tfree(w);
 }
 
-static set_watch_work_t *set_watch_work_new(int id, obj_t *func, obj_t *this,
+static set_watch_work_t *set_watch_work_new(obj_t *func, obj_t *this,
     void (*watch_event)(event_watch_t *ew, int resource_id))
 {
     set_watch_work_t *w = tmalloc_type(set_watch_work_t);
 
     w->ew.free = delayed_work_free;
     w->ew.watch_event = watch_event;
-    w->id = id;
     w->func = obj_get(func);
     w->this = obj_get(this);
     return w;
@@ -241,10 +239,9 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int event_id;
 
     tp_assert(argc == 3);
-    w = set_watch_work_new(obj_get_int(argv[2]), argv[1], this, 
-	set_watch_on_change_cb);
+    w = set_watch_work_new(argv[1], this, set_watch_on_change_cb);
 
-    event_id = event_watch_set(w->id, &w->ew);
+    event_id = event_watch_set(obj_get_int(argv[2]), &w->ew);
     *ret = num_new_int(event_id);
     return 0;
 }
