@@ -197,17 +197,18 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 }
 #endif
 
+#define Swatch_func S("watch_func")
+#define Swatch_this S("watch_this")
+
 typedef struct {
     event_watch_t ew; /* Must be first */
-    obj_t *func;
-    obj_t *this;
+    obj_t *watch_obj;
 } set_watch_work_t;
 
 static void delayed_work_free(event_watch_t *ew)
 {
     set_watch_work_t *w = (set_watch_work_t *)ew;
-    obj_put(w->func);
-    obj_put(w->this);
+    obj_put(w->watch_obj);
     tfree(w);
 }
 
@@ -218,18 +219,23 @@ static set_watch_work_t *set_watch_work_new(obj_t *func, obj_t *this,
 
     w->ew.free = delayed_work_free;
     w->ew.watch_event = watch_event;
-    w->func = obj_get(func);
-    w->this = obj_get(this);
+    w->watch_obj = object_new();
+    obj_set_property(w->watch_obj, Swatch_func, func);
+    obj_set_property(w->watch_obj, Swatch_this, this);
     return w;
 }
 
 static void set_watch_on_change_cb(event_watch_t *ew, int id)
 {
     set_watch_work_t *w = (set_watch_work_t *)ew;
-    obj_t *o;
+    obj_t *o, *this, *func;
 
-    function_call(&o, w->this, 1, &w->func);
+    func = obj_get_property(NULL, w->watch_obj, &Swatch_func);
+    this = obj_get_property(NULL, w->watch_obj, &Swatch_this);
+    function_call(&o, this, 1, &func);
 
+    obj_put(func);
+    obj_put(this);
     obj_put(o);
 }
 
