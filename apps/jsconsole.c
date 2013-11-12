@@ -26,12 +26,15 @@
 #include "js/js_eval.h"
 #include "js/js.h"
 
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
+
+#define COLOR(code) CTRL(code)
+
 /* VT 100 control codes.
  * XXX: should be consts
  * XXX: should move to a different file
  */
 /* Not using real "dim" since screen doesn't seem to like it. paint it gray */
-#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 static char TERM_COLOR_DIM[] = { 0x1b, '[', '9', '0', 'm' };
 static char TERM_COLOR_RED[] = { 0x1b, '[', '3', '1', 'm' };
 static char TERM_COLOR_CYAN[] = { 0x1b, '[', '3', '6', 'm' };
@@ -52,16 +55,16 @@ void cli_client_syntax_hightlight(tstr_t *line)
 	switch (js_scan_get_token_group(s))
 	{
 	case TOKEN_GRP_SCOPE:
-	    CTRL(TERM_COLOR_CYAN); 
+	    COLOR(TERM_COLOR_CYAN); 
 	    break;
 	case TOKEN_GRP_CONTROL:
-	    CTRL(TERM_COLOR_RED);
+	    COLOR(TERM_COLOR_RED);
 	    break;
 	case TOKEN_GRP_DATA:
-	    CTRL(TERM_COLOR_MAGENTA);
+	    COLOR(TERM_COLOR_MAGENTA);
 	    break;
 	case TOKEN_GRP_CONSTANT:
-	    CTRL(TERM_COLOR_BLUE);
+	    COLOR(TERM_COLOR_BLUE);
 	    break;
 	default:
 	    break;
@@ -69,12 +72,14 @@ void cli_client_syntax_hightlight(tstr_t *line)
 
 	offset = line->len - js_scan_get_remaining(s);
 	console_write(TPTR(line) + last_offset, offset - last_offset);
-	CTRL(TERM_COLOR_RESET);
+	COLOR(TERM_COLOR_RESET);
 	last_offset = offset;
 	js_scan_next_token(s);
     }
     js_scan_uninit(s);
 }
+#else
+#define COLOR(code)
 #endif
 
 void cli_client_process_line(tstr_t *line)
@@ -85,22 +90,16 @@ void cli_client_process_line(tstr_t *line)
     rc = js_eval(&o, line);
     if (rc)
     {
-#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
-	CTRL(TERM_COLOR_RED);
-#endif
+	COLOR(TERM_COLOR_RED);
 	console_printf("%o\n", o);
     }
     else
     {
-#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
-	CTRL(TERM_COLOR_DIM);
-#endif
+	COLOR(TERM_COLOR_DIM);
 	console_printf("= %o\n", o);
     }
 
-#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
-    CTRL(TERM_COLOR_RESET);
-#endif
+    COLOR(TERM_COLOR_RESET);
     obj_put(o);
 }
 
