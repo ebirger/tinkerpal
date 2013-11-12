@@ -37,9 +37,9 @@ config CLI_BUFFER_SIZE
 	depends on CLI
 	default 512
 
-config APP_JSCONSOLE_SYNTAX_HIGHLIGHTING
-	bool "JavaScript Syntax highlighting in JS Command Line application"
-	depends on APP_JSCONSOLE && JS
+config CLI_SYNTAX_HIGHLIGHTING
+	bool "CLI Syntax highlighting"
+	depends on CLI
 	default y
 
 endmenu

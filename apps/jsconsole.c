@@ -31,18 +31,16 @@
  * XXX: should move to a different file
  */
 /* Not using real "dim" since screen doesn't seem to like it. paint it gray */
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 static char TERM_COLOR_DIM[] = { 0x1b, '[', '9', '0', 'm' };
 static char TERM_COLOR_RED[] = { 0x1b, '[', '3', '1', 'm' };
-#ifdef CONFIG_APP_JSCONSOLE_SYNTAX_HIGHLIGHTING
 static char TERM_COLOR_CYAN[] = { 0x1b, '[', '3', '6', 'm' };
 static char TERM_COLOR_MAGENTA[] = { 0x1b, '[', '3', '5', 'm' };
 static char TERM_COLOR_BLUE[] = { 0x1b, '[', '3', '4', 'm' };
-#endif
 static char TERM_COLOR_RESET[] = { 0x1b, '[', '0', 'm' };
 
 void cli_client_syntax_hightlight(tstr_t *line)
 {
-#ifdef CONFIG_APP_JSCONSOLE_SYNTAX_HIGHLIGHTING
     scan_t *s;
     int last_offset = 0;
 
@@ -76,8 +74,8 @@ void cli_client_syntax_hightlight(tstr_t *line)
 	js_scan_next_token(s);
     }
     js_scan_uninit(s);
-#endif
 }
+#endif
 
 void cli_client_process_line(tstr_t *line)
 {
@@ -87,16 +85,22 @@ void cli_client_process_line(tstr_t *line)
     rc = js_eval(&o, line);
     if (rc)
     {
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 	CTRL(TERM_COLOR_RED);
+#endif
 	console_printf("%o\n", o);
     }
     else
     {
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 	CTRL(TERM_COLOR_DIM);
+#endif
 	console_printf("= %o\n", o);
     }
 
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
     CTRL(TERM_COLOR_RESET);
+#endif
     obj_put(o);
 }
 

@@ -33,6 +33,8 @@
 void cli_start(void);
 
 void cli_client_process_line(tstr_t *line);
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 void cli_client_syntax_hightlight(tstr_t *line);
+#endif
 
 #endif

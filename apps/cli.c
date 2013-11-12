@@ -38,8 +38,10 @@ static char TERM_BS[] = { '\b', ' ', '\b' };
 static char TERM_CURSOR_LEFT[] = { '\b' };
 static char CRLF[] = { '\r', '\n'};
 static char SPACE[] = { ' ' };
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 static char TERM_SAVE_CURSOR[] = { 0x1b, '[', 's' };
 static char TERM_RESTORE_CURSOR[] = { 0x1b, '[', 'u' };
+#endif
 static char prompt[] = { 'T','i','n','k','e','r','P','a','l','>',' ' };
 
 static char cli_buf[CONFIG_CLI_BUFFER_SIZE];
@@ -62,6 +64,7 @@ static void reset_line(void)
 
 static void syntax_hightlight(void)
 {
+#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
     int pos = cur_line_pos;
 
     CTRL(TERM_SAVE_CURSOR);
@@ -73,6 +76,7 @@ static void syntax_hightlight(void)
     cli_client_syntax_hightlight(&cur_line);
 
     CTRL(TERM_RESTORE_CURSOR);
+#endif
 }
 
 static void read_ack(void)
