@@ -223,36 +223,22 @@ void event_watch_del_all(void)
 	EVENT_SET_DELETED(e);
 }
 
-void event_purge_deleted(void)
+void event_purge_deleted(event_internal_t **events)
 {
-    event_internal_t **iter = &watches, *e;
-    event_internal_t **titer = &timers, *t;
+    event_internal_t *e;
 
-    while ((e = *iter))
+    while ((e = *events))
     {
 	if (EVENT_IS_DELETED(e))
 	{
-	    *iter = (*iter)->next;
+	    *events = (*events)->next;
 
 	    if (e->e->free)
 		e->e->free(e->e);
 	    tfree(e);
 	}
 	else
-	    iter = &(*iter)->next;
-    }
-    while ((t = *titer))
-    {
-	if (EVENT_IS_DELETED(t))
-	{
-	    *titer = (*titer)->next;
-
-	    if (t->e->free)
-		t->e->free(t->e);
-	    tfree(t);
-	}
-	else
-	    titer = &(*titer)->next;
+	    events = &(*events)->next;
     }
 }
 
@@ -286,10 +272,12 @@ void event_loop(void)
 	else
 	    timeout_process();
 
-	event_purge_deleted();
+	event_purge_deleted(&timers);
+	event_purge_deleted(&watches);
     }
 
     event_timer_del_all();
     event_watch_del_all();
-    event_purge_deleted();
+    event_purge_deleted(&timers);
+    event_purge_deleted(&watches);
 }
