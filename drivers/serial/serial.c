@@ -24,6 +24,7 @@
  */
 #include "drivers/serial/serial.h"
 #include "util/tmalloc.h"
+#include "util/event.h"
 #include <string.h> /* memcpy */
 
 #ifdef CONFIG_BUFFERED_SERIAL
@@ -48,7 +49,7 @@ int buffered_serial_push(int u, char c)
     return 0;
 }
 
-int buffered_serial_events_process(void (*mark_on)(int id))
+int buffered_serial_events_process(void)
 {
     int u, event = 0;
 
@@ -57,7 +58,7 @@ int buffered_serial_events_process(void (*mark_on)(int id))
 	platform.serial.irq_enable(u, 0);
 	if ((uart_bufs[u]->len != 0))
 	{
-	    serial_mark_on(u, mark_on);
+	    serial_event_trigger(u);
 	    event = 1;
 	}
 	platform.serial.irq_enable(u, 1);
@@ -97,6 +98,11 @@ int buffered_serial_enable(int u, int enabled)
 }
 
 #endif
+
+void serial_event_trigger(int u)
+{
+    event_watch_trigger(RES(UART_RESOURCE_ID_BASE, u));
+}
 
 int serial_enable(int id, int enabled)
 {

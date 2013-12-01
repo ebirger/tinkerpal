@@ -35,6 +35,7 @@ struct event_t {
 int event_watch_set(int resource_id, event_t *e);
 void event_watch_del(int watch_id);
 void event_watch_del_all(void);
+void event_watch_trigger(int resource_id);
 
 int event_timer_set(int ms, event_t *e);
 int event_timer_set_period(int ms, event_t *e);

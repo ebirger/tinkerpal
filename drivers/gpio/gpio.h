@@ -119,6 +119,6 @@ static inline void gpio_state_set(int port, gpio_port_t state)
     gpio_int_state[port] = state;
 }
 
-int gpio_events_process(void (*mark_on)(int id));
+int gpio_events_process(void);
 
 #endif

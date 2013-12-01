@@ -77,7 +77,7 @@ int stellaris_get_system_clock(void);
 void stellaris_msleep(double ms);
 
 void stellaris_uart_enable(int u, int enabled);
-int stellaris_select(int ms, void (*mark_on)(int id));
+int stellaris_select(int ms);
 void stellaris_serial_irq_enable(int u, int enable);
 int stellaris_serial_write(int u, char *buf, int size);
 

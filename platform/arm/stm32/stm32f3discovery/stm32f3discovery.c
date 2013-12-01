@@ -121,13 +121,13 @@ static int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     return 0;
 }
 
-static int stm32_select(int ms, void (*mark_on)(int id))
+static int stm32_select(int ms)
 {
     int expire = cortex_m_get_ticks_from_boot() + ms, event = 0;
 
     while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
     {
-	event |= buffered_serial_events_process(mark_on);
+	event |= buffered_serial_events_process();
 
 	/* XXX: Sleep */
     }

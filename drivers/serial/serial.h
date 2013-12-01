@@ -74,15 +74,12 @@ static inline int serial_get_constant(int *constant, char *buf, int len)
 }
 
 /* Used by the platform to set/test serial events */
-static inline void serial_mark_on(int u, void (*event_mark_on)(int id))
-{
-    event_mark_on(RES(UART_RESOURCE_ID_BASE, u));
-}
+void serial_event_trigger(int u);
 
 #ifdef CONFIG_BUFFERED_SERIAL
 
 int buffered_serial_push(int u, char c);
-int buffered_serial_events_process(void (*mark_on)(int id));
+int buffered_serial_events_process(void);
 int buffered_serial_read(int u, char *buf, int size);
 
 #endif

@@ -158,13 +158,13 @@ void msp430f5529_serial_irq_enable(int u, int enabled)
 	*uca->ie &= ~UCRXIE;
 }
 
-int msp430f5529_select(int ms, void (*mark_on)(int id))
+int msp430f5529_select(int ms)
 {
     int event = 0;
 
     while (!event)
     {
-	event |= buffered_serial_events_process(mark_on);
+	event |= buffered_serial_events_process();
 
 	/* XXX: Sleep */
     }

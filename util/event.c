@@ -170,7 +170,7 @@ static event_internal_t *watch_lookup(int resource_id)
     return NULL;
 }
 
-static void event_mark_on(int resource_id)
+void event_watch_trigger(int resource_id)
 {
     event_internal_t *e;
 
@@ -256,7 +256,7 @@ void event_loop(void)
 	get_next_timeout(&timeout);
 
 	if (timeout >= 0)
-	    rc = platform.select(timeout, event_mark_on);
+	    rc = platform.select(timeout);
 
 	if (rc)
 	    watches_process();

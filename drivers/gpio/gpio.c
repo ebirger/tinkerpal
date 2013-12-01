@@ -23,10 +23,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "drivers/gpio/gpio.h"
+#include "util/event.h"
 
 gpio_port_t gpio_int_state[NUM_GPIO_PORTS] = {};
 
-static int gpio_event(int port, void (*mark_on)(int id))
+static int gpio_event(int port)
 {
     int ret = 0, i;
     gpio_port_t state;
@@ -42,14 +43,14 @@ static int gpio_event(int port, void (*mark_on)(int id))
 	{
 	    int res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i));
 
-	    mark_on(res);
+	    event_watch_trigger(res);
 	    ret = 1;
 	}
     }
     return ret;
 }
 
-int gpio_events_process(void (*mark_on)(int id))
+int gpio_events_process(void)
 {
     int i, event = 0;
 
@@ -58,7 +59,7 @@ int gpio_events_process(void (*mark_on)(int id))
 	if (!gpio_int_state[i])
 	    continue;
 
-	event |= gpio_event(i, mark_on);
+	event |= gpio_event(i);
     }
     return event;
 }

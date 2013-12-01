@@ -42,7 +42,7 @@
 
 static struct timeval boot;
 
-int unix_select(int ms, void (*mark_on)(int id), unix_fd_event_map_t *map)
+int unix_select(int ms, unix_fd_event_map_t *map)
 {
     fd_set rfds;
     struct timeval tv;
@@ -72,7 +72,7 @@ int unix_select(int ms, void (*mark_on)(int id), unix_fd_event_map_t *map)
 	    if (!FD_ISSET(iter->fd, &rfds))
 		continue;
 		
-	    serial_mark_on(iter->event, mark_on);
+	    serial_event_trigger(iter->event);
 	}
     }
     return rc;
