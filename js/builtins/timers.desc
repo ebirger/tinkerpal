@@ -2,6 +2,8 @@ CATEGORY(timers, global_env, {
     .display_name = "Timer",
 })
 
+CATEGORY_INIT(timers_init, timers_uninit)
+
 FUNCTION("setTimeout", timers, do_set_timeout, {
     .params = { 
         { .name = "cb", .description = "Callback to be run" },
@@ -50,4 +52,12 @@ FUNCTION("getTime", timers, do_get_time, {
     .description = "Get number of seconds since system startup",
     .return_value = "Floating point time in seconds",
     .example = "debug.dump('Up for ' + getTime() + ' seconds');",
+})
+
+FUNCTION("listTimers", timers, do_list_timers, {
+    .params = { 
+    },
+    .description = "Output the timer list",
+    .return_value = "None",
+    .example = "listTimers();",
 })
