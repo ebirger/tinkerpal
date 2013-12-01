@@ -25,25 +25,19 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__
 
-typedef struct event_timer_t event_timer_t;
-typedef struct event_watch_t event_watch_t;
+typedef struct event_t event_t;
 
-struct event_timer_t {
-    void (*expired)(event_timer_t *et);
-    void (*free)(event_timer_t *et);
+struct event_t {
+    void (*trigger)(event_t *e, int resource_id);
+    void (*free)(event_t *e);
 };
 
-struct event_watch_t {
-    void (*watch_event)(event_watch_t *ew, int resource_id);
-    void (*free)(event_watch_t *ew);
-};
-
-int event_watch_set(int resource_id, event_watch_t *ew);
+int event_watch_set(int resource_id, event_t *e);
 void event_watch_del(int watch_id);
 void event_watch_del_all(void);
 
-int event_timer_set(int ms, event_timer_t *et);
-int event_timer_set_period(int ms, event_timer_t *et);
+int event_timer_set(int ms, event_t *e);
+int event_timer_set_period(int ms, event_t *e);
 void event_timer_del(int id);
 void event_timer_del_all(void);
 

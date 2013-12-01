@@ -34,7 +34,7 @@
 void console_printf(char *fmt, ...);
 
 /* XXX: should receive other event_watch_set params */
-void console_event_watch_set(event_watch_t *ew);
+void console_event_watch_set(event_t *e);
 int console_read(char *buf, int size);
 int console_write(char *buf, int size);
 
@@ -45,7 +45,7 @@ void console_init(void);
 #else
 
 static inline void console_printf(char *fmt, ...) {}
-static inline void console_event_watch_set(event_watch_t *ew) {}
+static inline void console_event_watch_set(event_t *e) {}
 static inline int console_read(char *buf, int size) { return 0; }
 static inline int console_write(char *buf, int size) { return 0; }
 static inline void console_set_id(int id) {}

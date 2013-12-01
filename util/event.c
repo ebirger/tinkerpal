@@ -36,7 +36,7 @@
 /* XXX: consolidate with event_timer_internal_t */
 typedef struct event_watch_internal_t {
     struct event_watch_internal_t *next;
-    event_watch_t *ew;
+    event_t *e;
     int resource_id;
     int watch_id;
     unsigned int flags;
@@ -44,7 +44,7 @@ typedef struct event_watch_internal_t {
 
 typedef struct event_timer_internal_t {
     struct event_timer_internal_t *next;
-    event_timer_t *et;
+    event_t *e;
     int timer_id;
     int period;
     int expire;
@@ -78,27 +78,26 @@ void event_timer_insert(event_timer_internal_t *t, int ms)
     *iter = t;
 }
 
-static event_timer_internal_t *_event_timer_set(int ms, int period, 
-    event_timer_t *et)
+static event_timer_internal_t *_event_timer_set(int ms, int period, event_t *e)
 {
     event_timer_internal_t *n = tmalloc_type(event_timer_internal_t);
 
-    n->et = et;
+    n->e = e;
     n->period = period;
     n->timer_id = g_timer_id++;
     event_timer_insert(n, ms);
     return n;
 }
 
-int event_timer_set(int ms, event_timer_t *et)
+int event_timer_set(int ms, event_t *e)
 {
-    event_timer_internal_t *n = _event_timer_set(ms, 0, et);
+    event_timer_internal_t *n = _event_timer_set(ms, 0, e);
     return n->timer_id;
 }
 
-int event_timer_set_period(int ms, event_timer_t *et)
+int event_timer_set_period(int ms, event_t *e)
 {
-    event_timer_internal_t *n = _event_timer_set(ms, ms, et);
+    event_timer_internal_t *n = _event_timer_set(ms, ms, e);
     return n->timer_id;
 }
 
@@ -128,7 +127,7 @@ static void timeout_process(void)
     while (*iter)
     {
 	event_timer_internal_t *t = *iter;
-	event_timer_t *et = t->et;
+	event_t *e = t->e;
 
 	if (EVENT_IS_DELETED(*iter))
 	{
@@ -147,7 +146,7 @@ static void timeout_process(void)
 	else
 	    tfree(t);
 
-	et->expired(et);
+	e->trigger(e, 0 /* dummy */);
 
 	/* Go back to the start. We don't know what happend to the list
 	 * while we ran the cb.
@@ -199,7 +198,7 @@ static int event_is_active(int resource_id)
     return e->resource_id != -1;
 }
 
-int event_watch_set(int resource_id, event_watch_t *ew)
+int event_watch_set(int resource_id, event_t *e)
 {
     event_watch_internal_t *n;
     
@@ -207,7 +206,7 @@ int event_watch_set(int resource_id, event_watch_t *ew)
 
     n->watch_id = g_watch_id++;
     n->resource_id = resource_id;
-    n->ew = ew;
+    n->e = e;
     n->next = watches;
     n->flags = 0;
     watches = n;
@@ -244,8 +243,8 @@ void event_purge_deleted(void)
 	{
 	    *iter = (*iter)->next;
 
-	    if (e->ew->free)
-		e->ew->free(e->ew);
+	    if (e->e->free)
+		e->e->free(e->e);
 	    tfree(e);
 	}
 	else
@@ -257,8 +256,8 @@ void event_purge_deleted(void)
 	{
 	    *titer = (*titer)->next;
 
-	    if (t->et->free)
-		t->et->free(t->et);
+	    if (t->e->free)
+		t->e->free(t->e);
 	    tfree(t);
 	}
 	else
@@ -275,7 +274,7 @@ static void watches_process(void)
 	if (!(EVENT_IS_ON(e)))
 	    continue;
 
-	e->ew->watch_event(e->ew, e->resource_id);
+	e->e->trigger(e->e, e->resource_id);
 	EVENT_OFF(e);
     }
 }

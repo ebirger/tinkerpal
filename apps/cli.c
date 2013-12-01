@@ -256,7 +256,7 @@ static void write_buf(void)
     read_ack();
 }
 
-static void on_event(event_watch_t *ew, int id)
+static void on_event(event_t *e, int id)
 {
     tstr_t quit_cmd = S("quit");
 
@@ -305,8 +305,8 @@ static void on_event(event_watch_t *ew, int id)
     console_write(prompt, sizeof(prompt));
 }
 
-static event_watch_t cli_event_watch = {
-    .watch_event = on_event,
+static event_t cli_event = {
+    .trigger = on_event,
 };
 
 void cli_start(void)
@@ -315,5 +315,5 @@ void cli_start(void)
     read_buf = buf = TPTR(&cur_line) = cli_buf;
     history = history_new();
     TSTR_SET_ALLOCATED(&cur_line);
-    console_event_watch_set(&cli_event_watch);
+    console_event_watch_set(&cli_event);
 }

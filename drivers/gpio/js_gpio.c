@@ -202,7 +202,7 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 #define Swatches S("watches")
 
 typedef struct {
-    event_watch_t ew; /* Must be first */
+    event_t e; /* Must be first */
     obj_t *watch_obj;
 } set_watch_work_t;
 
@@ -217,29 +217,29 @@ static void watch_register(obj_t *watch_obj, int id)
     obj_put(watches);
 }
 
-static void delayed_work_free(event_watch_t *ew)
+static void delayed_work_free(event_t *e)
 {
-    set_watch_work_t *w = (set_watch_work_t *)ew;
+    set_watch_work_t *w = (set_watch_work_t *)e;
     obj_put(w->watch_obj);
     tfree(w);
 }
 
 static set_watch_work_t *set_watch_work_new(obj_t *func, obj_t *this,
-    void (*watch_event)(event_watch_t *ew, int resource_id))
+    void (*watch_event)(event_t *e, int resource_id))
 {
     set_watch_work_t *w = tmalloc_type(set_watch_work_t);
 
-    w->ew.free = delayed_work_free;
-    w->ew.watch_event = watch_event;
+    w->e.free = delayed_work_free;
+    w->e.trigger = watch_event;
     w->watch_obj = object_new();
     obj_set_property(w->watch_obj, Swatch_func, func);
     obj_set_property(w->watch_obj, Swatch_this, this);
     return w;
 }
 
-static void set_watch_on_change_cb(event_watch_t *ew, int id)
+static void set_watch_on_change_cb(event_t *e, int id)
 {
-    set_watch_work_t *w = (set_watch_work_t *)ew;
+    set_watch_work_t *w = (set_watch_work_t *)e;
     obj_t *o, *this, *func;
 
     func = obj_get_property(NULL, w->watch_obj, &Swatch_func);
@@ -259,7 +259,7 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     tp_assert(argc == 3);
     w = set_watch_work_new(argv[1], this, set_watch_on_change_cb);
 
-    event_id = event_watch_set(obj_get_int(argv[2]), &w->ew);
+    event_id = event_watch_set(obj_get_int(argv[2]), &w->e);
     *ret = num_new_int(event_id);
     watch_register(w->watch_obj, event_id);
     return 0;

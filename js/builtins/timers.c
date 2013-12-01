@@ -34,7 +34,7 @@
 #define Stimer_id S("timer_id")
 
 typedef struct {
-    event_timer_t et; /* Must be first */
+    event_t e; /* Must be first */
     obj_t *timer_obj;
 } delayed_work_t;
 
@@ -70,24 +70,24 @@ static void timer_unregister(int id)
     obj_put(timers);
 }
 
-static void delayed_work_free(event_timer_t *et)
+static void delayed_work_free(event_t *e)
 {
-    delayed_work_t *w = (delayed_work_t *)et;
+    delayed_work_t *w = (delayed_work_t *)e;
 
     obj_put(w->timer_obj);
     tfree(w);
 }
 
 static delayed_work_t *delayed_work_new(obj_t *func, obj_t *this, 
-    void (*expired)(event_timer_t *et))
+    void (*expired)(event_t *e, int resource_id))
 {
     delayed_work_t *w = tmalloc_type(delayed_work_t);
 
     w->timer_obj = object_new();
     obj_set_property(w->timer_obj, Stimer_func, func);
     obj_set_property(w->timer_obj, Stimer_this, this);
-    w->et.expired = expired;
-    w->et.free = delayed_work_free;
+    w->e.trigger = expired;
+    w->e.free = delayed_work_free;
     return w;
 }
 
@@ -106,9 +106,9 @@ static int timer_function_call(obj_t **po, obj_t *timer_obj)
     return ret;
 }
 
-static void timeout_cb(event_timer_t *et)
+static void timeout_cb(event_t *e, int resource_id)
 {
-    delayed_work_t *w = (delayed_work_t *)et;
+    delayed_work_t *w = (delayed_work_t *)e;
     obj_t *o;
     int tid;
 
@@ -119,12 +119,12 @@ static void timeout_cb(event_timer_t *et)
     else
 	timer_unregister(tid);
     obj_put(o);
-    delayed_work_free(et);
+    delayed_work_free(e);
 }
 
-static void interval_cb(event_timer_t *et)
+static void interval_cb(event_t *e, int resource_id)
 {
-    delayed_work_t *w = (delayed_work_t *)et;
+    delayed_work_t *w = (delayed_work_t *)e;
     obj_t *o;
 
     if (timer_function_call(&o, w->timer_obj)) 
@@ -138,7 +138,7 @@ static void interval_cb(event_timer_t *et)
 	    event_timer_del(tid);
 	    timer_unregister(tid);
 	}
-	delayed_work_free(et);
+	delayed_work_free(e);
     }
 
     obj_put(o);
@@ -155,7 +155,7 @@ int do_set_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     ms = NUM_INT(to_num(argv[2]));
 
-    tid = event_timer_set(ms, &w->et);
+    tid = event_timer_set(ms, &w->e);
     *ret = num_new_int(tid);
     obj_set_property(w->timer_obj, Stimer_id, *ret);
     timer_register(w->timer_obj, tid);
@@ -173,7 +173,7 @@ int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     ms = NUM_INT(to_num(argv[2]));
 
-    tid = event_timer_set_period(ms, &w->et);
+    tid = event_timer_set_period(ms, &w->e);
     *ret = num_new_int(tid);
     obj_set_property(w->timer_obj, Stimer_id, *ret);
     timer_register(w->timer_obj, tid);

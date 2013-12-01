@@ -30,15 +30,15 @@
 
 static int console_id = -1;
 static int console_event_id = -1;
-static event_watch_t *user_ew;
+static event_t *user_e;
 
-/* Stupid wrapper for user_ew so their "free" cb is never called */
-static void console_watch_event(event_watch_t *ew, int resource_id)
+/* Stupid wrapper for user_e so their "free" cb is never called */
+static void console_watch_event(event_t *e, int resource_id)
 {
-    user_ew->watch_event(user_ew, resource_id);
+    user_e->trigger(user_e, resource_id);
 }
 
-static event_watch_t console_ew = { .watch_event = console_watch_event };
+static event_t console_e = { .trigger = console_watch_event };
 
 int console_read(char *buf, int size)
 {
@@ -67,12 +67,12 @@ static int console_printer_write(printer_t *printer, char *buf, int size)
     return console_write(buf, size);
 }
 
-void console_event_watch_set(event_watch_t *ew)
+void console_event_watch_set(event_t *e)
 {
     if (console_event_id != -1)
 	event_watch_del(console_event_id);
-    user_ew = ew;
-    console_event_id = event_watch_set(console_id, &console_ew);
+    user_e = e;
+    console_event_id = event_watch_set(console_id, &console_e);
 }
 
 /* XXX: this doesn't really belong here */
@@ -108,8 +108,8 @@ void console_set_id(int id)
 {
     console_id = id;
     /* refresh event listener */
-    if (user_ew)
-	console_event_watch_set(user_ew);
+    if (user_e)
+	console_event_watch_set(user_e);
 }
 
 static printer_t console_printer = {
