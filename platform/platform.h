@@ -73,7 +73,7 @@ typedef struct {
     int (*get_ticks_from_boot)(void);
     int (*get_system_clock)(void);
     void (*msleep)(double ms);
-    int (*select)(int ms, int (*is_active)(int id), void (*mark_on)(int id));
+    int (*select)(int ms, void (*mark_on)(int id));
     void (*panic)(void);
 } platform_t;
 

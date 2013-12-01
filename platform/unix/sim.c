@@ -75,10 +75,9 @@ static int pty_open(void)
 }
 #endif
 
-static int sim_unix_select(int ms, int (*is_active)(int id), 
-    void (*mark_on)(int id))
+static int sim_unix_select(int ms, void (*mark_on)(int id))
 {
-    return unix_select(ms, is_active, mark_on, event_fd_map);
+    return unix_select(ms, mark_on, event_fd_map);
 }
 
 static int sim_unix_serial_read(int id, char *buf, int size)

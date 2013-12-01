@@ -26,8 +26,7 @@
 
 gpio_port_t gpio_int_state[NUM_GPIO_PORTS] = {};
 
-static int gpio_event(int port, int (*is_active)(int id), 
-    void (*mark_on)(int id))
+static int gpio_event(int port, void (*mark_on)(int id))
 {
     int ret = 0, i;
     gpio_port_t state;
@@ -43,9 +42,6 @@ static int gpio_event(int port, int (*is_active)(int id),
 	{
 	    int res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i));
 
-	    if (!is_active(res))
-		continue;
-
 	    mark_on(res);
 	    ret = 1;
 	}
@@ -53,7 +49,7 @@ static int gpio_event(int port, int (*is_active)(int id),
     return ret;
 }
 
-int gpio_events_process(int (*is_active)(int id), void (*mark_on)(int id))
+int gpio_events_process(void (*mark_on)(int id))
 {
     int i, event = 0;
 
@@ -62,7 +58,7 @@ int gpio_events_process(int (*is_active)(int id), void (*mark_on)(int id))
 	if (!gpio_int_state[i])
 	    continue;
 
-	event |= gpio_event(i, is_active, mark_on);
+	event |= gpio_event(i, mark_on);
     }
     return event;
 }

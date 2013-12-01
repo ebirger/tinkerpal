@@ -145,16 +145,16 @@ void stellaris_uart_enable(int u, int enabled)
     MAP_UARTEnable(stellaris_uarts[u].base);
 }
 
-int stellaris_select(int ms, int (*is_active)(int id), void (*mark_on)(int id))
+int stellaris_select(int ms, void (*mark_on)(int id))
 {
     int expire = cortex_m_get_ticks_from_boot() + ms, event = 0;
 
     while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
     {
 #ifdef CONFIG_GPIO
-	event |= gpio_events_process(is_active, mark_on);
+	event |= gpio_events_process(mark_on);
 #endif
-	event |= buffered_serial_events_process(is_active, mark_on);
+	event |= buffered_serial_events_process(mark_on);
 
 	MAP_SysCtlSleep();
     }

@@ -100,14 +100,13 @@ static void kl25z_serial_irq_enable(int u, int enabled)
 	UART0_C2 &= ~UART_C2_RIE_MASK;
 }
 
-static int kl25z_select(int ms, int (*is_active)(int id), 
-    void (*mark_on)(int id))
+static int kl25z_select(int ms, void (*mark_on)(int id))
 {
     int expire = cortex_m_get_ticks_from_boot() + ms, event = 0;
 
     while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
     {
-	event |= buffered_serial_events_process(is_active, mark_on);
+	event |= buffered_serial_events_process(mark_on);
 
 	/* XXX: Sleep */
     }

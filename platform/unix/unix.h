@@ -33,8 +33,7 @@ typedef struct {
 void unix_set_term_raw(int fd, int raw);
 void unix_set_nonblock(int fd);
 
-int unix_select(int ms, int (*is_active)(int id), 
-    void (*mark_on)(int id), unix_fd_event_map_t *map);
+int unix_select(int ms, void (*mark_on)(int id), unix_fd_event_map_t *map);
 int unix_read(int fd, char *buf, int size);
 int unix_write(int fd, char *buf, int size);
 int unix_get_ticks_from_boot(void);

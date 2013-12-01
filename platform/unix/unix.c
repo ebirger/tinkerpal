@@ -42,8 +42,7 @@
 
 static struct timeval boot;
 
-int unix_select(int ms, int (*is_active)(int id), void (*mark_on)(int id), 
-    unix_fd_event_map_t *map)
+int unix_select(int ms, void (*mark_on)(int id), unix_fd_event_map_t *map)
 {
     fd_set rfds;
     struct timeval tv;
@@ -54,12 +53,9 @@ int unix_select(int ms, int (*is_active)(int id), void (*mark_on)(int id),
 
     for (iter = map; iter->fd != -1; iter++)
     {
-	if (serial_is_active(iter->event, is_active))
-	{
-	    FD_SET(iter->fd, &rfds);
-	    if (iter->fd > max_fd - 1)
-		max_fd = iter->fd + 1;
-	}
+	FD_SET(iter->fd, &rfds);
+	if (iter->fd > max_fd - 1)
+	    max_fd = iter->fd + 1;
     }
 
     sec = ms / 1000;
@@ -73,11 +69,8 @@ int unix_select(int ms, int (*is_active)(int id), void (*mark_on)(int id),
     {
 	for (iter = map; iter->fd != -1; iter++)
 	{
-	    if (!serial_is_active(iter->event, is_active) || 
-		!FD_ISSET(iter->fd, &rfds))
-	    {
+	    if (!FD_ISSET(iter->fd, &rfds))
 		continue;
-	    }
 		
 	    serial_mark_on(iter->event, mark_on);
 	}

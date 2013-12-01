@@ -38,8 +38,7 @@ void msp430f5529_init(void);
 int msp430f5529_serial_enable(int u, int enabled);
 int msp430f5529_serial_write(int u, char *buf, int size);
 void msp430f5529_serial_irq_enable(int u, int enabled);
-int msp430f5529_select(int ms, int (*is_active)(int id), 
-    void (*mark_on)(int id));
+int msp430f5529_select(int ms, void (*mark_on)(int id));
 
 #define UART0 0
 #define UART1 1

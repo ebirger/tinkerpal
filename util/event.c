@@ -180,16 +180,6 @@ static void event_mark_on(int resource_id)
     EVENT_ON(e);
 }
 
-static int event_is_active(int resource_id)
-{
-    event_internal_t *e;
-
-    if (!(e = watch_lookup(resource_id)))
-	return 0;
-
-    return e->resource_id != -1;
-}
-
 int event_watch_set(int resource_id, event_t *e)
 {
     event_internal_t *n;
@@ -266,7 +256,7 @@ void event_loop(void)
 	get_next_timeout(&timeout);
 
 	if (timeout >= 0)
-	    rc = platform.select(timeout, event_is_active, event_mark_on);
+	    rc = platform.select(timeout, event_mark_on);
 
 	if (rc)
 	    watches_process();

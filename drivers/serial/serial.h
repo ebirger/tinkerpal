@@ -79,16 +79,10 @@ static inline void serial_mark_on(int u, void (*event_mark_on)(int id))
     event_mark_on(RES(UART_RESOURCE_ID_BASE, u));
 }
 
-static inline int serial_is_active(int u, int (*event_is_active)(int id))
-{
-    return event_is_active(RES(UART_RESOURCE_ID_BASE, u));
-}
-
 #ifdef CONFIG_BUFFERED_SERIAL
 
 int buffered_serial_push(int u, char c);
-int buffered_serial_events_process(int (*is_active)(int id), 
-    void (*mark_on)(int id));
+int buffered_serial_events_process(void (*mark_on)(int id));
 int buffered_serial_read(int u, char *buf, int size);
 
 #endif

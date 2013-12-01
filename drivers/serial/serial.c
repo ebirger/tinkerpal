@@ -48,16 +48,12 @@ int buffered_serial_push(int u, char c)
     return 0;
 }
 
-int buffered_serial_events_process(int (*is_active)(int id), 
-    void (*mark_on)(int id))
+int buffered_serial_events_process(void (*mark_on)(int id))
 {
     int u, event = 0;
 
     for (u = 0; u < NUM_UARTS; u++)
     {
-	if (!serial_is_active(u, is_active))
-	    continue;
-
 	platform.serial.irq_enable(u, 0);
 	if ((uart_bufs[u]->len != 0))
 	{
