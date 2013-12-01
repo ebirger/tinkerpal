@@ -223,6 +223,8 @@ int do_list_timers(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *timers = obj_get_property(NULL, meta_env, &Stimers);
 
     tp_out(("Timer list:\n%o\n", timers));
+
+    obj_put(timers);
     return 0;
 }
 
