@@ -42,7 +42,10 @@
 #include "drivers/spi/spi.h"
 #endif
 
+/* Global environment for user objects */
 obj_t *global_env;
+/* Full environment including timers, watches, ... */
+obj_t *meta_env;
 
 static int js_get_constants_cb(int *constant, tstr_t *s)
 {
@@ -71,6 +74,7 @@ static void obj_tprintf_handler(printer_t *printer, void *o)
 
 void js_uninit(void)
 {
+    obj_put(meta_env);
     /* Release the global env without regarding reference counting since we
      * want to tear it down.
      */
@@ -85,7 +89,9 @@ void js_init(void)
     js_obj_init();
     tprintf_register_handler('o', obj_tprintf_handler);
     js_scan_set_constants_cb(js_get_constants_cb);
+    meta_env = env_new(NULL);
     global_env = env_new(NULL);
+    obj_set_property(meta_env, S("global_env"), global_env);
     js_eval_init();
     js_builtins_init();
     tp_info(("Object sizes:\n"));
