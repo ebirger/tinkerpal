@@ -38,14 +38,14 @@ typedef struct event_watch_internal_t {
     struct event_watch_internal_t *next;
     event_t *e;
     int resource_id;
-    int watch_id;
+    int event_id;
     unsigned int flags;
 } event_watch_internal_t;
 
 typedef struct event_timer_internal_t {
     struct event_timer_internal_t *next;
     event_t *e;
-    int timer_id;
+    int event_id;
     int period;
     int expire;
     unsigned int flags;
@@ -59,7 +59,7 @@ typedef struct event_timer_internal_t {
 
 static event_watch_internal_t *watches;
 static event_timer_internal_t *timer_list = NULL;
-static int g_timer_id = 0, g_watch_id = 0;
+static int g_event_id = 0;
 
 #define watches_foreach(e) for (e = watches; e; e = e->next)
 #define timers_foreach(t) for (t = timer_list; t; t = t->next)
@@ -84,7 +84,7 @@ static event_timer_internal_t *_event_timer_set(int ms, int period, event_t *e)
 
     n->e = e;
     n->period = period;
-    n->timer_id = g_timer_id++;
+    n->event_id = g_event_id++;
     event_timer_insert(n, ms);
     return n;
 }
@@ -92,22 +92,22 @@ static event_timer_internal_t *_event_timer_set(int ms, int period, event_t *e)
 int event_timer_set(int ms, event_t *e)
 {
     event_timer_internal_t *n = _event_timer_set(ms, 0, e);
-    return n->timer_id;
+    return n->event_id;
 }
 
 int event_timer_set_period(int ms, event_t *e)
 {
     event_timer_internal_t *n = _event_timer_set(ms, ms, e);
-    return n->timer_id;
+    return n->event_id;
 }
 
-void event_timer_del(int timer_id)
+void event_timer_del(int event_id)
 {
     event_timer_internal_t *t;
 
     timers_foreach(t)
     {
-	if (t->timer_id == timer_id)
+	if (t->event_id == event_id)
 	    EVENT_SET_DELETED(t);
     }
 }
@@ -204,22 +204,22 @@ int event_watch_set(int resource_id, event_t *e)
     
     n = tmalloc_type(event_watch_internal_t);
 
-    n->watch_id = g_watch_id++;
+    n->event_id = g_event_id++;
     n->resource_id = resource_id;
     n->e = e;
     n->next = watches;
     n->flags = 0;
     watches = n;
-    return n->watch_id;
+    return n->event_id;
 }
 
-void event_watch_del(int watch_id)
+void event_watch_del(int event_id)
 {
     event_watch_internal_t *e;
 
     watches_foreach(e)
     {
-	if (e->watch_id == watch_id)
+	if (e->event_id == event_id)
 	    EVENT_SET_DELETED(e);
     }
 }
