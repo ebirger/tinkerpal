@@ -49,12 +49,11 @@ typedef struct event_internal_t {
 #define EVENT_IS_DELETED(e) ((e)->flags & EVENT_FLAG_DELETED)
 #define EVENT_SET_DELETED(e) bit_set((e)->flags, EVENT_FLAG_DELETED, 1)
 
-static event_internal_t *watches;
-static event_internal_t *timer_list = NULL;
+static event_internal_t *watches, *timers;
 static int g_event_id = 0;
 
 #define watches_foreach(e) for (e = watches; e; e = e->next)
-#define timers_foreach(t) for (t = timer_list; t; t = t->next)
+#define timers_foreach(t) for (t = timers; t; t = t->next)
 
 void event_timer_insert(event_internal_t *t, int ms)
 {
@@ -63,7 +62,7 @@ void event_timer_insert(event_internal_t *t, int ms)
     t->expire = platform.get_ticks_from_boot() + ms;
 
     /* Bug: we do not properly handle wrap-around */
-    for (iter = &timer_list; *iter && (*iter)->expire < t->expire; 
+    for (iter = &timers; *iter && (*iter)->expire < t->expire; 
 	iter = &(*iter)->next);
 
     t->next = *iter;
@@ -114,7 +113,7 @@ void event_timer_del_all(void)
 
 static void timeout_process(void)
 {
-    event_internal_t **iter = &timer_list;
+    event_internal_t **iter = &timers;
 
     while (*iter)
     {
@@ -143,18 +142,18 @@ static void timeout_process(void)
 	/* Go back to the start. We don't know what happend to the list
 	 * while we ran the cb.
 	 */
-	iter = &timer_list;
+	iter = &timers;
     }
 }
 
 static void get_next_timeout(int *timeout)
 {
-    if (!timer_list)
+    if (!timers)
     {
 	*timeout = 0;
 	return;
     }
-    *timeout = timer_list->expire - platform.get_ticks_from_boot();
+    *timeout = timers->expire - platform.get_ticks_from_boot();
     tp_debug(("Next timeout: %d ms\n", *timeout));
 }
 
@@ -227,7 +226,7 @@ void event_watch_del_all(void)
 void event_purge_deleted(void)
 {
     event_internal_t **iter = &watches, *e;
-    event_internal_t **titer = &timer_list, *t;
+    event_internal_t **titer = &timers, *t;
 
     while ((e = *iter))
     {
@@ -273,7 +272,7 @@ static void watches_process(void)
 
 void event_loop(void)
 {
-    while (watches || timer_list) 
+    while (watches || timers) 
     {
 	int timeout, rc = 0;
 
