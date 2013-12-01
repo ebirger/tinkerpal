@@ -33,23 +33,15 @@
 #define EVENT_FLAG_ON 0x0001
 #define EVENT_FLAG_DELETED 0x0002
 
-/* XXX: consolidate with event_timer_internal_t */
-typedef struct event_watch_internal_t {
-    struct event_watch_internal_t *next;
+typedef struct event_internal_t {
+    struct event_internal_t *next;
     event_t *e;
     int resource_id;
-    int event_id;
-    unsigned int flags;
-} event_watch_internal_t;
-
-typedef struct event_timer_internal_t {
-    struct event_timer_internal_t *next;
-    event_t *e;
     int event_id;
     int period;
     int expire;
     unsigned int flags;
-} event_timer_internal_t;
+} event_internal_t;
 
 #define EVENT_IS_ON(e) ((e)->flags & EVENT_FLAG_ON)
 #define EVENT_ON(e) bit_set((e)->flags, EVENT_FLAG_ON, 1)
@@ -57,16 +49,16 @@ typedef struct event_timer_internal_t {
 #define EVENT_IS_DELETED(e) ((e)->flags & EVENT_FLAG_DELETED)
 #define EVENT_SET_DELETED(e) bit_set((e)->flags, EVENT_FLAG_DELETED, 1)
 
-static event_watch_internal_t *watches;
-static event_timer_internal_t *timer_list = NULL;
+static event_internal_t *watches;
+static event_internal_t *timer_list = NULL;
 static int g_event_id = 0;
 
 #define watches_foreach(e) for (e = watches; e; e = e->next)
 #define timers_foreach(t) for (t = timer_list; t; t = t->next)
 
-void event_timer_insert(event_timer_internal_t *t, int ms)
+void event_timer_insert(event_internal_t *t, int ms)
 {
-    event_timer_internal_t **iter;
+    event_internal_t **iter;
 
     t->expire = platform.get_ticks_from_boot() + ms;
 
@@ -78,9 +70,9 @@ void event_timer_insert(event_timer_internal_t *t, int ms)
     *iter = t;
 }
 
-static event_timer_internal_t *_event_timer_set(int ms, int period, event_t *e)
+static event_internal_t *_event_timer_set(int ms, int period, event_t *e)
 {
-    event_timer_internal_t *n = tmalloc_type(event_timer_internal_t);
+    event_internal_t *n = tmalloc_type(event_internal_t);
 
     n->e = e;
     n->period = period;
@@ -91,19 +83,19 @@ static event_timer_internal_t *_event_timer_set(int ms, int period, event_t *e)
 
 int event_timer_set(int ms, event_t *e)
 {
-    event_timer_internal_t *n = _event_timer_set(ms, 0, e);
+    event_internal_t *n = _event_timer_set(ms, 0, e);
     return n->event_id;
 }
 
 int event_timer_set_period(int ms, event_t *e)
 {
-    event_timer_internal_t *n = _event_timer_set(ms, ms, e);
+    event_internal_t *n = _event_timer_set(ms, ms, e);
     return n->event_id;
 }
 
 void event_timer_del(int event_id)
 {
-    event_timer_internal_t *t;
+    event_internal_t *t;
 
     timers_foreach(t)
     {
@@ -114,7 +106,7 @@ void event_timer_del(int event_id)
 
 void event_timer_del_all(void)
 {
-    event_timer_internal_t *t;
+    event_internal_t *t;
 
     timers_foreach(t)
 	EVENT_SET_DELETED(t);
@@ -122,11 +114,11 @@ void event_timer_del_all(void)
 
 static void timeout_process(void)
 {
-    event_timer_internal_t **iter = &timer_list;
+    event_internal_t **iter = &timer_list;
 
     while (*iter)
     {
-	event_timer_internal_t *t = *iter;
+	event_internal_t *t = *iter;
 	event_t *e = t->e;
 
 	if (EVENT_IS_DELETED(*iter))
@@ -166,9 +158,9 @@ static void get_next_timeout(int *timeout)
     tp_debug(("Next timeout: %d ms\n", *timeout));
 }
 
-static event_watch_internal_t *watch_lookup(int resource_id)
+static event_internal_t *watch_lookup(int resource_id)
 {
-    event_watch_internal_t *e;
+    event_internal_t *e;
 
     watches_foreach(e)
     {
@@ -180,7 +172,7 @@ static event_watch_internal_t *watch_lookup(int resource_id)
 
 static void event_mark_on(int resource_id)
 {
-    event_watch_internal_t *e;
+    event_internal_t *e;
 
     if (!(e = watch_lookup(resource_id)))
 	return;
@@ -190,7 +182,7 @@ static void event_mark_on(int resource_id)
 
 static int event_is_active(int resource_id)
 {
-    event_watch_internal_t *e;
+    event_internal_t *e;
 
     if (!(e = watch_lookup(resource_id)))
 	return 0;
@@ -200,9 +192,9 @@ static int event_is_active(int resource_id)
 
 int event_watch_set(int resource_id, event_t *e)
 {
-    event_watch_internal_t *n;
+    event_internal_t *n;
     
-    n = tmalloc_type(event_watch_internal_t);
+    n = tmalloc_type(event_internal_t);
 
     n->event_id = g_event_id++;
     n->resource_id = resource_id;
@@ -215,7 +207,7 @@ int event_watch_set(int resource_id, event_t *e)
 
 void event_watch_del(int event_id)
 {
-    event_watch_internal_t *e;
+    event_internal_t *e;
 
     watches_foreach(e)
     {
@@ -226,7 +218,7 @@ void event_watch_del(int event_id)
 
 void event_watch_del_all(void)
 {
-    event_watch_internal_t *e;
+    event_internal_t *e;
 
     watches_foreach(e)
 	EVENT_SET_DELETED(e);
@@ -234,8 +226,8 @@ void event_watch_del_all(void)
 
 void event_purge_deleted(void)
 {
-    event_watch_internal_t **iter = &watches, *e;
-    event_timer_internal_t **titer = &timer_list, *t;
+    event_internal_t **iter = &watches, *e;
+    event_internal_t **titer = &timer_list, *t;
 
     while ((e = *iter))
     {
@@ -267,7 +259,7 @@ void event_purge_deleted(void)
 
 static void watches_process(void)
 {
-    event_watch_internal_t *e;
+    event_internal_t *e;
 
     watches_foreach(e)
     {
