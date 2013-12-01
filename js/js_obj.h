@@ -350,6 +350,8 @@ static inline void obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 
 void obj_set_property_str(obj_t *o, tstr_t property, tstr_t value);
 void obj_set_property_int(obj_t *o, tstr_t property, int value);
+void obj_set_int_property(obj_t *o, int property, obj_t *value);
+
 int obj_get_property_int(int *value, obj_t *o, const tstr_t *property);
 int obj_get_int(obj_t *o);
 double obj_get_fp(obj_t *o);
