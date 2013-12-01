@@ -30,22 +30,17 @@
 #include "platform/platform.h"
 #include "js/js.h"
 
+#define EVENT_FLAG_ON 0x0001
+#define EVENT_FLAG_DELETED 0x0002
+
 /* XXX: consolidate with event_timer_internal_t */
 typedef struct event_watch_internal_t {
     struct event_watch_internal_t *next;
     event_watch_t *ew;
     int resource_id;
     int watch_id;
-#define EW_FLAG_ON 0x0001
-#define EW_FLAG_DELETED 0x0002
     unsigned int flags;
 } event_watch_internal_t;
-
-#define EW_IS_ON(e) ((e)->flags & EW_FLAG_ON)
-#define EW_ON(e) bit_set((e)->flags, EW_FLAG_ON, 1)
-#define EW_OFF(e) bit_set((e)->flags, EW_FLAG_ON, 0)
-#define EW_IS_DELETED(e) ((e)->flags & EW_FLAG_DELETED)
-#define EW_SET_DELETED(e) bit_set((e)->flags, EW_FLAG_DELETED, 1)
 
 typedef struct event_timer_internal_t {
     struct event_timer_internal_t *next;
@@ -53,13 +48,21 @@ typedef struct event_timer_internal_t {
     int timer_id;
     int period;
     int expire;
+    unsigned int flags;
 } event_timer_internal_t;
+
+#define EVENT_IS_ON(e) ((e)->flags & EVENT_FLAG_ON)
+#define EVENT_ON(e) bit_set((e)->flags, EVENT_FLAG_ON, 1)
+#define EVENT_OFF(e) bit_set((e)->flags, EVENT_FLAG_ON, 0)
+#define EVENT_IS_DELETED(e) ((e)->flags & EVENT_FLAG_DELETED)
+#define EVENT_SET_DELETED(e) bit_set((e)->flags, EVENT_FLAG_DELETED, 1)
 
 static event_watch_internal_t *watches;
 static event_timer_internal_t *timer_list = NULL;
 static int g_timer_id = 0, g_watch_id = 0;
 
 #define watches_foreach(e) for (e = watches; e; e = e->next)
+#define timers_foreach(t) for (t = timer_list; t; t = t->next)
 
 void event_timer_insert(event_timer_internal_t *t, int ms)
 {
@@ -101,30 +104,21 @@ int event_timer_set_period(int ms, event_timer_t *et)
 
 void event_timer_del(int timer_id)
 {
-    event_timer_internal_t **iter, *t;
-   
-    for (iter = &timer_list; *iter && (*iter)->timer_id != timer_id; 
-	iter = &(*iter)->next);
-    if (!(t = *iter))
-	return;
-    
-    *iter = (*iter)->next;
-    if (t->et->free)
-	t->et->free(t->et);
-    tfree(t);
+    event_timer_internal_t *t;
+
+    timers_foreach(t)
+    {
+	if (t->timer_id == timer_id)
+	    EVENT_SET_DELETED(t);
+    }
 }
 
 void event_timer_del_all(void)
 {
     event_timer_internal_t *t;
 
-    while ((t = timer_list))
-    {
-	timer_list = timer_list->next;
-	if (t->et->free)
-	    t->et->free(t->et);
-	tfree(t);
-    }
+    timers_foreach(t)
+	EVENT_SET_DELETED(t);
 }
 
 static void timeout_process(void)
@@ -135,6 +129,12 @@ static void timeout_process(void)
     {
 	event_timer_internal_t *t = *iter;
 	event_timer_t *et = t->et;
+
+	if (EVENT_IS_DELETED(*iter))
+	{
+	    iter = &(*iter)->next;
+	    continue;
+	}
 
 	if (platform.get_ticks_from_boot() < t->expire)
 	    break;
@@ -186,7 +186,7 @@ static void event_mark_on(int resource_id)
     if (!(e = watch_lookup(resource_id)))
 	return;
 
-    EW_ON(e);
+    EVENT_ON(e);
 }
 
 static int event_is_active(int resource_id)
@@ -221,7 +221,7 @@ void event_watch_del(int watch_id)
     watches_foreach(e)
     {
 	if (e->watch_id == watch_id)
-	    EW_SET_DELETED(e);
+	    EVENT_SET_DELETED(e);
     }
 }
 
@@ -230,16 +230,17 @@ void event_watch_del_all(void)
     event_watch_internal_t *e;
 
     watches_foreach(e)
-	EW_SET_DELETED(e);
+	EVENT_SET_DELETED(e);
 }
 
 void event_purge_deleted(void)
 {
     event_watch_internal_t **iter = &watches, *e;
+    event_timer_internal_t **titer = &timer_list, *t;
 
     while ((e = *iter))
     {
-	if (EW_IS_DELETED(e))
+	if (EVENT_IS_DELETED(e))
 	{
 	    *iter = (*iter)->next;
 
@@ -250,6 +251,19 @@ void event_purge_deleted(void)
 	else
 	    iter = &(*iter)->next;
     }
+    while ((t = *titer))
+    {
+	if (EVENT_IS_DELETED(t))
+	{
+	    *titer = (*titer)->next;
+
+	    if (t->et->free)
+		t->et->free(t->et);
+	    tfree(t);
+	}
+	else
+	    titer = &(*titer)->next;
+    }
 }
 
 static void watches_process(void)
@@ -258,11 +272,11 @@ static void watches_process(void)
 
     watches_foreach(e)
     {
-	if (!(EW_IS_ON(e)))
+	if (!(EVENT_IS_ON(e)))
 	    continue;
 
 	e->ew->watch_event(e->ew, e->resource_id);
-	EW_OFF(e);
+	EVENT_OFF(e);
     }
 }
 
