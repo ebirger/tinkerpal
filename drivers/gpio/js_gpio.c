@@ -199,11 +199,23 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 #define Swatch_func S("watch_func")
 #define Swatch_this S("watch_this")
+#define Swatches S("watches")
 
 typedef struct {
     event_watch_t ew; /* Must be first */
     obj_t *watch_obj;
 } set_watch_work_t;
+
+extern obj_t *meta_env;
+
+static void watch_register(obj_t *watch_obj, int id)
+{
+    obj_t *watches;
+
+    watches = obj_get_property(NULL, meta_env, &Swatches);
+    obj_set_int_property(watches, id, watch_obj);
+    obj_put(watches);
+}
 
 static void delayed_work_free(event_watch_t *ew)
 {
@@ -249,5 +261,25 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     event_id = event_watch_set(obj_get_int(argv[2]), &w->ew);
     *ret = num_new_int(event_id);
+    watch_register(w->watch_obj, event_id);
     return 0;
+}
+
+int do_list_watches(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    obj_t *watches = obj_get_property(NULL, meta_env, &Swatches);
+
+    tp_out(("Watch list:\n%o\n", watches));
+    
+    obj_put(watches);
+    return 0;
+}
+
+void js_gpio_uninit(void)
+{
+}
+
+void js_gpio_init(void)
+{
+    obj_set_property(meta_env, Swatches, array_new());
 }
