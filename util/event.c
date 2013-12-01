@@ -76,6 +76,7 @@ static event_internal_t *_event_timer_set(int ms, int period, event_t *e)
     n->e = e;
     n->period = period;
     n->event_id = g_event_id++;
+    n->flags = 0;
     event_timer_insert(n, ms);
     return n;
 }
