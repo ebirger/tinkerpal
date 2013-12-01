@@ -48,7 +48,7 @@ static void timer_register(obj_t *timer_obj, int id)
     obj_t *timers;
 
     timers = obj_get_property(NULL, meta_env, &Stimers);
-    obj_set_int_property(timers, id, timer_obj);
+    array_push(timers, timer_obj);
     obj_put(timers);
 }
 
@@ -61,12 +61,31 @@ static void timer_unregister_all(void)
 static void timer_unregister(int id)
 {
     obj_t *timers;
+    array_iter_t iter;
+    int idx = -1;
 
     timers = obj_get_property(NULL, meta_env, &Stimers);
+
+    /* Lookup our timer */
+    array_iter_init(&iter, timers, 0);
+    while (array_iter_next(&iter))
+    {
+	int tid;
+
+	if (obj_get_property_int(&tid, iter.obj, &Stimer_id))
+	    continue;
+
+	if (tid != id)
+	    continue;
+
+	idx = iter.k;
+    }
+    array_iter_uninit(&iter);
+
     /* XXX: should be deleting the entry entirely, not just
      * setting it to undefined
     */
-    obj_set_int_property(timers, id, UNDEF);
+    obj_set_int_property(timers, idx, UNDEF);
     obj_put(timers);
 }
 
