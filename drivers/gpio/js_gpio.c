@@ -281,5 +281,5 @@ void js_gpio_uninit(void)
 
 void js_gpio_init(void)
 {
-    obj_set_property(meta_env, Swatches, array_new());
+    _obj_set_property(meta_env, Swatches, array_new());
 }

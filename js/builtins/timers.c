@@ -253,5 +253,5 @@ void timers_uninit(void)
 
 void timers_init(void)
 {
-    obj_set_property(meta_env, Stimers, array_new());
+    _obj_set_property(meta_env, Stimers, array_new());
 }
