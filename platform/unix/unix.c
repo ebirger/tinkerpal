@@ -47,7 +47,7 @@ int unix_select(int ms, int (*is_active)(int id), void (*mark_on)(int id),
 {
     fd_set rfds;
     struct timeval tv;
-    int rc, sec, max_fd = -1;
+    int rc, sec, max_fd = 0;
     unix_fd_event_map_t *iter;
 
     FD_ZERO(&rfds);
@@ -57,7 +57,7 @@ int unix_select(int ms, int (*is_active)(int id), void (*mark_on)(int id),
 	if (serial_is_active(iter->event, is_active))
 	{
 	    FD_SET(iter->fd, &rfds);
-	    if (iter->fd > max_fd)
+	    if (iter->fd > max_fd - 1)
 		max_fd = iter->fd + 1;
 	}
     }
