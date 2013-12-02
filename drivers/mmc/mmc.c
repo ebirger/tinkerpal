@@ -167,11 +167,9 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
     expiry = TICKS() + 100;
     while (((token = rcvr_spi()) == 0xFF) && TICKS() < expiry);
 
+    /* Check for invalid token */
     if (token != 0xFE)
-    {    
-	/* Invalid token */
 	return -1;
-    }
 
     do 
     {
@@ -223,7 +221,7 @@ static u8 send_cmd(u8 cmd, u32 arg)
     xmit_spi((u8)(arg >> 16)); /* Argument[23..16] */
     xmit_spi((u8)(arg >> 8)); /* Argument[15..8] */
     xmit_spi((u8)arg); /* Argument[7..0] */
-    n = 0xff;
+    n = 0xFF;
     if (cmd == CMD0) 
 	n = 0x95; /* CRC for CMD0(0) */
     if (cmd == CMD8) 
@@ -236,11 +234,7 @@ static u8 send_cmd(u8 cmd, u32 arg)
 
     /* Wait for a valid response in timeout of 10 attempts */
     n = 10;
-    do
-    {
-        res = rcvr_spi();
-    } while ((res & 0x80) && --n);
-
+    while (((res = rcvr_spi()) & 0x80) && --n);
     return res;
 }
 
