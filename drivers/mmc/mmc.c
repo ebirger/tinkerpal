@@ -296,72 +296,70 @@ int mmc_spi_disk_init(void)
 
     cs_low();
     ty = 0;
-    if (send_cmd(CMD0, 0) == 1) 
+
+    if (send_cmd(CMD0, 0) != 1)
+	goto Exit;
+
+    /* Enter Idle state */
+    expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
+    if (send_cmd(CMD8, 0x1AA) == 1) 
     {
-	/* Enter Idle state */
-        expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
-        if (send_cmd(CMD8, 0x1AA) == 1) 
-	{
-	    /* SDC Ver2+ */
-            for (n = 0; n < 4; n++) ocr[n] = rcvr_spi();
-            if (ocr[2] == 0x01 && ocr[3] == 0xAA) 
-	    {    
-		/* The card can work at vdd range of 2.7-3.6V */
-                do 
-		{
-                    if (send_cmd(CMD55, 0) <= 1 && 
-			send_cmd(CMD41, 1UL << 30) == 0)
-		    {    
-			/* ACMD41 with HCS bit */
-		    	break;
-		    }
-                } while (TICKS() < expiry);
-                if (TICKS() < expiry && send_cmd(CMD58, 0) == 0) 
-		{
-		    /* Check CCS bit */
-                    for (n = 0; n < 4; n++)
-			ocr[n] = rcvr_spi();
-                    ty = (ocr[0] & 0x40) ? 6 : 2;
-                }
-            }
-        } 
-	else 
-	{
-	    /* SDC Ver1 or MMC */
-	    expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
-            ty = (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) <= 1) ? 2 : 1; /* SDC : MMC */
-            do 
+	/* SDC Ver2+ */
+	for (n = 0; n < 4; n++) ocr[n] = rcvr_spi();
+	if (ocr[2] == 0x01 && ocr[3] == 0xAA) 
+	{    
+	    /* The card can work at vdd range of 2.7-3.6V */
+	    do 
 	    {
-                if (ty == 2) 
-		{
-                    if (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) == 0) 
-			break;    /* ACMD41 */
-                } 
-		else 
-		{
-                    if (send_cmd(CMD1, 0) == 0) 
-			break;                                /* CMD1 */
-                }
-            } while (TICKS() < expiry);
-	    /* Select R/W block length */
-            if (TICKS() >= expiry || send_cmd(CMD16, 512) != 0)
-                ty = 0;
-        }
+		if (send_cmd(CMD55, 0) <= 1 && 
+			send_cmd(CMD41, 1UL << 30) == 0)
+		{    
+		    /* ACMD41 with HCS bit */
+		    break;
+		}
+	    } while (TICKS() < expiry);
+	    if (TICKS() < expiry && send_cmd(CMD58, 0) == 0) 
+	    {
+		/* Check CCS bit */
+		for (n = 0; n < 4; n++)
+		    ocr[n] = rcvr_spi();
+		ty = (ocr[0] & 0x40) ? 6 : 2;
+	    }
+	}
+    } 
+    else 
+    {
+	/* SDC Ver1 or MMC */
+	expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
+	ty = (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) <= 1) ? 2 : 1; /* SDC : MMC */
+	do 
+	{
+	    if (ty == 2) 
+	    {
+		if (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) == 0) 
+		    break;    /* ACMD41 */
+	    } 
+	    else 
+	    {
+		if (send_cmd(CMD1, 0) == 0) 
+		    break;                                /* CMD1 */
+	    }
+	} while (TICKS() < expiry);
+	/* Select R/W block length */
+	if (TICKS() >= expiry || send_cmd(CMD16, 512) != 0)
+	    ty = 0;
     }
-    card_type = ty;
+
+Exit:
     cs_high();
     rcvr_spi(); /* Idle (Release DO) */
 
-    if (ty) 
+    if ((card_type = ty))
     {
 	/* Initialization succeded */
         g_mmc.disc_status &= ~BLOCK_DISK_STATUS_NO_INIT;
 	spi_set_max_speed(g_mmc.spi_port, platform.get_system_clock() / 2);
     } 
-    else 
-    { 
-	/* Initialization failed */
-    }
 
     return g_mmc.disc_status ? -1 : 0;
 }
