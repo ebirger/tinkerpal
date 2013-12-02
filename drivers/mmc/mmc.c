@@ -51,7 +51,6 @@ struct mmc_t {
 };
 
 static u8 CardType; /* b0:MMC, b1:SDC, b2:Block addressing */
-static u8 PowerFlag = 0; /* indicates if "power" is on */
 static mmc_t g_mmc = { 
     .disc_status = BLOCK_DISK_STATUS_NO_INIT|BLOCK_DISK_STATUS_NO_DISK 
 };
@@ -150,19 +149,6 @@ static void power_on(void)
     /* Set DI and CS high and apply more than 74 pulses to SCLK for the card */
     /* to be able to accept a native command. */
     send_initial_clock_train();
-
-    PowerFlag = 1;
-}
-
-static void power_off(void)
-{
-    PowerFlag = 0;
-}
-
-static int chk_power(void)
-{
-    /* Socket power state: 0=off, 1=on */
-    return PowerFlag;
 }
 
 /* Common MMC API */
@@ -395,7 +381,6 @@ int mmc_spi_disk_init(void)
     else 
     { 
 	/* Initialization failed */
-        power_off();
     }
 
     return g_mmc.disc_status ? -1 : 0;
@@ -514,31 +499,8 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
 int mmc_spi_disk_ioctl(int cmd, void *buff)
 {
     int res = -1;
-    u8 n, csd[16], *ptr = buff;
+    u8 n, csd[16];
     u16 csize;
-
-    if (cmd == BLOCK_IOCTL_POWER)
-    {
-        switch (*ptr) 
-	{
-        case 0:
-	    /* POWER_OFF */
-            if (chk_power())
-                power_off();
-	    return 0;
-        case 1:
-	    /* POWER_ON */
-            power_on();
-	    return 0;
-        case 2:
-    	    /* POWER_GET */
-            *(ptr+1) = (u8)chk_power();
-	    return 0;
-        default :
-            break;
-        }
-	return -1;
-    }
 
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT) 
 	return -1;
