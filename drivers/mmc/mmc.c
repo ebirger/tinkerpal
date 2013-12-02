@@ -50,9 +50,12 @@ struct mmc_t {
     volatile int disc_status;
 };
 
-#define CARD_MMC(c) ((c) & (1 << 0))
-#define CARD_SDC(c) ((c) & (1 << 1))
-#define CARD_BLOCK_ADDRESSING(c) ((c) & (1 << 2))
+#define CARD_MMC (1 << 0)
+#define CARD_IS_MMC(c) ((c) & CARD_MMC)
+#define CARD_SDC (1 << 1)
+#define CARD_IS_SDC(c) ((c) & CARD_SDC)
+#define CARD_BLOCK_ADDRESSING (1 << 2)
+#define CARD_IS_BLOCK_ADDRESSING(c) ((c) & CARD_BLOCK_ADDRESSING)
 static u8 card_type;
 static mmc_t g_mmc = { 
     .disc_status = BLOCK_DISK_STATUS_NO_INIT|BLOCK_DISK_STATUS_NO_DISK 
@@ -281,7 +284,7 @@ static u8 send_cmd12(void)
 /* MMC CBs */
 int mmc_spi_disk_init(void)
 {
-    u8 n, ty, ocr[4];
+    u8 ty;
     int expiry;
 
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_DISK)
@@ -304,36 +307,39 @@ int mmc_spi_disk_init(void)
     expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
     if (send_cmd(CMD8, 0x1AA) == 1) 
     {
+	u8 n, ocr[4];
+
 	/* SDC Ver2+ */
 	for (n = 0; n < 4; n++)
 	    ocr[n] = rcvr_spi();
 	if (ocr[2] == 0x01 && ocr[3] == 0xAA)
 	{
 	    /* The card can work at vdd range of 2.7-3.6V */
-	    do
+	    while (TICKS() < expiry)
 	    {
 		if (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 1UL << 30) == 0)
 		{
 		    /* ACMD41 with HCS bit */
 		    break;
 		}
-	    } while (TICKS() < expiry);
-	    if (TICKS() < expiry && send_cmd(CMD58, 0) == 0)
-	    {
-		/* Check CCS bit */
-		for (n = 0; n < 4; n++)
-		    ocr[n] = rcvr_spi();
-		ty = (ocr[0] & 0x40) ? 6 : 2;
 	    }
+	    if (TICKS() >= expiry || send_cmd(CMD58, 0))
+		goto Exit;
+
+	    /* Check CCS bit */
+	    for (n = 0; n < 4; n++)
+		ocr[n] = rcvr_spi();
+	    ty = CARD_SDC | ((ocr[0] & 0x40) ? CARD_BLOCK_ADDRESSING : 0);
 	}
     }
     else 
     {
 	/* SDC Ver1 or MMC */
-	ty = (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) <= 1) ? 2 : 1; /* SDC : MMC */
-	do
+	ty = (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) <= 1) ? CARD_SDC : 
+	    CARD_MMC;
+	while (TICKS() < expiry)
 	{
-	    if (ty == 2)
+	    if (ty == CARD_SDC)
 	    {
 		if (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) == 0)
 		    break; /* ACMD41 */
@@ -343,7 +349,7 @@ int mmc_spi_disk_init(void)
 		if (send_cmd(CMD1, 0) == 0)
 		    break; /* CMD1 */
 	    }
-	} while (TICKS() < expiry);
+	}
 	/* Select R/W block length */
 	if (TICKS() >= expiry || send_cmd(CMD16, 512) != 0)
 	    ty = 0;
@@ -353,14 +359,13 @@ Exit:
     cs_high();
     rcvr_spi(); /* Idle (Release DO) */
 
-    if ((card_type = ty))
-    {
-	/* Initialization succeded */
-        g_mmc.disc_status &= ~BLOCK_DISK_STATUS_NO_INIT;
-	spi_set_max_speed(g_mmc.spi_port, platform.get_system_clock() / 2);
-    } 
+    if (!(card_type = ty))
+	return -1;
 
-    return g_mmc.disc_status ? -1 : 0;
+    /* Initialization succeded */
+    g_mmc.disc_status &= ~BLOCK_DISK_STATUS_NO_INIT;
+    spi_set_max_speed(g_mmc.spi_port, platform.get_system_clock() / 2);
+    return 0;
 }
 
 int mmc_spi_disk_status(void)
@@ -376,7 +381,7 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT) 
 	return -1;
 
-    if (!(CARD_BLOCK_ADDRESSING(card_type)))
+    if (!(CARD_IS_BLOCK_ADDRESSING(card_type)))
     { 
 	/* Convert to byte address if needed */
 	sector *= 512;
@@ -424,7 +429,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
 	return -1;
     }
 
-    if (!(CARD_BLOCK_ADDRESSING(card_type)))
+    if (!(CARD_IS_BLOCK_ADDRESSING(card_type)))
     {
 	/* Convert to byte address if needed */
 	sector *= 512;
@@ -444,7 +449,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
     else 
     {
 	/* Multiple block write */
-        if (CARD_SDC(card_type))
+        if (CARD_IS_SDC(card_type))
 	{
             send_cmd(CMD55, 0); 
 	    send_cmd(CMD23, count); /* ACMD23 */
