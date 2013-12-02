@@ -53,7 +53,6 @@ static void timeout_cb(event_t *e, int resource_id)
     timer_function_call(&o, e);
 
     obj_put(o);
-    js_event_free(e);
 }
 
 static void interval_cb(event_t *e, int resource_id)

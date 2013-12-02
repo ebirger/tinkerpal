@@ -134,13 +134,14 @@ static void timeout_process(void)
 	if (platform.get_ticks_from_boot() < t->expire)
 	    break;
 
-	/* Remove current timer from list */
-	*iter = (*iter)->next;
-
 	if (EVENT_IS_PERIODIC(t))
+	{
+	    /* Remove from list and re-insert at the proper time */
+	    *iter = (*iter)->next;
 	    event_timer_insert(t, t->period);
+	}
 	else
-	    tfree(t);
+	    EVENT_SET_DELETED(t);
 
 	e->trigger(e, 0 /* dummy */);
 
