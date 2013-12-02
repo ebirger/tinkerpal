@@ -26,6 +26,7 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_event.h"
 #include "drivers/gpio/gpio.h"
 
 #define Sexception_gpio_pin_mode_unavail \
@@ -197,14 +198,7 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 }
 #endif
 
-#define Swatch_func S("watch_func")
-#define Swatch_this S("watch_this")
 #define Swatches S("watches")
-
-typedef struct {
-    event_t e; /* Must be first */
-    obj_t *watch_obj;
-} set_watch_work_t;
 
 extern obj_t *meta_env;
 
@@ -217,33 +211,13 @@ static void watch_register(obj_t *watch_obj, int id)
     obj_put(watches);
 }
 
-static void delayed_work_free(event_t *e)
-{
-    set_watch_work_t *w = (set_watch_work_t *)e;
-    obj_put(w->watch_obj);
-    tfree(w);
-}
-
-static set_watch_work_t *set_watch_work_new(obj_t *func, obj_t *this,
-    void (*watch_event)(event_t *e, int resource_id))
-{
-    set_watch_work_t *w = tmalloc_type(set_watch_work_t);
-
-    w->e.free = delayed_work_free;
-    w->e.trigger = watch_event;
-    w->watch_obj = object_new();
-    obj_set_property(w->watch_obj, Swatch_func, func);
-    obj_set_property(w->watch_obj, Swatch_this, this);
-    return w;
-}
-
 static void set_watch_on_change_cb(event_t *e, int id)
 {
-    set_watch_work_t *w = (set_watch_work_t *)e;
     obj_t *o, *this, *func;
 
-    func = obj_get_property(NULL, w->watch_obj, &Swatch_func);
-    this = obj_get_property(NULL, w->watch_obj, &Swatch_this);
+    func = js_event_get_func(e);
+    this = js_event_get_this(e);
+
     function_call(&o, this, 1, &func);
 
     obj_put(func);
@@ -253,15 +227,16 @@ static void set_watch_on_change_cb(event_t *e, int id)
 
 int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    set_watch_work_t *w;
+    event_t *e;
     int event_id;
 
     tp_assert(argc == 3);
-    w = set_watch_work_new(argv[1], this, set_watch_on_change_cb);
 
-    event_id = event_watch_set(obj_get_int(argv[2]), &w->e);
+    e = js_event_new(argv[1], this, set_watch_on_change_cb);
+
+    event_id = event_watch_set(obj_get_int(argv[2]), e);
     *ret = num_new_int(event_id);
-    watch_register(w->watch_obj, event_id);
+    watch_register(js_event_obj(e), event_id);
     return 0;
 }
 
