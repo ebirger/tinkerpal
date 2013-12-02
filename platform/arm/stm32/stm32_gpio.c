@@ -22,19 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* XXX: perhaps this should be abstracted in each platform header file */
-#if defined(CONFIG_STM32F3DISCOVERY)
-#include "stm32f30x_rcc.h"
-#include "stm32f30x_gpio.h"
-#define PERIPH_ENABLE(p) RCC_AHBPeriphClockCmd(p, ENABLE)
-#elif defined(CONFIG_STM32F4DISCOVERY)
-#include "stm32f4xx_rcc.h"
-#include "stm32f4xx_gpio.h"
-#define PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
-#endif
-
 #include "platform/arm/stm32/stm32_gpio.h"
-#include "platform/platform.h"
 #include "drivers/gpio/gpio.h"
 
 #define GPIO_PERIPH(p) (stm32_gpio_ports[((p) >> 4)].periph)

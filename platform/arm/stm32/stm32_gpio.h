@@ -25,6 +25,17 @@
 #ifndef __STM32_GPIO_H__
 #define __STM32_GPIO_H__
 
+/* XXX: perhaps this should be abstracted in each platform header file */
+#if defined(CONFIG_STM32F3DISCOVERY)
+#include "stm32f30x_rcc.h"
+#include "stm32f30x_gpio.h"
+#define PERIPH_ENABLE(p) RCC_AHBPeriphClockCmd(p, ENABLE)
+#elif defined(CONFIG_STM32F4DISCOVERY)
+#include "stm32f4xx_rcc.h"
+#include "stm32f4xx_gpio.h"
+#define PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
+#endif
+
 #include "platform/platform.h"
 
 typedef struct {
