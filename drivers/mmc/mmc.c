@@ -50,7 +50,10 @@ struct mmc_t {
     volatile int disc_status;
 };
 
-static u8 CardType; /* b0:MMC, b1:SDC, b2:Block addressing */
+#define CARD_MMC(c) ((c) & (1 << 0))
+#define CARD_SDC(c) ((c) & (1 << 1))
+#define CARD_BLOCK_ADDRESSING(c) ((c) & (1 << 2))
+static u8 card_type;
 static mmc_t g_mmc = { 
     .disc_status = BLOCK_DISK_STATUS_NO_INIT|BLOCK_DISK_STATUS_NO_DISK 
 };
@@ -368,7 +371,7 @@ int mmc_spi_disk_init(void)
                 ty = 0;
         }
     }
-    CardType = ty;
+    card_type = ty;
     DESELECT(); /* CS = H */
     rcvr_spi(); /* Idle (Release DO) */
 
@@ -399,7 +402,7 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT) 
 	return -1;
 
-    if (!(CardType & 4))
+    if (!(CARD_BLOCK_ADDRESSING(card_type)))
     { 
 	/* Convert to byte address if needed */
 	sector *= 512;
@@ -447,7 +450,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
 	return -1;
     }
 
-    if (!(CardType & 4))
+    if (!(CARD_BLOCK_ADDRESSING(card_type)))
     {
 	/* Convert to byte address if needed */
 	sector *= 512;
@@ -467,7 +470,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
     else 
     {
 	/* Multiple block write */
-        if (CardType & 2) 
+        if (CARD_SDC(card_type))
 	{
             send_cmd(CMD55, 0); 
 	    send_cmd(CMD23, count); /* ACMD23 */
@@ -562,7 +565,7 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
 #if 0
     case MMC_GET_TYPE:
     	/* Get card type flags (1 byte) */
-	*ptr = CardType;
+	*ptr = card_type;
 	res = 0;
 	break;
 #endif
