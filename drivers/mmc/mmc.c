@@ -389,31 +389,27 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
 
     cs_low();
 
-    if (count == 1) 
-    {    
-	/* Single block read */
-        if ((send_cmd(CMD17, sector) == 0) /* READ_SINGLE_BLOCK */ && 
-	    !rcvr_datablock(buff, 512))
-	{
-            count = 0;
-	}
+    if (count == 1)
+    {
+	/* READ_SINGLE_BLOCK */
+        if (send_cmd(CMD17, sector) || rcvr_datablock(buff, 512))
+	   goto Exit;
+
+	count = 0;
     }
-    else 
+    else
     {
 	/* Multiple block read */
-        if (send_cmd(CMD18, sector) == 0) 
-	{ 
-	    /* READ_MULTIPLE_BLOCK */
-            do 
-	    {
-                if (rcvr_datablock(buff, 512)) 
-		    break;
-                buff += 512;
-            } while (--count);
-            send_cmd12(); /* STOP_TRANSMISSION */
-        }
+	if (send_cmd(CMD18, sector)) 
+	    goto Exit;
+
+	/* READ_MULTIPLE_BLOCK */
+	while (count-- && !rcvr_datablock(buff += 512, 512));
+
+	send_cmd12(); /* STOP_TRANSMISSION */
     }
 
+Exit:
     cs_high();
     rcvr_spi(); /* Idle (Release DO) */
 
