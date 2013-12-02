@@ -39,4 +39,3 @@ int stm32_select(int ms)
 
     return event;
 }
-
