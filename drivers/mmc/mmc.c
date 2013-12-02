@@ -27,21 +27,21 @@
 #include "drivers/mmc/mmc.h"
 
 /* Definitions for MMC/SDC command */
-#define CMD0 (0x40+0) /* GO_IDLE_STATE */
-#define CMD1 (0x40+1) /* SEND_OP_COND */
-#define CMD8 (0x40+8) /* SEND_IF_COND */
-#define CMD9 (0x40+9) /* SEND_CSD */
-#define CMD10 (0x40+10) /* SEND_CID */
-#define CMD12 (0x40+12) /* STOP_TRANSMISSION */
-#define CMD16 (0x40+16) /* SET_BLOCKLEN */
-#define CMD17 (0x40+17) /* READ_SINGLE_BLOCK */
-#define CMD18 (0x40+18) /* READ_MULTIPLE_BLOCK */
-#define CMD23 (0x40+23) /* SET_BLOCK_COUNT */
-#define CMD24 (0x40+24) /* WRITE_BLOCK */
-#define CMD25 (0x40+25) /* WRITE_MULTIPLE_BLOCK */
-#define CMD41 (0x40+41) /* SEND_OP_COND (ACMD) */
-#define CMD55 (0x40+55) /* APP_CMD */
-#define CMD58 (0x40+58) /* READ_OCR */
+#define CMD_GO_IDLE_STATE (0x40+0)
+#define CMD_SEND_OP_COND (0x40+1)
+#define CMD_SEND_IF_COND (0x40+8)
+#define CMD_SEND_CSD (0x40+9)
+#define CMD_SEND_CID (0x40+10)
+#define CMD_STOP_TRANSMISSION (0x40+12)
+#define CMD_SET_BLOCKLEN (0x40+16)
+#define CMD_READ_SINGLE_BLOCK (0x40+17)
+#define CMD_READ_MULTIPLE_BLOCK (0x40+18)
+#define CMD_SET_BLOCK_COUNT (0x40+23)
+#define CMD_WRITE_BLOCK (0x40+24)
+#define CMD_WRITE_MULTIPLE_BLOCK (0x40+25)
+#define CMD_SEND_OP_COND_ACMD (0x40+41)
+#define CMD_APP_CMD (0x40+55)
+#define CMD_READ_OCR (0x40+58)
 
 struct mmc_t {
     int spi_port;
@@ -223,14 +223,14 @@ static u8 send_cmd(u8 cmd, u32 arg)
     xmit_spi((u8)(arg >> 8)); /* Argument[15..8] */
     xmit_spi((u8)arg); /* Argument[7..0] */
     n = 0xFF;
-    if (cmd == CMD0) 
-	n = 0x95; /* CRC for CMD0(0) */
-    if (cmd == CMD8) 
-	n = 0x87; /* CRC for CMD8(0x1AA) */
+    if (cmd == CMD_GO_IDLE_STATE) 
+	n = 0x95; /* CRC for CMD_GO_IDLE_STATE(0) */
+    if (cmd == CMD_SEND_IF_COND) 
+	n = 0x87; /* CRC for CMD_SEND_IF_COND(0x1AA) */
     xmit_spi(n);
 
     /* Receive command response */
-    if (cmd == CMD12)
+    if (cmd == CMD_STOP_TRANSMISSION)
 	rcvr_spi(); /* Skip a stuff byte when stop reading */
 
     /* Wait for a valid response in timeout of 10 attempts */
@@ -244,25 +244,25 @@ static u8 send_cmd(u8 cmd, u32 arg)
  *
  * This is the only command which can be sent while the SDCard is sending
  * data. The SDCard spec indicates that the data transfer will stop 2 bytes
- * after the 6 byte CMD12 command is sent and that the card will then send
- * 0xFF for between 2 and 6 more bytes before the R1 response byte.  This
- * response will be followed by another 0xFF byte.  In testing, however, it
- * seems that some cards don't send the 2 to 6 0xFF bytes between the end of
+ * after the 6 byte CMD_STOP_TRANSMISSION command is sent and that the card will
+ * then send 0xFF for between 2 and 6 more bytes before the R1 response byte.
+ * This response will be followed by another 0xFF byte.  In testing, however, 
+ * it seems that some cards don't send the 2 to 6 0xFF bytes between the end of
  * data transmission and the response code.  This function, therefore, merely
  * reads 10 bytes and, if the last one read is 0xFF, returns the value of the
  * latest non-0xFF byte as the response code.
  *
  *-----------------------------------------------------------------------*/
-static u8 send_cmd12(void)
+static u8 send_cmd_stop_transmission(void)
 {
     u8 n, res, val;
 
-    /* For CMD12, we don't wait for the card to be idle before we send
+    /* For CMD_STOP_TRANSMISSION, we don't wait for the card to be idle before we send
      * the new command.
      */
 
-    /* Send command packet - the argument for CMD12 is ignored. */
-    xmit_spi(CMD12);
+    /* Send command packet - the argument for CMD_STOP_TRANSMISSION is ignored. */
+    xmit_spi(CMD_STOP_TRANSMISSION);
     xmit_spi(0);
     xmit_spi(0);
     xmit_spi(0);
@@ -300,12 +300,12 @@ int mmc_spi_disk_init(void)
     cs_low();
     ty = 0;
 
-    if (send_cmd(CMD0, 0) != 1)
+    if (send_cmd(CMD_GO_IDLE_STATE, 0) != 1)
 	goto Exit;
 
     /* Enter Idle state */
     expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
-    if (send_cmd(CMD8, 0x1AA) == 1) 
+    if (send_cmd(CMD_SEND_IF_COND, 0x1AA) == 1) 
     {
 	u8 n, ocr[4];
 
@@ -317,13 +317,14 @@ int mmc_spi_disk_init(void)
 	    /* The card can work at vdd range of 2.7-3.6V */
 	    while (TICKS() < expiry)
 	    {
-		if (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 1UL << 30) == 0)
+		if (send_cmd(CMD_APP_CMD, 0) <= 1 &&
+		    send_cmd(CMD_SEND_OP_COND_ACMD, 1UL << 30) == 0)
 		{
 		    /* ACMD41 with HCS bit */
 		    break;
 		}
 	    }
-	    if (TICKS() >= expiry || send_cmd(CMD58, 0))
+	    if (TICKS() >= expiry || send_cmd(CMD_READ_OCR, 0))
 		goto Exit;
 
 	    /* Check CCS bit */
@@ -335,23 +336,26 @@ int mmc_spi_disk_init(void)
     else 
     {
 	/* SDC Ver1 or MMC */
-	ty = (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) <= 1) ? CARD_SDC : 
-	    CARD_MMC;
+	ty = (send_cmd(CMD_APP_CMD, 0) <= 1 &&
+	    send_cmd(CMD_SEND_OP_COND_ACMD, 0) <= 1) ? CARD_SDC : CARD_MMC;
 	while (TICKS() < expiry)
 	{
 	    if (ty == CARD_SDC)
 	    {
-		if (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) == 0)
-		    break; /* ACMD41 */
+		if (send_cmd(CMD_APP_CMD, 0) <= 1 &&
+		    send_cmd(CMD_SEND_OP_COND_ACMD, 0) == 0)
+		{
+		    break;
+		}
 	    }
 	    else
 	    {
-		if (send_cmd(CMD1, 0) == 0)
-		    break; /* CMD1 */
+		if (send_cmd(CMD_SEND_OP_COND, 0) == 0)
+		    break;
 	    }
 	}
 	/* Select R/W block length */
-	if (TICKS() >= expiry || send_cmd(CMD16, 512) != 0)
+	if (TICKS() >= expiry || send_cmd(CMD_SET_BLOCKLEN, 512) != 0)
 	    ty = 0;
     }
 
@@ -391,22 +395,25 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
 
     if (count == 1)
     {
-	/* READ_SINGLE_BLOCK */
-        if (send_cmd(CMD17, sector) || rcvr_datablock(buff, 512))
+	/* Single block read */
+        if (send_cmd(CMD_READ_SINGLE_BLOCK, sector) ||
+	   rcvr_datablock(buff, 512))
+	{
 	   goto Exit;
+	}
 
 	count = 0;
     }
     else
     {
 	/* Multiple block read */
-	if (send_cmd(CMD18, sector)) 
+	if (send_cmd(CMD_READ_MULTIPLE_BLOCK, sector)) 
 	    goto Exit;
 
-	/* READ_MULTIPLE_BLOCK */
+	/* Do the actual reading */
 	while (count-- && !rcvr_datablock(buff += 512, 512));
 
-	send_cmd12(); /* STOP_TRANSMISSION */
+	send_cmd_stop_transmission();
     }
 
 Exit:
@@ -436,7 +443,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
     if (count == 1) 
     {
         /* WRITE_BLOCK */
-        if (send_cmd(CMD24, sector) || xmit_datablock(buff, 0xFE))
+        if (send_cmd(CMD_WRITE_BLOCK, sector) || xmit_datablock(buff, 0xFE))
 	    goto Exit;
 
 	count = 0;
@@ -446,11 +453,11 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
 	/* Multiple block write */
 	if (CARD_IS_SDC(card_type))
 	{
-	    send_cmd(CMD55, 0); 
-	    send_cmd(CMD23, count); /* ACMD23 */
+	    send_cmd(CMD_APP_CMD, 0); 
+	    send_cmd(CMD_SET_BLOCK_COUNT, count); /* ACMD23 */
 	}
 
-	if (send_cmd(CMD25, sector)) 
+	if (send_cmd(CMD_WRITE_MULTIPLE_BLOCK, sector)) 
 	    goto Exit;
 
 	/* WRITE_MULTIPLE_BLOCK */
@@ -475,7 +482,7 @@ static int mmc_spi_ioctl_get_sector_count(void *buff)
     u16 csize;
 
     /* Get number of sectors on the disk (u32) */
-    if (send_cmd(CMD9, 0) || rcvr_datablock(csd, 16))
+    if (send_cmd(CMD_SEND_CSD, 0) || rcvr_datablock(csd, 16))
 	return -1;
 
     if ((csd[0] >> 6) == 1) 
