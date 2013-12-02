@@ -114,14 +114,13 @@ void event_timer_del_all(void)
 
 static void timeout_process(void)
 {
-    event_internal_t **iter = &timers;
+    event_internal_t **iter = &timers, *t;
 
-    while (*iter)
+    while ((t = *iter))
     {
-	event_internal_t *t = *iter;
 	event_t *e = t->e;
 
-	if (EVENT_IS_DELETED(*iter))
+	if (EVENT_IS_DELETED(t))
 	{
 	    iter = &(*iter)->next;
 	    continue;
