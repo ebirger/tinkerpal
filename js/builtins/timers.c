@@ -26,17 +26,11 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_event.h"
 #include "platform/platform.h"
 
 #define Stimers S("timers")
-#define Stimer_func S("timer_func")
-#define Stimer_this S("timer_this")
 #define Stimer_id S("timer_id")
-
-typedef struct {
-    event_t e; /* Must be first */
-    obj_t *timer_obj;
-} delayed_work_t;
 
 extern obj_t *meta_env;
 
@@ -89,34 +83,13 @@ static void timer_unregister(int id)
     obj_put(timers);
 }
 
-static void delayed_work_free(event_t *e)
-{
-    delayed_work_t *w = (delayed_work_t *)e;
-
-    obj_put(w->timer_obj);
-    tfree(w);
-}
-
-static delayed_work_t *delayed_work_new(obj_t *func, obj_t *this, 
-    void (*expired)(event_t *e, int resource_id))
-{
-    delayed_work_t *w = tmalloc_type(delayed_work_t);
-
-    w->timer_obj = object_new();
-    obj_set_property(w->timer_obj, Stimer_func, func);
-    obj_set_property(w->timer_obj, Stimer_this, this);
-    w->e.trigger = expired;
-    w->e.free = delayed_work_free;
-    return w;
-}
-
-static int timer_function_call(obj_t **po, obj_t *timer_obj)
+static int timer_function_call(obj_t **po, event_t *e)
 {
     obj_t *this, *func;
     int ret;
 
-    func = obj_get_property(NULL, timer_obj, &Stimer_func);
-    this = obj_get_property(NULL, timer_obj, &Stimer_this);
+    func = js_event_get_func(e);
+    this = js_event_get_this(e);
 
     ret = function_call(po, this, 1, &func);
 
@@ -127,37 +100,35 @@ static int timer_function_call(obj_t **po, obj_t *timer_obj)
 
 static void timeout_cb(event_t *e, int resource_id)
 {
-    delayed_work_t *w = (delayed_work_t *)e;
     obj_t *o;
     int tid;
 
-    timer_function_call(&o, w->timer_obj);
+    timer_function_call(&o, e);
 
-    if (obj_get_property_int(&tid, w->timer_obj, &Stimer_id))
+    if (obj_get_property_int(&tid, js_event_obj(e), &Stimer_id))
 	tp_err(("Weird, no timer id on timer obj\n"));
     else
 	timer_unregister(tid);
     obj_put(o);
-    delayed_work_free(e);
+    js_event_free(e);
 }
 
 static void interval_cb(event_t *e, int resource_id)
 {
-    delayed_work_t *w = (delayed_work_t *)e;
     obj_t *o;
 
-    if (timer_function_call(&o, w->timer_obj)) 
+    if (timer_function_call(&o, e))
     {
 	int tid;
 
-	if (obj_get_property_int(&tid, w->timer_obj, &Stimer_id))
+	if (obj_get_property_int(&tid, js_event_obj(e), &Stimer_id))
 	    tp_warn(("Weird, cannot find timer id\n"));
 	else
 	{
 	    event_timer_del(tid);
 	    timer_unregister(tid);
 	}
-	delayed_work_free(e);
+	js_event_free(e);
     }
 
     obj_put(o);
@@ -165,37 +136,37 @@ static void interval_cb(event_t *e, int resource_id)
 
 int do_set_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    delayed_work_t *w;
+    event_t *e;
     int ms, tid;
 
     tp_assert(argc == 3);
 
-    w = delayed_work_new(argv[1], this, timeout_cb);
+    e = js_event_new(argv[1], this, timeout_cb);
 
     ms = NUM_INT(to_num(argv[2]));
 
-    tid = event_timer_set(ms, &w->e);
+    tid = event_timer_set(ms, e);
     *ret = num_new_int(tid);
-    obj_set_property(w->timer_obj, Stimer_id, *ret);
-    timer_register(w->timer_obj, tid);
+    obj_set_property(js_event_obj(e), Stimer_id, *ret);
+    timer_register(js_event_obj(e), tid);
     return 0;
 }
   
 int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    delayed_work_t *w;
+    event_t *e;
     int ms, tid;
 
     tp_assert(argc == 3);
 
-    w = delayed_work_new(argv[1], this, interval_cb);
+    e = js_event_new(argv[1], this, interval_cb);
 
     ms = NUM_INT(to_num(argv[2]));
 
-    tid = event_timer_set_period(ms, &w->e);
+    tid = event_timer_set_period(ms, e);
     *ret = num_new_int(tid);
-    obj_set_property(w->timer_obj, Stimer_id, *ret);
-    timer_register(w->timer_obj, tid);
+    obj_set_property(js_event_obj(e), Stimer_id, *ret);
+    timer_register(js_event_obj(e), tid);
     return 0;
 }
 
