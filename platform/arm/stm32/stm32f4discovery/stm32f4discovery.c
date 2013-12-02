@@ -31,14 +31,12 @@
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stm32/stm32f4discovery/stm32f4discovery.h"
+#include "platform/arm/stm32/stm32_gpio.h"
 #include "drivers/serial/serial.h"
 
 extern uint32_t SystemCoreClock;
 
-static const struct {
-    unsigned long periph;
-    GPIO_TypeDef *port;
-} gpio_port[] = {
+const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_A] = { RCC_AHB1Periph_GPIOA, GPIOA },
     [GPIO_PORT_B] = { RCC_AHB1Periph_GPIOB, GPIOB },
     [GPIO_PORT_C] = { RCC_AHB1Periph_GPIOC, GPIOC },
@@ -46,11 +44,6 @@ static const struct {
     [GPIO_PORT_E] = { RCC_AHB1Periph_GPIOE, GPIOE },
     [GPIO_PORT_F] = { RCC_AHB1Periph_GPIOF, GPIOF }
 };
-
-#define PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
-#define GPIO_PERIPH(p) (gpio_port[((p) >> 4)].periph)
-#define GPIO_PORT(p) (gpio_port[((p) >> 4)].port)
-#define GPIO_BIT(p) (1 << ((p) & 0xf))
 
 static void uart_int_enable(int enable)
 {
@@ -85,38 +78,6 @@ static int stm32_serial_write(int u, char *buf, int size)
 	USART_SendData(USART2, *buf);
 	/* Wait until transmit finishes */
 	while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
-    }
-    return 0;
-}
-
-static void stm32_gpio_digital_write(int pin, int value)
-{
-    if (value)
-	GPIO_SetBits(GPIO_PORT(pin), GPIO_BIT(pin));
-    else
-	GPIO_ResetBits(GPIO_PORT(pin), GPIO_BIT(pin));
-}
-
-static int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
-{
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-    PERIPH_ENABLE(GPIO_PERIPH(pin));
-
-    switch (mode)
-    {
-    case GPIO_PM_OUTPUT:
-	/* XXX: not all pins are actually available */
-	GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
-	break;
-    default:
-	tp_err(("Pinmode %d is not supported yet\n", mode));
-	return -1;
     }
     return 0;
 }
@@ -208,10 +169,12 @@ const platform_t platform = {
 	.irq_enable = stm32_serial_irq_enable,
 	.default_console_id = 0,
     },
+#ifdef CONFIG_GPIO
     .gpio = {
 	.digital_write = stm32_gpio_digital_write,
 	.set_pin_mode = stm32_gpio_set_pin_mode,
     },
+#endif
     .init = stm32f4discovery_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,

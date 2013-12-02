@@ -44,6 +44,7 @@ config STM32
 	select ARM
 	select PLAT_HAS_GCC
 	select PLAT_HAS_MALLOC
+	select PLAT_HAS_GPIO
 
 config MSP430
 	bool
@@ -94,14 +95,12 @@ config RDK_IDM
 config STM32F3DISCOVERY
 	bool "ST Micro STM32F3 Discovery board"
 	select STM32
-	select PLAT_HAS_GPIO
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
 
 config STM32F4DISCOVERY
 	bool "ST Micro STM32F4 Discovery board"
 	select STM32
-	select PLAT_HAS_GPIO
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
 
