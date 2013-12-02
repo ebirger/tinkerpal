@@ -82,6 +82,16 @@ static void xmit_spi(u8 dat)
     spi_send(g_mmc.spi_port, dat);
 }
 
+static void xmit_spi_multi(u8 *data, int cnt)
+{
+    while (cnt)
+    {
+	xmit_spi(*data++);
+	xmit_spi(*data++);
+	cnt -= 2;
+    }
+}
+
 static u8 rcvr_spi(void)
 {
     return (u8)spi_receive(g_mmc.spi_port);
@@ -180,7 +190,7 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
  */
 static int xmit_datablock(const u8 *buff, u8 token)
 {
-    u8 resp, wc;
+    u8 resp;
 
     if (wait_ready() != 0xFF) 
 	return -1;
@@ -193,23 +203,10 @@ static int xmit_datablock(const u8 *buff, u8 token)
     }
 
     /* Data token */
-    wc = 0;
-    do 
-    {
-	/* Xmit the 512 byte data block to MMC */
-	xmit_spi(*buff++);
-	xmit_spi(*buff++);
-    } while (--wc);
+    xmit_spi_multi(buff, 512);
     xmit_spi(0xFF); /* CRC (Dummy) */
     xmit_spi(0xFF);
-    resp = rcvr_spi(); /* Receive data response */
-    if ((resp & 0x1F) != 0x05)
-    { 
-	/* Not accepted */
-	return -1;
-    }
-
-    return 0;
+    return ((rcvr_spi() & 0x1F) == 0x05) ? 0 : -1;
 }
 #endif
 
