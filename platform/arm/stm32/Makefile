@@ -1,7 +1,7 @@
 MK_SUBDIRS+=$(if $(CONFIG_STM32F3DISCOVERY),stm32f3discovery)
 MK_SUBDIRS+=$(if $(CONFIG_STM32F4DISCOVERY),stm32f4discovery)
 
-MK_OBJS+=$(if $(CONFIG_GPIO),stm32_gpio.o)
+MK_OBJS+=stm32.o $(if $(CONFIG_GPIO),stm32_gpio.o)
 
 ifneq ($(CONFIG_GCC),)
   ifeq ($(CROSS_COMPILE),)

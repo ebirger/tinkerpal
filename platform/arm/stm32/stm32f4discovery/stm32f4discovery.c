@@ -32,6 +32,7 @@
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stm32/stm32f4discovery/stm32f4discovery.h"
 #include "platform/arm/stm32/stm32_gpio.h"
+#include "platform/arm/stm32/stm32.h"
 #include "drivers/serial/serial.h"
 
 extern uint32_t SystemCoreClock;
@@ -80,20 +81,6 @@ static int stm32_serial_write(int u, char *buf, int size)
 	while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
     }
     return 0;
-}
-
-static int stm32_select(int ms)
-{
-    int expire = cortex_m_get_ticks_from_boot() + ms, event = 0;
-
-    while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
-    {
-	event |= buffered_serial_events_process();
-
-	/* XXX: Sleep */
-    }
-
-    return event;
 }
 
 static void timers_init(void)
