@@ -330,7 +330,6 @@ int mmc_spi_disk_init(void)
     else 
     {
 	/* SDC Ver1 or MMC */
-	expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
 	ty = (send_cmd(CMD55, 0) <= 1 && send_cmd(CMD41, 0) <= 1) ? 2 : 1; /* SDC : MMC */
 	do 
 	{
