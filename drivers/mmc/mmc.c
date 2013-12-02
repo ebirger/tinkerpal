@@ -82,7 +82,7 @@ static void xmit_spi(u8 dat)
     spi_send(g_mmc.spi_port, dat);
 }
 
-static void xmit_spi_multi(u8 *data, int cnt)
+static void xmit_spi_multi(const u8 *data, int cnt)
 {
     while (cnt)
     {
@@ -188,8 +188,6 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
  */
 static int xmit_datablock(const u8 *buff, u8 token)
 {
-    u8 resp;
-
     if (wait_ready() != 0xFF) 
 	return -1;
 
