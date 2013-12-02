@@ -95,10 +95,7 @@ static u8 wait_ready(void)
     /* Wait for ready in timeout of 500ms */
     expiry = TICKS() + 500;
     rcvr_spi();
-    do
-    {
-        res = rcvr_spi();
-    } while ((res != 0xFF) && TICKS() < expiry);
+    while (((res = rcvr_spi()) != 0xFF) && TICKS() < expiry);
 
     return res;
 }
@@ -156,12 +153,9 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
     u8 token;
     int expiry;
 
+    /* Wait for data packet in timeouts of 100ms */
     expiry = TICKS() + 100;
-    do
-    {
-	/* Wait for data packet in timeouts of 100ms */
-        token = rcvr_spi();
-    } while ((token == 0xFF) && TICKS() < expiry);
+    while (((token = rcvr_spi()) == 0xFF) && TICKS() < expiry);
 
     if (token != 0xFE)
     {    
@@ -184,7 +178,7 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
 /* buff: 512 byte data block to be transmitted
  * token: Data/Stop token
  */
-static int xmit_datablock (const u8 *buff, u8 token)
+static int xmit_datablock(const u8 *buff, u8 token)
 {
     u8 resp, wc;
 
