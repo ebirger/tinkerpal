@@ -87,11 +87,6 @@ static u8 rcvr_spi(void)
     return (u8)spi_receive(g_mmc.spi_port);
 }
 
-static void rcvr_spi_m(u8 *dst)
-{
-    *dst = rcvr_spi();
-}
-
 static u8 wait_ready(void)
 {
     u8 res;
@@ -177,8 +172,8 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
     do 
     {
 	/* Receive the data block into buffer */
-        rcvr_spi_m(buff++);
-        rcvr_spi_m(buff++);
+        *buff++ = rcvr_spi();
+        *buff++ = rcvr_spi();
     } while (byte_count -= 2);
     rcvr_spi(); /* Discard CRC */
     rcvr_spi();
