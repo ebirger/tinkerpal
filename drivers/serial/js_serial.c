@@ -27,38 +27,14 @@
 #include "util/debug.h"
 #include "main/console.h"
 #include "js/js_obj.h"
+#include "js/js_event.h"
 #include "drivers/serial/serial.h"
 
 #define Sserial_id S("serial_id")
-#define Son_data_cb S("on_data_cb")
-
-typedef struct {
-    event_t e; /* Must be first */
-    obj_t *this;
-} serial_work_t;
-
-static void serial_work_free(event_t *e)
-{
-    serial_work_t *w = (serial_work_t *)e;
-    obj_put(w->this);
-    tfree(w);
-}
-
-static serial_work_t *serial_work_new(obj_t *this, 
-    void (*watch_event)(event_t *e, int resource_id))
-{
-    serial_work_t *w = tmalloc_type(serial_work_t);
-
-    w->e.trigger = watch_event;
-    w->e.free = serial_work_free;
-    w->this = obj_get(this);
-    return w;
-}
 
 static void serial_on_data_cb(event_t *e, int id)
 {
-    serial_work_t *w = (serial_work_t *)e;
-    obj_t *o, *argv[2], *data_obj;
+    obj_t *o, *argv[2], *data_obj, *this, *func;
     tstr_t data;
 
     /* XXX: read as much as possible */
@@ -68,11 +44,14 @@ static void serial_on_data_cb(event_t *e, int id)
     data_obj = object_new();
     obj_set_property_str(data_obj, S("data"), data);
 
-    argv[0] = obj_get_property(NULL, w->this, &Son_data_cb);
+    argv[0] = func = js_event_get_func(e);
     argv[1] = data_obj;
-    function_call(&o, w->this, 2, argv);
+    this = js_event_get_this(e);
 
-    obj_put(argv[0]);
+    function_call(&o, this, 2, argv);
+
+    obj_put(func);
+    obj_put(this);
     obj_put(o);
     obj_put(data_obj);
 }
@@ -99,16 +78,15 @@ int do_serial_disable(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    serial_work_t *w;
+    event_t *e;
     int event_id;
 
     tp_assert(argc == 2);
 
-    obj_set_property(this, Son_data_cb, argv[1]);
-    w = serial_work_new(this, serial_on_data_cb);
+    e = js_event_new(argv[1], this, serial_on_data_cb);
 
     /* XXX: if event is already set, it should be cleared */
-    event_id = event_watch_set(get_serial_id(this), &w->e);
+    event_id = event_watch_set(get_serial_id(this), e);
     *ret = num_new_int(event_id);
     return 0;
 }
