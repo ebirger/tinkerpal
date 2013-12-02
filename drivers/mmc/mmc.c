@@ -469,11 +469,37 @@ Exit:
 }
 #endif
 
+static int mmc_spi_ioctl_get_sector_count(void *buff)
+{
+    u8 csd[16];
+    u16 csize;
+
+    /* Get number of sectors on the disk (u32) */
+    if (send_cmd(CMD9, 0) || rcvr_datablock(csd, 16))
+	return -1;
+
+    if ((csd[0] >> 6) == 1) 
+    {
+	/* SDC ver 2.00 */
+	csize = csd[9] + ((u16)csd[8] << 8) + 1;
+	*(u32 *)buff = (u32)csize << 10;
+    }
+    else 
+    {
+	u8 n;
+
+	/* MMC or SDC ver 1.XX */
+	n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
+	csize = (csd[8] >> 6) + ((u16)csd[7] << 2) + 
+	    ((u16)(csd[6] & 3) << 10) + 1;
+	*(u32 *)buff = (u32)csize << (n - 9);
+    }
+    return 0;
+}
+
 int mmc_spi_disk_ioctl(int cmd, void *buff)
 {
     int res = -1;
-    u8 n, csd[16];
-    u16 csize;
 
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT) 
 	return -1;
@@ -483,28 +509,11 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
     switch (cmd) 
     {
     case BLOCK_IOCTL_GET_SECTOR_COUNT:
-    	/* Get number of sectors on the disk (u32) */
-	if ((send_cmd(CMD9, 0) == 0) && !rcvr_datablock(csd, 16)) 
-	{
-	    if ((csd[0] >> 6) == 1) 
-	    {
-	    	/* SDC ver 2.00 */
-		csize = csd[9] + ((u16)csd[8] << 8) + 1;
-		*(u32*)buff = (u32)csize << 10;
-	    } 
-	    else 
-	    {
-		/* MMC or SDC ver 1.XX */
-		n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
-		csize = (csd[8] >> 6) + ((u16)csd[7] << 2) + ((u16)(csd[6] & 3) << 10) + 1;
-		*(u32*)buff = (u32)csize << (n - 9);
-	    }
-	    res = 0;
-	}
+	res = mmc_spi_ioctl_get_sector_count(buff);
 	break;
     case BLOCK_IOCTL_GET_SECTOR_SIZE:
     	/* Get sectors on the disk (u16) */
-	*(u16*)buff = 512;
+	*(u16 *)buff = 512;
 	res = 0;
 	break;
     case BLOCK_IOCTL_SYNC:
@@ -512,40 +521,12 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
 	if (wait_ready() == 0xFF)
 	    res = 0;
 	break;
-#if 0
-    case MMC_GET_CSD:
-    	/* Receive CSD as a data block (16 bytes) */
-	if (send_cmd(CMD9, 0) == 0 /* READ_CSD */ && !rcvr_datablock(ptr, 16))
-	    res = 0;
-	break;
-    case MMC_GET_CID:
-    	/* Receive CID as a data block (16 bytes) */
-	if (send_cmd(CMD10, 0) == 0 /* READ_CID */ && !rcvr_datablock(ptr, 16))
-	    res = 0;
-	break;
-    case MMC_GET_OCR:
-    	/* Receive OCR as an R3 resp (4 bytes) */
-	if (send_cmd(CMD58, 0) == 0) 
-	{
-	    /* READ_OCR */
-	    for (n = 0; n < 4; n++)
-		*ptr++ = rcvr_spi();
-	    res = 0;
-	}
-#if 0
-    case MMC_GET_TYPE:
-    	/* Get card type flags (1 byte) */
-	*ptr = card_type;
-	res = 0;
-	break;
-#endif
-#endif
     default:
 	break;
     }
 
     cs_high();
-    rcvr_spi();            /* Idle (Release DO) */
+    rcvr_spi(); /* Idle (Release DO) */
     return res;
 }
 
@@ -556,21 +537,3 @@ void mmc_init(int spi_port, int mosi, int cs)
     g_mmc.spi_port = spi_port;
     g_mmc.disc_status = BLOCK_DISK_STATUS_NO_INIT;
 }
-
-#if 0
-/* This is a real time clock service to be called from
-* FatFs module. Any valid time must be returned even if
-* the system does not support a real time clock
-*/
-
-u32 get_fattime (void)
-{
-    return    ((2007UL-1980) << 25)    // Year = 2007
-            | (6UL << 21)            // Month = June
-            | (5UL << 16)            // Day = 5
-            | (11U << 11)            // Hour = 11
-            | (38U << 5)            // Min = 38
-            | (0U >> 1)                // Sec = 0
-            ;
-}
-#endif
