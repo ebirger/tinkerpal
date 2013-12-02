@@ -65,13 +65,13 @@ static inline int TICKS(void)
     return platform.get_ticks_from_boot();
 }
 
-static void SELECT(void)
+static inline void cs_low(void)
 {
     /* asserts the CS pin to the card */
     gpio_digital_write(g_mmc.cs, 0);
 }
 
-static void DESELECT(void)
+static inline void cs_high(void)
 {
     /* de-asserts the CS pin to the card */
     gpio_digital_write(g_mmc.cs, 1);
@@ -115,8 +115,7 @@ static void send_initial_clock_train(void)
 {
     unsigned int i;
 
-    /* Ensure CS is held high. */
-    DESELECT();
+    cs_high();
 
     /* Switch the SSI TX line to a GPIO and drive it high too. */
     gpio_set_pin_mode(g_mmc.mosi, GPIO_PM_OUTPUT);
@@ -317,7 +316,7 @@ int mmc_spi_disk_init(void)
     power_on();
     send_initial_clock_train();
 
-    SELECT(); /* CS = L */
+    cs_low();
     ty = 0;
     if (send_cmd(CMD0, 0) == 1) 
     {
@@ -372,7 +371,7 @@ int mmc_spi_disk_init(void)
         }
     }
     card_type = ty;
-    DESELECT(); /* CS = H */
+    cs_high();
     rcvr_spi(); /* Idle (Release DO) */
 
     if (ty) 
@@ -408,7 +407,7 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
 	sector *= 512;
     }
 
-    SELECT(); /* CS = L */
+    cs_low();
 
     if (count == 1) 
     {    
@@ -435,7 +434,7 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
         }
     }
 
-    DESELECT(); /* CS = H */
+    cs_high();
     rcvr_spi(); /* Idle (Release DO) */
 
     return count ? -1 : 0;
@@ -456,7 +455,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
 	sector *= 512;
     }
 
-    SELECT(); /* CS = L */
+    cs_low();
 
     if (count == 1) 
     {
@@ -492,7 +491,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
         }
     }
 
-    DESELECT(); /* CS = H */
+    cs_high();
     rcvr_spi(); /* Idle (Release DO) */
 
     return count ? -1 : 0;
@@ -508,7 +507,7 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT) 
 	return -1;
 
-    SELECT(); /* CS = L */
+    cs_low();
 
     switch (cmd) 
     {
@@ -574,7 +573,7 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
 	break;
     }
 
-    DESELECT();            /* CS = H */
+    cs_high();
     rcvr_spi();            /* Idle (Release DO) */
     return res;
 }
