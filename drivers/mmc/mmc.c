@@ -18,6 +18,7 @@
  */
 
 #include "util/debug.h"
+#include "util/tp_types.h"
 #include "main/console.h"
 #include "platform/platform.h"
 #include "drivers/gpio/gpio.h"
@@ -41,10 +42,6 @@
 #define CMD41 (0x40+41) /* SEND_OP_COND (ACMD) */
 #define CMD55 (0x40+55) /* APP_CMD */
 #define CMD58 (0x40+58) /* READ_OCR */
-
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned long u32;
 
 struct mmc_t {
     int spi_port;
