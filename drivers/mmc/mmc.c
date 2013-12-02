@@ -435,38 +435,33 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
 
     if (count == 1) 
     {
-    	/* Single block write */
-        if ((send_cmd(CMD24, sector) == 0) /* WRITE_BLOCK */ && 
-	    !xmit_datablock(buff, 0xFE))
-	{
-            count = 0;
-	}
+        /* WRITE_BLOCK */
+        if (send_cmd(CMD24, sector) || xmit_datablock(buff, 0xFE))
+	    goto Exit;
+
+	count = 0;
     }
     else 
     {
 	/* Multiple block write */
-        if (CARD_IS_SDC(card_type))
+	if (CARD_IS_SDC(card_type))
 	{
-            send_cmd(CMD55, 0); 
+	    send_cmd(CMD55, 0); 
 	    send_cmd(CMD23, count); /* ACMD23 */
-        }
-        if (send_cmd(CMD25, sector) == 0) 
-	{
-	    /* WRITE_MULTIPLE_BLOCK */
-            do 
-	    {
-                if (xmit_datablock(buff, 0xFC)) 
-		    break;
-                buff += 512;
-            } while (--count);
-            if (xmit_datablock(0, 0xFD))
-	    {
-		/* STOP_TRAN token */
-                count = 1;
-	    }
-        }
+	}
+
+	if (send_cmd(CMD25, sector)) 
+	    goto Exit;
+
+	/* WRITE_MULTIPLE_BLOCK */
+	while (count-- && !xmit_datablock(buff += 512, 0xFC));
+
+	/* STOP_TRAN token */
+	if (xmit_datablock(0, 0xFD))
+	    count = 1;
     }
 
+Exit:
     cs_high();
     rcvr_spi(); /* Idle (Release DO) */
 
