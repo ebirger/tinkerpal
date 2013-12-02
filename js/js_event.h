@@ -36,4 +36,7 @@ obj_t *js_event_obj(event_t *e);
 obj_t *js_event_get_func(event_t *e);
 obj_t *js_event_get_this(event_t *e);
 
+void js_event_uninit(void);
+void js_event_init(void);
+
 #endif

@@ -25,17 +25,47 @@
 #include "js/js_event.h"
 #include "js/js_obj.h"
 
+#define Sevents S("events")
 #define Sevent_func S("event_func")
 #define Sevent_this S("event_this")
+#define Sevent_id S("event_id")
+
+extern obj_t *meta_env;
+
+static int g_js_event_id;
 
 typedef struct {
     event_t e; /* Must be first */
     obj_t *obj;
 } js_event_t;
 
+static void js_event_unregister(int id)
+{
+    obj_t *events;
+
+    events = obj_get_property(NULL, meta_env, &Sevents);
+    /* XXX: we should really remove the object, not just set to undefined */
+    obj_set_int_property(events, id, UNDEF);
+    obj_put(events);
+}
+
+static void js_event_register(obj_t *obj, int id)
+{
+    obj_t *events;
+
+    events = obj_get_property(NULL, meta_env, &Sevents);
+    obj_set_int_property(events, id, obj);
+    obj_put(events);
+}
+
 void js_event_free(event_t *e)
 {
-    obj_put(js_event_obj(e));
+    obj_t *o = js_event_obj(e);
+    int id = 0;
+
+    obj_get_property_int(&id, o, &Sevent_id);
+    js_event_unregister(id);
+    obj_put(o);
     tfree(e);
 }
 
@@ -43,12 +73,15 @@ event_t *js_event_new(obj_t *func, obj_t *this,
     void (*trigger)(event_t *e, int resource_id))
 {
     js_event_t *jse = tmalloc_type(js_event_t);
+    int id = g_js_event_id++;
 
     jse->obj = object_new();
     obj_set_property(jse->obj, Sevent_func, func);
     obj_set_property(jse->obj, Sevent_this, this);
+    obj_set_property_int(jse->obj, Sevent_id, id);
     jse->e.trigger = trigger;
     jse->e.free = js_event_free;
+    js_event_register(jse->obj, id);
     return (event_t *)jse;
 }
 
@@ -65,4 +98,13 @@ obj_t *js_event_get_func(event_t *e)
 obj_t *js_event_get_this(event_t *e)
 {
     return obj_get_property(NULL, js_event_obj(e), &Sevent_this);
+}
+
+void js_event_uninit(void)
+{
+}
+
+void js_event_init(void)
+{
+    _obj_set_property(meta_env, Sevents, object_new());
 }

@@ -31,6 +31,7 @@
 #include "js/js_eval.h"
 #include "js/js_scan.h"
 #include "js/js_obj.h"
+#include "js/js_event.h"
 #include "js/js_builtins.h"
 #ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio.h"
@@ -80,6 +81,7 @@ void js_uninit(void)
      */
     _obj_put(global_env);
     js_builtins_uninit();
+    js_event_uninit();
     js_eval_uninit();
     js_obj_uninit();
 }
@@ -93,6 +95,7 @@ void js_init(void)
     global_env = env_new(NULL);
     obj_set_property(meta_env, S("global_env"), global_env);
     js_eval_init();
+    js_event_init();
     js_builtins_init();
     tp_info(("Object sizes:\n"));
 #define OSIZE(o) tp_info((#o ": %d\n", sizeof(o)))
