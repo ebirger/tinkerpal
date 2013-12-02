@@ -149,9 +149,7 @@ static void power_on(void)
 	return;
 
     gpio_set_pin_mode(g_mmc.cs, GPIO_PM_OUTPUT);
-
-    /* Deassert the chip select */
-    gpio_digital_write(g_mmc.cs, 1);
+    cs_high();
 
     /* Set DI and CS high and apply more than 74 pulses to SCLK for the card */
     /* to be able to accept a native command. */
