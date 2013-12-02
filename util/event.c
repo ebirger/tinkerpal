@@ -32,6 +32,7 @@
 
 #define EVENT_FLAG_ON 0x0001
 #define EVENT_FLAG_DELETED 0x0002
+#define EVENT_FLAG_PERIODIC 0x0004
 
 typedef struct event_internal_t {
     struct event_internal_t *next;
@@ -48,6 +49,8 @@ typedef struct event_internal_t {
 #define EVENT_OFF(e) bit_set((e)->flags, EVENT_FLAG_ON, 0)
 #define EVENT_IS_DELETED(e) ((e)->flags & EVENT_FLAG_DELETED)
 #define EVENT_SET_DELETED(e) bit_set((e)->flags, EVENT_FLAG_DELETED, 1)
+#define EVENT_IS_PERIODIC(e) ((e)->flags & EVENT_FLAG_PERIODIC)
+#define EVENT_SET_PERIODIC(e) bit_set((e)->flags, EVENT_FLAG_PERIODIC, 1)
 
 static event_internal_t *watches, *timers;
 static int g_event_id = 0;
@@ -69,13 +72,13 @@ void event_timer_insert(event_internal_t *t, int ms)
     *iter = t;
 }
 
-static event_internal_t *_event_timer_set(int ms, int period, event_t *e)
+static event_internal_t *_event_timer_set(int ms, event_t *e)
 {
     event_internal_t *n = tmalloc_type(event_internal_t);
 
     n->e = e;
-    n->period = period;
     n->event_id = g_event_id++;
+    n->period = 0;
     n->flags = 0;
     event_timer_insert(n, ms);
     return n;
@@ -83,13 +86,15 @@ static event_internal_t *_event_timer_set(int ms, int period, event_t *e)
 
 int event_timer_set(int ms, event_t *e)
 {
-    event_internal_t *n = _event_timer_set(ms, 0, e);
+    event_internal_t *n = _event_timer_set(ms, e);
     return n->event_id;
 }
 
 int event_timer_set_period(int ms, event_t *e)
 {
-    event_internal_t *n = _event_timer_set(ms, ms, e);
+    event_internal_t *n = _event_timer_set(ms, e);
+    n->period = ms;
+    EVENT_SET_PERIODIC(n);
     return n->event_id;
 }
 
@@ -132,7 +137,7 @@ static void timeout_process(void)
 	/* Remove current timer from list */
 	*iter = (*iter)->next;
 
-	if (t->period)
+	if (EVENT_IS_PERIODIC(t))
 	    event_timer_insert(t, t->period);
 	else
 	    tfree(t);
