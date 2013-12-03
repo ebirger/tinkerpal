@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "util/mem_cache.h"
+#include "mem/mem_cache.h"
 #include "js/js_obj.h"
 #include "js/js_eval.h"
 #include "platform/platform.h"

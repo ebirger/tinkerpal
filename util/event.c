@@ -23,11 +23,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <stdio.h> /* NULL */
-#include "util/tmalloc.h"
 #include "util/event.h"
 #include "util/debug.h"
 #include "util/tp_bits.h"
 #include "platform/platform.h"
+#include "mem/tmalloc.h"
 #include "js/js.h"
 
 #define EVENT_FLAG_ON 0x0001

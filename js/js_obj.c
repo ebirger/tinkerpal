@@ -23,10 +23,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/tp_types.h"
-#include "util/tmalloc.h"
-#include "util/mem_cache.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
+#include "mem/mem_cache.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"
 

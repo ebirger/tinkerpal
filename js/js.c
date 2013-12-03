@@ -23,9 +23,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <stdio.h> /* For NULL */
-#include "util/tmalloc.h"
 #include "util/tprintf.h"
-#include "util/mem_cache.h"
+#include "mem/mem_cache.h"
 #include "main/console.h"
 #include "js/js.h"
 #include "js/js_eval.h"

@@ -40,7 +40,7 @@ void mem_cache_stats(void);
 
 #else
 
-#include "util/tmalloc.h"
+#include "mem/tmalloc.h"
 #include "util/tp_types.h"
 
 typedef void mem_cache_t;

@@ -25,7 +25,7 @@
 #include "util/tp_types.h"
 #include "util/debug.h"
 #include "util/tstr.h"
-#include "util/tmalloc.h"
+#include "mem/tmalloc.h"
 #include "apps/history.h"
 
 /* History is kept in a double linked list. There is always one empty item at

@@ -26,7 +26,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "util/tstr.h"
-#include "util/tmalloc.h"
+#include "mem/tmalloc.h"
 
 /* XXX: move to a different file */
 char digit_value(char c)

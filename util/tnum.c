@@ -24,7 +24,6 @@
  */
 #include <string.h>
 #include <ctype.h>
-#include "util/tmalloc.h"
 #include "util/tnum.h"
 #include "util/tprintf.h"
 #include "util/debug.h"

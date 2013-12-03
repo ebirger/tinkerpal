@@ -24,8 +24,8 @@
  */
 #include "util/debug.h"
 #include "platform/platform.h"
-#include "util/tmalloc.h"
 #include "util/tstr.h"
+#include "mem/tmalloc.h"
 #include "drivers/fs/vfs.h"
 #include <stdio.h>
 

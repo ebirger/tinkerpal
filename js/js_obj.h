@@ -28,8 +28,8 @@
 #include "js/js_scan.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
-#include "util/tmalloc.h"
 #include "util/tp_types.h"
+#include "mem/tmalloc.h"
 
 typedef struct var_t var_t;
 

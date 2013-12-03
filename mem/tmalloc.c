@@ -22,14 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/tmalloc.h"
+#include "mem/tmalloc.h"
 #include "util/debug.h"
 
 static mem_squeezer_t *squeezers;
 
 #ifdef CONFIG_DLMALLOC
 
-#include "util/dlmalloc.h"
+#include "mem/dlmalloc.h"
 
 #define tmalloc_real dlmalloc
 #define tfree_real dlfree

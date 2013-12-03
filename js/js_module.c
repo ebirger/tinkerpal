@@ -24,7 +24,7 @@
  */
 #include "util/debug.h"
 #include "drivers/fs/vfs.h"
-#include "util/tmalloc.h"
+#include "mem/tmalloc.h"
 #include "js/js_obj.h"
 #include "js/js_module.h"
 #include "js/js_eval.h"

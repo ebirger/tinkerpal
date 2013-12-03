@@ -30,7 +30,6 @@
 #include <unistd.h>
 #include <fcntl.h> 
 #include "util/debug.h"
-#include "util/tmalloc.h"
 #include "drivers/block/block.h"
 #include "platform/platform.h"
 #include "platform/unix/unix.h"

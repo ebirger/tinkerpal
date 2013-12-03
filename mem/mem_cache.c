@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <stdio.h> // NULL
-#include "util/mem_cache.h"
-#include "util/tmalloc.h"
 #include "util/tp_types.h"
 #include "util/debug.h"
+#include "mem/mem_cache.h"
+#include "mem/tmalloc.h"
 
 #define NUM_ITEMS 10
 

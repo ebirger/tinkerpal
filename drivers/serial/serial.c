@@ -23,8 +23,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "drivers/serial/serial.h"
-#include "util/tmalloc.h"
 #include "util/event.h"
+#include "mem/tmalloc.h"
 #include <string.h> /* memcpy */
 
 #ifdef CONFIG_BUFFERED_SERIAL
