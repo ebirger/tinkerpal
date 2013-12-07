@@ -160,7 +160,7 @@ int sim_unix_block_disk_read(unsigned char *buf, int sector, int count)
     n = fread(buf, count, SEC_SIZE, block_disk);
     if (n != count * SEC_SIZE)
     {
-	tp_err(("wrote %d/%d bytes\n", n, count * SEC_SIZE));
+	tp_err(("read %d/%d bytes\n", n, count * SEC_SIZE));
 	return -1;
     }
     tp_info(("sector %d count %d read %d bytes\n", sector, count, n));
