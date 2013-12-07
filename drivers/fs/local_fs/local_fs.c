@@ -66,6 +66,37 @@ Exit:
     return rc;
 }
 
+static int local_file_write(tstr_t *content, tstr_t *file_name)
+{
+    FILE *fp;
+    size_t nwrote;
+    char *file_n = NULL;
+    int rc = -1;
+
+    file_n = tstr_to_strz(file_name);
+
+    if (!(fp = fopen(file_n, "w")))
+    {
+	/* Silently fail */
+	goto Exit;
+    }
+
+    nwrote = fwrite(TPTR(content), 1, content->len, fp);
+    if (nwrote != content->len)
+    {
+	tp_err(("Wrote %d/%d to file %S\n", nwrote, content->len, file_name));
+	goto Exit;
+    }
+
+    rc = 0;
+
+Exit:
+    if (fp)
+	fclose(fp);
+    tfree(file_n);
+    return rc;
+}
+
 int local_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 {
     tp_err(("Readdir not implemented yet...\n"));
@@ -85,5 +116,6 @@ const fs_t local_fs = {
     .init = local_init,
     .uninit = local_uninit,
     .file_read = local_file_read,
+    .file_write = local_file_write,
     .readdir = local_readdir,
 };
