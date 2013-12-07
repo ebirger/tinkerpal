@@ -99,7 +99,7 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
 
     if (f_open(&fp, file_n, FA_READ|FA_OPEN_EXISTING) != FR_OK)
     {
-	tp_err(("Could not open %S\n", file_name));
+	tp_err(("file_read: could not open %S\n", file_name));
 	goto Exit;
     }
 
@@ -110,6 +110,37 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
 	tp_err(("Read %d/%d from file %S rc %d\n", br, content->len, 
 	    file_name, rc));
 	tstr_free(content);
+	goto Exit;
+    }
+
+    rc = 0;
+
+Exit:
+    f_close(&fp);
+    tfree(file_n);
+    return rc;
+}
+
+static int fat_file_write(tstr_t *content, tstr_t *file_name)
+{
+    FIL fp = {};
+    UINT bw;
+    char *file_n = NULL;
+    int rc = -1;
+
+    file_n = tstr_to_strz(file_name);
+
+    if (f_open(&fp, file_n, FA_WRITE|FA_CREATE_ALWAYS) != FR_OK)
+    {
+	tp_err(("file_write: could not open %S\n", file_name));
+	goto Exit;
+    }
+
+    rc = f_write(&fp, TPTR(content), content->len, &bw);
+    if (rc != FR_OK || bw != content->len)
+    {
+	tp_err(("Wrote %d/%d to file %S rc %d\n", bw, content->len, 
+	    file_name, rc));
 	goto Exit;
     }
 
@@ -181,5 +212,6 @@ const fs_t fat_fs = {
     .init = fat_init,
     .uninit = fat_uninit,
     .file_read = fat_file_read,
+    .file_write = fat_file_write,
     .readdir = fat_readdir,
 };
