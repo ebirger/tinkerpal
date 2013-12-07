@@ -34,12 +34,14 @@
 #include "platform/platform.h"
 #include "platform/unix/unix.h"
 
-static int in_fd = 0, out_fd = 1, pty_fd = -1;
+static int pty_fd = -1;
 
 static unix_fd_event_map_t event_fd_map[3];
 
 #define STDIO_ID 0x0
 #define PTY_ID 0x1
+#define STDIN_FD 0
+#define STDOUT_FD 1
 
 FILE *block_disk;
 #define SEC_SIZE 512
@@ -85,7 +87,7 @@ static int sim_unix_serial_read(int id, char *buf, int size)
     
     switch (id)
     {
-    case STDIO_ID: fd = in_fd; break;
+    case STDIO_ID: fd = STDIN_FD; break;
     case PTY_ID: fd = pty_fd; break;
     default: printf("invalid id %d\n", id); exit(1);
     }
@@ -99,7 +101,7 @@ static int sim_unix_serial_write(int id, char *buf, int size)
 
     switch (id)
     {
-    case STDIO_ID: fd = out_fd; break;
+    case STDIO_ID: fd = STDOUT_FD; break;
     case PTY_ID: fd = pty_fd; break;
     default: printf("invalid id %d\n", id); exit(1);
     }
@@ -186,7 +188,7 @@ static void sim_unix_uninit(void)
     printf("Unix Platform Simulator Uninit\n");
     if (pty_fd != -1)
 	close(pty_fd);
-    unix_set_term_raw(in_fd, 0);
+    unix_set_term_raw(STDIN_FD, 0);
     unix_uninit();
 }
 
@@ -196,15 +198,15 @@ static void sim_unix_init(void)
 
     unix_init();
 
-    unix_set_nonblock(in_fd);
-    unix_set_term_raw(in_fd, 1);
+    unix_set_nonblock(STDIN_FD);
+    unix_set_term_raw(STDIN_FD, 1);
 #ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
     pty_fd = pty_open();
     unix_set_nonblock(pty_fd);
     unix_set_term_raw(pty_fd, 1);
 #endif
 
-    event_fd_map[0].fd = in_fd;
+    event_fd_map[0].fd = STDIN_FD;
     event_fd_map[0].event = STDIO_ID;
     event_fd_map[1].fd = pty_fd;
     event_fd_map[1].event = PTY_ID;
