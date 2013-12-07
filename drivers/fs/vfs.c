@@ -93,6 +93,19 @@ int vfs_file_read(tstr_t *content, tstr_t *file_name, int flags)
     return fs->file_read(content, &file_name_copy);
 }
 
+int vfs_file_write(tstr_t *content, tstr_t *file_name)
+{
+    const fs_t *fs;
+    tstr_t file_name_copy;
+
+    /* get_fs cuts the fs name from the file_name, so we copy it */
+    file_name_copy = *file_name;
+    if (!(fs = get_fs(&file_name_copy)))
+	return -1;
+
+    return fs->file_write(content, &file_name_copy);
+}
+
 static void readdir_root(readdir_cb_t cb, void *ctx)
 {
     const fs_t **fs;

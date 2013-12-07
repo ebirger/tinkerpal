@@ -34,6 +34,7 @@ typedef int (*readdir_cb_t)(tstr_t *file_name, void *ctx);
 typedef struct {
     tstr_t name;
     int (*file_read)(tstr_t *content, tstr_t *file_name);
+    int (*file_write)(tstr_t *content, tstr_t *file_name);
     int (*readdir)(tstr_t *path, readdir_cb_t cb, void *ctx);
     void (*init)(void);
     void (*uninit)(void);
@@ -48,6 +49,7 @@ static inline int vfs_is_root_path(tstr_t *path)
 #define VFS_FLAGS_ANY_FS 0x1
 
 int vfs_file_read(tstr_t *content, tstr_t *file_name, int flags);
+int vfs_file_write(tstr_t *content, tstr_t *file_name);
 int vfs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx);
 
 void vfs_init(void);
