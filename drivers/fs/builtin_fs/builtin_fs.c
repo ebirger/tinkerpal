@@ -44,6 +44,11 @@ static int builtin_fs_file_read(tstr_t *content, tstr_t *file_name)
     *content = *f->content;
     return 0;
 }
+
+static int builtin_fs_file_write(tstr_t *content, tstr_t *file_name)
+{
+    return -1; /* Builtin FS is read only */
+}
     
 int builtin_fs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 {
@@ -71,5 +76,6 @@ const fs_t builtin_fs = {
     .init = builtin_fs_init,
     .uninit = builtin_fs_uninit,
     .file_read = builtin_fs_file_read,
+    .file_write = builtin_fs_file_write,
     .readdir = builtin_fs_readdir,
 };
