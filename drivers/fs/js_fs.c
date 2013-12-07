@@ -47,6 +47,7 @@ int do_read_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     rc = 0;
 
 Exit:
+    tstr_free(&content);
     tstr_free(&path);
     return rc;
 }
