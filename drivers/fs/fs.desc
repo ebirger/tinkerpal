@@ -11,6 +11,16 @@ FUNCTION("readFileSync", fs, do_read_file_sync, {
     .example = "var s = fs.readFileSync('FAT/file.txt');",
 })
 
+FUNCTION("writeFileSync", fs, do_write_file_sync, {
+    .params = { 
+       { .name = "path", .description = "File Path" },
+       { .name = "data", .description = "String to be written to file" },
+     },
+    .description = "Synchronously writes the entire contents of a file",
+    .return_value = "None",
+    .example = "fs.writeFileSync('FAT/file.txt', 'hello world!');",
+})
+
 FUNCTION("readdirSync", fs, do_readdir_sync, {
     .params = { 
        { .name = "path", .description = "Directory Path" },

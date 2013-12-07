@@ -52,6 +52,31 @@ Exit:
     return rc;
 }
 
+int do_write_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    tstr_t path, data;
+    int rc;
+
+    tp_assert(argc == 3);
+
+    path = obj_get_str(argv[1]);
+    data = obj_get_str(argv[2]);
+
+    if (vfs_file_write(&data, &path))
+    {
+	rc = throw_exception(ret, &Sexception_path_not_found);
+	goto Exit;
+    }
+
+    *ret = UNDEF;
+    rc = 0;
+
+Exit:
+    tstr_free(&path);
+    tstr_free(&data);
+    return rc;
+}
+
 static int readdir_cb(tstr_t *file_name, void *ctx)
 {
     obj_t *arr = (obj_t *)ctx;
