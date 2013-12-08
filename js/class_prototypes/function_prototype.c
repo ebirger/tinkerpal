@@ -24,6 +24,7 @@
  */
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "js/js_eval.h"
 
 #define Sbound_func INTERNAL_S("bound_func")
@@ -43,7 +44,8 @@ int do_function_prototype_call(obj_t **ret, obj_t *this, int argc,
     int rc;
     obj_t *saved_this;
 
-    tp_assert(argc > 1);
+    if (argc <= 1)
+	return js_invalid_args(ret);
 
     saved_this = argv[1];
     argv[1] = this; /* this is the called function */
@@ -58,7 +60,8 @@ int do_function_prototype_apply(obj_t **ret, obj_t *this, int argc,
     int rc, i;
     function_args_t args;
 
-    tp_assert(argc > 1);
+    if (argc <= 1)
+	return js_invalid_args(ret);
 
     function_args_init(&args, this);
 
@@ -114,7 +117,8 @@ int do_function_prototype_bind(obj_t **ret, obj_t *this, int argc,
 {
     obj_t *wrapper_env;
 
-    tp_assert(argc > 1);
+    if (argc <= 1)
+	return js_invalid_args(ret);
 
     wrapper_env = env_new(NULL);
     obj_set_property(wrapper_env, Sbound_func, this);

@@ -25,6 +25,7 @@
 #include "util/debug.h"
 #include "mem/mem_cache.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "js/js_eval.h"
 #include "platform/platform.h"
 #include <math.h>
@@ -70,7 +71,8 @@ int do_assert(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *lv, *rv, *cond;
     int failed;
 
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     lv = argv[1];
     rv = argv[2];
@@ -90,7 +92,8 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *cond;
     int failed;
 
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     cond = argv[1];
     failed = !obj_true(cond);
@@ -103,7 +106,8 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_dump(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     tp_out(("%o\n", argv[1]));
     *ret = UNDEF;
@@ -114,7 +118,8 @@ int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     extern obj_t *global_env;
 
-    tp_assert(argc == 1);
+    if (argc != 1)
+	return js_invalid_args(ret);
 
     tp_out(("%o\n", global_env));
     *ret = UNDEF;
@@ -123,7 +128,9 @@ int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_apply(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc > 1);
+    if (argc <= 1)
+	return js_invalid_args(ret);
+
     return function_call(ret, this, argc - 1, argv + 1);
 }
 

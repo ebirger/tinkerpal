@@ -24,20 +24,23 @@
  */
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include <math.h>
 #include <stdlib.h> /* abs */
 
 #define MATH_FUNC1(type, name) \
 int do_##name(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
 { \
-    tp_assert(argc == 2); \
+    if (argc != 2) \
+    	return js_invalid_args(ret); \
     *ret = num_new_##type(name(obj_get_##type(argv[1]))); \
     return 0; \
 }
 #define MATH_FUNC2(type, name) \
 int do_##name(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
 { \
-    tp_assert(argc == 3); \
+    if (argc != 3) \
+    	return js_invalid_args(ret); \
     *ret = num_new_##type(name(obj_get_##type(argv[1]), obj_get_##type(argv[2]))); \
     return 0; \
 }

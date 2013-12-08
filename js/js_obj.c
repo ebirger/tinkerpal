@@ -386,13 +386,6 @@ void obj_inherit(obj_t *son, obj_t *parent)
     _obj_set_property(son, Sprototype, func_proto);
 }
 
-int throw_exception(obj_t **po, tstr_t *desc)
-{
-    obj_put(*po);
-    *po = string_new(*desc);
-    return COMPLETION_THROW;
-}
-
 /*** "num" Class ***/
 
 static void num_dump(printer_t *printer, obj_t *o)

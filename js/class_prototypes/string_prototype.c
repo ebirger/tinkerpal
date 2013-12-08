@@ -25,13 +25,15 @@
 #include "util/debug.h"
 #include "util/tstr.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 
 int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tstr_t orig, cur, sep;
     int idx = 0;
 
-    tp_assert(argc == 2); /* XXX: support limit */
+    if (argc != 2)
+	return js_invalid_args(ret); /* XXX: support limit */
 
     *ret = array_new();
 
@@ -63,7 +65,8 @@ int do_string_prototype_indexof(obj_t **ret, obj_t *this, int argc,
     tstr_t needle, haystack;
     int idx;
 
-    tp_assert(argc == 2); /* XXX: support position */
+    if (argc != 2)
+	return js_invalid_args(ret); /* XXX: support position */
 
     haystack = obj_get_str(this);
     needle = obj_get_str(argv[1]);
@@ -82,7 +85,9 @@ int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc,
     int start, end;
     tstr_t s, retval;
 
-    tp_assert(argc == 2 || argc == 3);
+    if (argc != 2 && argc != 3)
+	return js_invalid_args(ret);
+
 
     s = obj_get_str(this);
 
@@ -90,8 +95,8 @@ int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc,
     end = argc == 3 ? obj_get_int(argv[2]) : s.len;
 
     /* We don't allow bad params here :) */
-    tp_assert(start >= 0 && start < s.len);
-    tp_assert(end > start && end <= s.len);
+    if (start < 0 || start >= s.len || end <= start || end > s.len)
+	return js_invalid_args(ret);
 
     retval = tstr_slice(s, start, end - start);
     *ret = string_new(retval);

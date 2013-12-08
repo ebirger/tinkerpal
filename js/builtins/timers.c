@@ -25,6 +25,7 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "js/js_event.h"
 #include "platform/platform.h"
 
@@ -74,7 +75,8 @@ int do_set_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     event_t *e;
     int ms, tid;
 
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     e = js_event_new(argv[1], this, timeout_cb);
 
@@ -91,7 +93,8 @@ int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     event_t *e;
     int ms, tid;
 
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     e = js_event_new(argv[1], this, interval_cb);
 
@@ -105,7 +108,8 @@ int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 static int do_clear_timer(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 1 || argc == 2);
+    if (argc != 1 && argc != 2)
+	return js_invalid_args(ret);
 
     if (argc == 1)
 	event_timer_del_all();

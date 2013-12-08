@@ -24,6 +24,7 @@
  */
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "drivers/fs/vfs.h"
 
 #define Sexception_path_not_found S("Exception: Path not found")
@@ -33,7 +34,8 @@ int do_read_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     tstr_t content, path;
     int rc;
 
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     path = obj_get_str(argv[1]);
 
@@ -57,7 +59,8 @@ int do_write_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     tstr_t path, data;
     int rc;
 
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     path = obj_get_str(argv[1]);
     data = obj_get_str(argv[2]);
@@ -91,7 +94,8 @@ int do_readdir_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *arr;
     int rc;
 
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     path = obj_get_str(argv[1]);
     arr = array_new();

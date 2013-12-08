@@ -24,13 +24,15 @@
  */
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 
 int do_array_buffer_constructor(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[])
 {
     int len;
 
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     len = obj_get_int(argv[1]);
     if (len < 0)

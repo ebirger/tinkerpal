@@ -22,56 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/event.h"
-#include "util/debug.h"
-#include "main/console.h"
 #include "js/js_obj.h"
-#include "js/js_utils.h"
-#include "drivers/spi/spi.h"
+#include "js/js_types.h"
 
-#define Sspi_id S("spi_id")
-
-/* XXX: provide CS */
-
-static int get_spi_id(obj_t *o)
+static inline int throw_exception(obj_t **po, tstr_t *desc)
 {
-    int ret = -1;
-    
-    tp_assert(!obj_get_property_int(&ret, o, &Sspi_id));
-    return ret;
+    obj_put(*po);
+    *po = string_new(*desc);
+    return COMPLETION_THROW;
 }
 
-int do_spi_receive(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+static inline int js_invalid_args(obj_t **ret)
 {
-    *ret = num_new_int(spi_receive(get_spi_id(this)));
-    return 0;
-}
-
-int do_spi_send(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    unsigned long data;
-
-    if (argc != 2)
-	return js_invalid_args(ret);
-
-    data = obj_get_int(argv[1]);
-
-    spi_send(get_spi_id(this), data);
-    *ret = UNDEF;
-    return 0;
-}
-
-int do_spi_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    int id;
-
-    if (argc != 2)
-	return js_invalid_args(ret);
-
-    id = obj_get_int(argv[1]);
-    *ret = object_new();
-    obj_inherit(*ret, argv[0]);
-    obj_set_property_int(*ret, Sspi_id, id);
-    spi_init(id);
-    return 0;
+    return throw_exception(ret, &S("Invalid arguments"));
 }

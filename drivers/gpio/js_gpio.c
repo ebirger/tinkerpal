@@ -25,6 +25,7 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "js/js_event.h"
 #include "drivers/gpio/gpio.h"
 
@@ -33,7 +34,8 @@
 
 int do_digital_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     if (is_array(argv[1]))
     {
@@ -77,7 +79,8 @@ int do_digital_pulse(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int pin;
 
-    tp_assert(argc == 4);
+    if (argc != 4)
+	return js_invalid_args(ret);
 
     pin = obj_get_int(argv[1]);
 
@@ -97,7 +100,8 @@ int do_digital_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int value = 0;
 
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     if (is_array(argv[1]))
     {
@@ -141,7 +145,8 @@ int do_analog_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int pin;
     double value;
 
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     pin = obj_get_int(argv[1]);
     value = obj_get_fp(argv[2]);
@@ -161,7 +166,8 @@ int do_analog_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int pin;
     double value;
 
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     pin = obj_get_int(argv[1]);
 
@@ -180,7 +186,8 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int pin, mode;
 
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     pin = obj_get_int(argv[1]);
     mode = obj_get_int(argv[2]);
@@ -216,7 +223,8 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     event_t *e;
     int event_id;
 
-    tp_assert(argc == 3);
+    if (argc != 3)
+	return js_invalid_args(ret);
 
     e = js_event_new(argv[1], this, set_watch_on_change_cb);
 

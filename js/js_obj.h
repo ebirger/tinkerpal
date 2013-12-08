@@ -370,8 +370,6 @@ static inline int obj_eq(obj_t *a, obj_t *b)
     return ret;
 }
 
-int throw_exception(obj_t **po, tstr_t *desc);
-
 void js_obj_uninit(void);
 void js_obj_init(void);
 

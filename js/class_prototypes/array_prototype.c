@@ -24,13 +24,16 @@
  */
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 
 int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int i;
     obj_t *obj = NULL;
 
-    tp_assert(argc > 1);
+    if (argc <= 1)
+	return js_invalid_args(ret);
+
     for (i = 1; i < argc; i++)
 	obj = array_push(this, obj_get(argv[i]));
     *ret = obj_get(obj);
@@ -39,7 +42,9 @@ int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_array_prototype_pop(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 1);
+    if (argc != 1)
+	return js_invalid_args(ret);
+
     *ret = array_pop(this);
     return 0;
 }
@@ -66,7 +71,8 @@ int do_array_prototype_foreach(obj_t **ret, obj_t *this, int argc,
     obj_t *cb_this;
     array_iter_t iter;
 
-    tp_assert(argc == 2 || argc == 3);
+    if (argc != 2 && argc != 3)
+	return js_invalid_args(ret);
 
     cb = to_function(argv[1]);
     cb_this = argc == 3 ? argv[2] : UNDEF;
@@ -92,7 +98,8 @@ int do_array_prototype_indexof(obj_t **ret, obj_t *this, int argc,
     int is_eq = 0;
     array_iter_t iter;
 
-    tp_assert(argc == 2 || argc == 3);
+    if (argc != 2 && argc != 3)
+	return js_invalid_args(ret);
 
     item = argv[1];
     start = argc == 3 ? NUM_INT(to_num(argv[2])) : 0;
@@ -118,7 +125,8 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *o = NULL;
     array_iter_t iter;
 
-    tp_assert(argc == 2 || argc == 1);
+    if (argc != 2 && argc != 1)
+	return js_invalid_args(ret);
 
     array_iter_init(&iter, this, 0);
     if (iter.len == 0)
@@ -158,7 +166,9 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *cb_this, *new_arr;
     array_iter_t iter;
 
-    tp_assert(argc == 2 || argc == 3);
+    if (argc != 2 && argc != 3)
+	return js_invalid_args(ret);
+
     cb = to_function(argv[1]);
     cb_this = argc == 3 ? argv[2] : UNDEF;
 

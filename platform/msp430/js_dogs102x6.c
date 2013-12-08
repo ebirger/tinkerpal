@@ -26,6 +26,7 @@
 #include "util/debug.h"
 #include "main/console.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "platform/msp430/dogs102x6.h"
 
 int do_dogs102x6_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
@@ -33,7 +34,8 @@ int do_dogs102x6_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     uint8_t x, y;
     int enable;
 
-    tp_assert(argc == 4);
+    if (argc != 4)
+	return js_invalid_args(ret);
 
     x = (uint8_t)obj_get_int(argv[1]);
     y = (uint8_t)obj_get_int(argv[2]);

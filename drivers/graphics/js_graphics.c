@@ -26,6 +26,7 @@
 #include "util/debug.h"
 #include "main/console.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "drivers/graphics/text.h"
 #include "drivers/graphics/circle.h"
 #include "drivers/graphics/js_painter.h"
@@ -34,7 +35,9 @@ int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int x, y, radius;
 
-    tp_assert(argc == 4);
+    if (argc != 4)
+	return js_invalid_args(ret);
+
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
     radius = obj_get_int(argv[3]);
@@ -48,7 +51,9 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int x, y;
     string_t *s;
 
-    tp_assert(argc == 4);
+    if (argc != 4)
+	return js_invalid_args(ret);
+
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
     s = to_string(argv[3]);
@@ -59,7 +64,8 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tp_assert(argc == 2);
+    if (argc != 2)
+	return js_invalid_args(ret);
 
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
