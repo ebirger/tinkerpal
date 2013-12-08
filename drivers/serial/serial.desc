@@ -37,11 +37,3 @@ FUNCTION("onData", serial, do_serial_on_data, {
     .example = "var s = new Serial(UART1);\n"
         "s.onData(function(e) { s.print(e.data); });",
 })
-
-FUNCTION("setConsole", serial, do_serial_set_console, {
-    .params = { },
-    .description = "Sets TinkerPal console to the given serial port",
-    .return_value = "None",
-    .example = "var s = new Serial(UART1);\n"
-        "s.setConsole",
-})

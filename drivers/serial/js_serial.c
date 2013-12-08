@@ -24,7 +24,6 @@
  */
 #include "util/event.h"
 #include "util/debug.h"
-#include "main/console.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
@@ -102,13 +101,6 @@ int do_serial_print(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     s = to_string(argv[1]);
 
     serial_write(serial_obj_get_id(this), TPTR(&s->value), s->value.len);
-    *ret = UNDEF;
-    return 0;
-}
-
-int do_serial_set_console(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    console_set_id(serial_obj_get_id(this));
     *ret = UNDEF;
     return 0;
 }
