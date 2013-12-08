@@ -1,0 +1,11 @@
+OBJECT("console", console, {
+})
+
+FUNCTION("set", console, do_console_set, {
+    .params = { 
+        { .name = "serial", .description = "Serial object" },
+    },
+    .description = "Sets TinkerPal console to a given serial port",
+    .return_value = "None",
+    .example = "console.set(new Serial(UART1));\n",
+})
