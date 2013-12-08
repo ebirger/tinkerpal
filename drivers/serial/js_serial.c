@@ -56,7 +56,7 @@ static void serial_on_data_cb(event_t *e, int id)
     obj_put(data_obj);
 }
 
-static int get_serial_id(obj_t *o)
+int serial_obj_get_id(obj_t *o)
 {
     int ret = -1;
     
@@ -66,13 +66,13 @@ static int get_serial_id(obj_t *o)
 
 int do_serial_enable(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    serial_enable(get_serial_id(this), 1);
+    serial_enable(serial_obj_get_id(this), 1);
     return 0;
 }
 
 int do_serial_disable(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    serial_enable(get_serial_id(this), 0);
+    serial_enable(serial_obj_get_id(this), 0);
     return 0;
 }
 
@@ -87,7 +87,7 @@ int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     e = js_event_new(argv[1], this, serial_on_data_cb);
 
     /* XXX: if event is already set, it should be cleared */
-    event_id = event_watch_set(get_serial_id(this), e);
+    event_id = event_watch_set(serial_obj_get_id(this), e);
     *ret = num_new_int(event_id);
     return 0;
 }
@@ -101,14 +101,14 @@ int do_serial_print(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     s = to_string(argv[1]);
 
-    serial_write(get_serial_id(this), TPTR(&s->value), s->value.len);
+    serial_write(serial_obj_get_id(this), TPTR(&s->value), s->value.len);
     *ret = UNDEF;
     return 0;
 }
 
 int do_serial_set_console(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    console_set_id(get_serial_id(this));
+    console_set_id(serial_obj_get_id(this));
     *ret = UNDEF;
     return 0;
 }
