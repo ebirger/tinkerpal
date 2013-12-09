@@ -543,7 +543,7 @@ obj_t *num_new_int(int v)
 	 * Mark the pointer as 'INT_VAL' using the pointer LSB
 	 * under the assumption that pointers are always aligned.
 	 */
-	ret = (num_t *)(((v << 1)) | 0x1);
+	ret = (num_t *)(int_ptr_t)((v << 1) | 0x1);
     }
 
     return (obj_t *)ret;
