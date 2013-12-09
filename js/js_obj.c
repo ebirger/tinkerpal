@@ -57,8 +57,8 @@ static obj_t *class_prototypes[CLASS_LAST+1];
 static mem_cache_t *obj_cache[CLASS_LAST];
 static mem_cache_t *var_cache;
 
-#define CLASS(obj) (&classes[(obj)->class])
-#define CLASS_PROTOTYPE(obj) (class_prototypes[(obj)->class])
+#define CLASS(obj) (&classes[OBJ_CLASS(obj)])
+#define CLASS_PROTOTYPE(obj) (class_prototypes[OBJ_CLASS(obj)])
 
 /* Global Objects */
 obj_t undefind_obj = STATIC_OBJ(UNDEFINED_CLASS);
@@ -151,7 +151,7 @@ void _obj_put(obj_t *o)
     vars_free(&o->properties);
     tp_debug(("%s: freeing %p\n", __FUNCTION__, o));
     if (!(o->flags & OBJ_STATIC))
-	mem_cache_free(obj_cache[o->class - 1], o);
+	mem_cache_free(obj_cache[OBJ_CLASS(o) - 1], o);
 }
 
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)

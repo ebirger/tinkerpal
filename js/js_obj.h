@@ -119,6 +119,7 @@ typedef struct {
 #define ARRAY_BUFFER_CLASS 10
 #define ARRAY_BUFFER_VIEW_CLASS 11
 #define CLASS_LAST ARRAY_BUFFER_VIEW_CLASS
+#define OBJ_CLASS(obj) ((obj)->class)
 
 /* Global objects */
 extern obj_t undefind_obj;
@@ -189,7 +190,7 @@ obj_t *num_new(tnum_t n);
 
 static inline int is_num(obj_t *o)
 {
-    return o && o->class == NUM_CLASS;
+    return o && OBJ_CLASS(o) == NUM_CLASS;
 }
 
 static inline num_t *to_num(obj_t *o)
@@ -235,7 +236,7 @@ static inline void function_args_uninit(function_args_t *args)
 
 static inline int is_function(obj_t *o)
 {
-    return o && o->class == FUNCTION_CLASS;
+    return o && OBJ_CLASS(o) == FUNCTION_CLASS;
 }
 
 static inline function_t *to_function(obj_t *o)
@@ -249,7 +250,7 @@ obj_t *string_new(tstr_t s);
 
 static inline int is_string(obj_t *o)
 {
-    return o && o->class == STRING_CLASS;
+    return o && OBJ_CLASS(o) == STRING_CLASS;
 }
 
 static inline string_t *to_string(obj_t *o)
@@ -263,7 +264,7 @@ obj_t *object_new(void);
 
 static inline int is_object(obj_t *o)
 {
-    return o && o->class == OBJECT_CLASS;
+    return o && OBJ_CLASS(o) == OBJECT_CLASS;
 }
 
 typedef struct {
@@ -284,7 +285,7 @@ obj_t *env_new(obj_t *env);
 
 static inline int is_env(obj_t *o)
 {
-    return o && o->class == ENV_CLASS;
+    return o && OBJ_CLASS(o) == ENV_CLASS;
 }
 
 /* "array" objects methods */
@@ -295,7 +296,7 @@ void array_length_set(obj_t *arr, int length);
 
 static inline int is_array(obj_t *o)
 {
-    return o && o->class == ARRAY_CLASS;
+    return o && OBJ_CLASS(o) == ARRAY_CLASS;
 }
 
 typedef struct {
@@ -318,7 +319,7 @@ obj_t *array_buffer_view_new(obj_t *array_buffer, u32 flags, u32 offset,
 
 static inline int is_array_buffer(obj_t *o)
 {
-    return o && o->class == ARRAY_BUFFER_CLASS;
+    return o && OBJ_CLASS(o) == ARRAY_BUFFER_CLASS;
 }
 
 static inline array_buffer_t *to_array_buffer(obj_t *o)
@@ -329,7 +330,7 @@ static inline array_buffer_t *to_array_buffer(obj_t *o)
 
 static inline int is_array_buffer_view(obj_t *o)
 {
-    return o && o->class == ARRAY_BUFFER_VIEW_CLASS;
+    return o && OBJ_CLASS(o) == ARRAY_BUFFER_VIEW_CLASS;
 }
 
 static inline array_buffer_view_t *to_array_buffer_view(obj_t *o)
