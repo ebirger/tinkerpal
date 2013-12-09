@@ -209,6 +209,9 @@ obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)
 {
     obj_t **ref;
 
+    if (OBJ_IS_INT_VAL(o))
+	return NULL;
+
     if ((ref = var_get(o->properties, key)))
     {
 	if (lval)
@@ -303,6 +306,9 @@ static obj_t *obj_new(unsigned char class)
 void _obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 {
     obj_t **dst;
+
+    if (OBJ_IS_INT_VAL(o))
+	return;
 
     if (CLASS(o)->set_own_property && 
         !CLASS(o)->set_own_property(o, property, value))
@@ -516,11 +522,30 @@ static int num_is_true(obj_t *o)
     return NUM_INT(n) ? 1 : 0;
 }
 
+#define NUM_BITS ((sizeof(uint_ptr_t) << 3))
+#define INT_MSB (NUM_BITS - 2)
+#define SIGN_BIT (NUM_BITS - 1)
 obj_t *num_new_int(int v)
 {
-    num_t *ret = (num_t *)obj_new(NUM_CLASS);
+    num_t *ret;
 
-    NUM_INT(ret) = v;
+    /* If shifting v left by one bit would destroy the sign bit,
+     * a full num obj is required
+     */
+    if (!!(v & (1 << SIGN_BIT)) != !!(v & (1 << INT_MSB)))
+    {
+	ret = (num_t *)obj_new(NUM_CLASS);
+	NUM_INT_SET(ret, v);
+    }
+    else
+    {
+	/* Number can be shifted and placed it in the pointer.
+	 * Mark the pointer as 'INT_VAL' using the pointer LSB
+	 * under the assumption that pointers are always aligned.
+	 */
+	ret = (num_t *)(((v << 1)) | 0x1);
+    }
+
     return (obj_t *)ret;
 }
 

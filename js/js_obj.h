@@ -69,9 +69,17 @@ typedef struct {
     } value;
 } num_t;
 
-#define NUM_IS_FP(x) ((x)->obj.flags & OBJ_NUM_FP)
+/* Trick: use the LSB to mark if we are an 'immediate' integer value
+ * or an obj pointer under the assumption that pointers are always
+ * aligned
+ */
+#define OBJ_IS_INT_VAL(x) (((uint_ptr_t)x) & 0x1)
+
+#define NUM_IS_FP(x) (!OBJ_IS_INT_VAL(x) && ((x)->obj.flags & OBJ_NUM_FP))
 #define NUM_SET_FP(x) ((x)->obj.flags |= OBJ_NUM_FP)
-#define NUM_INT(x) ((x)->value.i)
+#define INT_VAL(x) (((int)x)>>1)
+#define NUM_INT(x) (OBJ_IS_INT_VAL(x) ? INT_VAL(x) : ((x)->value.i))
+#define NUM_INT_SET(x, val) (x)->value.i = (val)
 #define NUM_FP(x) ((x)->value.fp)
 
 typedef struct {
@@ -119,7 +127,7 @@ typedef struct {
 #define ARRAY_BUFFER_CLASS 10
 #define ARRAY_BUFFER_VIEW_CLASS 11
 #define CLASS_LAST ARRAY_BUFFER_VIEW_CLASS
-#define OBJ_CLASS(obj) ((obj)->class)
+#define OBJ_CLASS(obj) (OBJ_IS_INT_VAL(obj) ? NUM_CLASS : (obj)->class)
 
 /* Global objects */
 extern obj_t undefind_obj;
@@ -163,6 +171,9 @@ static inline obj_t *obj_get(obj_t *o)
     if (!o)
 	return NULL;
 
+    if (OBJ_IS_INT_VAL(o))
+	return o;
+
     o->ref_count++;
     return o;
 }
@@ -171,7 +182,7 @@ void _obj_put(obj_t *o);
 
 static inline void obj_put(obj_t *o)
 {
-    if (!o || o == UNDEF)
+    if (!o || o == UNDEF || OBJ_IS_INT_VAL(o))
 	return;
 
     if (--o->ref_count > 0)
