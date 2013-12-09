@@ -35,6 +35,7 @@ typedef long s32;
 typedef unsigned long u32;
 
 typedef unsigned int uint_ptr_t;
+typedef int int_ptr_t;
 
 #else
 
@@ -46,6 +47,7 @@ typedef int s32;
 typedef unsigned int u32;
 
 typedef unsigned long uint_ptr_t;
+typedef long int_ptr_t;
 
 #endif
 

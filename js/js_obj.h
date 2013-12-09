@@ -77,7 +77,7 @@ typedef struct {
 
 #define NUM_IS_FP(x) (!OBJ_IS_INT_VAL(x) && ((x)->obj.flags & OBJ_NUM_FP))
 #define NUM_SET_FP(x) ((x)->obj.flags |= OBJ_NUM_FP)
-#define INT_VAL(x) (((int)x)>>1)
+#define INT_VAL(x) (((int_ptr_t)x)>>1)
 #define NUM_INT(x) (OBJ_IS_INT_VAL(x) ? INT_VAL(x) : ((x)->value.i))
 #define NUM_INT_SET(x, val) (x)->value.i = (val)
 #define NUM_FP(x) ((x)->value.fp)
