@@ -532,7 +532,7 @@ obj_t *num_new_int(int v)
     /* If shifting v left by one bit would destroy the sign bit,
      * a full num obj is required
      */
-    if (!!(v & (1 << SIGN_BIT)) != !!(v & (1 << INT_MSB)))
+    if (!!(v & (1UL << SIGN_BIT)) != !!(v & (1UL << INT_MSB)))
     {
 	ret = (num_t *)obj_new(NUM_CLASS);
 	NUM_INT_SET(ret, v);
