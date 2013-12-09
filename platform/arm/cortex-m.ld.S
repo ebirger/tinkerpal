@@ -45,8 +45,13 @@ SECTIONS
     } > SRAM
 
     _heap_bottom = .;
-    _heap_top = ORIGIN(SRAM) + LENGTH(SRAM) - _stack_size;
 
-    _stack_bottom = _heap_top;
-    _stack_top = ORIGIN(SRAM) + LENGTH(SRAM);
+#ifdef STACK_RAM_SECTION
+    _heap_top = ORIGIN(SRAM) + LENGTH(SRAM);
+#else
+#define STACK_RAM_SECTION SRAM
+    _heap_top = ORIGIN(SRAM) + LENGTH(SRAM) - _stack_size;
+#endif
+
+    _stack_top = ORIGIN(STACK_RAM_SECTION) + LENGTH(STACK_RAM_SECTION);
 }
