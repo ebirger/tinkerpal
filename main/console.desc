@@ -9,3 +9,12 @@ FUNCTION("set", console, do_console_set, {
     .return_value = "None",
     .example = "console.set(new Serial(UART1));\n",
 })
+
+FUNCTION("log", console, do_console_log, {
+    .params = { 
+       { .name = "object", .description = "Object to display" },
+     },
+    .description = "Logs object to the console",
+    .return_value = "None",
+    .example = "console.log('Hello World');",
+})

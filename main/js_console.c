@@ -36,3 +36,13 @@ int do_console_set(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     *ret = UNDEF;
     return 0;
 }
+
+int do_console_log(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    if (argc != 2)
+	return js_invalid_args(ret);
+
+    console_printf("%o\n", argv[1]);
+    *ret = UNDEF;
+    return 0;
+}
