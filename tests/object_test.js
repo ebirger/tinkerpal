@@ -1,49 +1,49 @@
 var o = { age : 32, married : 1 };
-debug.dump(1);
-debug.dump(o);
-debug.dump(2);
+console.log(1);
+console.log(o);
+console.log(2);
 var l = { test : { test : { test : 2 }, test2 : 3 }, test3 : 4 };
-debug.dump(l);
-debug.dump(3);
+console.log(l);
+console.log(3);
 debug.assert(l.test3, 4);
-debug.dump(4);
+console.log(4);
 debug.assert(l.test.test2, 3);
-debug.dump(5);
+console.log(5);
 l.test3=5;
-debug.dump(6);
+console.log(6);
 debug.assert(l.test3, 5);
-debug.dump(7);
+console.log(7);
 
 
 var empty = { };
-debug.dump(empty);
-debug.dump(8);
+console.log(empty);
+console.log(8);
 empty.test1 = 3;
-debug.dump(9);
+console.log(9);
 debug.assert(empty.test1, 3);
-debug.dump(10);
+console.log(10);
 
 
 var kuku = { };
-debug.dump(11);
+console.log(11);
 kuku.test1 = 4;
-debug.dump(13);
-debug.dump(kuku);
-debug.dump(11111);
+console.log(13);
+console.log(kuku);
+console.log(11111);
 
-kuku.func = function() { debug.dump(2222222); return 3; };
+kuku.func = function() { console.log(2222222); return 3; };
 debug.assert(kuku.func(), 3);
 
-debug.dump("=====1====");
+console.log("=====1====");
 var ob = { value : 5 };
-debug.dump("=====2====");
-ob.get_value = function() { debug.dump("hahah " + this.value.toString()); return this.value; };
-debug.dump("=====3====");
+console.log("=====2====");
+ob.get_value = function() { console.log("hahah " + this.value.toString()); return this.value; };
+console.log("=====3====");
 debug.assert(ob.get_value(), 5);
-debug.dump("=====4====");
+console.log("=====4====");
 ob.get_value();
-debug.dump("=====5====");
-var kaplawi = function() { this.kuku = 3; debug.dump("kaplawi!"); };
+console.log("=====5====");
+var kaplawi = function() { this.kuku = 3; console.log("kaplawi!"); };
 //new kaplawi();
 var object_with_empty_comma_in_the_end = { aa : 1, bb : 2, };
 debug.assert("" + object_with_empty_comma_in_the_end, "" + { aa : 1, bb : 2 });

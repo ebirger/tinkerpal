@@ -7,38 +7,38 @@ function bla()
 
 function kuku()
 {
-    debug.dump(1);
+    console.log(1);
     bla();
     debug.assert(2, 0);
 }
 
 function dudu()
 {
-    debug.dump(2);
+    console.log(2);
     kuku();
     debug.assert(1, 0);
 }
 
 function pupu()
 {
-    debug.dump(3);
+    console.log(3);
     try 
     {
-	debug.dump(4);
+	console.log(4);
 	dudu();
 	debug.assert(3, 0);
     }
     catch (should_be_one)
     {
 	var x = 1 + 1;
-	debug.dump("kuku");
+	console.log("kuku");
 	debug.assert(should_be_one, 1);
     }
 }
 
 function susu()
 {
-    debug.dump(6);
+    console.log(6);
     pupu();
     x = 1;
 }
@@ -52,7 +52,7 @@ try
 }
 catch(s)
 {
-    debug.dump(s);
+    console.log(s);
 }
 
 try
@@ -62,7 +62,7 @@ try
 }
 catch(s)
 {
-    debug.dump(s);
+    console.log(s);
 }
 
 try
@@ -71,5 +71,5 @@ try
 }
 catch(s)
 {
-    debug.dump(s);
+    console.log(s);
 }

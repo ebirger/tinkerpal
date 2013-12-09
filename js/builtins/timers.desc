@@ -9,7 +9,7 @@ FUNCTION("setTimeout", timers, do_set_timeout, {
     },
     .description = "Schedule 'cb' to run in ms milliseconds",
     .return_value = "Timer ID that can be used in clearTimeout()",
-    .example = "setTimeout(function() { debug.dump('Timer Expired'); }, 1000);",
+    .example = "setTimeout(function() { console.log('Timer Expired'); }, 1000);",
 })
 
 FUNCTION("setInterval", timers, do_set_interval, {
@@ -19,7 +19,7 @@ FUNCTION("setInterval", timers, do_set_interval, {
     },
     .description = "Schedule 'cb' to run periodically every ms milliseconds",
     .return_value = "Timer ID that can be used in clearTimeout()",
-    .example = "setInterval(function() { debug.dump('.'); }, 1000);",
+    .example = "setInterval(function() { console.log('.'); }, 1000);",
 })
 
 FUNCTION("clearTimeout", timers, do_clear_timeout, {
@@ -29,7 +29,7 @@ FUNCTION("clearTimeout", timers, do_clear_timeout, {
     .description = "Cancel timeout timer if timeout hadn't expired",
     .return_value = "None",
     .example = "var to = setTimeout(function() { "
-        "debug.dump('timeout'); }, 1000);\n"
+        "console.log('timeout'); }, 1000);\n"
 	"clearTimeout(to);",
 })
 
@@ -40,7 +40,7 @@ FUNCTION("clearInterval", timers, do_clear_interval, {
     .description = "Cancel periodic timer",
     .return_value = "None",
     .example = "var to = setInterval(function() { "
-        "debug.dump('.'); }, 1000);\n"
+        "console.log('.'); }, 1000);\n"
 	"clearInterval(to);",
 })
 
@@ -49,5 +49,5 @@ FUNCTION("getTime", timers, do_get_time, {
     },
     .description = "Get number of seconds since system startup",
     .return_value = "Floating point time in seconds",
-    .example = "debug.dump('Up for ' + getTime() + ' seconds');",
+    .example = "console.log('Up for ' + getTime() + ' seconds');",
 })

@@ -42,7 +42,7 @@ FUNCTION("forEach", array_prototype, do_array_prototype_foreach, {
           "array, in ascending order",
     .return_value = "undefined",
     .example = "var a = [ 1, 2, 3 ];\n"
-	"a.forEach(function(value, k, obj) { debug.dump(value + ' [' + k + '] ' + ' @ ' + obj); });",
+	"a.forEach(function(value, k, obj) { console.log(value + ' [' + k + '] ' + ' @ ' + obj); });",
 })
 
 FUNCTION("indexOf", array_prototype, do_array_prototype_indexof, {

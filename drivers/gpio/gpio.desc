@@ -66,5 +66,5 @@ FUNCTION("setWatch", gpio, do_set_watch, {
      },
     .description = "Calls a callback function whenever the GPIO pin changes state",
     .return_value = "Event ID",
-    .example = "setWatch(function() { debug.dump('button changed state'); }, GPIO_PF0);",
+    .example = "setWatch(function() { console.log('button changed state'); }, GPIO_PF0);",
 })

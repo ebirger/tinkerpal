@@ -49,7 +49,7 @@ function main()
 
 var i = 10;
 
-do debug.dump(i); while(--i);
+do console.log(i); while(--i);
 
 debug.assert(i, 0);
 
