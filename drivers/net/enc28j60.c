@@ -471,7 +471,7 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     if (eir & LINKIF)
     {
 	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
-	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack MAC interrupt */
+	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
 	tp_out(("ENC28J60 Link state change - state %d\n", link_status(e)));
     }
 }
