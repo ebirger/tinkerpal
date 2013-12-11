@@ -201,8 +201,8 @@
 #define DEFER (1<<6)
 
 /* MICMD bits */
-#define MIIRD (1<<0)
-#define MIISCAN (1<<1)
+#define MIIRD (1<<0) /* MII Read Enable */
+#define MIISCAN (1<<1) /* MII Scan Enable */
 
 /* EBSTCON bits */
 #define BISTST (1<<0)
@@ -215,9 +215,9 @@
 #define PSV2 (1<<7)
 
 /* MISTAT bits */
-#define BUSY (1<<0)
-#define SCAN (1<<1)
-#define NVALID (1<<2)
+#define BUSY (1<<0) /* MII Management Busy */
+#define SCAN (1<<1) /* MII Management Scan Operation */
+#define NVALID (1<<2) /* MII Management Read Data Not Valid */
 
 /* ECOCON bits */
 #define COCON0 (1<<0)
@@ -236,10 +236,10 @@
 #define PRST (1<<15)
 
 /* PHSTAT1 bits */
-#define JBSTAT (1<<1)
-#define LLSTAT (1<<2)
-#define PHDPX (1<<11)
-#define PFDPX (1<<12)
+#define JBSTAT (1<<1) /* PHY Latching Jabber Status */
+#define LLSTAT (1<<2) /* PHY Latching Link Status */
+#define PHDPX (1<<11) /* PHY Half-Duplex Capable */
+#define PFDPX (1<<12) /* PHY Full-Duplex Capable */
 
 /* PHCON2 bits */
 #define HDLDIS (1<<8)
@@ -248,12 +248,12 @@
 #define FRCLNK (1<<14)
 
 /* PHSTAT2 bits */
-#define PLRITY (1<<5)
-#define DPXSTAT (1<<9)
-#define LSTAT (1<<10)
-#define COLSTAT (1<<11)
-#define RXSTAT (1<<12)
-#define TXSTAT (1<<13)
+#define PLRITY (1<<5) /* Polarity Status */
+#define DPXSTAT (1<<9) /* PHY Duplex Status */
+#define LSTAT (1<<10) /* PHY Link Status */
+#define COLSTAT (1<<11) /* PHY Collision Status */
+#define RXSTAT (1<<12) /* PHY Receive Status */
+#define TXSTAT (1<<13) /* PHY Transmit Status */
 
 /* PHIE bits */
 #define PGEIE (1<<1)
