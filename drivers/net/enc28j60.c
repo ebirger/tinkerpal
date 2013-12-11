@@ -413,6 +413,12 @@ static int chip_reset(enc28j60_t *e)
 
     write_op(e, ENC28J60_OPCODE_SRC, 0, 0);
 
+    /* According to ENC28J60 Silicon Errata for B7, we need to wait at least
+     * 1 ms after reset since the CLKRDY bit may not be cleared in time, and
+     * the declared timeout is not guarenteed
+     */
+    platform.msleep(1);
+
     /* Wait for reset to complete */
     while (!(ready = (ctrl_reg_read(e, ESTAT) & CLKRDY)) && 
 	(ticks() - start < 1000));
