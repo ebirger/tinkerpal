@@ -27,6 +27,7 @@
 
 #include "drivers/resources.h"
 #include "platform/platform.h"
+#include "util/tstr.h"
 
 /* XXX: API should provide error indication
  * CS should be part of the SPI driver */
