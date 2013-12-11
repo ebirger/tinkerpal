@@ -25,17 +25,19 @@
 
 #include "util/tp_types.h"
 #include "util/debug.h"
+#include "util/event.h"
 #include "drivers/spi/spi.h"
 #include "drivers/gpio/gpio.h"
 
 /* ENC28J60 Control Registers */
 /* Use bits on the register addresses for meta data */
 #define REG_MII_MAC (1<<7)
-#define REG_BANK(r) (((r) >> 5) & 0x3)
+#define REG_ADDR_MASK 0x1f
 #define BANK1 (1<<5)
 #define BANK2 (2<<5)
 #define BANK3 (3<<5)
-#define REG_ADDR_MASK 0x1f
+#define REG_BANK(addr) (((addr) >> 5) & 0x3)
+#define REG(addr) ((addr) & REG_ADDR_MASK)
 
 /* Bank 0 */
 #define ERDPTL 0x00
@@ -323,7 +325,7 @@ static u8 read_op(enc28j60_t *e, u8 op, u8 addr)
     u8 ret;
 
     cs_low(e);
-    spi_send(e->spi_port, op | (addr & REG_ADDR_MASK));
+    spi_send(e->spi_port, op | REG(addr));
     if (addr & REG_MII_MAC)
     {
 	/* MAC and MII registers also return a dummy byte */
@@ -337,17 +339,23 @@ static u8 read_op(enc28j60_t *e, u8 op, u8 addr)
 static void write_op(enc28j60_t *e, u8 op, u8 addr, u8 data)
 {
     cs_low(e);
-    spi_send(e->spi_port, op | (addr & REG_ADDR_MASK));
+    spi_send(e->spi_port, op | REG(addr));
     spi_send(e->spi_port, data);
     cs_high(e);
 }
 
-static void bank_select(enc28j60_t *e, u8 reg)
+static void bank_select(enc28j60_t *e, u8 addr)
 {
-    u8 bank = REG_BANK(reg);
+    u8 bank = REG_BANK(addr), reg = REG(addr);
 
     if (e->bank == bank)
 	return;
+
+    if (reg >= EIE && reg <= ECON1)
+    {
+	/* No need to switch banks, all banks have these registers */
+	return;
+    }
 
     write_op(e, ENC28J60_OPCODE_BFC, ECON1, BSEL0 | BSEL1);
     write_op(e, ENC28J60_OPCODE_BFS, ECON1, bank);
