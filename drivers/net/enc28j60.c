@@ -476,7 +476,7 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     }
 }
 
-enc28j60_t *enc28j60_init(int spi_port, int cs, int intr)
+void enc28j60_init(int spi_port, int cs, int intr)
 {
     enc28j60_t *e = &g_ctx; /* Singleton for now */
 
@@ -495,6 +495,4 @@ enc28j60_t *enc28j60_init(int spi_port, int cs, int intr)
     event_watch_set(intr, &e->irq_event);
 
     chip_init(e);
-
-    return e;
 }
