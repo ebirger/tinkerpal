@@ -23,7 +23,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "util/tp_types.h"
+#include "util/debug.h"
+#include "drivers/spi/spi.h"
+#include "drivers/gpio/gpio.h"
+
 /* ENC28J60 Control Registers */
+/* Use bits on the register addresses for meta data */
+#define REG_MII_MAC (1<<7)
+#define REG_BANK(r) (((r) >> 5) & 0x3)
+#define BANK1 (1<<5)
+#define BANK2 (2<<5)
+#define BANK3 (3<<5)
+#define REG_ADDR_MASK 0x1f
+
 /* Bank 0 */
 #define ERDPTL 0x00
 #define ERDPTH 0x01
@@ -51,64 +64,64 @@
 #define EDMACSH 0x17
 
 /* Bank 1 */
-#define EHT0 0x00
-#define EHT1 0x01
-#define EHT2 0x02
-#define EHT3 0x03
-#define EHT4 0x04
-#define EHT5 0x05
-#define EHT6 0x06
-#define EHT7 0x07
-#define EPMM0 0x08
-#define EPMM1 0x09
-#define EPMM2 0x0a
-#define EPMM3 0x0b
-#define EPMM4 0x0c
-#define EPMM5 0x0d
-#define EPMM6 0x0e
-#define EPMM7 0x0f
-#define EPMCSL 0x10
-#define EPMCSH 0x11
-#define EPMOL 0x14
-#define EPMOH 0x15
-#define ERXFCON 0x18
-#define EPKTCNT 0x19
+#define EHT0 (0x00 | BANK1)
+#define EHT1 (0x01 | BANK1)
+#define EHT2 (0x02 | BANK1)
+#define EHT3 (0x03 | BANK1)
+#define EHT4 (0x04 | BANK1)
+#define EHT5 (0x05 | BANK1)
+#define EHT6 (0x06 | BANK1)
+#define EHT7 (0x07 | BANK1)
+#define EPMM0 (0x08 | BANK1)
+#define EPMM1 (0x09 | BANK1)
+#define EPMM2 (0x0a | BANK1)
+#define EPMM3 (0x0b | BANK1)
+#define EPMM4 (0x0c | BANK1)
+#define EPMM5 (0x0d | BANK1)
+#define EPMM6 (0x0e | BANK1)
+#define EPMM7 (0x0f | BANK1)
+#define EPMCSL (0x10 | BANK1)
+#define EPMCSH (0x11 | BANK1)
+#define EPMOL (0x14 | BANK1)
+#define EPMOH (0x15 | BANK1)
+#define ERXFCON (0x18 | BANK1)
+#define EPKTCNT (0x19 | BANK1)
 
 /* Bank 2 */
-#define MACON1 0x00
-#define MACON3 0x02
-#define MACON4 0x03
-#define MABBIPG 0x04
-#define MAIPGL 0x06
-#define MAIPGH 0x07
-#define MACLCON1 0x08
-#define MACLCON2 0x09
-#define MAMXFLL 0x0a
-#define MAMXFLH 0x0b
-#define MICMD 0x12
-#define MIREGADR 0x14
-#define MIWRL 0x16
-#define MIWRH 0x17
-#define MIRDL 0x18
-#define MIRDH 0x19
+#define MACON1 (0x00 | REG_MII_MAC | BANK2)
+#define MACON3 (0x02 | REG_MII_MAC | BANK2)
+#define MACON4 (0x03 | REG_MII_MAC | BANK2)
+#define MABBIPG (0x04 | REG_MII_MAC | BANK2)
+#define MAIPGL (0x06 | REG_MII_MAC | BANK2)
+#define MAIPGH (0x07 | REG_MII_MAC | BANK2)
+#define MACLCON1 (0x08 | REG_MII_MAC | BANK2)
+#define MACLCON2 (0x09 | REG_MII_MAC | BANK2)
+#define MAMXFLL (0x0a | REG_MII_MAC | BANK2)
+#define MAMXFLH (0x0b | REG_MII_MAC | BANK2)
+#define MICMD (0x12 | REG_MII_MAC | BANK2)
+#define MIREGADR (0x14 | REG_MII_MAC | BANK2)
+#define MIWRL (0x16 | REG_MII_MAC | BANK2)
+#define MIWRH (0x17 | REG_MII_MAC | BANK2)
+#define MIRDL (0x18 | REG_MII_MAC | BANK2)
+#define MIRDH (0x19 | REG_MII_MAC | BANK2)
 
 /* Bank 3 */
-#define MAADR5 0x00
-#define MAADR6 0x01
-#define MAADR3 0x02
-#define MAADR4 0x03
-#define MAADR1 0x04
-#define MAADR2 0x05
-#define EBSTSD 0x06
-#define EBSTCON 0x07
-#define EBSTCSL 0x08
-#define EBSTCSH 0x09
-#define MISTAT 0x0a
-#define EREVID 0x12
-#define ECOCON 0x15
-#define EFLOCON 0x17
-#define EPAUSL 0x18
-#define EPAUSH 0x18
+#define MAADR5 (0x00 | REG_MII_MAC | BANK3)
+#define MAADR6 (0x01 | REG_MII_MAC | BANK3)
+#define MAADR3 (0x02 | REG_MII_MAC | BANK3)
+#define MAADR4 (0x03 | REG_MII_MAC | BANK3)
+#define MAADR1 (0x04 | REG_MII_MAC | BANK3)
+#define MAADR2 (0x05 | REG_MII_MAC | BANK3)
+#define EBSTSD (0x06 | BANK3)
+#define EBSTCON (0x07 | BANK3)
+#define EBSTCSL (0x08 | BANK3)
+#define EBSTCSH (0x09 | BANK3)
+#define MISTAT (0x0a | REG_MII_MAC)
+#define EREVID (0x12 | BANK3)
+#define ECOCON (0x15 | BANK3)
+#define EFLOCON (0x17 | BANK3)
+#define EPAUSL (0x18 | BANK3)
+#define EPAUSH (0x19 | BANK3)
 
 /* Common Control Registers (same on all banks) */
 #define EIE 0x1b
@@ -275,3 +288,138 @@
 #define LACFG1 (1<<9)
 #define LACFG2 (1<<10)
 #define LACFG3 (1<<11)
+
+/* ENC28J60 SPI Opcodes */
+#define ENC28J60_OPCODE_RCR 0x00 /* Read Control Register */
+#define ENC28J60_OPCODE_RBM 0x3a /* Read Buffer Memory */
+#define ENC28J60_OPCODE_WCR 0x40 /* Write Control Register */
+#define ENC28J60_OPCODE_WBM 0x7a /* Write Buffer Memory */
+#define ENC28J60_OPCODE_BFS 0x80 /* Bit Field Set */
+#define ENC28J60_OPCODE_BFC 0xa0 /* Bit Field Clear */
+#define ENC28J60_OPCODE_SRC 0xff /* System Reset Command */
+
+typedef struct {
+    int spi_port;
+    int cs;
+    u8 bank;
+} enc28j60_t;
+
+static enc28j60_t g_ctx;
+
+static inline void cs_low(enc28j60_t *e)
+{
+    /* asserts the CS pin to the card */
+    gpio_digital_write(e->cs, 0);
+}
+
+static inline void cs_high(enc28j60_t *e)
+{
+    /* de-asserts the CS pin to the card */
+    gpio_digital_write(e->cs, 1);
+}
+
+static u8 read_op(enc28j60_t *e, u8 op, u8 addr)
+{
+    u8 ret;
+
+    cs_low(e);
+    spi_send(e->spi_port, op | (addr & REG_ADDR_MASK));
+    if (addr & REG_MII_MAC)
+    {
+	/* MAC and MII registers also return a dummy byte */
+	spi_receive(e->spi_port);
+    }
+    ret = (u8)spi_receive(e->spi_port);
+    cs_high(e);
+    return ret;
+}
+
+static void write_op(enc28j60_t *e, u8 op, u8 addr, u8 data)
+{
+    cs_low(e);
+    spi_send(e->spi_port, op | (addr & REG_ADDR_MASK));
+    spi_send(e->spi_port, data);
+    cs_high(e);
+}
+
+static inline u8 ctrl_reg_read(enc28j60_t *e, u8 reg)
+{
+    return read_op(e, ENC28J60_OPCODE_RCR, reg);
+}
+
+static inline void ctrl_reg_write(enc28j60_t *e, u8 reg, u8 data)
+{
+    write_op(e, ENC28J60_OPCODE_WCR, reg, data);
+}
+
+static inline void ctrl_reg_bits_clear(enc28j60_t *e, u8 reg, u8 mask)
+{
+    write_op(e, ENC28J60_OPCODE_BFC, reg, mask);
+}
+
+static inline void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
+{
+    write_op(e, ENC28J60_OPCODE_BFS, reg, mask);
+}
+
+static void bank_select(enc28j60_t *e, u8 reg)
+{
+    u8 bank = REG_BANK(reg);
+
+    if (e->bank == bank)
+	return;
+
+    ctrl_reg_bits_clear(e, ECON1, BSEL0 | BSEL1);
+    ctrl_reg_bits_set(e, ECON1, bank);
+
+    e->bank = bank;
+}
+
+static inline u32 ticks(void)
+{
+    return (u32)platform.get_ticks_from_boot();
+}
+
+static int chip_reset(enc28j60_t *e)
+{
+    u32 start = ticks();
+    int ready;
+
+    tp_info(("Resetting ENC28J60\n"));
+
+    write_op(e, ENC28J60_OPCODE_SRC, 0, 0);
+
+    /* Wait for reset to complete */
+    while (!(ready = (ctrl_reg_read(e, ESTAT) & CLKRDY)) && 
+	(ticks() - start < 1000));
+
+    return ready ? 0 : -1;
+}
+
+static void chip_init(enc28j60_t *e)
+{
+    if (chip_reset(e))
+    {
+	tp_err(("ENC28J60 Reset failed. Is it connected?\n"));
+	return;
+    }
+
+    bank_select(e, EREVID);
+    tp_out(("ENC28J60 Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
+}
+
+enc28j60_t *enc28j60_init(int spi_port, int cs)
+{
+    enc28j60_t *e = &g_ctx; /* Singleton for now */
+
+    e->spi_port = spi_port;
+    e->cs = cs;
+
+    spi_init(spi_port);
+    gpio_set_pin_mode(cs, GPIO_PM_OUTPUT);
+    cs_high(e);
+
+    chip_init(e);
+
+    return e;
+}
