@@ -116,3 +116,104 @@
 #define ESTAT 0x1d
 #define ECON2 0x1e
 #define ECON1 0x1f
+
+/* EIE bits */
+#define RXERIE (1<<0)
+#define TXERIE (1<<1)
+#define TXIE (1<<3)
+#define LINKIE (1<<4)
+#define DMAIE (1<<5)
+#define PKTIE (1<<6)
+#define INTIE (1<<7)
+
+/* EIR bits */
+#define RXERIF (1<<0)
+#define TXERIF (1<<1)
+#define TXIF (1<<3)
+#define LINKIF (1<<4)
+#define DMAIF (1<<5)
+#define PKTIF (1<<6)
+
+/* ESTAT bits */
+#define CLKRDY (1<<0)
+#define TXABRT (1<<1)
+#define RXBUSY (1<<2)
+#define LATECOL (1<<4)
+#define BUFER (1<<6)
+#define INT (1<<7)
+
+/* ECON2 bits */
+#define VRPS (1<<3)
+#define PWRSV (1<<5)
+#define PKTDEC (1<<6)
+#define AUTOINC (1<<7)
+
+/* ECON1 bits */
+#define BSEL0 (1<<0)
+#define BSEL1 (1<<1)
+#define RXEN (1<<2)
+#define TXRTS (1<<3)
+#define CSUMEN (1<<4)
+#define DMAST (1<<5)
+#define RXRST (1<<6)
+#define TXRST (1<<7)
+
+/* ERXFCON bits */
+#define BCEN (1<<0)
+#define MCEN (1<<1)
+#define HTEN (1<<2)
+#define MPEN (1<<3)
+#define PMEN (1<<4)
+#define CRCEN (1<<5)
+#define ANDOR (1<<6)
+#define UCEN (1<<7)
+
+/* MACON1 bits */
+#define MARXEN (1<<0)
+#define PASSALL (1<<1)
+#define RXPAUS (1<<2)
+#define TXPAUS (1<<3)
+
+/* MACON3 bits */
+#define FULDPX (1<<0)
+#define FRMLNEN (1<<1)
+#define HFRMEN (1<<2)
+#define PHDREN (1<<3)
+#define TXCRCEN (1<<4)
+#define PADCFG0 (1<<5)
+#define PADCFG1 (1<<6)
+#define PADCFG2 (1<<7)
+
+/* MACON4 bits */
+#define NOBKOFF (1<<4)
+#define BPEN (1<<5)
+#define DEFER (1<<6)
+
+/* MICMD bits */
+#define MIIRD (1<<0)
+#define MIISCAN (1<<1)
+
+/* EBSTCON bits */
+#define BISTST (1<<0)
+#define TME (1<<1)
+#define TMSEL0 (1<<2)
+#define TMSEL1 (1<<3)
+#define PSEL (1<<4)
+#define PSV0 (1<<5)
+#define PSV1 (1<<6)
+#define PSV2 (1<<7)
+
+/* MISTAT bits */
+#define BUSY (1<<0)
+#define SCAN (1<<1)
+#define NVALID (1<<2)
+
+/* ECOCON bits */
+#define COCON0 (1<<0)
+#define COCON1 (1<<1)
+#define COCON2 (1<<2)
+
+/* EFLOCON bits */
+#define FCEN0 (1<<0)
+#define FCEN1 (1<<1)
+#define FULDPXS (1<<2)
