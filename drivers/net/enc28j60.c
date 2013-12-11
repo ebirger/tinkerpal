@@ -117,6 +117,17 @@
 #define ECON2 0x1e
 #define ECON1 0x1f
 
+/* PHY Registers */
+#define PHCON1 0x00
+#define PHSTAT1 0x01
+#define PHID1 0x02
+#define PHID2 0x03
+#define PHCON2 0x10
+#define PHSTAT2 0x11
+#define PHIE 0x12
+#define PHIR 0x13
+#define PHLCON 0x14
+
 /* EIE bits */
 #define RXERIE (1<<0)
 #define TXERIE (1<<1)
@@ -217,3 +228,50 @@
 #define FCEN0 (1<<0)
 #define FCEN1 (1<<1)
 #define FULDPXS (1<<2)
+
+/* PHCON1 bits */
+#define PDPXMD (1<<8)
+#define PPWRSV (1<<11)
+#define PLOOPBK (1<<14)
+#define PRST (1<<15)
+
+/* PHSTAT1 bits */
+#define JBSTAT (1<<1)
+#define LLSTAT (1<<2)
+#define PHDPX (1<<11)
+#define PFDPX (1<<12)
+
+/* PHCON2 bits */
+#define HDLDIS (1<<8)
+#define JABBER (1<<10)
+#define TXDIS (1<<13)
+#define FRCLNK (1<<14)
+
+/* PHSTAT2 bits */
+#define PLRITY (1<<5)
+#define DPXSTAT (1<<9)
+#define LSTAT (1<<10)
+#define COLSTAT (1<<11)
+#define RXSTAT (1<<12)
+#define TXSTAT (1<<13)
+
+/* PHIE bits */
+#define PGEIE (1<<1)
+#define PLNKIE (1<<4)
+
+/* PHIR bits */
+#define PGIF (1<<2)
+#define PLNKIF (1<<4)
+
+/* PHLCON bits */
+#define STRCH (1<<1)
+#define LFRQ0 (1<<2)
+#define LFRQ1 (1<<3)
+#define LBCFG0 (1<<4)
+#define LBCFG1 (1<<5)
+#define LBCFG2 (1<<6)
+#define LBCFG3 (1<<7)
+#define LACFG0 (1<<8)
+#define LACFG1 (1<<9)
+#define LACFG2 (1<<10)
+#define LACFG3 (1<<11)
