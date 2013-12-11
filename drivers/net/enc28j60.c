@@ -301,8 +301,10 @@
 #define ENC28J60_OPCODE_SRC 0xff /* System Reset Command */
 
 typedef struct {
+    event_t irq_event;
     int spi_port;
     int cs;
+    int intr;
     u8 bank;
 } enc28j60_t;
 
@@ -451,19 +453,46 @@ static void chip_init(enc28j60_t *e)
 
     tp_out(("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
     tp_out(("PHY ID %x:%x\n", phy_reg_read(e, PHID1), phy_reg_read(e, PHID2)));
+
+    /* Enable interrupts */
+    ctrl_reg_bits_set(e, EIE, LINKIE | INTIE);
+    /* Enable PHY interrupts */
+    phy_reg_write(e, PHIE, PGEIE | PLNKIE);
 }
 
-enc28j60_t *enc28j60_init(int spi_port, int cs)
+static void enc28j60_isr(event_t *ev, int resource_id)
+{
+    enc28j60_t *e = (enc28j60_t *)ev;
+    u8 eir;
+
+    eir = ctrl_reg_read(e, EIR);
+    tp_out(("ENC28J60 ISR %x\n", eir));
+
+    if (eir & LINKIF)
+    {
+	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
+	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack MAC interrupt */
+	tp_out(("ENC28J60 Link state change - state %d\n", link_status(e)));
+    }
+}
+
+enc28j60_t *enc28j60_init(int spi_port, int cs, int intr)
 {
     enc28j60_t *e = &g_ctx; /* Singleton for now */
 
     e->spi_port = spi_port;
     e->cs = cs;
+    e->intr = intr;
+    e->irq_event.trigger = enc28j60_isr;
 
     spi_init(spi_port);
     spi_set_max_speed(spi_port, 8000000);
+
     gpio_set_pin_mode(cs, GPIO_PM_OUTPUT);
+    gpio_set_pin_mode(intr, GPIO_PM_INPUT_PULLUP);
     cs_high(e);
+
+    event_watch_set(intr, &e->irq_event);
 
     chip_init(e);
 
