@@ -428,14 +428,15 @@ static int chip_reset(enc28j60_t *e)
 
 static void chip_init(enc28j60_t *e)
 {
+    tp_out(("ENC28J60 Init\n"));
     if (chip_reset(e))
     {
 	tp_err(("ENC28J60 Reset failed. Is it connected?\n"));
 	return;
     }
 
-    bank_select(e, EREVID);
-    tp_out(("ENC28J60 Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
+    tp_out(("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
+    tp_out(("PHY ID %x:%x\n", phy_reg_read(e, PHID1), phy_reg_read(e, PHID2)));
 }
 
 enc28j60_t *enc28j60_init(int spi_port, int cs)
