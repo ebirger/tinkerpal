@@ -143,20 +143,20 @@
 #define INT (1<<7)
 
 /* ECON2 bits */
-#define VRPS (1<<3)
-#define PWRSV (1<<5)
-#define PKTDEC (1<<6)
-#define AUTOINC (1<<7)
+#define VRPS (1<<3) /* Voltage Regulator Power Save Enable */
+#define PWRSV (1<<5) /* Power Save Enable */
+#define PKTDEC (1<<6) /* Packet Decrement */
+#define AUTOINC (1<<7) /* Automatic Buffer Pointer Increment Enable */
 
 /* ECON1 bits */
-#define BSEL0 (1<<0)
-#define BSEL1 (1<<1)
-#define RXEN (1<<2)
-#define TXRTS (1<<3)
-#define CSUMEN (1<<4)
-#define DMAST (1<<5)
-#define RXRST (1<<6)
-#define TXRST (1<<7)
+#define BSEL0 (1<<0) /* Bank Select 0 */
+#define BSEL1 (1<<1) /* Bank Select 1 */
+#define RXEN (1<<2) /* Receive Enable */
+#define TXRTS (1<<3) /* Transmit Request to Send */
+#define CSUMEN (1<<4) /* DMA Checksum Enable */
+#define DMAST (1<<5) /* DMS Start and Busy Status */
+#define RXRST (1<<6) /* Receive Logic Reset */
+#define TXRST (1<<7) /* Transmit Logic Reset */
 
 /* ERXFCON bits */
 #define BCEN (1<<0)
