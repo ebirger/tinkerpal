@@ -40,4 +40,12 @@ if GRAPHICS
 source "drivers/graphics/Kconfig"
 endif
 
+config NET
+	bool "Networking Support"
+	default y
+
+if NET
+source "drivers/net/Kconfig"
+endif
+
 endmenu

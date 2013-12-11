@@ -1,0 +1,8 @@
+menu "Networking"
+
+config ENC28J60
+	bool "ENC28J60 SPI Ethernet Support"
+	depends on SPI && GPIO
+	default y
+
+endmenu
