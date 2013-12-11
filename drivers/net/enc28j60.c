@@ -381,6 +381,24 @@ static void bank_select(enc28j60_t *e, u8 reg)
     e->bank = bank;
 }
 
+static u16 phy_reg_read(enc28j60_t *e, u8 phy_reg)
+{
+    u16 ret;
+
+    ctrl_reg_write(e, MIREGADR, phy_reg);
+    ctrl_reg_bits_set(e, MICMD, MIIRD);
+    while (ctrl_reg_read(e, MISTAT) & BUSY);
+    ctrl_reg_bits_clear(e, MICMD, MIIRD);
+    ret = ctrl_reg_read(e, MIRDL);
+    ret |= ctrl_reg_read(e, MIRDH) << 8;
+    return ret;
+}
+
+static int link_status(enc28j60_t *e)
+{
+    return phy_reg_read(e, PHSTAT2) & LSTAT ? 1 : 0;
+}
+
 static inline u32 ticks(void)
 {
     return (u32)platform.get_ticks_from_boot();
