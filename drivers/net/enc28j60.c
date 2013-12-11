@@ -400,6 +400,14 @@ static u16 phy_reg_read(enc28j60_t *e, u8 phy_reg)
     return ret;
 }
 
+static void phy_reg_write(enc28j60_t *e, u8 phy_reg, u16 data)
+{
+    ctrl_reg_write(e, MIREGADR, phy_reg);
+    ctrl_reg_write(e, MIWRL, data & 0xff);
+    ctrl_reg_write(e, MIWRH, (data >> 8) & 0xff);
+    while (ctrl_reg_read(e, MISTAT) & BUSY);
+}
+
 static int link_status(enc28j60_t *e)
 {
     return phy_reg_read(e, PHSTAT2) & LSTAT ? 1 : 0;
