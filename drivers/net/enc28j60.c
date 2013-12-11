@@ -342,23 +342,29 @@ static void write_op(enc28j60_t *e, u8 op, u8 addr, u8 data)
     cs_high(e);
 }
 
+static void bank_select(enc28j60_t *e, u8 reg);
+
 static inline u8 ctrl_reg_read(enc28j60_t *e, u8 reg)
 {
+    bank_select(e, reg);
     return read_op(e, ENC28J60_OPCODE_RCR, reg);
 }
 
 static inline void ctrl_reg_write(enc28j60_t *e, u8 reg, u8 data)
 {
+    bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_WCR, reg, data);
 }
 
 static inline void ctrl_reg_bits_clear(enc28j60_t *e, u8 reg, u8 mask)
 {
+    bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_BFC, reg, mask);
 }
 
 static inline void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
 {
+    bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_BFS, reg, mask);
 }
 
@@ -369,8 +375,8 @@ static void bank_select(enc28j60_t *e, u8 reg)
     if (e->bank == bank)
 	return;
 
-    ctrl_reg_bits_clear(e, ECON1, BSEL0 | BSEL1);
-    ctrl_reg_bits_set(e, ECON1, bank);
+    write_op(e, ENC28J60_OPCODE_BFC, ECON1, BSEL0 | BSEL1);
+    write_op(e, ENC28J60_OPCODE_BFS, ECON1, bank);
 
     e->bank = bank;
 }
