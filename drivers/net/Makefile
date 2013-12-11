@@ -1,1 +1,1 @@
-MK_OBJS+=enc28j60.o
+MK_OBJS+=$(if $(CONFIG_ENC28J60),enc28j60.o)
