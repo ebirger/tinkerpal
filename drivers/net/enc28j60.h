@@ -27,6 +27,7 @@
 
 typedef struct enc28j60_t enc28j60_t;
 
-enc28j60_t *enc28j60_init(int spi_port, int cs, int intr);
+void enc28j60_free(enc28j60_t *e);
+enc28j60_t *enc28j60_new(int spi_port, int cs, int intr);
 
 #endif

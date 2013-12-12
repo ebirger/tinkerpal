@@ -26,6 +26,7 @@
 #include "util/tp_types.h"
 #include "util/debug.h"
 #include "util/event.h"
+#include "mem/tmalloc.h"
 #include "drivers/spi/spi.h"
 #include "drivers/gpio/gpio.h"
 
@@ -302,13 +303,12 @@
 
 struct enc28j60_t {
     event_t irq_event;
+    int irq_event_id;
     int spi_port;
     int cs;
     int intr;
     u8 bank;
 };
-
-static enc28j60_t g_ctx;
 
 static inline void cs_low(enc28j60_t *e)
 {
@@ -476,9 +476,15 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     }
 }
 
-enc28j60_t *enc28j60_init(int spi_port, int cs, int intr)
+void enc28j60_free(enc28j60_t *e)
 {
-    enc28j60_t *e = &g_ctx; /* Singleton for now */
+    event_watch_del(e->irq_event_id);
+    tfree(e);
+}
+
+enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
+{
+    enc28j60_t *e = tmalloc_type(enc28j60_t);
 
     e->spi_port = spi_port;
     e->cs = cs;
@@ -492,7 +498,7 @@ enc28j60_t *enc28j60_init(int spi_port, int cs, int intr)
     gpio_set_pin_mode(intr, GPIO_PM_INPUT_PULLUP);
     cs_high(e);
 
-    event_watch_set(intr, &e->irq_event);
+    e->irq_event_id = event_watch_set(intr, &e->irq_event);
 
     chip_init(e);
     return e;
