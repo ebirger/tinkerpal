@@ -35,6 +35,8 @@ event_t *js_event_new(obj_t *func, obj_t *this,
 obj_t *js_event_obj(event_t *e);
 obj_t *js_event_get_func(event_t *e);
 obj_t *js_event_get_this(event_t *e);
+/* gen trigger just calls func() with no parameters */
+void js_event_gen_trigger(event_t *e, int id);
 
 void js_event_uninit(void);
 void js_event_init(void);

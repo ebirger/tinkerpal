@@ -204,20 +204,6 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 }
 #endif
 
-static void set_watch_on_change_cb(event_t *e, int id)
-{
-    obj_t *o, *this, *func;
-
-    func = js_event_get_func(e);
-    this = js_event_get_this(e);
-
-    function_call(&o, this, 1, &func);
-
-    obj_put(func);
-    obj_put(this);
-    obj_put(o);
-}
-
 int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     event_t *e;
@@ -226,7 +212,7 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 3)
 	return js_invalid_args(ret);
 
-    e = js_event_new(argv[1], this, set_watch_on_change_cb);
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
 
     event_id = event_watch_set(obj_get_int(argv[2]), e);
     *ret = num_new_int(event_id);

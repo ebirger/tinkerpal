@@ -31,35 +31,14 @@
 
 #define Stimer_id S("timer_id")
 
-static int timer_function_call(obj_t **po, event_t *e)
+static void interval_cb(event_t *e, int resource_id)
 {
-    obj_t *this, *func;
-    int ret;
+    obj_t *o, *this, *func;
 
     func = js_event_get_func(e);
     this = js_event_get_this(e);
 
-    ret = function_call(po, this, 1, &func);
-
-    obj_put(this);
-    obj_put(func);
-    return ret;
-}
-
-static void timeout_cb(event_t *e, int resource_id)
-{
-    obj_t *o;
-
-    timer_function_call(&o, e);
-
-    obj_put(o);
-}
-
-static void interval_cb(event_t *e, int resource_id)
-{
-    obj_t *o;
-
-    if (timer_function_call(&o, e))
+    if (function_call(&o, this, 1, &func))
     {
 	int tid = 0;
 
@@ -67,6 +46,8 @@ static void interval_cb(event_t *e, int resource_id)
 	event_timer_del(tid);
     }
 
+    obj_put(this);
+    obj_put(func);
     obj_put(o);
 }
 
@@ -78,7 +59,7 @@ int do_set_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 3)
 	return js_invalid_args(ret);
 
-    e = js_event_new(argv[1], this, timeout_cb);
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
 
     ms = NUM_INT(to_num(argv[2]));
 

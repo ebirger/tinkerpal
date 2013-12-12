@@ -29,20 +29,6 @@
 
 static enc28j60_t *g_enc28j60; /* Singleton */
 
-static void on_port_change_cb(event_t *e, int id)
-{
-    obj_t *o, *this, *func;
-
-    func = js_event_get_func(e);
-    this = js_event_get_this(e);
-
-    function_call(&o, this, 1, &func);
-
-    obj_put(func);
-    obj_put(this);
-    obj_put(o);
-}
-
 int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
@@ -51,7 +37,7 @@ int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
     if (argc != 2)
 	return js_invalid_args(ret);
 
-    e = js_event_new(argv[1], this, on_port_change_cb);
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
 
     enc28j60_on_port_change_event_set(g_enc28j60, e);
     *ret = UNDEF;

@@ -100,6 +100,20 @@ obj_t *js_event_get_this(event_t *e)
     return obj_get_property(NULL, js_event_obj(e), &Sevent_this);
 }
 
+void js_event_gen_trigger(event_t *e, int id)
+{
+    obj_t *o, *this, *func;
+
+    func = js_event_get_func(e);
+    this = js_event_get_this(e);
+
+    function_call(&o, this, 1, &func);
+
+    obj_put(func);
+    obj_put(this);
+    obj_put(o);
+}
+
 void js_event_uninit(void)
 {
 }
