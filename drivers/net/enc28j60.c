@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+#include "drivers/net/enc28j60.h"
 #include "util/tp_types.h"
 #include "util/debug.h"
 #include "util/event.h"
@@ -300,13 +300,13 @@
 #define ENC28J60_OPCODE_BFC 0xa0 /* Bit Field Clear */
 #define ENC28J60_OPCODE_SRC 0xff /* System Reset Command */
 
-typedef struct {
+struct enc28j60_t {
     event_t irq_event;
     int spi_port;
     int cs;
     int intr;
     u8 bank;
-} enc28j60_t;
+};
 
 static enc28j60_t g_ctx;
 
@@ -476,7 +476,7 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     }
 }
 
-void enc28j60_init(int spi_port, int cs, int intr)
+enc28j60_t *enc28j60_init(int spi_port, int cs, int intr)
 {
     enc28j60_t *e = &g_ctx; /* Singleton for now */
 
@@ -495,4 +495,5 @@ void enc28j60_init(int spi_port, int cs, int intr)
     event_watch_set(intr, &e->irq_event);
 
     chip_init(e);
+    return e;
 }
