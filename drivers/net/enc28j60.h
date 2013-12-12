@@ -25,9 +25,14 @@
 #ifndef __ENC28J60_H__
 #define __ENC28J60_H__
 
+#include "util/event.h"
+
 typedef struct enc28j60_t enc28j60_t;
 
 void enc28j60_free(enc28j60_t *e);
 enc28j60_t *enc28j60_new(int spi_port, int cs, int intr);
+
+int enc28j60_link_status(enc28j60_t *e);
+void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev);
 
 #endif

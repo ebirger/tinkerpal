@@ -307,6 +307,7 @@ struct enc28j60_t {
     int spi_port;
     int cs;
     int intr;
+    event_t *on_port_change;
     u8 bank;
 };
 
@@ -410,7 +411,7 @@ static void phy_reg_write(enc28j60_t *e, u8 phy_reg, u16 data)
     while (ctrl_reg_read(e, MISTAT) & BUSY);
 }
 
-static int link_status(enc28j60_t *e)
+int enc28j60_link_status(enc28j60_t *e)
 {
     return phy_reg_read(e, PHSTAT2) & LSTAT ? 1 : 0;
 }
@@ -466,14 +467,25 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     u8 eir;
 
     eir = ctrl_reg_read(e, EIR);
-    tp_out(("ENC28J60 ISR %x\n", eir));
+    tp_debug(("ENC28J60 ISR %x\n", eir));
 
     if (eir & LINKIF)
     {
 	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
 	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
-	tp_out(("ENC28J60 Link state change - state %d\n", link_status(e)));
+	tp_info(("ENC28J60 Link state change - state %d\n", 
+            enc28j60_link_status(e)));
+	if (e->on_port_change)
+	{
+	    /* XXX: create enumeraton of ENC28J60 devices as resource IDs */
+	    e->on_port_change->trigger(e->on_port_change, 0);
+	}
     }
+}
+
+void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev)
+{
+    e->on_port_change = ev;
 }
 
 void enc28j60_free(enc28j60_t *e)
@@ -490,6 +502,7 @@ enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
     e->cs = cs;
     e->intr = intr;
     e->irq_event.trigger = enc28j60_isr;
+    e->on_port_change = NULL;
 
     spi_init(spi_port);
     spi_set_max_speed(spi_port, 8000000);
