@@ -321,6 +321,8 @@ struct enc28j60_t {
     u8 bank;
 };
 
+static u8 test_mac[] = { 0, 1, 2, 3, 4, 5 };
+
 static inline void cs_low(enc28j60_t *e)
 {
     /* asserts the CS pin to the card */
@@ -388,6 +390,13 @@ static inline void ctrl_reg_write(enc28j60_t *e, u8 reg, u8 data)
     write_op(e, ENC28J60_OPCODE_WCR, reg, data);
 }
 
+static inline void ctrl_wreg_write(enc28j60_t *e, u8 reg, u16 data)
+{
+    bank_select(e, reg);
+    write_op(e, ENC28J60_OPCODE_WCR, reg, data & 0xff);
+    write_op(e, ENC28J60_OPCODE_WCR, reg + 1, data >> 8);
+}
+
 static inline void ctrl_reg_bits_clear(enc28j60_t *e, u8 reg, u8 mask)
 {
     bank_select(e, reg);
@@ -453,6 +462,23 @@ static int chip_reset(enc28j60_t *e)
     return ready ? 0 : -1;
 }
 
+static void rx_buf_init(enc28j60_t *e, u16 start, u16 end)
+{
+    ctrl_wreg_write(e, ERXSTL, start);
+    ctrl_wreg_write(e, ERXNDL, end);
+    ctrl_wreg_write(e, ERXRDPTL, end); /* XXX: Errata WAR */
+}
+
+static void mac_addr_conf(enc28j60_t *e, u8 mac[6])
+{
+    ctrl_reg_write(e, MAADR0, mac[5]);
+    ctrl_reg_write(e, MAADR1, mac[4]);
+    ctrl_reg_write(e, MAADR2, mac[3]);
+    ctrl_reg_write(e, MAADR3, mac[2]);
+    ctrl_reg_write(e, MAADR4, mac[1]);
+    ctrl_reg_write(e, MAADR5, mac[0]);
+}
+
 static void chip_init(enc28j60_t *e)
 {
     tp_out(("ENC28J60 Init\n"));
@@ -469,6 +495,22 @@ static void chip_init(enc28j60_t *e)
     ctrl_reg_bits_set(e, EIE, LINKIE | INTIE);
     /* Enable PHY interrupts */
     phy_reg_write(e, PHIE, PGEIE | PLNKIE);
+    /* All RX except for one packet for TX */
+    rx_buf_init(e, 0, 0x1fff - 1536);
+
+    /* MAC config */
+    /* Allow only targeted unicast or broadcast packets with valid CRCs */
+    ctrl_reg_write(e, ERXFCON, UCEN | CRCEN | BCEN);
+    ctrl_reg_bits_clear(e, MACON2, MARST);
+    ctrl_reg_bits_set(e, MACON1, MARXEN);
+    /* Pad short frames to 60 bytes, add CRC. No Full-Duplex */
+    ctrl_reg_write(e, MACON3, PADCFG0 | TXCRCEN);
+    ctrl_wreg_write(e, MAMXFLL, 1518);
+    /* Back-to-Back Inter-Packet Gap - Half-Duplex */
+    ctrl_reg_write(e, MABBIPG, 0x12);
+    /* Non Back-to-Back Inter-Packet Gap - Half Duplex */
+    ctrl_wreg_write(e, MAIPGL, 0x0c12);
+    mac_addr_conf(e, test_mac);
 }
 
 static void enc28j60_isr(event_t *ev, int resource_id)
