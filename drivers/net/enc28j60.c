@@ -318,6 +318,7 @@ struct enc28j60_t {
     int cs;
     int intr;
     event_t *on_port_change;
+    event_t *on_packet_received;
     u8 bank;
 };
 
@@ -541,13 +542,23 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     {
 	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
 	ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
-	tp_out(("ENC28J60 packet received\n"));
+	tp_info(("ENC28J60 packet received\n"));
+	if (e->on_packet_received)
+	{
+	    /* XXX: create enumeraton of ENC28J60 devices as resource IDs */
+	    e->on_packet_received->trigger(e->on_packet_received, 0);
+	}
     }
 }
 
 void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev)
 {
     e->on_port_change = ev;
+}
+
+void enc28j60_on_packet_received_event_set(enc28j60_t *e, event_t *ev)
+{
+    e->on_packet_received = ev;
 }
 
 void enc28j60_free(enc28j60_t *e)
@@ -565,6 +576,7 @@ enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
     e->intr = intr;
     e->irq_event.trigger = enc28j60_isr;
     e->on_port_change = NULL;
+    e->on_packet_received = NULL;
 
     spi_init(spi_port);
     spi_set_max_speed(spi_port, 12000000);
