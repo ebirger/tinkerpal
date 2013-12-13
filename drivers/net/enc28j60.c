@@ -92,6 +92,7 @@
 
 /* Bank 2 */
 #define MACON1 (0x00 | REG_MII_MAC | BANK2)
+#define MACON2 (0x01 | REG_MII_MAC | BANK2)
 #define MACON3 (0x02 | REG_MII_MAC | BANK2)
 #define MACON4 (0x03 | REG_MII_MAC | BANK2)
 #define MABBIPG (0x04 | REG_MII_MAC | BANK2)
@@ -109,12 +110,12 @@
 #define MIRDH (0x19 | REG_MII_MAC | BANK2)
 
 /* Bank 3 */
-#define MAADR5 (0x00 | REG_MII_MAC | BANK3)
-#define MAADR6 (0x01 | REG_MII_MAC | BANK3)
+#define MAADR1 (0x00 | REG_MII_MAC | BANK3)
+#define MAADR0 (0x01 | REG_MII_MAC | BANK3)
 #define MAADR3 (0x02 | REG_MII_MAC | BANK3)
-#define MAADR4 (0x03 | REG_MII_MAC | BANK3)
-#define MAADR1 (0x04 | REG_MII_MAC | BANK3)
-#define MAADR2 (0x05 | REG_MII_MAC | BANK3)
+#define MAADR2 (0x03 | REG_MII_MAC | BANK3)
+#define MAADR5 (0x04 | REG_MII_MAC | BANK3)
+#define MAADR4 (0x05 | REG_MII_MAC | BANK3)
 #define EBSTSD (0x06 | BANK3)
 #define EBSTCON (0x07 | BANK3)
 #define EBSTCSL (0x08 | BANK3)
@@ -200,6 +201,15 @@
 #define PASSALL (1<<1)
 #define RXPAUS (1<<2)
 #define TXPAUS (1<<3)
+#define LOOPBK (1<<4)
+
+/* MACON2 bits */
+#define TFUNRST (1<<0)
+#define MAYXRST (1<<1)
+#define RFUNRST (1<<2)
+#define MARXRST (1<<3)
+#define RNDRST (1<<6)
+#define MARST (1<<7)
 
 /* MACON3 bits */
 #define FULDPX (1<<0)
