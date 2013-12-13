@@ -29,6 +29,21 @@
 
 static enc28j60_t *g_enc28j60; /* Singleton */
 
+int do_enc28j60_on_packet_received(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    event_t *e;
+
+    if (argc != 2)
+	return js_invalid_args(ret);
+
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
+
+    enc28j60_on_packet_received_event_set(g_enc28j60, e);
+    *ret = UNDEF;
+    return 0;
+}
+
 int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {

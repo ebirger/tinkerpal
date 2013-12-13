@@ -26,3 +26,16 @@ FUNCTION("onPortChange", enc28j60, do_enc28j60_on_port_change, {
     .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
         "e.onPortChange(function() { e.print('port state changed!'); });",
 })
+
+FUNCTION("onPacketReceived", enc28j60, do_enc28j60_on_packet_received, {
+    .params = {
+        { 
+	    .name = "cb", 
+	    .description = "callback function called when packet was received",
+	},
+    },
+    .description = "Calls 'cb' when packet was received",
+    .return_value = "None",
+    .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
+        "e.onPacketReceived(function() { e.print('packet received!'); });",
+})
