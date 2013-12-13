@@ -491,8 +491,6 @@ static void chip_init(enc28j60_t *e)
     tp_out(("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
     tp_out(("PHY ID %x:%x\n", phy_reg_read(e, PHID1), phy_reg_read(e, PHID2)));
 
-    /* Enable interrupts */
-    ctrl_reg_bits_set(e, EIE, LINKIE | INTIE);
     /* Enable PHY interrupts */
     phy_reg_write(e, PHIE, PGEIE | PLNKIE);
     /* All RX except for one packet for TX */
@@ -511,6 +509,12 @@ static void chip_init(enc28j60_t *e)
     /* Non Back-to-Back Inter-Packet Gap - Half Duplex */
     ctrl_wreg_write(e, MAIPGL, 0x0c12);
     mac_addr_conf(e, test_mac);
+    
+    /* Enable packet reception */
+    ctrl_reg_bits_set(e, ECON1, RXEN);
+
+    /* Enable interrupts */
+    ctrl_reg_bits_set(e, EIE, LINKIE | INTIE | PKTIE);
 }
 
 static void enc28j60_isr(event_t *ev, int resource_id)
@@ -532,6 +536,12 @@ static void enc28j60_isr(event_t *ev, int resource_id)
 	    /* XXX: create enumeraton of ENC28J60 devices as resource IDs */
 	    e->on_port_change->trigger(e->on_port_change, 0);
 	}
+    }
+    if (eir & PKTIF)
+    {
+	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
+	ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
+	tp_out(("ENC28J60 packet received\n"));
     }
 }
 
