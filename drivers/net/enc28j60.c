@@ -557,7 +557,7 @@ enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
     e->on_port_change = NULL;
 
     spi_init(spi_port);
-    spi_set_max_speed(spi_port, 8000000);
+    spi_set_max_speed(spi_port, 12000000);
 
     gpio_set_pin_mode(cs, GPIO_PM_OUTPUT);
     gpio_set_pin_mode(intr, GPIO_PM_INPUT_PULLUP);
