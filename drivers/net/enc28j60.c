@@ -311,6 +311,11 @@
 #define ENC28J60_OPCODE_BFC 0xa0 /* Bit Field Clear */
 #define ENC28J60_OPCODE_SRC 0xff /* System Reset Command */
 
+#define RX_BUF_START 0
+#define RX_BUF_END (0x1fff - 1536) /* One packet for transmission */
+
+#define RX_STAT_OK (1 << 7) /* bit 23 - 16 bits of packet length */
+
 struct enc28j60_t {
     event_t irq_event;
     int irq_event_id;
@@ -320,6 +325,8 @@ struct enc28j60_t {
     event_t *on_port_change;
     event_t *on_packet_received;
     u8 bank;
+    u16 next_pkt_ptr;
+    u16 cur_pkt_byte_count;
 };
 
 static u8 test_mac[] = { 0, 1, 2, 3, 4, 5 };
@@ -410,6 +417,16 @@ static inline void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
     write_op(e, ENC28J60_OPCODE_BFS, reg, mask);
 }
 
+static void buf_mem_read(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
+{
+    ctrl_wreg_write(e, ERDPTL, addr);
+    cs_low(e);
+    spi_send(e->spi_port, ENC28J60_OPCODE_RBM);
+    while (len--)
+	*buf++ = (u8)spi_receive(e->spi_port);
+    cs_high(e);
+}
+
 static u16 phy_reg_read(enc28j60_t *e, u8 phy_reg)
 {
     u16 ret;
@@ -463,11 +480,23 @@ static int chip_reset(enc28j60_t *e)
     return ready ? 0 : -1;
 }
 
+static void erxrdpt_set(enc28j60_t *e, u16 addr)
+{
+    /* Per B7 Silicon Errata, ERXRDPT must not be set to an even address */
+    addr--;
+
+    if (addr < RX_BUF_START || addr > RX_BUF_END)
+	addr = RX_BUF_END;
+
+    ctrl_wreg_write(e, ERXRDPTL, addr);
+}
+
 static void rx_buf_init(enc28j60_t *e, u16 start, u16 end)
 {
+    e->next_pkt_ptr = start;
     ctrl_wreg_write(e, ERXSTL, start);
     ctrl_wreg_write(e, ERXNDL, end);
-    ctrl_wreg_write(e, ERXRDPTL, end); /* XXX: Errata WAR */
+    erxrdpt_set(e, start);
 }
 
 static void mac_addr_conf(enc28j60_t *e, u8 mac[6])
@@ -492,10 +521,9 @@ static void chip_init(enc28j60_t *e)
     tp_out(("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
     tp_out(("PHY ID %x:%x\n", phy_reg_read(e, PHID1), phy_reg_read(e, PHID2)));
 
-    /* Enable PHY interrupts */
-    phy_reg_write(e, PHIE, PGEIE | PLNKIE);
-    /* All RX except for one packet for TX */
-    rx_buf_init(e, 0, 0x1fff - 1536);
+    /* Enable auto increment of the ERDPT/EWRPT pointers */
+    ctrl_reg_bits_set(e, ECON2, AUTOINC);
+    rx_buf_init(e, RX_BUF_START, RX_BUF_END);
 
     /* MAC config */
     /* Allow only targeted unicast or broadcast packets with valid CRCs */
@@ -510,12 +538,66 @@ static void chip_init(enc28j60_t *e)
     /* Non Back-to-Back Inter-Packet Gap - Half Duplex */
     ctrl_wreg_write(e, MAIPGL, 0x0c12);
     mac_addr_conf(e, test_mac);
-    
     /* Enable packet reception */
     ctrl_reg_bits_set(e, ECON1, RXEN);
 
+    /* PHY config */
+    phy_reg_write(e, PHCON1, 0); /* Normal operation - Half-Duplex */
+
     /* Enable interrupts */
     ctrl_reg_bits_set(e, EIE, LINKIE | INTIE | PKTIE);
+    /* Enable PHY interrupts */
+    phy_reg_write(e, PHIE, PGEIE | PLNKIE);
+}
+
+static void packet_complete(enc28j60_t *e)
+{
+    /* Free packet memory by advancing ERXRDPT */
+    erxrdpt_set(e, e->next_pkt_ptr);
+    /* Indicate packet processing is complete */
+    ctrl_reg_bits_set(e, ECON2, PKTDEC);
+}
+
+static void packet_received(enc28j60_t *e)
+{
+    u8 header[6];
+    u16 stat;
+    int i;
+
+    tp_info(("ENC28J60 packet received\n"));
+
+    /* header - 2 bytes of next pkt ptr + 4 bytes status */
+    buf_mem_read(e, e->next_pkt_ptr, header, sizeof(header));
+
+#define MK_U16(a, b) ((((u16)a) << 8) | b)
+    e->next_pkt_ptr = MK_U16(header[1], header[0]);
+    e->cur_pkt_byte_count = MK_U16(header[3], header[2]);
+    stat = MK_U16(header[5], header[4]);
+
+    packet_complete(e);
+
+    if (!(stat & RX_STAT_OK))
+    {
+	tp_err(("Invalid packet received\n"));
+	return;
+    }
+
+    if (e->on_packet_received)
+    {
+	/* XXX: create enumeraton of ENC28J60 devices as resource IDs */
+	e->on_packet_received->trigger(e->on_packet_received, 0);
+    }
+}
+
+static void link_status_changed(enc28j60_t *e)
+{
+    tp_info(("ENC28J60 Link state change - state %d\n", 
+	enc28j60_link_status(e)));
+    if (e->on_port_change)
+    {
+	/* XXX: create enumeraton of ENC28J60 devices as resource IDs */
+	e->on_port_change->trigger(e->on_port_change, 0);
+    }
 }
 
 static void enc28j60_isr(event_t *ev, int resource_id)
@@ -531,24 +613,13 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     {
 	ack_phy = 1;
 	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
-	tp_info(("ENC28J60 Link state change - state %d\n", 
-            enc28j60_link_status(e)));
-	if (e->on_port_change)
-	{
-	    /* XXX: create enumeraton of ENC28J60 devices as resource IDs */
-	    e->on_port_change->trigger(e->on_port_change, 0);
-	}
+	link_status_changed(e);
     }
     if (eir & PKTIF)
     {
 	ack_phy = 1;
 	ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
-	tp_info(("ENC28J60 packet received\n"));
-	if (e->on_packet_received)
-	{
-	    /* XXX: create enumeraton of ENC28J60 devices as resource IDs */
-	    e->on_packet_received->trigger(e->on_packet_received, 0);
-	}
+	packet_received(e);
     }
 
     if (ack_phy)
