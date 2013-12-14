@@ -522,13 +522,14 @@ static void enc28j60_isr(event_t *ev, int resource_id)
 {
     enc28j60_t *e = (enc28j60_t *)ev;
     u8 eir;
+    int ack_phy = 0;
 
     eir = ctrl_reg_read(e, EIR);
     tp_debug(("ENC28J60 ISR %x\n", eir));
 
     if (eir & LINKIF)
     {
-	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
+	ack_phy = 1;
 	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
 	tp_info(("ENC28J60 Link state change - state %d\n", 
             enc28j60_link_status(e)));
@@ -540,7 +541,7 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     }
     if (eir & PKTIF)
     {
-	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
+	ack_phy = 1;
 	ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
 	tp_info(("ENC28J60 packet received\n"));
 	if (e->on_packet_received)
@@ -549,6 +550,9 @@ static void enc28j60_isr(event_t *ev, int resource_id)
 	    e->on_packet_received->trigger(e->on_packet_received, 0);
 	}
     }
+
+    if (ack_phy)
+	phy_reg_read(e, PHIR);
 }
 
 void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev)
