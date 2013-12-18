@@ -313,6 +313,7 @@
 
 #define RX_BUF_START 0
 #define RX_BUF_END (0x1fff - 1536) /* One packet for transmission */
+#define TX_BUF_START (RX_BUF_END + 1)
 
 #define RX_STAT_OK (1 << 7) /* bit 23 - 16 bits of packet length */
 
@@ -324,6 +325,7 @@ struct enc28j60_t {
     int intr;
     event_t *on_port_change;
     event_t *on_packet_received;
+    event_t *on_packet_xmit;
     u8 bank;
     u16 next_pkt_ptr;
     u16 cur_pkt_ptr;
@@ -427,6 +429,16 @@ static int buf_mem_read(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
 	*buf++ = (u8)spi_receive(e->spi_port);
     cs_high(e);
     return len;
+}
+
+static void buf_mem_write(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
+{
+    ctrl_wreg_write(e, EWRPTL, addr);
+    cs_low(e);
+    spi_send(e->spi_port, ENC28J60_OPCODE_WBM);
+    while (len--)
+	spi_send(e->spi_port, *buf++);
+    cs_high(e);
 }
 
 static u16 phy_reg_read(enc28j60_t *e, u8 phy_reg)
@@ -545,9 +557,10 @@ static void chip_init(enc28j60_t *e)
 
     /* PHY config */
     phy_reg_write(e, PHCON1, 0); /* Normal operation - Half-Duplex */
+    phy_reg_write(e, PHCON2, HDLDIS); /* Do not loop back xmitted packets */
 
     /* Enable interrupts */
-    ctrl_reg_bits_set(e, EIE, LINKIE | INTIE | PKTIE);
+    ctrl_reg_bits_set(e, EIE, LINKIE | INTIE | PKTIE | TXIE);
     /* Enable PHY interrupts */
     phy_reg_write(e, PHIE, PGEIE | PLNKIE);
 }
@@ -574,6 +587,21 @@ int enc28j60_packet_recv(enc28j60_t *e, u8 *buf, int size)
     e->cur_pkt_ptr += buf_mem_read(e, e->cur_pkt_ptr, buf, size);
     packet_complete(e); /* XXX: do we want to allow partial read ? */
     return size;
+}
+
+void enc28j60_packet_xmit(enc28j60_t *e, u8 *buf, int size)
+{
+    u8 ctrl = 0;
+
+    /* Set buffer start */
+    ctrl_wreg_write(e, ETXSTL, TX_BUF_START);
+    /* Write ctrl byte + data */
+    buf_mem_write(e, TX_BUF_START, &ctrl, 1);
+    buf_mem_write(e, TX_BUF_START + 1, buf, size);
+    /* Set buffer end */
+    ctrl_wreg_write(e, ETXNDL, TX_BUF_START + size + 1);
+    /* Start xmit */
+    ctrl_reg_bits_set(e, ECON1, TXRTS);
 }
 
 static void packet_received(enc28j60_t *e)
@@ -606,6 +634,19 @@ static void packet_received(enc28j60_t *e)
     }
 }
 
+static void packet_xmitted(enc28j60_t *e)
+{
+    tp_err(("ENC28J60 packet transmitted\n"));
+
+    /* TODO: read packet xmit status */
+
+    if (e->on_packet_xmit)
+    {
+	/* XXX: create enumeraton of ENC28J60 devices as resource IDs */
+	e->on_packet_xmit->trigger(e->on_packet_xmit, 0);
+    }
+}
+
 static void link_status_changed(enc28j60_t *e)
 {
     tp_info(("ENC28J60 Link state change - state %d\n", 
@@ -621,27 +662,28 @@ static void enc28j60_isr(event_t *ev, int resource_id)
 {
     enc28j60_t *e = (enc28j60_t *)ev;
     u8 eir;
-    int ack_phy = 0;
 
     eir = ctrl_reg_read(e, EIR);
     tp_debug(("ENC28J60 ISR %x\n", eir));
 
     if (eir & LINKIF)
     {
-	ack_phy = 1;
+	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
 	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
 	link_status_changed(e);
     }
     if (eir & PKTIF)
     {
-	ack_phy = 1;
 	ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
 	ctrl_reg_bits_clear(e, EIE, PKTIE); /* Mask packet received interrupt */
 	packet_received(e);
     }
 
-    if (ack_phy)
-	phy_reg_read(e, PHIR);
+    if (eir & TXIF)
+    {
+	ctrl_reg_bits_clear(e, EIR, TXIF); /* Ack interrupt */
+	packet_xmitted(e);
+    }
 }
 
 void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev)
@@ -652,6 +694,11 @@ void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev)
 void enc28j60_on_packet_received_event_set(enc28j60_t *e, event_t *ev)
 {
     e->on_packet_received = ev;
+}
+
+void enc28j60_on_packet_xmit_event_set(enc28j60_t *e, event_t *ev)
+{
+    e->on_packet_xmit = ev;
 }
 
 void enc28j60_free(enc28j60_t *e)
@@ -670,6 +717,7 @@ enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
     e->irq_event.trigger = enc28j60_isr;
     e->on_port_change = NULL;
     e->on_packet_received = NULL;
+    e->on_packet_xmit = NULL;
 
     spi_init(spi_port);
     spi_set_max_speed(spi_port, 12000000);

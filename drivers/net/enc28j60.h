@@ -36,7 +36,9 @@ enc28j60_t *enc28j60_new(int spi_port, int cs, int intr);
 int enc28j60_link_status(enc28j60_t *e);
 void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev);
 void enc28j60_on_packet_received_event_set(enc28j60_t *e, event_t *ev);
+void enc28j60_on_packet_xmit_event_set(enc28j60_t *e, event_t *ev);
 int enc28j60_packet_size(enc28j60_t *e);
 int enc28j60_packet_recv(enc28j60_t *e, u8 *buf, int size);
+void enc28j60_packet_xmit(enc28j60_t *e, u8 *buf, int size);
 
 #endif
