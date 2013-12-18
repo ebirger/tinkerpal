@@ -326,6 +326,7 @@ struct enc28j60_t {
     event_t *on_packet_received;
     u8 bank;
     u16 next_pkt_ptr;
+    u16 cur_pkt_ptr;
     u16 cur_pkt_byte_count;
 };
 
@@ -417,7 +418,7 @@ static inline void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
     write_op(e, ENC28J60_OPCODE_BFS, reg, mask);
 }
 
-static void buf_mem_read(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
+static int buf_mem_read(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
 {
     ctrl_wreg_write(e, ERDPTL, addr);
     cs_low(e);
@@ -425,6 +426,7 @@ static void buf_mem_read(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
     while (len--)
 	*buf++ = (u8)spi_receive(e->spi_port);
     cs_high(e);
+    return len;
 }
 
 static u16 phy_reg_read(enc28j60_t *e, u8 phy_reg)
@@ -558,23 +560,37 @@ static void packet_complete(enc28j60_t *e)
     ctrl_reg_bits_set(e, ECON2, PKTDEC);
 }
 
+int enc28j60_packet_size(enc28j60_t *e)
+{
+    return e->cur_pkt_byte_count;
+}
+
+int enc28j60_packet_recv(enc28j60_t *e, u8 *buf, int size)
+{
+    if (size > e->cur_pkt_byte_count)
+	size = e->cur_pkt_byte_count;
+
+    e->cur_pkt_ptr += buf_mem_read(e, e->cur_pkt_ptr, buf, size);
+    packet_complete(e); /* XXX: do we want to allow partial read ? */
+    return size;
+}
+
 static void packet_received(enc28j60_t *e)
 {
     u8 header[6];
     u16 stat;
-    int i;
 
     tp_info(("ENC28J60 packet received\n"));
 
+    e->cur_pkt_ptr = e->next_pkt_ptr;
+
     /* header - 2 bytes of next pkt ptr + 4 bytes status */
-    buf_mem_read(e, e->next_pkt_ptr, header, sizeof(header));
+    e->cur_pkt_ptr += buf_mem_read(e, e->cur_pkt_ptr, header, sizeof(header));
 
 #define MK_U16(a, b) ((((u16)a) << 8) | b)
     e->next_pkt_ptr = MK_U16(header[1], header[0]);
     e->cur_pkt_byte_count = MK_U16(header[3], header[2]);
     stat = MK_U16(header[5], header[4]);
-
-    packet_complete(e);
 
     if (!(stat & RX_STAT_OK))
     {
