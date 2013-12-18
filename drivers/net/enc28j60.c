@@ -558,6 +558,7 @@ static void packet_complete(enc28j60_t *e)
     erxrdpt_set(e, e->next_pkt_ptr);
     /* Indicate packet processing is complete */
     ctrl_reg_bits_set(e, ECON2, PKTDEC);
+    ctrl_reg_bits_set(e, EIE, PKTIE); /* Unmask packet received interrupt */
 }
 
 int enc28j60_packet_size(enc28j60_t *e)
@@ -635,6 +636,7 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     {
 	ack_phy = 1;
 	ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
+	ctrl_reg_bits_clear(e, EIE, PKTIE); /* Mask packet received interrupt */
 	packet_received(e);
     }
 
