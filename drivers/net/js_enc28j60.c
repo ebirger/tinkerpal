@@ -41,6 +41,7 @@ int do_enc28j60_packet_recv(obj_t **ret, obj_t *this, int argc,
 	TPTR(&((array_buffer_t *)array_buffer)->value), size);
     *ret = array_buffer_view_new(array_buffer, 
 	ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, size);
+    obj_put(array_buffer);
     return 0;
 }
 
