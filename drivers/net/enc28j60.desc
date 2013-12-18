@@ -3,6 +3,16 @@ PROTOTYPE("ENC28J60", enc28j60, {
 
 CONSTRUCTOR("ENC28J60", enc28j60, do_enc28j60_constructor)
 
+FUNCTION("packetRecv", enc28j60, do_enc28j60_packet_recv, {
+    .params = {
+    },
+    .description = "Receive packet data",
+    .return_value = "Uint8 array buffer view with the packet data",
+    .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
+        "e.onPacketReceived(function() { console.log('packet size: ' + "
+	"e.packetRecv().length); });\n",
+})
+
 FUNCTION("linkStatus", enc28j60, do_enc28j60_link_status, {
     .params = {
     },
