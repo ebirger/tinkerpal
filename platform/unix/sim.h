@@ -27,10 +27,18 @@
 
 #include "platform/unix/unix.h"
 
-#define STDIO_ID 0x0
-#define PTY_ID 0x1
-#define MAX_IDS 2
+#define STDIO_ID 0
+#define PTY_ID 1
+#define NUM_IDS 2
 
-extern unix_fd_event_map_t unix_sim_event_fd_map[MAX_IDS + 1];
+extern int unix_sim_event_fd_count;
+extern unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1];
+
+static inline void unix_sim_add_fd_event_to_map(int fd, int event)
+{
+    unix_sim_event_fd_map[unix_sim_event_fd_count].fd = fd;
+    unix_sim_event_fd_map[unix_sim_event_fd_count].event = event;
+    unix_sim_event_fd_count++;
+}
 
 #endif

@@ -36,7 +36,10 @@
 
 static int pty_fd = -1;
 
-unix_fd_event_map_t unix_sim_event_fd_map[MAX_IDS + 1];
+int unix_sim_event_fd_count;
+unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1] = { 
+    [0 ... NUM_IDS] = { .fd = -1 }
+};
 
 #define STDIN_FD 0
 #define STDOUT_FD 1
@@ -204,11 +207,9 @@ static void sim_unix_init(void)
     unix_set_term_raw(pty_fd, 1);
 #endif
 
-    unix_sim_event_fd_map[0].fd = STDIN_FD;
-    unix_sim_event_fd_map[0].event = STDIO_ID;
-    unix_sim_event_fd_map[1].fd = pty_fd;
-    unix_sim_event_fd_map[1].event = PTY_ID;
-    unix_sim_event_fd_map[2].fd = -1;
+    unix_sim_add_fd_event_to_map(STDIN_FD, STDIO_ID);
+    if (pty_fd != -1)
+	unix_sim_add_fd_event_to_map(pty_fd, PTY_ID);
     atexit(sim_unix_uninit);
 }
 
