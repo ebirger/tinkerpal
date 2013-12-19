@@ -25,7 +25,12 @@
 #ifndef __TP_MISC_H__
 #define __TP_MISC_H__
 
+#include "util/tp_types.h"
+
 #define bit_set(x, bit, val) x = (val) ? x | (bit) : x & ~(bit)
 #define bit_get(x, bit) (!!((x) & (bit)))
+
+#define container_of(ptr, type, member) \
+    ((type *)((u8 *)(ptr) - offsetof(type, member)))
 
 #endif
