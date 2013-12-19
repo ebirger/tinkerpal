@@ -22,8 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __TP_BITS_H__
-#define __TP_BITS_H__
+#ifndef __TP_MISC_H__
+#define __TP_MISC_H__
 
 #define bit_set(x, bit, val) x = (val) ? x | (bit) : x & ~(bit)
 #define bit_get(x, bit) (!!((x) & (bit)))
