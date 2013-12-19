@@ -31,9 +31,6 @@ typedef struct etherif_t etherif_t;
 
 typedef struct {
     int (*link_status)(etherif_t *e);
-    void (*on_port_change_event_set)(etherif_t *e, event_t *ev);
-    void (*on_packet_received_event_set)(etherif_t *e, event_t *ev);
-    void (*on_packet_xmit_event_set)(etherif_t *e, event_t *ev);
     int (*packet_size)(etherif_t *e);
     int (*packet_recv)(etherif_t *e, u8 *buf, int size);
     void (*packet_xmit)(etherif_t *e, u8 *buf, int size);
@@ -41,11 +38,35 @@ typedef struct {
 
 struct etherif_t {
     const etherif_ops_t *ops;
+    event_t *on_port_change;
+    event_t *on_packet_received;
+    event_t *on_packet_xmit;
 };
 
 static inline void etherif_init(etherif_t *ethif, const etherif_ops_t *ops)
 {
     ethif->ops = ops;
+    ethif->on_port_change = NULL;
+    ethif->on_packet_received = NULL;
+    ethif->on_packet_xmit = NULL;
+}
+
+static inline void etherif_on_port_change_event_set(etherif_t *ethif,
+    event_t *ev)
+{
+    ethif->on_port_change = ev;
+}
+
+static inline void etherif_on_packet_received_event_set(etherif_t *ethif,
+    event_t *ev)
+{
+    ethif->on_packet_received = ev;
+}
+
+static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
+    event_t *ev)
+{
+    ethif->on_packet_xmit = ev;
 }
 
 #endif

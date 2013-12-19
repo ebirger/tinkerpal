@@ -22,6 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <stdio.h> /* NULL */
 #include "drivers/net/enc28j60.h"
 #include "util/tp_types.h"
 #include "util/tp_misc.h"
@@ -325,9 +326,6 @@ typedef struct {
     int spi_port;
     int cs;
     int intr;
-    event_t *on_port_change;
-    event_t *on_packet_received;
-    event_t *on_packet_xmit;
     u8 bank;
     u16 next_pkt_ptr;
     u16 cur_pkt_ptr;
@@ -634,10 +632,10 @@ static void packet_received(enc28j60_t *e)
 	return;
     }
 
-    if (e->on_packet_received)
+    if (e->ethif.on_packet_received)
     {
 	/* XXX: create enumeraton of ENC28J60 devices as resource IDs */
-	e->on_packet_received->trigger(e->on_packet_received, 0);
+	e->ethif.on_packet_received->trigger(e->ethif.on_packet_received, 0);
     }
 }
 
@@ -647,10 +645,10 @@ static void packet_xmitted(enc28j60_t *e)
 
     /* TODO: read packet xmit status */
 
-    if (e->on_packet_xmit)
+    if (e->ethif.on_packet_xmit)
     {
 	/* XXX: create enumeraton of ENC28J60 devices as resource IDs */
-	e->on_packet_xmit->trigger(e->on_packet_xmit, 0);
+	e->ethif.on_packet_xmit->trigger(e->ethif.on_packet_xmit, 0);
     }
 }
 
@@ -658,10 +656,10 @@ static void link_status_changed(enc28j60_t *e)
 {
     tp_info(("ENC28J60 Link state change - state %d\n", 
 	enc28j60_link_status(e)));
-    if (e->on_port_change)
+    if (e->ethif.on_port_change)
     {
 	/* XXX: create enumeraton of ENC28J60 devices as resource IDs */
-	e->on_port_change->trigger(e->on_port_change, 0);
+	e->ethif.on_port_change->trigger(e->ethif.on_port_change, 0);
     }
 }
 
@@ -693,21 +691,6 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     }
 }
 
-static void enc28j60_on_port_change_event_set(etherif_t *ethif, event_t *ev)
-{
-    ETHIF_TO_ENC28J60(ethif)->on_port_change = ev;
-}
-
-static void enc28j60_on_packet_received_event_set(etherif_t *ethif, event_t *ev)
-{
-    ETHIF_TO_ENC28J60(ethif)->on_packet_received = ev;
-}
-
-static void enc28j60_on_packet_xmit_event_set(etherif_t *ethif, event_t *ev)
-{
-    ETHIF_TO_ENC28J60(ethif)->on_packet_xmit = ev;
-}
-
 void enc28j60_free(etherif_t *ethif)
 {
     enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
@@ -718,9 +701,6 @@ void enc28j60_free(etherif_t *ethif)
 
 static const etherif_ops_t enc28j60_etherif_ops = {
     .link_status = enc28j60_link_status,
-    .on_port_change_event_set = enc28j60_on_port_change_event_set,
-    .on_packet_received_event_set = enc28j60_on_packet_received_event_set,
-    .on_packet_xmit_event_set = enc28j60_on_packet_xmit_event_set,
     .packet_size = enc28j60_packet_size,
     .packet_recv = enc28j60_packet_recv,
     .packet_xmit = enc28j60_packet_xmit,
@@ -734,9 +714,6 @@ etherif_t *enc28j60_new(int spi_port, int cs, int intr)
     e->cs = cs;
     e->intr = intr;
     e->irq_event.trigger = enc28j60_isr;
-    e->on_port_change = NULL;
-    e->on_packet_received = NULL;
-    e->on_packet_xmit = NULL;
     etherif_init(&e->ethif, &enc28j60_etherif_ops);
 
     spi_init(spi_port);

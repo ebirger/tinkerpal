@@ -25,9 +25,14 @@
 #include "util/tp_misc.h"
 #include "mem/tmalloc.h"
 #include "platform/unix/linux_packet_eth.h"
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netpacket/packet.h>
+#include <net/ethernet.h>
 
 typedef struct {
     etherif_t ethif;
+    int packet_socket;
 } linux_packet_eth_t;
 
 #define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_packet_eth_t, ethif)
@@ -35,18 +40,6 @@ typedef struct {
 int packet_eth_link_status(etherif_t *e)
 {
     return 1;
-}
-
-void packet_eth_on_port_change_event_set(etherif_t *e, event_t *ev)
-{
-}
-
-void packet_eth_on_packet_received_event_set(etherif_t *e, event_t *ev)
-{
-}
-
-void packet_eth_on_packet_xmit_event_set(etherif_t *e, event_t *ev)
-{
 }
 
 int packet_eth_packet_size(etherif_t *e)
@@ -65,9 +58,6 @@ void packet_eth_packet_xmit(etherif_t *e, u8 *buf, int size)
 
 static const etherif_ops_t linux_packet_eth_ops = {
     .link_status = packet_eth_link_status,
-    .on_port_change_event_set = packet_eth_on_port_change_event_set,
-    .on_packet_received_event_set = packet_eth_on_packet_received_event_set,
-    .on_packet_xmit_event_set = packet_eth_on_packet_xmit_event_set,
     .packet_size = packet_eth_packet_size,
     .packet_recv = packet_eth_packet_recv,
     .packet_xmit = packet_eth_packet_xmit,
@@ -77,6 +67,7 @@ void linux_packet_eth_free(etherif_t *ethif)
 {
     linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
 
+    close(lpe->packet_socket);
     tfree(lpe);
 }
 
@@ -84,5 +75,7 @@ etherif_t *linux_packet_eth_new(void)
 {
     linux_packet_eth_t *lpe = tmalloc_type(linux_packet_eth_t);
 
+    lpe->packet_socket = socket(AF_PACKET, SOCK_RAW, ETH_P_ALL);
+    etherif_init(&lpe->ethif, &linux_packet_eth_ops);
     return &lpe->ethif;
 }
