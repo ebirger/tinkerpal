@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <msp430.h>
-#include "util/tp_bits.h"
+#include "util/tp_misc.h"
 #include "drivers/gpio/gpio.h"
 #include "platform/msp430/msp430f5529_gpio.h"
 

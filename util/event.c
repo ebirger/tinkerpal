@@ -25,7 +25,7 @@
 #include <stdio.h> /* NULL */
 #include "util/event.h"
 #include "util/debug.h"
-#include "util/tp_bits.h"
+#include "util/tp_misc.h"
 #include "platform/platform.h"
 #include "mem/tmalloc.h"
 #include "js/js.h"
