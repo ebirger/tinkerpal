@@ -25,6 +25,8 @@
 #ifndef __ETHERIF_H__
 #define __ETHERIF_H__
 
+#include "util/event.h"
+
 typedef struct etherif_t etherif_t;
 
 typedef struct {
