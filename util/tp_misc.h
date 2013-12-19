@@ -25,6 +25,7 @@
 #ifndef __TP_MISC_H__
 #define __TP_MISC_H__
 
+#include <stddef.h>
 #include "util/tp_types.h"
 
 #define bit_set(x, bit, val) x = (val) ? x | (bit) : x & ~(bit)
