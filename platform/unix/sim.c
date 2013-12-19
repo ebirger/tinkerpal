@@ -36,7 +36,7 @@
 
 static int pty_fd = -1;
 
-unix_fd_event_map_t event_fd_map[MAX_IDS + 1];
+unix_fd_event_map_t unix_sim_event_fd_map[MAX_IDS + 1];
 
 #define STDIN_FD 0
 #define STDOUT_FD 1
@@ -76,7 +76,7 @@ static int pty_open(void)
 
 static int sim_unix_select(int ms)
 {
-    return unix_select(ms, event_fd_map);
+    return unix_select(ms, unix_sim_event_fd_map);
 }
 
 static int sim_unix_serial_read(int id, char *buf, int size)
@@ -204,11 +204,11 @@ static void sim_unix_init(void)
     unix_set_term_raw(pty_fd, 1);
 #endif
 
-    event_fd_map[0].fd = STDIN_FD;
-    event_fd_map[0].event = STDIO_ID;
-    event_fd_map[1].fd = pty_fd;
-    event_fd_map[1].event = PTY_ID;
-    event_fd_map[2].fd = -1;
+    unix_sim_event_fd_map[0].fd = STDIN_FD;
+    unix_sim_event_fd_map[0].event = STDIO_ID;
+    unix_sim_event_fd_map[1].fd = pty_fd;
+    unix_sim_event_fd_map[1].event = PTY_ID;
+    unix_sim_event_fd_map[2].fd = -1;
     atexit(sim_unix_uninit);
 }
 

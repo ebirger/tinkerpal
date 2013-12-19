@@ -31,6 +31,6 @@
 #define PTY_ID 0x1
 #define MAX_IDS 2
 
-extern unix_fd_event_map_t event_fd_map[MAX_IDS + 1];
+extern unix_fd_event_map_t unix_sim_event_fd_map[MAX_IDS + 1];
 
 #endif
