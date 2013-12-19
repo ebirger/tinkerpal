@@ -466,7 +466,7 @@ static void phy_reg_write(enc28j60_t *e, u8 phy_reg, u16 data)
     while (ctrl_reg_read(e, MISTAT) & BUSY);
 }
 
-int enc28j60_link_status(etherif_t *ethif)
+static int enc28j60_link_status(etherif_t *ethif)
 {
     return phy_reg_read(ETHIF_TO_ENC28J60(ethif), PHSTAT2) & LSTAT ? 1 : 0;
 }
@@ -578,12 +578,12 @@ static void packet_complete(enc28j60_t *e)
     ctrl_reg_bits_set(e, EIE, PKTIE); /* Unmask packet received interrupt */
 }
 
-int enc28j60_packet_size(etherif_t *ethif)
+static int enc28j60_packet_size(etherif_t *ethif)
 {
     return ETHIF_TO_ENC28J60(ethif)->cur_pkt_byte_count;
 }
 
-int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size)
+static int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
     enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
 
@@ -595,7 +595,7 @@ int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size)
     return size;
 }
 
-void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size)
+static void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 {
     enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
     u8 ctrl = 0;
@@ -693,17 +693,17 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     }
 }
 
-void enc28j60_on_port_change_event_set(etherif_t *ethif, event_t *ev)
+static void enc28j60_on_port_change_event_set(etherif_t *ethif, event_t *ev)
 {
     ETHIF_TO_ENC28J60(ethif)->on_port_change = ev;
 }
 
-void enc28j60_on_packet_received_event_set(etherif_t *ethif, event_t *ev)
+static void enc28j60_on_packet_received_event_set(etherif_t *ethif, event_t *ev)
 {
     ETHIF_TO_ENC28J60(ethif)->on_packet_received = ev;
 }
 
-void enc28j60_on_packet_xmit_event_set(etherif_t *ethif, event_t *ev)
+static void enc28j60_on_packet_xmit_event_set(etherif_t *ethif, event_t *ev)
 {
     ETHIF_TO_ENC28J60(ethif)->on_packet_xmit = ev;
 }

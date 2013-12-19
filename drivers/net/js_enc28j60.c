@@ -35,9 +35,9 @@ int do_enc28j60_packet_recv(obj_t **ret, obj_t *this, int argc,
     int size;
     obj_t *array_buffer;
 
-    size = enc28j60_packet_size(g_enc28j60);
+    size = g_enc28j60->ops->packet_size(g_enc28j60);
     array_buffer = array_buffer_new(size);
-    size = enc28j60_packet_recv(g_enc28j60, (u8 *)
+    size = g_enc28j60->ops->packet_recv(g_enc28j60, (u8 *)
 	TPTR(&((array_buffer_t *)array_buffer)->value), size);
     *ret = array_buffer_view_new(array_buffer, 
 	ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, size);
@@ -55,7 +55,7 @@ int do_enc28j60_on_packet_received(obj_t **ret, obj_t *this, int argc,
 
     e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-    enc28j60_on_packet_received_event_set(g_enc28j60, e);
+    g_enc28j60->ops->on_packet_received_event_set(g_enc28j60, e);
     *ret = UNDEF;
     return 0;
 }
@@ -70,14 +70,14 @@ int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
 
     e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-    enc28j60_on_port_change_event_set(g_enc28j60, e);
+    g_enc28j60->ops->on_port_change_event_set(g_enc28j60, e);
     *ret = UNDEF;
     return 0;
 }
 
 int do_enc28j60_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    *ret = enc28j60_link_status(g_enc28j60) ? TRUE : FALSE;
+    *ret = g_enc28j60->ops->link_status(g_enc28j60) ? TRUE : FALSE;
     return 0;
 }
 

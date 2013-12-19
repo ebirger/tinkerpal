@@ -32,12 +32,4 @@
 void enc28j60_free(etherif_t *ethif);
 etherif_t *enc28j60_new(int spi_port, int cs, int intr);
 
-int enc28j60_link_status(etherif_t *ethif);
-void enc28j60_on_port_change_event_set(etherif_t *ethif, event_t *ev);
-void enc28j60_on_packet_received_event_set(etherif_t *ethif, event_t *ev);
-void enc28j60_on_packet_xmit_event_set(etherif_t *ethif, event_t *ev);
-int enc28j60_packet_size(etherif_t *ethif);
-int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size);
-void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size);
-
 #endif
