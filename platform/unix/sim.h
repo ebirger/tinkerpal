@@ -25,4 +25,12 @@
 #ifndef __UNIX_SIM_CONSTS_H__
 #define __UNIX_SIM_CONSTS_H__
 
+#include "platform/unix/unix.h"
+
+#define STDIO_ID 0x0
+#define PTY_ID 0x1
+#define MAX_IDS 2
+
+extern unix_fd_event_map_t event_fd_map[MAX_IDS + 1];
+
 #endif

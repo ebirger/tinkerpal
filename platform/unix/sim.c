@@ -36,10 +36,8 @@
 
 static int pty_fd = -1;
 
-static unix_fd_event_map_t event_fd_map[3];
+unix_fd_event_map_t event_fd_map[MAX_IDS + 1];
 
-#define STDIO_ID 0x0
-#define PTY_ID 0x1
 #define STDIN_FD 0
 #define STDOUT_FD 1
 
