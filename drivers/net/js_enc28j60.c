@@ -27,7 +27,7 @@
 #include "js/js_event.h"
 #include "drivers/net/enc28j60.h"
 
-static enc28j60_t *g_enc28j60; /* Singleton */
+static etherif_t *g_enc28j60; /* Singleton */
 
 int do_enc28j60_packet_recv(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])

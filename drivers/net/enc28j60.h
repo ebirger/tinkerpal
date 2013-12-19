@@ -27,18 +27,17 @@
 
 #include "util/event.h"
 #include "util/tp_types.h"
+#include "net/etherif.h"
 
-typedef struct enc28j60_t enc28j60_t;
+void enc28j60_free(etherif_t *ethif);
+etherif_t *enc28j60_new(int spi_port, int cs, int intr);
 
-void enc28j60_free(enc28j60_t *e);
-enc28j60_t *enc28j60_new(int spi_port, int cs, int intr);
-
-int enc28j60_link_status(enc28j60_t *e);
-void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev);
-void enc28j60_on_packet_received_event_set(enc28j60_t *e, event_t *ev);
-void enc28j60_on_packet_xmit_event_set(enc28j60_t *e, event_t *ev);
-int enc28j60_packet_size(enc28j60_t *e);
-int enc28j60_packet_recv(enc28j60_t *e, u8 *buf, int size);
-void enc28j60_packet_xmit(enc28j60_t *e, u8 *buf, int size);
+int enc28j60_link_status(etherif_t *ethif);
+void enc28j60_on_port_change_event_set(etherif_t *ethif, event_t *ev);
+void enc28j60_on_packet_received_event_set(etherif_t *ethif, event_t *ev);
+void enc28j60_on_packet_xmit_event_set(etherif_t *ethif, event_t *ev);
+int enc28j60_packet_size(etherif_t *ethif);
+int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size);
+void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size);
 
 #endif

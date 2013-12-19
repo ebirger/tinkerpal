@@ -24,6 +24,7 @@
  */
 #include "drivers/net/enc28j60.h"
 #include "util/tp_types.h"
+#include "util/tp_misc.h"
 #include "util/debug.h"
 #include "util/event.h"
 #include "mem/tmalloc.h"
@@ -317,7 +318,8 @@
 
 #define RX_STAT_OK (1 << 7) /* bit 23 - 16 bits of packet length */
 
-struct enc28j60_t {
+typedef struct {
+    etherif_t ethif;
     event_t irq_event;
     int irq_event_id;
     int spi_port;
@@ -330,7 +332,9 @@ struct enc28j60_t {
     u16 next_pkt_ptr;
     u16 cur_pkt_ptr;
     u16 cur_pkt_byte_count;
-};
+} enc28j60_t;
+
+#define ETHIF_TO_ENC28J60(x) container_of(x, enc28j60_t, ethif)
 
 static u8 test_mac[] = { 0, 1, 2, 3, 4, 5 };
 
@@ -462,9 +466,9 @@ static void phy_reg_write(enc28j60_t *e, u8 phy_reg, u16 data)
     while (ctrl_reg_read(e, MISTAT) & BUSY);
 }
 
-int enc28j60_link_status(enc28j60_t *e)
+int enc28j60_link_status(etherif_t *ethif)
 {
-    return phy_reg_read(e, PHSTAT2) & LSTAT ? 1 : 0;
+    return phy_reg_read(ETHIF_TO_ENC28J60(ethif), PHSTAT2) & LSTAT ? 1 : 0;
 }
 
 static inline u32 ticks(void)
@@ -574,13 +578,15 @@ static void packet_complete(enc28j60_t *e)
     ctrl_reg_bits_set(e, EIE, PKTIE); /* Unmask packet received interrupt */
 }
 
-int enc28j60_packet_size(enc28j60_t *e)
+int enc28j60_packet_size(etherif_t *ethif)
 {
-    return e->cur_pkt_byte_count;
+    return ETHIF_TO_ENC28J60(ethif)->cur_pkt_byte_count;
 }
 
-int enc28j60_packet_recv(enc28j60_t *e, u8 *buf, int size)
+int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
+    enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
+
     if (size > e->cur_pkt_byte_count)
 	size = e->cur_pkt_byte_count;
 
@@ -589,8 +595,9 @@ int enc28j60_packet_recv(enc28j60_t *e, u8 *buf, int size)
     return size;
 }
 
-void enc28j60_packet_xmit(enc28j60_t *e, u8 *buf, int size)
+void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 {
+    enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
     u8 ctrl = 0;
 
     /* Set buffer start */
@@ -660,7 +667,7 @@ static void link_status_changed(enc28j60_t *e)
 
 static void enc28j60_isr(event_t *ev, int resource_id)
 {
-    enc28j60_t *e = (enc28j60_t *)ev;
+    enc28j60_t *e = container_of(ev, enc28j60_t, irq_event);
     u8 eir;
 
     eir = ctrl_reg_read(e, EIR);
@@ -686,28 +693,40 @@ static void enc28j60_isr(event_t *ev, int resource_id)
     }
 }
 
-void enc28j60_on_port_change_event_set(enc28j60_t *e, event_t *ev)
+void enc28j60_on_port_change_event_set(etherif_t *ethif, event_t *ev)
 {
-    e->on_port_change = ev;
+    ETHIF_TO_ENC28J60(ethif)->on_port_change = ev;
 }
 
-void enc28j60_on_packet_received_event_set(enc28j60_t *e, event_t *ev)
+void enc28j60_on_packet_received_event_set(etherif_t *ethif, event_t *ev)
 {
-    e->on_packet_received = ev;
+    ETHIF_TO_ENC28J60(ethif)->on_packet_received = ev;
 }
 
-void enc28j60_on_packet_xmit_event_set(enc28j60_t *e, event_t *ev)
+void enc28j60_on_packet_xmit_event_set(etherif_t *ethif, event_t *ev)
 {
-    e->on_packet_xmit = ev;
+    ETHIF_TO_ENC28J60(ethif)->on_packet_xmit = ev;
 }
 
-void enc28j60_free(enc28j60_t *e)
+void enc28j60_free(etherif_t *ethif)
 {
+    enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
+
     event_watch_del(e->irq_event_id);
     tfree(e);
 }
 
-enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
+static const etherif_ops_t enc28j60_etherif_ops = {
+    .link_status = enc28j60_link_status,
+    .on_port_change_event_set = enc28j60_on_port_change_event_set,
+    .on_packet_received_event_set = enc28j60_on_packet_received_event_set,
+    .on_packet_xmit_event_set = enc28j60_on_packet_xmit_event_set,
+    .packet_size = enc28j60_packet_size,
+    .packet_recv = enc28j60_packet_recv,
+    .packet_xmit = enc28j60_packet_xmit,
+};
+
+etherif_t *enc28j60_new(int spi_port, int cs, int intr)
 {
     enc28j60_t *e = tmalloc_type(enc28j60_t);
 
@@ -718,6 +737,7 @@ enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
     e->on_port_change = NULL;
     e->on_packet_received = NULL;
     e->on_packet_xmit = NULL;
+    etherif_init(&e->ethif, &enc28j60_etherif_ops);
 
     spi_init(spi_port);
     spi_set_max_speed(spi_port, 12000000);
@@ -729,5 +749,5 @@ enc28j60_t *enc28j60_new(int spi_port, int cs, int intr)
     e->irq_event_id = event_watch_set(intr, &e->irq_event);
 
     chip_init(e);
-    return e;
+    return &e->ethif;
 }
