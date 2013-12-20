@@ -5,4 +5,13 @@ config ENC28J60
 	depends on SPI && GPIO
 	default y
 
+config LINUX_PACKET_ETH
+	bool "Linux User Mode Ethernet using Packet Socket"
+	depends on PLATFORM_EMULATION
+	default n
+	help
+		Packet sockets allow raw Ethernet packet send/receive
+		Selecting this option requires running the process on Linux with
+		root permissions
+
 endmenu

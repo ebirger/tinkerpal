@@ -19,13 +19,4 @@ config PLATFORM_EMULATION_BLOCK_DISK_NUM_SECTORS
 	depends on PLATFORM_EMULATION_BLOCK_DISK
 	default 2048
 
-config LINUX_PACKET_ETH
-	bool "Linux User Mode Ethernet using Packet Socket"
-	depends on PLATFORM_EMULATION
-	default n
-	help
-		Packet sockets allow raw Ethernet packet send/receive
-		Selecting this option requires running the process on Linux with
-		root permissions
-
 endmenu
