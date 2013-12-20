@@ -39,11 +39,24 @@ FUNCTION("onPacketReceived", etherif, do_etherif_on_packet_received, {
     .params = {
         { 
 	    .name = "cb", 
-	    .description = "callback function called when packet was received",
+	    .description = "call function when packet was received",
 	},
     },
     .description = "Calls 'cb' when packet was received",
     .return_value = "None",
     .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
         "e.onPacketReceived(function() { e.print('packet received!'); });",
+})
+
+FUNCTION("onPacketXmit", etherif, do_etherif_on_packet_xmit, {
+    .params = {
+        { 
+	    .name = "cb", 
+	    .description = "call function when packet was transmitted",
+	},
+    },
+    .description = "Calls 'cb' when packet was transmitted",
+    .return_value = "None",
+    .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
+        "e.onPacketXmit(function() { e.print('packet transmitted!'); });",
 })

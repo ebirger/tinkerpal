@@ -81,6 +81,22 @@ int do_etherif_on_packet_received(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
+int do_etherif_on_packet_xmit(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    etherif_t *ethif = etherif_obj_get_etherif(this);
+    event_t *e;
+
+    if (argc != 2)
+	return js_invalid_args(ret);
+
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
+
+    etherif_on_packet_xmit_event_set(ethif, e);
+    *ret = UNDEF;
+    return 0;
+}
+
 int do_etherif_on_port_change(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
