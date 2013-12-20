@@ -47,8 +47,8 @@ typedef struct {
     event_t packet_event;
     int packet_event_id;
     int packet_socket;
-    u8 packet[1518];
-    int packet_size;
+    u8 last_packet[1518];
+    int last_packet_length;
 } linux_packet_eth_t;
 
 static linux_packet_eth_t g_lpe; /* Singleton for now */
@@ -63,8 +63,8 @@ static void cur_packet_dump(linux_packet_eth_t *lpe)
     int i;
 
     printf("\n-------------------------------------\n");
-    for (i = 0; i < lpe->packet_size; i++)
-	printf("%02x%s", lpe->packet[i], (i + 1) % 16 ? " " : "\n");
+    for (i = 0; i < lpe->last_packet_length; i++)
+	printf("%02x%s", lpe->last_packet[i], (i + 1) % 16 ? " " : "\n");
     printf("-------------------------------------\n");
 }
 
@@ -73,20 +73,23 @@ int packet_eth_link_status(etherif_t *ethif)
     return 1;
 }
 
-int packet_eth_packet_size(etherif_t *ethif)
-{
-    return ETHIF_TO_PACKET_ETH(ethif)->packet_size;
-}
-
 int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
     linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
 
-    if (size > lpe->packet_size)
-	size = lpe->packet_size;
+    lpe->last_packet_length = serial_read(NET_RES, (char *)lpe->last_packet,
+	sizeof(lpe->last_packet));
+    if (lpe->last_packet_length <= 0)
+    {
+	perror("read");
+	return -1;
+    }
 
-    memcpy(buf, lpe->packet, size);
-    return lpe->packet_size;
+    if (size > lpe->last_packet_length)
+	size = lpe->last_packet_length;
+
+    memcpy(buf, lpe->last_packet, size);
+    return size;
 }
 
 void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
@@ -107,13 +110,6 @@ static void packet_eth_packet_event(event_t *ev, int resource_id)
 	packet_event);
 
     tp_debug(("Packet received\n"));
-    lpe->packet_size = serial_read(NET_RES, (char *)lpe->packet,
-	sizeof(lpe->packet));
-    if (lpe->packet_size <= 0)
-    {
-	perror("read");
-	return;
-    }
     if (lpe->ethif.on_packet_received)
     {
 	lpe->ethif.on_packet_received->trigger(lpe->ethif.on_packet_received,
@@ -123,7 +119,6 @@ static void packet_eth_packet_event(event_t *ev, int resource_id)
 
 static const etherif_ops_t linux_packet_eth_ops = {
     .link_status = packet_eth_link_status,
-    .packet_size = packet_eth_packet_size,
     .packet_recv = packet_eth_packet_recv,
     .packet_xmit = packet_eth_packet_xmit,
 };
