@@ -29,6 +29,7 @@
 #define GPIO_RESOURCE_ID_BASE 0x0100
 #define UART_RESOURCE_ID_BASE 0x0200
 #define SPI_RESOURCE_ID_BASE 0x0400
+#define ETHERIF_RESOURCE_ID_BASE 0x0800
 
 #define RES(base, id) ((base) | (id))
 #define RES_ID(res) ((res) & RES_ID_MASK)
