@@ -34,8 +34,8 @@ void unix_set_term_raw(int fd, int raw);
 void unix_set_nonblock(int fd);
 
 int unix_select(int ms, unix_fd_event_map_t *map);
-int unix_read(int fd, char *buf, int size);
-int unix_write(int fd, char *buf, int size);
+int unix_read(int event, char *buf, int size, unix_fd_event_map_t *map);
+int unix_write(int event, char *buf, int size, unix_fd_event_map_t *map);
 int unix_get_ticks_from_boot(void);
 void unix_panic(void);
 

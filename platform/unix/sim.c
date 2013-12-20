@@ -84,30 +84,12 @@ static int sim_unix_select(int ms)
 
 static int sim_unix_serial_read(int id, char *buf, int size)
 {
-    int fd;
-    
-    switch (id)
-    {
-    case STDIO_ID: fd = STDIN_FD; break;
-    case PTY_ID: fd = pty_fd; break;
-    default: printf("invalid id %d\n", id); exit(1);
-    }
-
-    return unix_read(fd, buf, size);
+    return unix_read(id, buf, size, unix_sim_event_fd_map);
 }
 
 static int sim_unix_serial_write(int id, char *buf, int size)
 {
-    int fd;
-
-    switch (id)
-    {
-    case STDIO_ID: fd = STDOUT_FD; break;
-    case PTY_ID: fd = pty_fd; break;
-    default: printf("invalid id %d\n", id); exit(1);
-    }
-
-    return unix_write(fd, buf, size);
+    return unix_write(id, buf, size, unix_sim_event_fd_map);
 }
 
 static int sim_unix_serial_enable(int id, int enabled)

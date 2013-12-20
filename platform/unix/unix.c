@@ -78,10 +78,24 @@ int unix_select(int ms, unix_fd_event_map_t *map)
     return rc;
 }
 
-int unix_read(int fd, char *buf, int size)
+static int get_event_fd(int event, unix_fd_event_map_t *map)
 {
-    int rsize;
-    
+    unix_fd_event_map_t *iter;
+
+    for (iter = map; iter->fd != -1 && iter->event != event; iter++);
+    if (iter->fd == -1)
+    {
+	printf("invalid event id %d\n", event);
+	exit(1);
+    }
+
+    return iter->fd;
+}
+
+int unix_read(int event, char *buf, int size, unix_fd_event_map_t *map)
+{
+    int rsize, fd = get_event_fd(event, map);
+
     rsize = read(fd, buf, size);
     if (!rsize)
     {
@@ -96,8 +110,10 @@ int unix_read(int fd, char *buf, int size)
     return rsize;
 }
 
-int unix_write(int fd, char *buf, int size)
+int unix_write(int event, char *buf, int size, unix_fd_event_map_t *map)
 {
+    int fd = get_event_fd(event, map);
+
     if (write(fd, buf, size) != size)
     {
 	perror("write");
