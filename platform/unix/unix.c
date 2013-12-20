@@ -51,11 +51,11 @@ int unix_select(int ms, unix_fd_event_map_t *map)
 
     FD_ZERO(&rfds);
 
-    for (iter = map; iter->fd != -1; iter++)
+    for (iter = map; iter->event != -1; iter++)
     {
-	FD_SET(iter->fd, &rfds);
-	if (iter->fd > max_fd - 1)
-	    max_fd = iter->fd + 1;
+	FD_SET(iter->in_fd, &rfds);
+	if (iter->in_fd > max_fd - 1)
+	    max_fd = iter->in_fd + 1;
     }
 
     sec = ms / 1000;
@@ -67,9 +67,9 @@ int unix_select(int ms, unix_fd_event_map_t *map)
 	perror("select");
     if (rc > 0)
     {
-	for (iter = map; iter->fd != -1; iter++)
+	for (iter = map; iter->event != -1; iter++)
 	{
-	    if (!FD_ISSET(iter->fd, &rfds))
+	    if (!FD_ISSET(iter->in_fd, &rfds))
 		continue;
 		
 	    serial_event_trigger(iter->event);
@@ -78,23 +78,23 @@ int unix_select(int ms, unix_fd_event_map_t *map)
     return rc;
 }
 
-static int get_event_fd(int event, unix_fd_event_map_t *map)
+static int get_event_fd(int event, unix_fd_event_map_t *map, int in)
 {
     unix_fd_event_map_t *iter;
 
-    for (iter = map; iter->fd != -1 && iter->event != event; iter++);
-    if (iter->fd == -1)
+    for (iter = map; iter->event != -1 && iter->event != event; iter++);
+    if (iter->event == -1)
     {
 	printf("invalid event id %d\n", event);
 	exit(1);
     }
 
-    return iter->fd;
+    return in ? iter->in_fd : iter->out_fd;
 }
 
 int unix_read(int event, char *buf, int size, unix_fd_event_map_t *map)
 {
-    int rsize, fd = get_event_fd(event, map);
+    int rsize, fd = get_event_fd(event, map, 1);
 
     rsize = read(fd, buf, size);
     if (!rsize)
@@ -112,7 +112,7 @@ int unix_read(int event, char *buf, int size, unix_fd_event_map_t *map)
 
 int unix_write(int event, char *buf, int size, unix_fd_event_map_t *map)
 {
-    int fd = get_event_fd(event, map);
+    int fd = get_event_fd(event, map, 0);
 
     if (write(fd, buf, size) != size)
     {

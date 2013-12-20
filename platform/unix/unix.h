@@ -27,7 +27,8 @@
 
 typedef struct {
     int event;
-    int fd;
+    int in_fd;
+    int out_fd;
 } unix_fd_event_map_t;
 
 void unix_set_term_raw(int fd, int raw);
