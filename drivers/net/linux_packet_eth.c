@@ -99,8 +99,8 @@ void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
     serial_write(NET_RES, (char *)buf, size);
     if (lpe->ethif.on_packet_xmit)
     {
-	/* XXX: resource ID will not be provided */
-	event_timer_set(0, lpe->ethif.on_packet_xmit);
+	/* packet_event will be called with resource_id = 0 */
+	event_timer_set(0, &lpe->packet_event);
     }
 }
 
@@ -109,11 +109,23 @@ static void packet_eth_packet_event(event_t *ev, int resource_id)
     linux_packet_eth_t *lpe = container_of(ev, linux_packet_eth_t,
 	packet_event);
 
-    tp_debug(("Packet received\n"));
-    if (lpe->ethif.on_packet_received)
+    if (!resource_id)
     {
-	lpe->ethif.on_packet_received->trigger(lpe->ethif.on_packet_received,
+	/* resource_id is 0 when event is placed on a timer instead of a 
+	 * watch
+	 */
+	tp_debug(("Packet transmitted\n"));
+	lpe->ethif.on_packet_xmit->trigger(lpe->ethif.on_packet_xmit,
 	    PACKET_ETH_RES(lpe));
+    }
+    else
+    {
+	tp_debug(("Packet received\n"));
+	if (lpe->ethif.on_packet_received)
+	{
+	    lpe->ethif.on_packet_received->trigger(
+		lpe->ethif.on_packet_received, PACKET_ETH_RES(lpe));
+	}
     }
 }
 
