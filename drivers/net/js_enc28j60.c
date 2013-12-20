@@ -27,17 +27,26 @@
 #include "js/js_event.h"
 #include "drivers/net/enc28j60.h"
 
-static etherif_t *g_enc28j60; /* Singleton */
+#define Sether_id S("ether_id")
+
+static etherif_t *obj_etherif_get(obj_t *o)
+{
+    int id = -1;
+    
+    tp_assert(!obj_get_property_int(&id, o, &Sether_id));
+    return etherif_get_by_id(id);
+}
 
 int do_enc28j60_packet_recv(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
     int size;
     obj_t *array_buffer;
+    etherif_t *ethif = obj_etherif_get(this);
 
-    size = g_enc28j60->ops->packet_size(g_enc28j60);
+    size = ethif->ops->packet_size(ethif);
     array_buffer = array_buffer_new(size);
-    size = g_enc28j60->ops->packet_recv(g_enc28j60, (u8 *)
+    size = ethif->ops->packet_recv(ethif, (u8 *)
 	TPTR(&((array_buffer_t *)array_buffer)->value), size);
     *ret = array_buffer_view_new(array_buffer, 
 	ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, size);
@@ -48,6 +57,7 @@ int do_enc28j60_packet_recv(obj_t **ret, obj_t *this, int argc,
 int do_enc28j60_on_packet_received(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
+    etherif_t *ethif = obj_etherif_get(this);
     event_t *e;
 
     if (argc != 2)
@@ -55,7 +65,7 @@ int do_enc28j60_on_packet_received(obj_t **ret, obj_t *this, int argc,
 
     e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-    etherif_on_packet_received_event_set(g_enc28j60, e);
+    etherif_on_packet_received_event_set(ethif, e);
     *ret = UNDEF;
     return 0;
 }
@@ -63,6 +73,7 @@ int do_enc28j60_on_packet_received(obj_t **ret, obj_t *this, int argc,
 int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
+    etherif_t *ethif = obj_etherif_get(this);
     event_t *e;
 
     if (argc != 2)
@@ -70,20 +81,23 @@ int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
 
     e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-    etherif_on_port_change_event_set(g_enc28j60, e);
+    etherif_on_port_change_event_set(ethif, e);
     *ret = UNDEF;
     return 0;
 }
 
 int do_enc28j60_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    *ret = g_enc28j60->ops->link_status(g_enc28j60) ? TRUE : FALSE;
+    etherif_t *ethif = obj_etherif_get(this);
+
+    *ret = ethif->ops->link_status(ethif) ? TRUE : FALSE;
     return 0;
 }
 
 int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int spi_port, cs, intr;
+    etherif_t *ethif;
 
     if (argc != 4)
 	return js_invalid_args(ret);
@@ -94,7 +108,7 @@ int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
-
-    g_enc28j60 = enc28j60_new(spi_port, cs, intr);
+    ethif = enc28j60_new(spi_port, cs, intr);
+    _obj_set_property(*ret, Sether_id, num_new_int(ethif->id));
     return 0;
 }
