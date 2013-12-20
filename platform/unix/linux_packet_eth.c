@@ -22,38 +22,87 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <stdio.h>
+#include <string.h>
+#include "util/debug.h"
 #include "util/tp_misc.h"
+#include "util/tp_types.h"
 #include "mem/tmalloc.h"
+#include "drivers/resources.h"
+#include "drivers/serial/serial.h"
+#include "platform/unix/sim.h"
 #include "platform/unix/linux_packet_eth.h"
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
 #include <netpacket/packet.h>
 #include <net/ethernet.h>
+#include <net/if.h>
+#include <net/if_arp.h>
+#include <arpa/inet.h>
 
 typedef struct {
     etherif_t ethif;
+    event_t packet_event;
+    int packet_event_id;
     int packet_socket;
+    u8 packet[1518];
+    int packet_size;
 } linux_packet_eth_t;
 
-#define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_packet_eth_t, ethif)
+static linux_packet_eth_t g_lpe; /* Singleton for now */
 
-int packet_eth_link_status(etherif_t *e)
+#define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_packet_eth_t, ethif)
+#define NET_RES (RES(UART_RESOURCE_ID_BASE, NET_ID))
+
+static void cur_packet_dump(linux_packet_eth_t *lpe) __attribute__((unused));
+static void cur_packet_dump(linux_packet_eth_t *lpe)
+{
+    int i;
+
+    printf("\n-------------------------------------\n");
+    for (i = 0; i < lpe->packet_size; i++)
+	printf("%02x%s", lpe->packet[i], (i + 1) % 16 ? " " : "\n");
+    printf("-------------------------------------\n");
+}
+
+int packet_eth_link_status(etherif_t *ethif)
 {
     return 1;
 }
 
-int packet_eth_packet_size(etherif_t *e)
+int packet_eth_packet_size(etherif_t *ethif)
 {
-    return 0;
+    return ETHIF_TO_PACKET_ETH(ethif)->packet_size;
 }
 
-int packet_eth_packet_recv(etherif_t *e, u8 *buf, int size)
+int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
-    return 0;
+    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+
+    if (size > lpe->packet_size)
+	size = lpe->packet_size;
+
+    memcpy(buf, lpe->packet, size);
+    return lpe->packet_size;
 }
 
-void packet_eth_packet_xmit(etherif_t *e, u8 *buf, int size)
+void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 {
+    serial_write(NET_RES, (char *)buf, size);
+}
+
+static void packet_eth_packet_event(event_t *ev, int resource_id)
+{
+    linux_packet_eth_t *lpe = container_of(ev, linux_packet_eth_t,
+	packet_event);
+
+    tp_debug(("Packet received\n"));
+    lpe->packet_size = serial_read(NET_RES, (char *)lpe->packet,
+	sizeof(lpe->packet));
+    if (lpe->packet_size < 0)
+	perror("read");
 }
 
 static const etherif_ops_t linux_packet_eth_ops = {
@@ -63,19 +112,66 @@ static const etherif_ops_t linux_packet_eth_ops = {
     .packet_xmit = packet_eth_packet_xmit,
 };
 
+static int packet_socket_create(const char *ifname)
+{
+    int sock;
+    struct ifreq ifr;
+    struct packet_mreq mreq;
+    struct sockaddr_ll sll;
+
+    sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    if (sock < 0) {
+	perror("Failed to create packet socket\n");
+	return -1;
+    }
+
+    memset(&ifr, 0, sizeof(ifr));
+    strcpy(ifr.ifr_name, ifname);
+    ioctl(sock, SIOCGIFHWADDR, &ifr);
+
+    if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER) 
+    {
+	tp_err(("%s is not an Ethernet device (%d)\n", ifname,
+	    (int)ifr.ifr_hwaddr.sa_family));
+	return -1;
+    }
+
+    ioctl(sock, SIOCGIFINDEX, &ifr);
+
+    memset(&sll, 0, sizeof(sll));
+    sll.sll_family = AF_PACKET;
+    sll.sll_protocol = htons(ETH_P_ALL);
+    sll.sll_ifindex = ifr.ifr_ifindex;
+    bind(sock, (struct sockaddr *)&sll, sizeof(sll));
+
+    memset(&mreq, 0, sizeof(mreq));
+    mreq.mr_ifindex = ifr.ifr_ifindex;
+    mreq.mr_type = PACKET_MR_PROMISC;
+    setsockopt(sock, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
+    return sock;
+}
+
 void linux_packet_eth_free(etherif_t *ethif)
 {
     linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
 
+    event_watch_del(lpe->packet_event_id);
     close(lpe->packet_socket);
-    tfree(lpe);
 }
 
-etherif_t *linux_packet_eth_new(void)
+etherif_t *linux_packet_eth_new(char *dev_name)
 {
-    linux_packet_eth_t *lpe = tmalloc_type(linux_packet_eth_t);
+    linux_packet_eth_t *lpe = &g_lpe;
 
-    lpe->packet_socket = socket(AF_PACKET, SOCK_RAW, ETH_P_ALL);
+    if ((lpe->packet_socket = packet_socket_create(dev_name)) < 0)
+	return NULL;
+
+    lpe->packet_event.trigger = packet_eth_packet_event;
     etherif_init(&lpe->ethif, &linux_packet_eth_ops);
+    unix_sim_add_fd_event_to_map(lpe->packet_socket, NET_ID);
+    lpe->packet_event_id = event_watch_set(NET_RES, &lpe->packet_event);
+
+    printf("Created Linux Packet Ethernet Interface. fd %d\n",
+	lpe->packet_socket);
     return &lpe->ethif;
 }

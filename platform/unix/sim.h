@@ -29,7 +29,8 @@
 
 #define STDIO_ID 0
 #define PTY_ID 1
-#define NUM_IDS 2
+#define NET_ID 2
+#define NUM_IDS 3
 
 extern int unix_sim_event_fd_count;
 extern unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1];

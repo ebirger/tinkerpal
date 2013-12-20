@@ -28,6 +28,6 @@
 #include "net/etherif.h"
 
 void linux_packet_eth_free(etherif_t *ethif);
-etherif_t *linux_packet_eth_new(void);
+etherif_t *linux_packet_eth_new(char *dev_name);
 
 #endif
