@@ -32,16 +32,6 @@
 #define NET_ID 2
 #define NUM_IDS 3
 
-extern int unix_sim_event_fd_count;
-extern unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1];
-
-static inline void unix_sim_add_fd_event_to_map(int event, int in_fd,
-    int out_fd)
-{
-    unix_sim_event_fd_map[unix_sim_event_fd_count].event = event;
-    unix_sim_event_fd_map[unix_sim_event_fd_count].in_fd = in_fd;
-    unix_sim_event_fd_map[unix_sim_event_fd_count].out_fd = out_fd;
-    unix_sim_event_fd_count++;
-}
+void unix_sim_add_fd_event_to_map(int event, int in_fd, int out_fd);
 
 #endif

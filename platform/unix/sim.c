@@ -36,8 +36,8 @@
 
 static int pty_fd = -1;
 
-int unix_sim_event_fd_count;
-unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1] = { 
+static int unix_sim_event_fd_count;
+static unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1] = { 
     [0 ... NUM_IDS] = { .event = -1 }
 };
 
@@ -46,6 +46,15 @@ unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1] = {
 
 FILE *block_disk;
 #define SEC_SIZE 512
+
+void unix_sim_add_fd_event_to_map(int event, int in_fd,
+    int out_fd)
+{
+    unix_sim_event_fd_map[unix_sim_event_fd_count].event = event;
+    unix_sim_event_fd_map[unix_sim_event_fd_count].in_fd = in_fd;
+    unix_sim_event_fd_map[unix_sim_event_fd_count].out_fd = out_fd;
+    unix_sim_event_fd_count++;
+}
 
 #ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
 static int pty_open(void)
