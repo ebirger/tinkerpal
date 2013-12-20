@@ -18,4 +18,8 @@ config NET
 	bool "Networking Support"
 	default y
 
+if NET
+source "net/Kconfig"
+endif
+
 source "drivers/Kconfig"

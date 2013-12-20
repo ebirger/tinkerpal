@@ -3,11 +3,13 @@ menu "Networking"
 config ENC28J60
 	bool "ENC28J60 SPI Ethernet Support"
 	depends on SPI && GPIO
+	select ETHERIF
 	default y
 
 config LINUX_PACKET_ETH
 	bool "Linux User Mode Ethernet using Packet Socket"
 	depends on PLATFORM_EMULATION
+	select ETHERIF
 	default n
 	help
 		Packet sockets allow raw Ethernet packet send/receive
