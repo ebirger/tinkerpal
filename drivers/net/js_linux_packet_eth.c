@@ -44,5 +44,8 @@ int do_linux_packet_eth_constructor(obj_t **ret, obj_t *this, int argc,
     tstr_free(&dev_name_tstr);
     tfree(dev_name);
 
+    if (!ethif)
+	return throw_exception(ret, &S("Exception: can't create device"));
+
     return etherif_obj_constructor(ethif, ret, this, argc, argv);
 }
