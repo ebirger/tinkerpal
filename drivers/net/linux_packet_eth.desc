@@ -1,0 +1,1 @@
+CONSTRUCTOR("LinuxPacketEth", etherif, do_linux_packet_eth_constructor)
