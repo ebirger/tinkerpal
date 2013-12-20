@@ -31,10 +31,10 @@
 typedef struct etherif_t etherif_t;
 
 typedef struct {
-    int (*link_status)(etherif_t *e);
-    int (*packet_size)(etherif_t *e);
-    int (*packet_recv)(etherif_t *e, u8 *buf, int size);
-    void (*packet_xmit)(etherif_t *e, u8 *buf, int size);
+    int (*link_status)(etherif_t *ethif);
+    int (*packet_size)(etherif_t *ethif);
+    int (*packet_recv)(etherif_t *ethif, u8 *buf, int size);
+    void (*packet_xmit)(etherif_t *ethif, u8 *buf, int size);
 } etherif_ops_t;
 
 struct etherif_t {
