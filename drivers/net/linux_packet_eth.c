@@ -55,6 +55,7 @@ static linux_packet_eth_t g_lpe; /* Singleton for now */
 
 #define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_packet_eth_t, ethif)
 #define NET_RES (RES(UART_RESOURCE_ID_BASE, NET_ID))
+#define PACKET_ETH_RES(lpe) RES(ETHERIF_RESOURCE_ID_BASE, (lpe)->ethif.id)
 
 static void cur_packet_dump(linux_packet_eth_t *lpe) __attribute__((unused));
 static void cur_packet_dump(linux_packet_eth_t *lpe)
@@ -90,7 +91,14 @@ int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
 
 void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 {
+    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+
     serial_write(NET_RES, (char *)buf, size);
+    if (lpe->ethif.on_packet_xmit)
+    {
+	/* XXX: resource ID will not be provided */
+	event_timer_set(0, lpe->ethif.on_packet_xmit);
+    }
 }
 
 static void packet_eth_packet_event(event_t *ev, int resource_id)
@@ -101,8 +109,16 @@ static void packet_eth_packet_event(event_t *ev, int resource_id)
     tp_debug(("Packet received\n"));
     lpe->packet_size = serial_read(NET_RES, (char *)lpe->packet,
 	sizeof(lpe->packet));
-    if (lpe->packet_size < 0)
+    if (lpe->packet_size <= 0)
+    {
 	perror("read");
+	return;
+    }
+    if (lpe->ethif.on_packet_received)
+    {
+	lpe->ethif.on_packet_received->trigger(lpe->ethif.on_packet_received,
+	    PACKET_ETH_RES(lpe));
+    }
 }
 
 static const etherif_ops_t linux_packet_eth_ops = {
