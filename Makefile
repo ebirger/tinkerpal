@@ -43,7 +43,8 @@ include scripts/text_to_c.mk
 
 d=.
 
-MK_SUBDIRS=$(if $(CONFIG_JS),js) apps main platform mem util drivers
+MK_SUBDIRS=$(if $(CONFIG_JS),js) apps main platform mem util \
+  $(if $(CONFIG_NET),net) drivers
 
 include scripts/Rules.mk
 

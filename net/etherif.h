@@ -44,13 +44,7 @@ struct etherif_t {
     event_t *on_packet_xmit;
 };
 
-static inline void etherif_init(etherif_t *ethif, const etherif_ops_t *ops)
-{
-    ethif->ops = ops;
-    ethif->on_port_change = NULL;
-    ethif->on_packet_received = NULL;
-    ethif->on_packet_xmit = NULL;
-}
+void etherif_init(etherif_t *ethif, const etherif_ops_t *ops);
 
 static inline void etherif_on_port_change_event_set(etherif_t *ethif,
     event_t *ev)
