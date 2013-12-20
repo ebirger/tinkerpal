@@ -51,7 +51,8 @@ typedef struct {
     int last_packet_length;
 } linux_packet_eth_t;
 
-static linux_packet_eth_t g_lpe; /* Singleton for now */
+/* Singleton for now */
+static linux_packet_eth_t g_lpe = { .packet_socket = -1 };
 
 #define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_packet_eth_t, ethif)
 #define NET_RES (RES(UART_RESOURCE_ID_BASE, NET_ID))
@@ -179,12 +180,20 @@ void linux_packet_eth_free(etherif_t *ethif)
     linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
 
     event_watch_del(lpe->packet_event_id);
+    unix_sim_remove_fd_event_from_map(NET_ID);
     close(lpe->packet_socket);
+    lpe->packet_socket = -1;
 }
 
 etherif_t *linux_packet_eth_new(char *dev_name)
 {
     linux_packet_eth_t *lpe = &g_lpe;
+
+    if (lpe->packet_socket != -1)
+    {
+	tp_warn(("Only one device at a time. Removing old one\n"));
+	linux_packet_eth_free(&lpe->ethif);
+    }
 
     if ((lpe->packet_socket = packet_socket_create(dev_name)) < 0)
 	return NULL;
