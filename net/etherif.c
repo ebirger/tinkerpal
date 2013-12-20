@@ -22,50 +22,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ETHERIF_H__
-#define __ETHERIF_H__
+#include <stdio.h> /* NULL */
+#include "util/debug.h"
+#include "net/etherif.h"
 
-#include "util/event.h"
-#include "util/tp_types.h"
+static etherif_t *etherifs;
+static int etherifs_last_id;
 
-typedef struct etherif_t etherif_t;
-
-typedef struct {
-    int (*link_status)(etherif_t *ethif);
-    int (*packet_size)(etherif_t *ethif);
-    int (*packet_recv)(etherif_t *ethif, u8 *buf, int size);
-    void (*packet_xmit)(etherif_t *ethif, u8 *buf, int size);
-} etherif_ops_t;
-
-struct etherif_t {
-    etherif_t *next;
-    int id;
-    const etherif_ops_t *ops;
-    event_t *on_port_change;
-    event_t *on_packet_received;
-    event_t *on_packet_xmit;
-};
-
-void etherif_init(etherif_t *ethif, const etherif_ops_t *ops);
-
-etherif_t *etherif_get_by_id(int id);
-
-static inline void etherif_on_port_change_event_set(etherif_t *ethif,
-    event_t *ev)
+void etherif_init(etherif_t *ethif, const etherif_ops_t *ops)
 {
-    ethif->on_port_change = ev;
+    ethif->ops = ops;
+    ethif->on_port_change = NULL;
+    ethif->on_packet_received = NULL;
+    ethif->on_packet_xmit = NULL;
+    ethif->id = etherifs_last_id++;
+    ethif->next = etherifs;
+    etherifs = ethif;
 }
 
-static inline void etherif_on_packet_received_event_set(etherif_t *ethif,
-    event_t *ev)
+etherif_t *etherif_get_by_id(int id)
 {
-    ethif->on_packet_received = ev;
-}
+    etherif_t *ret;
 
-static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
-    event_t *ev)
-{
-    ethif->on_packet_xmit = ev;
+    for (ret = etherifs; ret && ret->id != id; ret = ret->next);
+    tp_assert(ret);
+    return ret;
 }
-
-#endif
