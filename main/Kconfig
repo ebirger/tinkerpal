@@ -1,13 +1,5 @@
 menu "Core Tuning"
 
-config JS
-	bool "JS support"
-	default y
-
-config NET
-	bool "Networking Support"
-	default y
-
 config PLAT_HAS_MALLOC
 	bool
 

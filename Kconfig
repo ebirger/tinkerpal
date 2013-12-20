@@ -7,7 +7,15 @@ config TINKERPAL
 source "platform/Kconfig"
 source "apps/Kconfig"
 source "main/Kconfig"
+config JS
+	bool "JS support"
+	default y
+
 if JS
 source "js/Kconfig"
 endif
+config NET
+	bool "Networking Support"
+	default y
+
 source "drivers/Kconfig"
