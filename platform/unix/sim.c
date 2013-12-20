@@ -56,6 +56,18 @@ void unix_sim_add_fd_event_to_map(int event, int in_fd,
     unix_sim_event_fd_count++;
 }
 
+void unix_sim_remove_fd_event_from_map(int event)
+{
+    unix_fd_event_map_t *from, *to;
+
+    for (to = unix_sim_event_fd_map; to->event != event; to++);
+    tp_assert(to->event != -1);
+    from = to;
+    while (to->event != -1)
+	*to++ = *++from;
+    unix_sim_event_fd_count--;
+}
+
 #ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
 static int pty_open(void)
 {

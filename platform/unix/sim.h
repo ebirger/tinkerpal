@@ -33,5 +33,6 @@
 #define NUM_IDS 3
 
 void unix_sim_add_fd_event_to_map(int event, int in_fd, int out_fd);
+void unix_sim_remove_fd_event_from_map(int event);
 
 #endif
