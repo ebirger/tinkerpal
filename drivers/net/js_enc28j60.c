@@ -25,24 +25,15 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
+#include "net/js_etherif.h"
 #include "drivers/net/enc28j60.h"
-
-#define Sether_id S("ether_id")
-
-static etherif_t *obj_etherif_get(obj_t *o)
-{
-    int id = -1;
-    
-    tp_assert(!obj_get_property_int(&id, o, &Sether_id));
-    return etherif_get_by_id(id);
-}
 
 int do_enc28j60_packet_recv(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
     int size;
     obj_t *array_buffer;
-    etherif_t *ethif = obj_etherif_get(this);
+    etherif_t *ethif = etherif_obj_get_etherif(this);
 
     size = ethif->ops->packet_size(ethif);
     array_buffer = array_buffer_new(size);
@@ -57,7 +48,7 @@ int do_enc28j60_packet_recv(obj_t **ret, obj_t *this, int argc,
 int do_enc28j60_on_packet_received(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
-    etherif_t *ethif = obj_etherif_get(this);
+    etherif_t *ethif = etherif_obj_get_etherif(this);
     event_t *e;
 
     if (argc != 2)
@@ -73,7 +64,7 @@ int do_enc28j60_on_packet_received(obj_t **ret, obj_t *this, int argc,
 int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
-    etherif_t *ethif = obj_etherif_get(this);
+    etherif_t *ethif = etherif_obj_get_etherif(this);
     event_t *e;
 
     if (argc != 2)
@@ -88,7 +79,7 @@ int do_enc28j60_on_port_change(obj_t **ret, obj_t *this, int argc,
 
 int do_enc28j60_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    etherif_t *ethif = obj_etherif_get(this);
+    etherif_t *ethif = etherif_obj_get_etherif(this);
 
     *ret = ethif->ops->link_status(ethif) ? TRUE : FALSE;
     return 0;
@@ -106,9 +97,8 @@ int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     cs = obj_get_int(argv[2]);
     intr = obj_get_int(argv[3]);
 
-    *ret = object_new();
-    obj_inherit(*ret, argv[0]);
     ethif = enc28j60_new(spi_port, cs, intr);
-    _obj_set_property(*ret, Sether_id, num_new_int(ethif->id));
+    *ret = etherif_obj_new(ethif);
+    obj_inherit(*ret, argv[0]);
     return 0;
 }
