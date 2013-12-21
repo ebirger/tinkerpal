@@ -53,6 +53,9 @@ struct etherif_t {
     etherif_t *next;
     int id;
     const etherif_ops_t *ops;
+    int port_change_watch_id;
+    int packet_received_watch_id;
+    int packet_xmitted_watch_id;
 };
 
 void etherif_uninit(etherif_t *ethif);
@@ -63,7 +66,8 @@ etherif_t *etherif_get_by_id(int id);
 static inline void etherif_on_port_change_event_set(etherif_t *ethif,
     event_t *ev)
 {
-    event_watch_set(ETHERIF_RES_PORT_CHANGE(ethif), ev);
+    ethif->port_change_watch_id = event_watch_set(
+	ETHERIF_RES_PORT_CHANGE(ethif), ev);
 }
 
 static inline void etherif_port_changed(etherif_t *ethif)
@@ -74,7 +78,8 @@ static inline void etherif_port_changed(etherif_t *ethif)
 static inline void etherif_on_packet_received_event_set(etherif_t *ethif,
     event_t *ev)
 {
-    event_watch_set(ETHERIF_RES_PACKET_RECEIVED(ethif), ev);
+    ethif->packet_received_watch_id = event_watch_set(
+	ETHERIF_RES_PACKET_RECEIVED(ethif), ev);
 }
 
 static inline void etherif_packet_received(etherif_t *ethif)
@@ -85,7 +90,8 @@ static inline void etherif_packet_received(etherif_t *ethif)
 static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
     event_t *ev)
 {
-    event_watch_set(ETHERIF_RES_PACKET_XMITTED(ethif), ev);
+    ethif->packet_xmitted_watch_id = event_watch_set(
+	ETHERIF_RES_PACKET_XMITTED(ethif), ev);
 }
 
 static inline void etherif_packet_xmitted(etherif_t *ethif)

@@ -36,12 +36,23 @@ void etherif_uninit(etherif_t *ethif)
     for (iter = &etherifs; *iter && *iter != ethif; iter = &(*iter)->next);
     tp_assert(*iter);
     *iter = (*iter)->next;
+
+    /* Remove events */
+    event_watch_del(ethif->port_change_watch_id);
+    event_watch_del(ethif->packet_received_watch_id);
+    event_watch_del(ethif->packet_xmitted_watch_id);
 }
 
 void etherif_init(etherif_t *ethif, const etherif_ops_t *ops)
 {
     ethif->ops = ops;
     ethif->id = etherifs_last_id++;
+
+    ethif->port_change_watch_id = -1;
+    ethif->packet_received_watch_id = -1;
+    ethif->packet_xmitted_watch_id = -1;
+
+    /* Link to list */
     ethif->next = etherifs;
     etherifs = ethif;
 }
