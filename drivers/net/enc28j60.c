@@ -683,6 +683,7 @@ void enc28j60_free(etherif_t *ethif)
     enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
 
     event_watch_del(e->irq_event_id);
+    etherif_uninit(ethif);
     tfree(e);
 }
 

@@ -28,6 +28,16 @@
 static etherif_t *etherifs;
 static int etherifs_last_id;
 
+void etherif_uninit(etherif_t *ethif)
+{
+    etherif_t **iter;
+
+    /* Unlink from list */
+    for (iter = &etherifs; *iter && *iter != ethif; iter = &(*iter)->next);
+    tp_assert(*iter);
+    *iter = (*iter)->next;
+}
+
 void etherif_init(etherif_t *ethif, const etherif_ops_t *ops)
 {
     ethif->ops = ops;

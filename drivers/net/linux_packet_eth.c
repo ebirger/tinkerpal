@@ -160,6 +160,7 @@ void linux_packet_eth_free(etherif_t *ethif)
 
     event_watch_del(lpe->packet_event_id);
     unix_sim_remove_fd_event_from_map(NET_ID);
+    etherif_uninit(ethif);
     close(lpe->packet_socket);
     lpe->packet_socket = -1;
 }
