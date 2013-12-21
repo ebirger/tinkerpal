@@ -65,10 +65,20 @@ static inline void etherif_on_port_change_event_set(etherif_t *ethif,
     event_watch_set(ETHERIF_RES_PORT_CHANGE(ethif), ev);
 }
 
+static inline void etherif_port_changed(etherif_t *ethif)
+{
+    event_watch_trigger(ETHERIF_RES_PORT_CHANGE(ethif));
+}
+
 static inline void etherif_on_packet_received_event_set(etherif_t *ethif,
     event_t *ev)
 {
     event_watch_set(ETHERIF_RES_PACKET_RECEIVED(ethif), ev);
+}
+
+static inline void etherif_packet_received(etherif_t *ethif)
+{
+    event_watch_trigger(ETHERIF_RES_PACKET_RECEIVED(ethif));
 }
 
 static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
@@ -77,19 +87,9 @@ static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
     event_watch_set(ETHERIF_RES_PACKET_XMITTED(ethif), ev);
 }
 
-static inline void etherif_packet_received(etherif_t *ethif)
-{
-    event_watch_trigger(ETHERIF_RES_PACKET_RECEIVED(ethif));
-}
-
 static inline void etherif_packet_xmitted(etherif_t *ethif)
 {
     event_watch_trigger(ETHERIF_RES_PACKET_XMITTED(ethif));
-}
-
-static inline void etherif_port_changed(etherif_t *ethif)
-{
-    event_watch_trigger(ETHERIF_RES_PORT_CHANGE(ethif));
 }
 
 #endif
