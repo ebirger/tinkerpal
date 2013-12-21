@@ -29,7 +29,16 @@
 #include "util/tp_types.h"
 #include "drivers/resources.h"
 
-#define ETHERIF_RES(ethif) RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, 0)
+#define ETHERIF_FLAG_PORT_CHANGE 0x01
+#define ETHERIF_FLAG_PACKET_RECEIVED 0x02
+#define ETHERIF_FLAG_PACKET_XMITTED 0x04
+
+#define ETHERIF_RES_PORT_CHANGE(ethif) \
+    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, ETHERIF_FLAG_PORT_CHANGE)
+#define ETHERIF_RES_PACKET_RECEIVED(ethif) \
+    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, ETHERIF_FLAG_PACKET_RECEIVED)
+#define ETHERIF_RES_PACKET_XMITTED(ethif) \
+    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, ETHERIF_FLAG_PACKET_XMITTED)
 
 typedef struct etherif_t etherif_t;
 
@@ -44,9 +53,6 @@ struct etherif_t {
     etherif_t *next;
     int id;
     const etherif_ops_t *ops;
-    event_t *on_port_change;
-    event_t *on_packet_received;
-    event_t *on_packet_xmit;
 };
 
 void etherif_init(etherif_t *ethif, const etherif_ops_t *ops);
@@ -56,44 +62,34 @@ etherif_t *etherif_get_by_id(int id);
 static inline void etherif_on_port_change_event_set(etherif_t *ethif,
     event_t *ev)
 {
-    ethif->on_port_change = ev;
+    event_watch_set(ETHERIF_RES_PORT_CHANGE(ethif), ev);
 }
 
 static inline void etherif_on_packet_received_event_set(etherif_t *ethif,
     event_t *ev)
 {
-    ethif->on_packet_received = ev;
+    event_watch_set(ETHERIF_RES_PACKET_RECEIVED(ethif), ev);
 }
 
 static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
     event_t *ev)
 {
-    ethif->on_packet_xmit = ev;
+    event_watch_set(ETHERIF_RES_PACKET_XMITTED(ethif), ev);
 }
 
 static inline void etherif_packet_received(etherif_t *ethif)
 {
-    if (!ethif->on_packet_received)
-	return;
-
-    ethif->on_packet_received->trigger(ethif->on_packet_received,
-	ETHERIF_RES(ethif));
+    event_watch_trigger(ETHERIF_RES_PACKET_RECEIVED(ethif));
 }
 
 static inline void etherif_packet_xmitted(etherif_t *ethif)
 {
-    if (!ethif->on_packet_xmit)
-	return;
-
-    ethif->on_packet_xmit->trigger(ethif->on_packet_xmit, ETHERIF_RES(ethif));
+    event_watch_trigger(ETHERIF_RES_PACKET_XMITTED(ethif));
 }
 
 static inline void etherif_port_changed(etherif_t *ethif)
 {
-    if (!ethif->on_port_change)
-	return;
-
-    ethif->on_port_change->trigger(ethif->on_port_change, ETHERIF_RES(ethif));
+    event_watch_trigger(ETHERIF_RES_PORT_CHANGE(ethif));
 }
 
 #endif

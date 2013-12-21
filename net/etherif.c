@@ -22,7 +22,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdio.h> /* NULL */
 #include "util/debug.h"
 #include "net/etherif.h"
 
@@ -32,9 +31,6 @@ static int etherifs_last_id;
 void etherif_init(etherif_t *ethif, const etherif_ops_t *ops)
 {
     ethif->ops = ops;
-    ethif->on_port_change = NULL;
-    ethif->on_packet_received = NULL;
-    ethif->on_packet_xmit = NULL;
     ethif->id = etherifs_last_id++;
     ethif->next = etherifs;
     etherifs = ethif;

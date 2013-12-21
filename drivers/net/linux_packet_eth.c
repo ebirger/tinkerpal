@@ -97,11 +97,7 @@ void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
     linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
 
     serial_write(NET_RES, (char *)buf, size);
-    if (lpe->ethif.on_packet_xmit)
-    {
-	/* packet_event will be called with resource_id = 0 */
-	event_timer_set(0, &lpe->packet_event);
-    }
+    etherif_packet_xmitted(&lpe->ethif);
 }
 
 static void packet_eth_packet_event(event_t *ev, u32 resource_id)
@@ -109,19 +105,8 @@ static void packet_eth_packet_event(event_t *ev, u32 resource_id)
     linux_packet_eth_t *lpe = container_of(ev, linux_packet_eth_t,
 	packet_event);
 
-    if (!resource_id)
-    {
-	/* resource_id is 0 when event is placed on a timer instead of a 
-	 * watch
-	 */
-	tp_debug(("Packet transmitted\n"));
-	etherif_packet_xmitted(&lpe->ethif);
-    }
-    else
-    {
-	tp_debug(("Packet received\n"));
-	etherif_packet_received(&lpe->ethif);
-    }
+    tp_debug(("Packet received\n"));
+    etherif_packet_received(&lpe->ethif);
 }
 
 static const etherif_ops_t linux_packet_eth_ops = {
