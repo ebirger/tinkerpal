@@ -33,7 +33,7 @@ static int console_event_id = -1;
 static event_t *user_e;
 
 /* Stupid wrapper for user_e so their "free" cb is never called */
-static void console_watch_event(event_t *e, int resource_id)
+static void console_watch_event(event_t *e, u32 resource_id)
 {
     user_e->trigger(user_e, resource_id);
 }

@@ -25,17 +25,19 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__
 
+#include "util/tp_types.h"
+
 typedef struct event_t event_t;
 
 struct event_t {
-    void (*trigger)(event_t *e, int resource_id);
+    void (*trigger)(event_t *e, u32 resource_id);
     void (*free)(event_t *e);
 };
 
-int event_watch_set(int resource_id, event_t *e);
+int event_watch_set(u32 resource_id, event_t *e);
 void event_watch_del(int watch_id);
 void event_watch_del_all(void);
-void event_watch_trigger(int resource_id);
+void event_watch_trigger(u32 resource_id);
 
 int event_timer_set(int ms, event_t *e);
 int event_timer_set_period(int ms, event_t *e);

@@ -104,7 +104,7 @@ void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
     }
 }
 
-static void packet_eth_packet_event(event_t *ev, int resource_id)
+static void packet_eth_packet_event(event_t *ev, u32 resource_id)
 {
     linux_packet_eth_t *lpe = container_of(ev, linux_packet_eth_t,
 	packet_event);

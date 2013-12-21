@@ -37,7 +37,7 @@
 typedef struct event_internal_t {
     struct event_internal_t *next;
     event_t *e;
-    int resource_id;
+    u32 resource_id;
     int event_id;
     int period;
     int expire;
@@ -163,7 +163,7 @@ static void get_next_timeout(int *timeout)
     tp_debug(("Next timeout: %d ms\n", *timeout));
 }
 
-static event_internal_t *watch_lookup(int resource_id)
+static event_internal_t *watch_lookup(u32 resource_id)
 {
     event_internal_t *e;
 
@@ -175,7 +175,7 @@ static event_internal_t *watch_lookup(int resource_id)
     return NULL;
 }
 
-void event_watch_trigger(int resource_id)
+void event_watch_trigger(u32 resource_id)
 {
     event_internal_t *e;
 
@@ -185,7 +185,7 @@ void event_watch_trigger(int resource_id)
     EVENT_ON(e);
 }
 
-int event_watch_set(int resource_id, event_t *e)
+int event_watch_set(u32 resource_id, event_t *e)
 {
     event_internal_t *n;
     
