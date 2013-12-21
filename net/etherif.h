@@ -29,16 +29,15 @@
 #include "util/tp_types.h"
 #include "drivers/resources.h"
 
-#define ETHERIF_FLAG_PORT_CHANGE 0x01
-#define ETHERIF_FLAG_PACKET_RECEIVED 0x02
-#define ETHERIF_FLAG_PACKET_XMITTED 0x04
+typedef enum {
+    ETHERIF_EVENT_PORT_CHANGE = 0,
+    ETHERIF_EVENT_PACKET_RECEIVED = 1,
+    ETHERIF_EVENT_PACKET_XMITTED = 2,
+    ETHERIF_EVENT_COUNT
+} etherif_event_t;
 
-#define ETHERIF_RES_PORT_CHANGE(ethif) \
-    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, ETHERIF_FLAG_PORT_CHANGE)
-#define ETHERIF_RES_PACKET_RECEIVED(ethif) \
-    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, ETHERIF_FLAG_PACKET_RECEIVED)
-#define ETHERIF_RES_PACKET_XMITTED(ethif) \
-    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, ETHERIF_FLAG_PACKET_XMITTED)
+#define ETHERIF_RES(ethif, event) \
+    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, event)
 
 typedef struct etherif_t etherif_t;
 
@@ -53,9 +52,7 @@ struct etherif_t {
     etherif_t *next;
     int id;
     const etherif_ops_t *ops;
-    int port_change_watch_id;
-    int packet_received_watch_id;
-    int packet_xmitted_watch_id;
+    int watches[ETHERIF_EVENT_COUNT];
 };
 
 void etherif_uninit(etherif_t *ethif);
@@ -63,40 +60,31 @@ void etherif_init(etherif_t *ethif, const etherif_ops_t *ops);
 
 etherif_t *etherif_get_by_id(int id);
 
-static inline void etherif_on_port_change_event_set(etherif_t *ethif,
+static inline void etherif_on_event_set(etherif_t *ethif, etherif_event_t event,
     event_t *ev)
 {
-    ethif->port_change_watch_id = event_watch_set(
-	ETHERIF_RES_PORT_CHANGE(ethif), ev);
+    ethif->watches[event] = event_watch_set(ETHERIF_RES(ethif, event), ev);
 }
 
-static inline void etherif_port_changed(etherif_t *ethif)
+static inline void etherif_event_trigger(etherif_t *ethif,
+    etherif_event_t event)
 {
-    event_watch_trigger(ETHERIF_RES_PORT_CHANGE(ethif));
+    event_watch_trigger(ETHERIF_RES(ethif, event));
 }
 
-static inline void etherif_on_packet_received_event_set(etherif_t *ethif,
-    event_t *ev)
-{
-    ethif->packet_received_watch_id = event_watch_set(
-	ETHERIF_RES_PACKET_RECEIVED(ethif), ev);
-}
+#define etherif_on_port_change_event_set(ethif, ev) \
+    etherif_on_event_set(ethif, ETHERIF_EVENT_PORT_CHANGE, ev)
+#define etherif_port_changed(ethif) \
+    etherif_event_trigger(ethif, ETHERIF_EVENT_PORT_CHANGE);
 
-static inline void etherif_packet_received(etherif_t *ethif)
-{
-    event_watch_trigger(ETHERIF_RES_PACKET_RECEIVED(ethif));
-}
+#define etherif_on_packet_received_event_set(ethif, ev) \
+    etherif_on_event_set(ethif, ETHERIF_EVENT_PACKET_RECEIVED, ev)
+#define etherif_packet_received(ethif) \
+    etherif_event_trigger(ethif, ETHERIF_EVENT_PACKET_RECEIVED);
 
-static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
-    event_t *ev)
-{
-    ethif->packet_xmitted_watch_id = event_watch_set(
-	ETHERIF_RES_PACKET_XMITTED(ethif), ev);
-}
-
-static inline void etherif_packet_xmitted(etherif_t *ethif)
-{
-    event_watch_trigger(ETHERIF_RES_PACKET_XMITTED(ethif));
-}
+#define etherif_on_packet_xmit_event_set(ethif, ev) \
+    etherif_on_event_set(ethif, ETHERIF_EVENT_PACKET_XMITTED, ev)
+#define etherif_packet_xmitted(ethif) \
+    etherif_event_trigger(ethif, ETHERIF_EVENT_PACKET_XMITTED);
 
 #endif
