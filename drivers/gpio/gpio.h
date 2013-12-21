@@ -108,7 +108,7 @@ static inline int gpio_get_constant(int *constant, char *buf, int len)
     else 
 	return -1;
 
-    *constant = RES(GPIO_RESOURCE_ID_BASE, pin);
+    *constant = RES(GPIO_RESOURCE_ID_BASE, pin, 0);
     return 0;
 }
 

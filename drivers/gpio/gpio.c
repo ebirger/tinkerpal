@@ -41,7 +41,7 @@ static int gpio_event(int port)
     {
 	if (state & GPIO_BIT(i))
 	{
-	    int res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i));
+	    int res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i), 0);
 
 	    event_watch_trigger(res);
 	    ret = 1;

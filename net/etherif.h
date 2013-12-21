@@ -29,7 +29,7 @@
 #include "util/tp_types.h"
 #include "drivers/resources.h"
 
-#define ETHERIF_RES(ethif) RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id)
+#define ETHERIF_RES(ethif) RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, 0)
 
 typedef struct etherif_t etherif_t;
 

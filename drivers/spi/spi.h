@@ -88,7 +88,7 @@ static inline int spi_get_constant(int *constant, char *buf, int len)
     if (len != 1)
 	return -1;
 
-    *constant = RES(SPI_RESOURCE_ID_BASE, buf[0] - '0');
+    *constant = RES(SPI_RESOURCE_ID_BASE, buf[0] - '0', 0);
     return 0;
 }
 

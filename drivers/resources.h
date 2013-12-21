@@ -25,14 +25,18 @@
 #ifndef __RESOURCES_H__
 #define __RESOURCES_H__
 
-#define RES_ID_MASK (0xff)
-#define GPIO_RESOURCE_ID_BASE 0x0100
-#define UART_RESOURCE_ID_BASE 0x0200
-#define SPI_RESOURCE_ID_BASE 0x0400
-#define ETHERIF_RESOURCE_ID_BASE 0x0800
+#define RES_ID_MASK 0xff
+#define RES_FLAGS_MASK (0xff << 8)
+#define RES_BASE_MASK (0xff << 16)
 
-#define RES(base, id) ((base) | (id))
+#define RES(base, id, flags) (((base) << 16) | ((flags) << 8) | (id))
 #define RES_ID(res) ((res) & RES_ID_MASK)
-#define RES_BASE(res) ((res) & ~RES_ID_MASK)
+#define RES_FLAGS(res) (((res) & RES_FLAGS_MASK) >> 8)
+#define RES_BASE(res) (((res) & RES_BASE_MASK) >> 16)
+
+#define GPIO_RESOURCE_ID_BASE 0x01
+#define UART_RESOURCE_ID_BASE 0x02
+#define SPI_RESOURCE_ID_BASE 0x03
+#define ETHERIF_RESOURCE_ID_BASE 0x04
 
 #endif

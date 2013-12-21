@@ -101,7 +101,7 @@ int buffered_serial_enable(int u, int enabled)
 
 void serial_event_trigger(int u)
 {
-    event_watch_trigger(RES(UART_RESOURCE_ID_BASE, u));
+    event_watch_trigger(RES(UART_RESOURCE_ID_BASE, u, 0));
 }
 
 int serial_enable(int id, int enabled)

@@ -49,7 +49,7 @@ int serial_enable(int id, int enabled);
 
 static inline int serial_default_console_id(void)
 {
-    return RES(UART_RESOURCE_ID_BASE, platform.serial.default_console_id);
+    return RES(UART_RESOURCE_ID_BASE, platform.serial.default_console_id, 0);
 }
 
 /* XXX: should receive tstr */
@@ -69,7 +69,7 @@ static inline int serial_get_constant(int *constant, char *buf, int len)
     if (len != 1)
 	return -1;
 
-    *constant = RES(UART_RESOURCE_ID_BASE, buf[0] - '0');
+    *constant = RES(UART_RESOURCE_ID_BASE, buf[0] - '0', 0);
     return 0;
 }
 

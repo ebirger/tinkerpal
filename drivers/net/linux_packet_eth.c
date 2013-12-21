@@ -55,7 +55,7 @@ typedef struct {
 static linux_packet_eth_t g_lpe = { .packet_socket = -1 };
 
 #define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_packet_eth_t, ethif)
-#define NET_RES (RES(UART_RESOURCE_ID_BASE, NET_ID))
+#define NET_RES (RES(UART_RESOURCE_ID_BASE, NET_ID, 0))
 
 static void cur_packet_dump(linux_packet_eth_t *lpe) __attribute__((unused));
 static void cur_packet_dump(linux_packet_eth_t *lpe)
