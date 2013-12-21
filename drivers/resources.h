@@ -25,13 +25,13 @@
 #ifndef __RESOURCES_H__
 #define __RESOURCES_H__
 
-#define RES_ID_MASK 0xff
-#define RES_FLAGS_MASK (0xff << 8)
+#define RES_MIN_MASK 0xff
+#define RES_MAJ_MASK (0xff << 8)
 #define RES_BASE_MASK (0xff << 16)
 
-#define RES(base, id, flags) (((base) << 16) | ((flags) << 8) | (id))
-#define RES_ID(res) ((res) & RES_ID_MASK)
-#define RES_FLAGS(res) (((res) & RES_FLAGS_MASK) >> 8)
+#define RES(base, maj, min) (((base) << 16) | ((maj) << 8) | (min))
+#define RES_MIN(res) ((res) & RES_MIN_MASK)
+#define RES_MAJ(res) (((res) & RES_MAJ_MASK) >> 8)
 #define RES_BASE(res) (((res) & RES_BASE_MASK) >> 16)
 
 #define GPIO_RESOURCE_ID_BASE 0x01

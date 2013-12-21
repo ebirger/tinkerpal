@@ -37,7 +37,7 @@ static inline int spi_init(int port)
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return -1;
 
-    return platform.spi.init(RES_ID(port));
+    return platform.spi.init(RES_MAJ(port));
 }
 
 static inline void spi_reconf(int port)
@@ -45,7 +45,7 @@ static inline void spi_reconf(int port)
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return;
 
-    platform.spi.reconf(RES_ID(port));
+    platform.spi.reconf(RES_MAJ(port));
 }
 
 static inline void spi_set_max_speed(int port, int speed)
@@ -53,7 +53,7 @@ static inline void spi_set_max_speed(int port, int speed)
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return;
 
-    platform.spi.set_max_speed(RES_ID(port), speed);
+    platform.spi.set_max_speed(RES_MAJ(port), speed);
 }
 
 static inline void spi_send(int port, unsigned long data)
@@ -61,7 +61,7 @@ static inline void spi_send(int port, unsigned long data)
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return;
 
-    platform.spi.send(RES_ID(port), data);
+    platform.spi.send(RES_MAJ(port), data);
 }
 
 static inline unsigned long spi_receive(int port)
@@ -69,7 +69,7 @@ static inline unsigned long spi_receive(int port)
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return 0;
 
-    return platform.spi.receive(RES_ID(port));
+    return platform.spi.receive(RES_MAJ(port));
 }
 
 static inline int spi_get_constant(int *constant, char *buf, int len)

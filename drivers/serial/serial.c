@@ -109,7 +109,7 @@ int serial_enable(int id, int enabled)
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
 	return -1;
 
-    id = RES_ID(id);
+    id = RES_MAJ(id);
 
 #ifdef CONFIG_BUFFERED_SERIAL
     if (buffered_serial_enable(id, enabled))

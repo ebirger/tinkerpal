@@ -34,7 +34,7 @@ static inline void gpio_digital_write(int pin, int value)
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return;
 
-    pin = RES_ID(pin);
+    pin = RES_MAJ(pin);
     platform.gpio.digital_write(pin, value);
 }
 
@@ -43,7 +43,7 @@ static inline void gpio_digital_pulse(int pin, int value, double ms)
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return;
 
-    pin = RES_ID(pin);
+    pin = RES_MAJ(pin);
     platform.gpio.digital_write(pin, value);
     platform.msleep(ms);
     platform.gpio.digital_write(pin, !value);
@@ -54,7 +54,7 @@ static inline int gpio_digital_read(int pin)
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return 0;
 
-    pin = RES_ID(pin);
+    pin = RES_MAJ(pin);
     return platform.gpio.digital_read(pin);
 }
 
@@ -63,7 +63,7 @@ static inline void gpio_analog_write(int pin, double value)
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return;
 
-    pin = RES_ID(pin);
+    pin = RES_MAJ(pin);
     platform.gpio.analog_write(pin, value);
 }
 
@@ -72,7 +72,7 @@ static inline double gpio_analog_read(int pin)
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return 0;
 
-    pin = RES_ID(pin);
+    pin = RES_MAJ(pin);
     return platform.gpio.analog_read(pin);
 }
 
@@ -81,7 +81,7 @@ static inline int gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return -1;
 
-    pin = RES_ID(pin);
+    pin = RES_MAJ(pin);
     return platform.gpio.set_pin_mode(pin, mode);
 }
 

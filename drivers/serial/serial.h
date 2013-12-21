@@ -34,7 +34,7 @@ static inline int serial_read(int id, char *buf, int size)
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
 	return -1;
 
-    return platform.serial.read(RES_ID(id), buf, size);
+    return platform.serial.read(RES_MAJ(id), buf, size);
 }
 
 static inline int serial_write(int id, char *buf, int size)
@@ -42,7 +42,7 @@ static inline int serial_write(int id, char *buf, int size)
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
 	return -1;
     
-    return platform.serial.write(RES_ID(id), buf, size);
+    return platform.serial.write(RES_MAJ(id), buf, size);
 }
 
 int serial_enable(int id, int enabled);
