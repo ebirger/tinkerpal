@@ -332,7 +332,6 @@ typedef struct {
 } enc28j60_t;
 
 #define ETHIF_TO_ENC28J60(x) container_of(x, enc28j60_t, ethif)
-#define ENC28J60_RES(e) RES(ETHERIF_RESOURCE_ID_BASE, (e)->ethif.id)
 
 static u8 test_mac[] = { 0, 1, 2, 3, 4, 5 };
 
@@ -632,11 +631,7 @@ static void packet_received(enc28j60_t *e)
 	return;
     }
 
-    if (e->ethif.on_packet_received)
-    {
-	e->ethif.on_packet_received->trigger(e->ethif.on_packet_received,
-	    ENC28J60_RES(e));
-    }
+    etherif_packet_received(&e->ethif);
 }
 
 static void packet_xmitted(enc28j60_t *e)
@@ -645,22 +640,14 @@ static void packet_xmitted(enc28j60_t *e)
 
     /* TODO: read packet xmit status */
 
-    if (e->ethif.on_packet_xmit)
-    {
-	e->ethif.on_packet_xmit->trigger(e->ethif.on_packet_xmit,
-	    ENC28J60_RES(e));
-    }
+    etherif_packet_xmitted(&e->ethif);
 }
 
 static void link_status_changed(enc28j60_t *e)
 {
     tp_info(("ENC28J60 Link state change - state %d\n", 
 	enc28j60_link_status(e)));
-    if (e->ethif.on_port_change)
-    {
-	e->ethif.on_port_change->trigger(e->ethif.on_port_change,
-            ENC28J60_RES(e));
-    }
+    etherif_port_changed(&e->ethif);
 }
 
 static void enc28j60_isr(event_t *ev, int resource_id)

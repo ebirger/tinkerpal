@@ -27,6 +27,9 @@
 
 #include "util/event.h"
 #include "util/tp_types.h"
+#include "drivers/resources.h"
+
+#define ETHERIF_RES(ethif) RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id)
 
 typedef struct etherif_t etherif_t;
 
@@ -66,6 +69,31 @@ static inline void etherif_on_packet_xmit_event_set(etherif_t *ethif,
     event_t *ev)
 {
     ethif->on_packet_xmit = ev;
+}
+
+static inline void etherif_packet_received(etherif_t *ethif)
+{
+    if (!ethif->on_packet_received)
+	return;
+
+    ethif->on_packet_received->trigger(ethif->on_packet_received,
+	ETHERIF_RES(ethif));
+}
+
+static inline void etherif_packet_xmitted(etherif_t *ethif)
+{
+    if (!ethif->on_packet_xmit)
+	return;
+
+    ethif->on_packet_xmit->trigger(ethif->on_packet_xmit, ETHERIF_RES(ethif));
+}
+
+static inline void etherif_port_changed(etherif_t *ethif)
+{
+    if (!ethif->on_port_change)
+	return;
+
+    ethif->on_port_change->trigger(ethif->on_port_change, ETHERIF_RES(ethif));
 }
 
 #endif
