@@ -68,12 +68,12 @@ static void cur_packet_dump(linux_packet_eth_t *lpe)
     printf("-------------------------------------\n");
 }
 
-int packet_eth_link_status(etherif_t *ethif)
+static int packet_eth_link_status(etherif_t *ethif)
 {
     return 1;
 }
 
-int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
+static int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
     linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
 
@@ -92,7 +92,7 @@ int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
     return size;
 }
 
-void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
+static void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 {
     linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
 
