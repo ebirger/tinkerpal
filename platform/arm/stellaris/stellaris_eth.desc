@@ -1,0 +1,1 @@
+CONSTRUCTOR("StellarisEth", etherif, do_stellaris_eth_constructor)

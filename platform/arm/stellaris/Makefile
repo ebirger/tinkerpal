@@ -4,6 +4,10 @@ MK_OBJS=stellaris.o
 MK_OBJS+=$(if $(CONFIG_TI_CCS5),stellaris_entry_ccs5.o)
 MK_OBJS+=$(if $(CONFIG_GPIO),stellaris_gpio.o)
 MK_OBJS+=$(if $(CONFIG_SPI),stellaris_spi.o)
+ifneq ($(CONFIG_STELLARIS_ETH),)
+  MK_OBJS+=stellaris_eth.o $(if $(CONFIG_JS),js_stellaris_eth.o)
+  MK_DESCS+=stellaris_eth.desc
+endif
 
 MK_SUBDIRS+=$(if $(CONFIG_LM4F120XL),lm4f120xl)
 MK_SUBDIRS+=$(if $(CONFIG_LM3S6965),lm3s6965)

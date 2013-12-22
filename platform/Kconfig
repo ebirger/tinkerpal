@@ -15,6 +15,9 @@ config PLAT_HAS_SERIAL
 config PLAT_HAS_SPI
 	bool
 
+config PLAT_HAS_EMBEDDED_ETH
+	bool
+
 config BUFFERED_SERIAL
 	bool
 	depends on PLAT_HAS_SERIAL
@@ -32,6 +35,11 @@ config STELLARIS
 	select BUFFERED_SERIAL
 	select PLAT_HAS_SPI
 	select PLAT_HAS_MALLOC
+
+config STELLARIS_ETH
+	bool
+	depends on STELLARIS && PLAT_HAS_EMBEDDED_ETH && NET
+	default y
 
 config FRDM
 	bool
@@ -66,6 +74,7 @@ config MSP430F5529
 config LM3S6918
 	bool
 	select STELLARIS
+	select PLAT_HAS_EMBEDDED_ETH
 
 choice 
 
@@ -87,6 +96,7 @@ config LM4F120XL
 config LM3S6965
 	bool "TI LM3S6965"
 	select STELLARIS
+	select PLAT_HAS_EMBEDDED_ETH
 
 config RDK_IDM
 	bool "TI RDK-IDM (LM3S6918)"
