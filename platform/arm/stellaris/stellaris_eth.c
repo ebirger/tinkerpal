@@ -167,14 +167,12 @@ static void hw_init(void)
 
 etherif_t *stellaris_eth_new(void)
 {
-    stellaris_eth_t *se = &g_eth;
-
     g_eth.istat = 0;
-    etherif_init(&se->ethif, &stellaris_eth_etherif_ops);
+    etherif_init(&g_eth.ethif, &stellaris_eth_etherif_ops);
 
     hw_init();
     phy_cfg();
     phy_info();
 
-    return &se->ethif;
+    return &g_eth.ethif;
 }
