@@ -124,7 +124,7 @@ void stellaris_ethernet_isr(void)
 {
     u32 istat;
 
-    istat = MAP_EthernetIntStatus(ETH_BASE, false);
+    istat = MAP_EthernetIntStatus(ETH_BASE, true);
 
     /* Mask interrupts until they are handled */
     MAP_EthernetIntDisable(ETH_BASE, istat);
