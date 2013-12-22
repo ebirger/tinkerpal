@@ -39,6 +39,7 @@
 
 typedef struct {
     etherif_t ethif;
+    u32 istat;
 } stellaris_eth_t;
 
 static stellaris_eth_t g_eth; /* Singleton */
@@ -86,6 +87,56 @@ static void phy_info(void)
     tp_out(("Revision Number %x\n", (mr3 & PHY_MR3_RN_M) >> PHY_MR3_RN_S));
 }
 
+static void phy_cfg(void)
+{
+    /* Enable link change interrupt */
+    MAP_EthernetPHYWrite(ETH_BASE, PHY_MR17,
+	MAP_EthernetPHYRead(ETH_BASE, PHY_MR17) | PHY_MR17_LSCHG_IE);
+}
+
+int stellaris_eth_event_process(void)
+{
+    MAP_IntDisable(INT_ETH);
+    if (!g_eth.istat)
+    {
+	MAP_IntEnable(INT_ETH);
+	return 0;
+    }
+
+    if (g_eth.istat & ETH_INT_PHY)
+    {
+	/* Ack PHY interrupt */
+	MAP_EthernetPHYWrite(ETH_BASE, PHY_MR17,
+	    MAP_EthernetPHYRead(ETH_BASE, PHY_MR17) | PHY_MR17_LSCHG_INT);
+
+	etherif_port_changed(&g_eth.ethif);
+    }
+
+    /* Unmask interrupts */
+    MAP_EthernetIntEnable(ETH_BASE, g_eth.istat);
+    g_eth.istat = 0;
+
+    MAP_IntEnable(INT_ETH);
+    return 1;
+}
+
+void stellaris_ethernet_isr(void)
+{
+    u32 istat;
+
+    istat = MAP_EthernetIntStatus(ETH_BASE, false);
+
+    /* Mask interrupts until they are handled */
+    MAP_EthernetIntDisable(ETH_BASE, istat);
+
+    /* Clear interrupt status */
+    MAP_EthernetIntClear(ETH_BASE, istat);
+
+    tp_debug(("Stellaris Ethernet ISR %x\n", istat));
+
+    g_eth.istat |= istat;
+}
+
 static void hw_init(void)
 {
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_ETH);
@@ -110,17 +161,19 @@ static void hw_init(void)
     /* Enable the Ethernet Interrupt handler */
     MAP_IntEnable(INT_ETH);
 
-    /* Enable Ethernet TX and RX Packet Interrupts */
-    MAP_EthernetIntEnable(ETH_BASE, ETH_INT_RX | ETH_INT_TX);
+    /* Enable Ethernet Interrupts */
+    MAP_EthernetIntEnable(ETH_BASE, ETH_INT_PHY);
 }
 
 etherif_t *stellaris_eth_new(void)
 {
     stellaris_eth_t *se = &g_eth;
 
+    g_eth.istat = 0;
     etherif_init(&se->ethif, &stellaris_eth_etherif_ops);
 
     hw_init();
+    phy_cfg();
     phy_info();
 
     return &se->ethif;

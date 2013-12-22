@@ -29,6 +29,8 @@
 #include "util/tp_types.h"
 #include "net/etherif.h"
 
+int stellaris_eth_event_process(void);
+
 void stellaris_eth_free(etherif_t *ethif);
 etherif_t *stellaris_eth_new(void);
 

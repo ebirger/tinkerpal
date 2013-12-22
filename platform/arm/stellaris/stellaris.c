@@ -35,6 +35,9 @@
 #endif
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stellaris/stellaris.h"
+#ifdef CONFIG_STELLARIS_ETH
+#include "platform/arm/stellaris/stellaris_eth.h"
+#endif
 
 void stellaris_systick_init(void)
 {
@@ -153,6 +156,9 @@ int stellaris_select(int ms)
     {
 #ifdef CONFIG_GPIO
 	event |= gpio_events_process();
+#endif
+#ifdef CONFIG_STELLARIS_ETH
+	event |= stellaris_eth_event_process();
 #endif
 	event |= buffered_serial_events_process();
 

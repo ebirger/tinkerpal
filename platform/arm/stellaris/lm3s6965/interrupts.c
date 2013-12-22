@@ -30,6 +30,7 @@ extern void reset_isr(void);
 extern void stellaris_uart_isr(int u);
 extern void gpio_isr(int port);
 extern void cortex_m_systick_isr(void);
+extern void stellaris_ethernet_isr(void);
 
 static void uart0_isr(void) { stellaris_uart_isr(UART0); }
 
@@ -124,6 +125,6 @@ void (*const g_pfnVectors[])(void) =
     default_isr,                      // CAN0
     default_isr,                      // CAN1
     default_isr,                      // CAN2
-    default_isr,                      // Ethernet
+    stellaris_ethernet_isr,           // Ethernet
     default_isr                       // Hibernate
 };
