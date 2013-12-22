@@ -13,7 +13,8 @@ ifneq ($(CONFIG_TI_CCS5),)
 endif
 
 ifneq ($(CONFIG_GCC),)
-  BSP_SRCS:=systick.c sysctl.c gpio.c interrupt.c uart.c ssi.c cpu.c pwm.c
+  BSP_SRCS:=systick.c sysctl.c gpio.c interrupt.c uart.c ssi.c cpu.c pwm.c \
+    $(if $(CONFIG_STELLARIS_ETH),ethernet.c)
 
   MK_LINKS:=$(addprefix $(STELLARISWARE_DIR)/driverlib/,$(BSP_SRCS))
 
