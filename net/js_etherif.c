@@ -59,6 +59,11 @@ int do_etherif_packet_recv(obj_t **ret, obj_t *this, int argc,
     array_buffer = array_buffer_new(size);
     size = ethif->ops->packet_recv(ethif, (u8 *)
 	TPTR(&((array_buffer_t *)array_buffer)->value), size);
+    if (size <= 0)
+    {
+	obj_put(array_buffer);
+	return throw_exception(ret, &S("Exception: can't read packet"));
+    }
     *ret = array_buffer_view_new(array_buffer, 
 	ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, size);
     obj_put(array_buffer);
