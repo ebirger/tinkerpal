@@ -11,5 +11,5 @@ compiler:
   - gcc
 env:
   - DEFCONFIG=unix_sim_tests_defconfig
-  - DEFCONFIG=frdm_kl25z_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb LIBGCC_DIR=/usr/lib/gcc/arm-none-eabi/4.7.4/thumb CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=frdm_kl25z_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb LIBGCC_DIR=/usr/lib/gcc/arm-none-eabi/4.8.3/thumb CROSS_COMPILE=arm-none-eabi-
 script: make $DEFCONFIG && make && cd tests && ./run_tests.sh && ./leak_check.sh
