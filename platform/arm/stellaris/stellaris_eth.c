@@ -49,18 +49,24 @@ static int stellaris_eth_link_status(etherif_t *ethif)
     return MAP_EthernetPHYRead(ETH_BASE, PHY_MR1) & PHY_MR1_LINK ? 1 : 0;
 }
 
-static int stellaris_eth_packet_size(etherif_t *ethif)
-{
-    return 0;
-}
-
 static int stellaris_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
-    return 0;
+    long length;
+
+    length = MAP_EthernetPacketGetNonBlocking(ETH_BASE, buf, size);
+    MAP_EthernetIntEnable(ETH_BASE, ETH_INT_RX);
+    if (length < 0)
+	tp_err(("Buffer too small (%d). Packet length %d\n", size, -length));
+    return (int)length;
 }
 
 static void stellaris_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 {
+    long length;
+
+    length = MAP_EthernetPacketPut(ETH_BASE, buf, size);
+    if (length < 0)
+	tp_err(("No space for packet (%d). Space left %d\n", size, -length));
 }
 
 void stellaris_eth_free(etherif_t *ethif)
@@ -70,7 +76,6 @@ void stellaris_eth_free(etherif_t *ethif)
 
 static const etherif_ops_t stellaris_eth_etherif_ops = {
     .link_status = stellaris_eth_link_status,
-    .packet_size = stellaris_eth_packet_size,
     .packet_recv = stellaris_eth_packet_recv,
     .packet_xmit = stellaris_eth_packet_xmit,
 };
@@ -110,10 +115,21 @@ int stellaris_eth_event_process(void)
 	    MAP_EthernetPHYRead(ETH_BASE, PHY_MR17) | PHY_MR17_LSCHG_INT);
 
 	etherif_port_changed(&g_eth.ethif);
+	MAP_EthernetIntEnable(ETH_BASE, ETH_INT_PHY);
+    }
+    
+    if (g_eth.istat & ETH_INT_RX)
+    {
+	etherif_packet_received(&g_eth.ethif);
+	/* Interrupt will be unmasked after read */
+    }
+    
+    if (g_eth.istat & ETH_INT_TX)
+    {
+	etherif_packet_xmitted(&g_eth.ethif);
+	MAP_EthernetIntEnable(ETH_BASE, ETH_INT_TX);
     }
 
-    /* Unmask interrupts */
-    MAP_EthernetIntEnable(ETH_BASE, g_eth.istat);
     g_eth.istat = 0;
 
     MAP_IntEnable(INT_ETH);
@@ -162,7 +178,7 @@ static void hw_init(void)
     MAP_IntEnable(INT_ETH);
 
     /* Enable Ethernet Interrupts */
-    MAP_EthernetIntEnable(ETH_BASE, ETH_INT_PHY);
+    MAP_EthernetIntEnable(ETH_BASE, ETH_INT_PHY | ETH_INT_RX | ETH_INT_TX);
 }
 
 etherif_t *stellaris_eth_new(void)
