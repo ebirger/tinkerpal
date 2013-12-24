@@ -36,6 +36,7 @@ struct event_t {
 
 int event_watch_set(u32 resource_id, event_t *e);
 void event_watch_del(int watch_id);
+void event_watch_del_by_resource(u32 resource_id);
 void event_watch_del_all(void);
 void event_watch_trigger(u32 resource_id);
 

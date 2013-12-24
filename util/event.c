@@ -211,6 +211,17 @@ void event_watch_del(int event_id)
     }
 }
 
+void event_watch_del_by_resource(u32 resource_id)
+{
+    event_internal_t *e;
+
+    watches_foreach(e)
+    {
+	if (e->resource_id == resource_id)
+	    EVENT_SET_DELETED(e);
+    }
+}
+
 void event_watch_del_all(void)
 {
     event_internal_t *e;
