@@ -683,7 +683,7 @@ static void enc28j60_free(etherif_t *ethif)
     enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
 
     event_watch_del(e->irq_event_id);
-    etherif_uninit(ethif);
+    etherif_destruct(ethif);
     tfree(e);
 }
 
@@ -703,7 +703,7 @@ etherif_t *enc28j60_new(int spi_port, int cs, int intr)
     e->cs = cs;
     e->intr = intr;
     e->irq_event.trigger = enc28j60_isr;
-    etherif_init(&e->ethif, &enc28j60_etherif_ops);
+    etherif_construct(&e->ethif, &enc28j60_etherif_ops);
 
     spi_init(spi_port);
     spi_set_max_speed(spi_port, 12000000);

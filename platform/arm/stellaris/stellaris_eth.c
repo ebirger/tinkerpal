@@ -71,7 +71,7 @@ static void stellaris_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 
 static void stellaris_eth_free(etherif_t *ethif)
 {
-    etherif_uninit(ethif);
+    etherif_destruct(ethif);
 }
 
 static const etherif_ops_t stellaris_eth_etherif_ops = {
@@ -185,7 +185,7 @@ static void hw_init(void)
 etherif_t *stellaris_eth_new(void)
 {
     g_eth.istat = 0;
-    etherif_init(&g_eth.ethif, &stellaris_eth_etherif_ops);
+    etherif_construct(&g_eth.ethif, &stellaris_eth_etherif_ops);
 
     hw_init();
     phy_cfg();

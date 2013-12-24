@@ -56,8 +56,8 @@ struct etherif_t {
     int watches[ETHERIF_EVENT_COUNT];
 };
 
-void etherif_uninit(etherif_t *ethif);
-void etherif_init(etherif_t *ethif, const etherif_ops_t *ops);
+void etherif_destruct(etherif_t *ethif);
+void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops);
 
 etherif_t *etherif_get_by_id(int id);
 

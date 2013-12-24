@@ -28,7 +28,7 @@
 static etherif_t *etherifs;
 static int etherifs_last_id;
 
-void etherif_uninit(etherif_t *ethif)
+void etherif_destruct(etherif_t *ethif)
 {
     etherif_event_t event;
     etherif_t **iter;
@@ -43,7 +43,7 @@ void etherif_uninit(etherif_t *ethif)
 	event_watch_del(ethif->watches[event]);
 }
 
-void etherif_init(etherif_t *ethif, const etherif_ops_t *ops)
+void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
 {
     etherif_event_t event;
 

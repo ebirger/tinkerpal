@@ -115,7 +115,7 @@ static void packet_eth_free(etherif_t *ethif)
 
     event_watch_del(lpe->packet_event_id);
     unix_sim_remove_fd_event_from_map(NET_ID);
-    etherif_uninit(ethif);
+    etherif_destruct(ethif);
     close(lpe->packet_socket);
     lpe->packet_socket = -1;
 }
@@ -180,7 +180,7 @@ etherif_t *linux_packet_eth_new(char *dev_name)
 	return NULL;
 
     lpe->packet_event.trigger = packet_eth_packet_event;
-    etherif_init(&lpe->ethif, &linux_packet_eth_ops);
+    etherif_construct(&lpe->ethif, &linux_packet_eth_ops);
     unix_sim_add_fd_event_to_map(NET_ID, lpe->packet_socket,
         lpe->packet_socket);
     lpe->packet_event_id = event_watch_set(NET_RES, &lpe->packet_event);
