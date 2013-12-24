@@ -255,7 +255,7 @@ static void watches_process(void)
 
     watches_foreach(e)
     {
-	if (!(EVENT_IS_ON(e)))
+	if (EVENT_IS_DELETED(e) || !(EVENT_IS_ON(e)))
 	    continue;
 
 	e->e->trigger(e->e, e->resource_id);
