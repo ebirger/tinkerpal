@@ -39,5 +39,5 @@ void eth_hdr_dump(eth_hdr_t *hdr)
 {
     tp_out(("DST: %s\n", eth_mac_serialize(&hdr->dst)));
     tp_out(("SRC: %s\n", eth_mac_serialize(&hdr->src)));
-    tp_out(("PROTO: %x\n", hdr->proto));
+    tp_out(("PROTO: %04x\n", ntohs(hdr->proto)));
 }
