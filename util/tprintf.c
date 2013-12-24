@@ -41,7 +41,8 @@ static int num_tprintf_handlers = 0;
     printer->print(printer, b, 1); \
 } while (0)
 
-void tprint_integer(printer_t *printer, int num, int base, int min_digits)
+static void tprint_integer(printer_t *printer, int num, int base,
+    int min_digits)
 {
     char nbuf[40], *p = nbuf;
     char const hex2ascii[] = "0123456789abcdef";
