@@ -27,6 +27,42 @@
 
 #include "util/tp_types.h"
 
+#ifdef CONFIG_BIG_ENDIAN
+
+#ifndef htonl
+#define htonl(a) (a)
+#endif
+
+#ifndef htons
+#define htons(a) (a)
+#endif
+
+#else
+
+#ifndef htonl
+#define htonl(a) \
+    ((((a) >> 24) & 0x000000ff) | \
+     (((a) >>  8) & 0x0000ff00) | \
+     (((a) <<  8) & 0x00ff0000) | \
+     (((a) << 24) & 0xff000000))
+#endif
+
+#ifndef ntohl
+#define ntohl(a) htonl((a))
+#endif
+
+#ifndef htons
+#define htons(a) \
+    ((((a) >> 8) & 0x00ff) | \
+     (((a) << 8) & 0xff00))
+#endif
+
+#ifndef ntohs
+#define ntohs(a) htons((a))
+#endif
+
+#endif
+
 typedef struct {
     u8 mac[6];
 } eth_mac_t;
