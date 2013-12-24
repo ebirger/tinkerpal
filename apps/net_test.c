@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "net/ethernet.h"
+#include "net/ether.h"
 #include "platform/platform_consts.h"
 #include "apps/cli.h"
 
