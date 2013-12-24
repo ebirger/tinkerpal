@@ -61,6 +61,21 @@ void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops);
 
 etherif_t *etherif_get_by_id(int id);
 
+static inline int etherif_link_status(etherif_t *ethif)
+{
+    return ethif->ops->link_status(ethif);
+}
+
+static inline int etherif_packet_recv(etherif_t *ethif, u8 *buf, int size)
+{
+    return ethif->ops->packet_recv(ethif, buf, size);
+}
+
+static inline void etherif_packet_xmit(etherif_t *ethif, u8 *buf, int size)
+{
+    ethif->ops->packet_xmit(ethif, buf, size);
+}
+
 static inline void etherif_free(etherif_t *ethif)
 {
     ethif->ops->free(ethif);

@@ -57,7 +57,7 @@ int do_etherif_packet_recv(obj_t **ret, obj_t *this, int argc,
     else
 	size = 400; /* Arbitrary, but should be good enough */
     array_buffer = array_buffer_new(size);
-    size = ethif->ops->packet_recv(ethif, (u8 *)
+    size = etherif_packet_recv(ethif, (u8 *)
 	TPTR(&((array_buffer_t *)array_buffer)->value), size);
     if (size <= 0)
     {
@@ -122,6 +122,6 @@ int do_etherif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     etherif_t *ethif = etherif_obj_get_etherif(this);
 
-    *ret = ethif->ops->link_status(ethif) ? TRUE : FALSE;
+    *ret = etherif_link_status(ethif) ? TRUE : FALSE;
     return 0;
 }
