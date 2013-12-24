@@ -56,7 +56,16 @@ static inline void packet_pull(packet_t *pkt, int len)
 
 static inline void packet_reset(packet_t *pkt, int head)
 {
-    pkt->ptr = head ? pkt->head : pkt->tail;
+    if (head)
+    {
+	pkt->ptr = pkt->head;
+	pkt->length = pkt->tail - pkt->head;
+    }
+    else
+    {
+	pkt->ptr = pkt->tail;
+	pkt->length = 0;
+    }
 }
 
 #endif
