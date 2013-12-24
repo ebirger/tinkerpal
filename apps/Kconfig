@@ -23,6 +23,11 @@ config APP_STATIC_FILE
 	bool "Static File Application"
 	depends on JS
 
+config APP_NET_TEST
+	bool "Net test"
+	depends on ETHERNET
+	select CLI
+
 config APP_DUMMY
 	bool "Dummy. Does nothing. Used for testing"
 
