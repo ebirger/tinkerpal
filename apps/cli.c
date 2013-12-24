@@ -48,6 +48,7 @@ static char cli_buf[CONFIG_CLI_BUFFER_SIZE];
 static char *buf, *read_buf;
 static int free_size = sizeof(cli_buf), size, cur_line_pos;
 static tstr_t cur_line = {};
+static cli_client_t *g_client;
 history_t *history;
 
 static void reset_line(void)
@@ -73,7 +74,8 @@ static void syntax_hightlight(void)
     while (pos--)
 	CTRL(TERM_CURSOR_LEFT);
 
-    cli_client_syntax_hightlight(&cur_line);
+    if (g_client->syntax_hightlight)
+	g_client->syntax_hightlight(&cur_line);
 
     CTRL(TERM_RESTORE_CURSOR);
 #endif
@@ -198,7 +200,8 @@ static void app_quit(void)
     event_timer_del_all();
     event_watch_del_all();
     history_free(history);
-    cli_client_quit();
+    if (g_client->quit)
+	g_client->quit();
 }
 
 static void do_esc(void)
@@ -297,7 +300,8 @@ static void on_event(event_t *e, u32 id)
 
     if (cur_line.len)
     {
-	cli_client_process_line(&cur_line);
+	if (g_client->process_line)
+	    g_client->process_line(&cur_line);
 	history_commit(history, &cur_line);
 	cur_line.len = cur_line_pos = 0;
 	TPTR(&cur_line) = read_buf = buf = cli_buf;
@@ -310,8 +314,9 @@ static event_t cli_event = {
     .trigger = on_event,
 };
 
-void cli_start(void)
+void cli_start(cli_client_t *client)
 {
+    g_client = client;
     console_write(prompt, sizeof(prompt));
     read_buf = buf = TPTR(&cur_line) = cli_buf;
     history = history_new();

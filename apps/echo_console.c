@@ -24,24 +24,18 @@
  */
 #include "apps/cli.h"
 
-void cli_client_quit(void)
-{
-}
-
-#ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
-void cli_client_syntax_hightlight(tstr_t *line)
-{
-}
-#endif
-
-void cli_client_process_line(tstr_t *line)
+void echo_process_line(tstr_t *line)
 {
     console_printf("Echo: %S\n", line);
 }
+
+static cli_client_t echo_cli_client = {
+    .process_line = echo_process_line,
+};
 
 void app_start(int argc, char *argv[])
 {
     console_printf("Application - Echo Console\n");
 
-    cli_start();
+    cli_start(&echo_cli_client);
 }

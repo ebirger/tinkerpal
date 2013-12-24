@@ -30,12 +30,14 @@
 
 #define CTRL(c) console_write(c, sizeof(c))
 
-void cli_start(void);
-
-void cli_client_process_line(tstr_t *line);
+typedef struct {
+    void (*process_line)(tstr_t *line);
+    void (*quit)(void);
 #ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
-void cli_client_syntax_hightlight(tstr_t *line);
+    void (*syntax_hightlight)(tstr_t *line);
 #endif
-void cli_client_quit(void);
+} cli_client_t;
+
+void cli_start(cli_client_t *client);
 
 #endif
