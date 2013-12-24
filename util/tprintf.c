@@ -90,7 +90,8 @@ static void print_fp(printer_t *printer, double num, unsigned dec_digits)
     tprint_integer(printer, frac, 10, dec_digits);
 }
 
-static void print_integer(printer_t *printer, int num, int base, int sign)
+static void print_integer(printer_t *printer, int num, int base, int sign,
+    int min_digits)
 {
     if (sign && num < 0) 
     {
@@ -98,7 +99,7 @@ static void print_integer(printer_t *printer, int num, int base, int sign)
 	PRINT_SINGLE('-');
     }
 
-    tprint_integer(printer, num, base, 0);
+    tprint_integer(printer, num, base, min_digits);
 }
 
 void vtprintf(printer_t *printer, char *fmt, va_list ap)
@@ -106,6 +107,7 @@ void vtprintf(printer_t *printer, char *fmt, va_list ap)
     char *p, *percent;
     int is_long, c, i, base, ignore_modifiers = 0;
     unsigned long num;
+    int min_digits;
 
     while(1)
     {
@@ -118,10 +120,15 @@ void vtprintf(printer_t *printer, char *fmt, va_list ap)
 
 	percent = fmt - 1;
 	is_long = 0;
+	min_digits = 0;
 
 again:	
 	switch (c = *fmt++) 
 	{
+	case '0': case '1': case '2': case '3': case '4': 
+	case '5': case '6': case '7': case '8': case '9':
+	    min_digits = min_digits * 10 + c - '0';
+	    goto again;
 	case 'l': is_long = 1; goto again;
 	case '%': PRINT_SINGLE(c); break;
 	case 'c': PRINT_SINGLE(va_arg(ap, int)); break;
@@ -135,24 +142,24 @@ again:
 	case 'd':
 	    base = 10;
 	    num = is_long ? va_arg(ap, long) : va_arg(ap, int);
-	    print_integer(printer, num, base, 1);
+	    print_integer(printer, num, base, 1, min_digits);
 	    break;
 	case 'p':
 	    base = 16;
 	    num = (uint_ptr_t)va_arg(ap, void *);
-	    print_integer(printer, num, base, 0);
+	    print_integer(printer, num, base, 0, 0);
 	    break;
 	case 'u':
 	    base = 10;
 	    num = is_long ? va_arg(ap, unsigned long) : 
 		va_arg(ap, unsigned int);
-	    print_integer(printer, num, base, 0);
+	    print_integer(printer, num, base, 0, min_digits);
 	    break;
 	case 'x':
 	    base = 16;
 	    num = is_long ? va_arg(ap, unsigned long) : 
 		va_arg(ap, unsigned int);
-	    print_integer(printer, num, base, 0);
+	    print_integer(printer, num, base, 0, min_digits);
 	    break;
 	default:
 	    for (i = 0; i < num_tprintf_handlers && 
