@@ -86,6 +86,12 @@ static inline void etherif_on_event_set(etherif_t *ethif, etherif_event_t event,
     event_watch_set(ETHERIF_RES(ethif, event), ev);
 }
 
+static inline void etherif_on_event_clear(etherif_t *ethif,
+    etherif_event_t event)
+{
+    event_watch_del_by_resource(ETHERIF_RES(ethif, event));
+}
+
 static inline void etherif_event_trigger(etherif_t *ethif,
     etherif_event_t event)
 {
@@ -94,16 +100,22 @@ static inline void etherif_event_trigger(etherif_t *ethif,
 
 #define etherif_on_port_change_event_set(ethif, ev) \
     etherif_on_event_set(ethif, ETHERIF_EVENT_PORT_CHANGE, ev)
+#define etherif_on_port_change_event_clear(ethif) \
+    etherif_on_event_clear(ethif, ETHERIF_EVENT_PORT_CHANGE)
 #define etherif_port_changed(ethif) \
     etherif_event_trigger(ethif, ETHERIF_EVENT_PORT_CHANGE);
 
 #define etherif_on_packet_received_event_set(ethif, ev) \
     etherif_on_event_set(ethif, ETHERIF_EVENT_PACKET_RECEIVED, ev)
+#define etherif_on_packet_received_event_clear(ethif) \
+    etherif_on_event_clear(ethif, ETHERIF_EVENT_PACKET_RECEIVED)
 #define etherif_packet_received(ethif) \
     etherif_event_trigger(ethif, ETHERIF_EVENT_PACKET_RECEIVED);
 
 #define etherif_on_packet_xmit_event_set(ethif, ev) \
     etherif_on_event_set(ethif, ETHERIF_EVENT_PACKET_XMITTED, ev)
+#define etherif_on_packet_xmit_event_clear(ethif) \
+    etherif_on_event_clear(ethif, ETHERIF_EVENT_PACKET_XMITTED)
 #define etherif_packet_xmitted(ethif) \
     etherif_event_trigger(ethif, ETHERIF_EVENT_PACKET_XMITTED);
 
