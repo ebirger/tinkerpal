@@ -36,5 +36,6 @@ void cli_client_process_line(tstr_t *line);
 #ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 void cli_client_syntax_hightlight(tstr_t *line);
 #endif
+void cli_client_quit(void);
 
 #endif

@@ -198,6 +198,7 @@ static void app_quit(void)
     event_timer_del_all();
     event_watch_del_all();
     history_free(history);
+    cli_client_quit();
 }
 
 static void do_esc(void)

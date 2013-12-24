@@ -42,6 +42,10 @@ static char TERM_COLOR_MAGENTA[] = { 0x1b, '[', '3', '5', 'm' };
 static char TERM_COLOR_BLUE[] = { 0x1b, '[', '3', '4', 'm' };
 static char TERM_COLOR_RESET[] = { 0x1b, '[', '0', 'm' };
 
+void cli_client_quit(void)
+{
+}
+
 void cli_client_syntax_hightlight(tstr_t *line)
 {
     scan_t *s;
