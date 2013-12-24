@@ -678,7 +678,7 @@ static void enc28j60_isr(event_t *ev, u32 resource_id)
     }
 }
 
-void enc28j60_free(etherif_t *ethif)
+static void enc28j60_free(etherif_t *ethif)
 {
     enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
 
@@ -692,6 +692,7 @@ static const etherif_ops_t enc28j60_etherif_ops = {
     .packet_size = enc28j60_packet_size,
     .packet_recv = enc28j60_packet_recv,
     .packet_xmit = enc28j60_packet_xmit,
+    .free = enc28j60_free,
 };
 
 etherif_t *enc28j60_new(int spi_port, int cs, int intr)

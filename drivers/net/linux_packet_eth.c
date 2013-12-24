@@ -109,10 +109,22 @@ static void packet_eth_packet_event(event_t *ev, u32 resource_id)
     etherif_packet_received(&lpe->ethif);
 }
 
+static void packet_eth_free(etherif_t *ethif)
+{
+    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+
+    event_watch_del(lpe->packet_event_id);
+    unix_sim_remove_fd_event_from_map(NET_ID);
+    etherif_uninit(ethif);
+    close(lpe->packet_socket);
+    lpe->packet_socket = -1;
+}
+
 static const etherif_ops_t linux_packet_eth_ops = {
     .link_status = packet_eth_link_status,
     .packet_recv = packet_eth_packet_recv,
     .packet_xmit = packet_eth_packet_xmit,
+    .free = packet_eth_free,
 };
 
 static int packet_socket_create(const char *ifname)
@@ -154,17 +166,6 @@ static int packet_socket_create(const char *ifname)
     return sock;
 }
 
-void linux_packet_eth_free(etherif_t *ethif)
-{
-    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
-
-    event_watch_del(lpe->packet_event_id);
-    unix_sim_remove_fd_event_from_map(NET_ID);
-    etherif_uninit(ethif);
-    close(lpe->packet_socket);
-    lpe->packet_socket = -1;
-}
-
 etherif_t *linux_packet_eth_new(char *dev_name)
 {
     linux_packet_eth_t *lpe = &g_lpe;
@@ -172,7 +173,7 @@ etherif_t *linux_packet_eth_new(char *dev_name)
     if (lpe->packet_socket != -1)
     {
 	tp_warn(("Only one device at a time. Removing old one\n"));
-	linux_packet_eth_free(&lpe->ethif);
+	etherif_free(&lpe->ethif);
     }
 
     if ((lpe->packet_socket = packet_socket_create(dev_name)) < 0)

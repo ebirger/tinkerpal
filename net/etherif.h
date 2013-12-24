@@ -46,6 +46,7 @@ typedef struct {
     int (*packet_size)(etherif_t *ethif);
     int (*packet_recv)(etherif_t *ethif, u8 *buf, int size);
     void (*packet_xmit)(etherif_t *ethif, u8 *buf, int size);
+    void (*free)(etherif_t *ethif);
 } etherif_ops_t;
 
 struct etherif_t {
@@ -59,6 +60,11 @@ void etherif_uninit(etherif_t *ethif);
 void etherif_init(etherif_t *ethif, const etherif_ops_t *ops);
 
 etherif_t *etherif_get_by_id(int id);
+
+static inline void etherif_free(etherif_t *ethif)
+{
+    ethif->ops->free(ethif);
+}
 
 static inline void etherif_on_event_set(etherif_t *ethif, etherif_event_t event,
     event_t *ev)

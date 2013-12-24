@@ -69,7 +69,7 @@ static void stellaris_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 	tp_err(("No space for packet (%d). Space left %d\n", size, -length));
 }
 
-void stellaris_eth_free(etherif_t *ethif)
+static void stellaris_eth_free(etherif_t *ethif)
 {
     etherif_uninit(ethif);
 }
@@ -78,6 +78,7 @@ static const etherif_ops_t stellaris_eth_etherif_ops = {
     .link_status = stellaris_eth_link_status,
     .packet_recv = stellaris_eth_packet_recv,
     .packet_xmit = stellaris_eth_packet_xmit,
+    .free = stellaris_eth_free,
 };
 
 static void phy_info(void)

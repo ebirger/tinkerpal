@@ -29,7 +29,6 @@
 #include "util/tp_types.h"
 #include "net/etherif.h"
 
-void enc28j60_free(etherif_t *ethif);
 etherif_t *enc28j60_new(int spi_port, int cs, int intr);
 
 #endif
