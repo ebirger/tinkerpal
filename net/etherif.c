@@ -40,18 +40,13 @@ void etherif_destruct(etherif_t *ethif)
 
     /* Remove events */
     for (event = 0; event < ETHERIF_EVENT_COUNT; event++)
-	event_watch_del(ethif->watches[event]);
+	event_watch_del_by_resource(ETHERIF_RES(ethif, event));
 }
 
 void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
 {
-    etherif_event_t event;
-
     ethif->ops = ops;
     ethif->id = etherifs_last_id++;
-
-    for (event = 0; event < ETHERIF_EVENT_COUNT; event++)
-	ethif->watches[event] = -1;
 
     /* Link to list */
     ethif->next = etherifs;

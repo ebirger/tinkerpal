@@ -53,7 +53,6 @@ struct etherif_t {
     etherif_t *next;
     int id;
     const etherif_ops_t *ops;
-    int watches[ETHERIF_EVENT_COUNT];
 };
 
 void etherif_destruct(etherif_t *ethif);
@@ -84,7 +83,7 @@ static inline void etherif_free(etherif_t *ethif)
 static inline void etherif_on_event_set(etherif_t *ethif, etherif_event_t event,
     event_t *ev)
 {
-    ethif->watches[event] = event_watch_set(ETHERIF_RES(ethif, event), ev);
+    event_watch_set(ETHERIF_RES(ethif, event), ev);
 }
 
 static inline void etherif_event_trigger(etherif_t *ethif,
