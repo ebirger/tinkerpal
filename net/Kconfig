@@ -1,3 +1,23 @@
+menu "Networking"
+
 config ETHERIF
 	bool
 	default n
+
+config PACKET
+	bool
+	default n
+
+config ETHERNET
+	bool "Ethernet"
+	depends on ETHERIF
+	select PACKET
+	default y
+	help
+		Support for Ethernet protocols handling
+
+config NET_DEBUG
+	bool "Netork Debugging"
+	default n
+
+endmenu
