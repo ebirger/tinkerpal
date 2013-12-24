@@ -63,6 +63,8 @@
 
 #endif
 
+#define ETHER_PROTOCOL_ARP 0x0806
+
 typedef struct {
     u8 mac[6];
 } eth_mac_t;
@@ -72,5 +74,17 @@ typedef struct {
     eth_mac_t src;
     u16 proto;
 } eth_hdr_t;
+
+typedef struct __attribute__((packed)) {
+    u16 htype;
+    u16 ptype;
+    u8 hlen;
+    u8 plen;
+    u16 oper;
+    eth_mac_t sha;
+    u8 spa[4];
+    eth_mac_t tha;
+    u8 tpa[4];
+} arp_packet_t;
 
 #endif

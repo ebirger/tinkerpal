@@ -26,18 +26,39 @@
 #include "util/tprintf.h"
 #include "net/net_debug.h"
 
+static char buf[18];
+
 char *eth_mac_serialize(eth_mac_t *m)
 {
-    static char buf[18];
-
     tsnprintf(buf, sizeof(buf), "%02x:%02x:%02x:%02x:%02x:%02x", m->mac[0],
 	m->mac[1], m->mac[2], m->mac[3], m->mac[4], m->mac[5]);
     return buf;
 }
 
+#define D(field, fmt, args...) tp_out((field ": " fmt "\n", ##args))
+
 void eth_hdr_dump(eth_hdr_t *hdr)
 {
-    tp_out(("DST: %s\n", eth_mac_serialize(&hdr->dst)));
-    tp_out(("SRC: %s\n", eth_mac_serialize(&hdr->src)));
-    tp_out(("PROTO: %04x\n", ntohs(hdr->proto)));
+    D("DST", "%s", eth_mac_serialize(&hdr->dst));
+    D("SRC", "%s", eth_mac_serialize(&hdr->src));
+    D("PROTO", "%04x", ntohs(hdr->proto));
+}
+
+static char *ip_addr_serialize(u8 ip[])
+{
+    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+    return buf;
+}
+
+void arp_packet_dump(arp_packet_t *arp)
+{
+    D("HTYPE", "%4x", ntohs(arp->htype));
+    D("PTYPE", "%4x", ntohs(arp->ptype));
+    D("HLEN", "%2d", arp->hlen);
+    D("PLEN", "%2d", arp->plen);
+    D("OPER", "%4x", ntohs(arp->oper));
+    D("SHA", "%s", eth_mac_serialize(&arp->sha));
+    D("SPA", "%s", ip_addr_serialize(arp->spa));
+    D("THA", "%s", eth_mac_serialize(&arp->tha));
+    D("TPA", "%s", ip_addr_serialize(arp->tpa));
 }
