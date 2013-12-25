@@ -117,6 +117,21 @@ int do_etherif_on_port_change(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
+int do_etherif_mac_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    etherif_t *ethif = etherif_obj_get_etherif(this);
+    obj_t *array_buffer;
+    eth_mac_t *mac;
+
+    array_buffer = array_buffer_new(sizeof(*mac));
+    mac = array_buffer_ptr(array_buffer);
+    etherif_mac_addr_get(ethif, mac);
+    *ret = array_buffer_view_new(array_buffer,
+	ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, sizeof(*mac));
+    obj_put(array_buffer);
+    return 0;
+}
+
 int do_etherif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     etherif_t *ethif = etherif_obj_get_etherif(this);

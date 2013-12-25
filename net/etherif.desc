@@ -21,6 +21,15 @@ FUNCTION("linkStatus", etherif, do_etherif_link_status, {
 	"e.linkStatus ? 'connected' : 'disconnected')\n",
 })
 
+FUNCTION("MACAddrGet", etherif, do_etherif_mac_addr_get, {
+    .params = {
+    },
+    .description = "Get Interface MAC Address",
+    .return_value = "Uint8 array buffer view containing the MAC address",
+    .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
+        "console.log(e.MACAddrGet());\n",
+})
+
 FUNCTION("onPortChange", etherif, do_etherif_on_port_change, {
     .params = {
         { 
