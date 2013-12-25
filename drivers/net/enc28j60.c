@@ -524,6 +524,18 @@ static void mac_addr_conf(enc28j60_t *e, u8 mac[6])
     ctrl_reg_write(e, MAADR5, mac[0]);
 }
 
+static void enc28j60_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
+{
+    enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
+
+    mac->mac[5] = ctrl_reg_read(e, MAADR0);
+    mac->mac[4] = ctrl_reg_read(e, MAADR1);
+    mac->mac[3] = ctrl_reg_read(e, MAADR2);
+    mac->mac[2] = ctrl_reg_read(e, MAADR3);
+    mac->mac[1] = ctrl_reg_read(e, MAADR4);
+    mac->mac[0] = ctrl_reg_read(e, MAADR5);
+}
+
 static void chip_init(enc28j60_t *e)
 {
     tp_out(("ENC28J60 Init\n"));
@@ -689,6 +701,7 @@ static void enc28j60_free(etherif_t *ethif)
 
 static const etherif_ops_t enc28j60_etherif_ops = {
     .link_status = enc28j60_link_status,
+    .mac_addr_get = enc28j60_mac_addr_get,
     .packet_size = enc28j60_packet_size,
     .packet_recv = enc28j60_packet_recv,
     .packet_xmit = enc28j60_packet_xmit,
