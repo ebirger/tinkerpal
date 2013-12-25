@@ -56,6 +56,8 @@ static cli_client_t net_test_cli_client = {
 
 void app_start(int argc, char *argv[])
 {
+    eth_mac_t mac;
+
     tp_out(("TinkerPal Application - Net Test\n"));
 
 #if defined(CONFIG_LINUX_PACKET_ETH)
@@ -75,5 +77,7 @@ void app_start(int argc, char *argv[])
 
     ethernet_attach_etherif(ethif);
 
+    etherif_mac_addr_get(ethif, &mac);
+    tp_out(("Interface MAC address: %s\n", eth_mac_serialize(&mac)));
     cli_start(&net_test_cli_client);
 }
