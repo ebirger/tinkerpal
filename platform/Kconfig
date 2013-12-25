@@ -39,6 +39,7 @@ config STELLARIS
 config STELLARIS_ETH
 	bool
 	depends on STELLARIS && PLAT_HAS_EMBEDDED_ETH && NET
+	select ETHERIF
 	default y
 
 config FRDM
