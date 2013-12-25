@@ -57,8 +57,7 @@ int do_etherif_packet_recv(obj_t **ret, obj_t *this, int argc,
     else
 	size = 400; /* Arbitrary, but should be good enough */
     array_buffer = array_buffer_new(size);
-    size = etherif_packet_recv(ethif, (u8 *)
-	TPTR(&((array_buffer_t *)array_buffer)->value), size);
+    size = etherif_packet_recv(ethif, array_buffer_ptr(array_buffer), size);
     if (size <= 0)
     {
 	obj_put(array_buffer);
