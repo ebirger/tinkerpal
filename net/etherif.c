@@ -39,7 +39,7 @@ void etherif_destruct(etherif_t *ethif)
     *iter = (*iter)->next;
 
     /* Remove events */
-    for (event = 0; event < ETHERIF_EVENT_COUNT; event++)
+    for (event = ETHERIF_EVENT_FIRST; event < ETHERIF_EVENT_COUNT; event++)
 	event_watch_del_by_resource(ETHERIF_RES(ethif, event));
 }
 

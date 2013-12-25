@@ -30,6 +30,7 @@
 #include "drivers/resources.h"
 
 typedef enum {
+    ETHERIF_EVENT_FIRST = 0,
     ETHERIF_EVENT_PORT_CHANGE = 0,
     ETHERIF_EVENT_PACKET_RECEIVED = 1,
     ETHERIF_EVENT_PACKET_XMITTED = 2,
