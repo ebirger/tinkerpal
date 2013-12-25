@@ -486,7 +486,7 @@ static int chip_reset(enc28j60_t *e)
      * 1 ms after reset since the CLKRDY bit may not be cleared in time, and
      * the declared timeout is not guarenteed
      */
-    platform.msleep(1);
+    platform.msleep(3);
 
     /* Wait for reset to complete */
     while (!(ready = (ctrl_reg_read(e, ESTAT) & CLKRDY)) && 
