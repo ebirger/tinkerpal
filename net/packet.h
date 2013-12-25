@@ -40,18 +40,20 @@ typedef struct {
  */
 extern packet_t g_packet;
 
-static inline void packet_push(packet_t *pkt, int len)
+static inline void *packet_push(packet_t *pkt, int len)
 {
     tp_assert(pkt->ptr - pkt->head >= len);
     pkt->ptr -= len;
     pkt->length += len;
+    return pkt->ptr;
 }
 
-static inline void packet_pull(packet_t *pkt, int len)
+static inline void *packet_pull(packet_t *pkt, int len)
 {
     tp_assert(pkt->length >= len);
     pkt->ptr += len;
     pkt->length += len;
+    return pkt->ptr;
 }
 
 static inline void packet_reset(packet_t *pkt, int head)
