@@ -24,7 +24,7 @@ config ARP
 		Support for the Address Resolution Protocol (ARP)
 
 config NET_DEBUG
-	bool "Netork Debugging"
+	bool "Network Debugging"
 	default n
 
 endmenu
