@@ -40,11 +40,12 @@
 #include <net/ethernet.h>
 #include <net/if.h>
 #include <net/if_arp.h>
-#include <arpa/inet.h>
 
 typedef struct {
     etherif_t ethif;
     event_t packet_event;
+    char dev_name[IFNAMSIZ];
+    eth_mac_t mac_addr;
     int packet_event_id;
     int packet_socket;
     u8 last_packet[1518];
@@ -68,9 +69,28 @@ static void cur_packet_dump(linux_packet_eth_t *lpe)
     printf("-------------------------------------\n");
 }
 
+static struct ifreq packet_eth_ioctl(linux_packet_eth_t *lpe, unsigned long num)
+{
+    struct ifreq ifr;
+    
+    memset(&ifr, 0, sizeof(ifr));
+    strcpy(ifr.ifr_name, lpe->dev_name);
+    ioctl(lpe->packet_socket, num, &ifr);
+    return ifr;
+}
+
 static int packet_eth_link_status(etherif_t *ethif)
 {
     return 1;
+}
+
+static void packet_eth_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
+{
+    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+    struct ifreq ifr;
+
+    ifr = packet_eth_ioctl(lpe, SIOCGIFHWADDR);
+    memcpy(mac->mac, ifr.ifr_hwaddr.sa_data, 6);
 }
 
 static int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
@@ -122,48 +142,47 @@ static void packet_eth_free(etherif_t *ethif)
 
 static const etherif_ops_t linux_packet_eth_ops = {
     .link_status = packet_eth_link_status,
+    .mac_addr_get = packet_eth_mac_addr_get,
     .packet_recv = packet_eth_packet_recv,
     .packet_xmit = packet_eth_packet_xmit,
     .free = packet_eth_free,
 };
 
-static int packet_socket_create(const char *ifname)
+static int packet_eth_sock_init(linux_packet_eth_t *lpe)
 {
-    int sock;
     struct ifreq ifr;
     struct packet_mreq mreq;
     struct sockaddr_ll sll;
 
-    sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-    if (sock < 0) {
+    lpe->packet_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    if (lpe->packet_socket < 0) 
+    {
 	perror("Failed to create packet socket\n");
 	return -1;
     }
 
-    memset(&ifr, 0, sizeof(ifr));
-    strcpy(ifr.ifr_name, ifname);
-    ioctl(sock, SIOCGIFHWADDR, &ifr);
-
+    ifr = packet_eth_ioctl(lpe, SIOCGIFHWADDR);
     if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER) 
     {
-	tp_err(("%s is not an Ethernet device (%d)\n", ifname,
+	tp_err(("%s is not an Ethernet device (%d)\n", lpe->dev_name,
 	    (int)ifr.ifr_hwaddr.sa_family));
 	return -1;
     }
 
-    ioctl(sock, SIOCGIFINDEX, &ifr);
+    ifr = packet_eth_ioctl(lpe, SIOCGIFINDEX);
 
     memset(&sll, 0, sizeof(sll));
     sll.sll_family = AF_PACKET;
     sll.sll_protocol = htons(ETH_P_ALL);
     sll.sll_ifindex = ifr.ifr_ifindex;
-    bind(sock, (struct sockaddr *)&sll, sizeof(sll));
+    bind(lpe->packet_socket, (struct sockaddr *)&sll, sizeof(sll));
 
     memset(&mreq, 0, sizeof(mreq));
     mreq.mr_ifindex = ifr.ifr_ifindex;
     mreq.mr_type = PACKET_MR_PROMISC;
-    setsockopt(sock, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
-    return sock;
+    setsockopt(lpe->packet_socket, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq,
+	sizeof(mreq));
+    return 0;
 }
 
 etherif_t *linux_packet_eth_new(char *dev_name)
@@ -176,7 +195,9 @@ etherif_t *linux_packet_eth_new(char *dev_name)
 	etherif_free(&lpe->ethif);
     }
 
-    if ((lpe->packet_socket = packet_socket_create(dev_name)) < 0)
+    strcpy(lpe->dev_name, dev_name);
+
+    if (packet_eth_sock_init(lpe))
 	return NULL;
 
     lpe->packet_event.trigger = packet_eth_packet_event;
