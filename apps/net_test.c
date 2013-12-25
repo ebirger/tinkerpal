@@ -26,6 +26,15 @@
 #include "net/ether.h"
 #include "platform/platform_consts.h"
 #include "apps/cli.h"
+#if defined(CONFIG_LINUX_PACKET_ETH)
+#include "drivers/net/linux_packet_eth.h"
+#elif defined(CONFIG_STELLARIS_ETH)
+#include "platform/arm/stellaris/stellaris_eth.h"
+#elif defined(CONFIG_ENC28J60)
+#include "drivers/net/enc28j60.h"
+#else
+#error No Network device available
+#endif
 
 static etherif_t *ethif;
 
@@ -50,21 +59,16 @@ void app_start(int argc, char *argv[])
     tp_out(("TinkerPal Application - Net Test\n"));
 
 #if defined(CONFIG_LINUX_PACKET_ETH)
-#include "drivers/net/linux_packet_eth.h"
     if (argc != 2)
 	tp_crit(("Usage: %s <network interface>\n", argv[0]));
 
     ethif = linux_packet_eth_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)
-#include "platform/arm/stellaris/stellaris_eth.h"
     ethif = stellaris_eth_new();
 #elif defined(CONFIG_ENC28J60)
-#include "drivers/net/enc28j60.h"
     ethif = enc28j60_new(RES(SPI_RESOURCE_ID_BASE, 1, 0),
 	RES(GPIO_RESOURCE_ID_BASE, PE3, 0),
 	RES(GPIO_RESOURCE_ID_BASE, PF4, 0));
-#else
-#error No Network device available
 #endif
 
     tp_assert(ethif);
