@@ -28,6 +28,18 @@
 #include "net/net_types.h"
 #include "net/etherif.h"
 
+typedef struct ether_proto_t ether_proto_t;
+
+struct ether_proto_t {
+    ether_proto_t *next;
+    u16 eth_type; /* EtherType in network order */
+    void (*recv)(etherif_t *ethif);
+};
+
+/* protocols are assumed to be statically allocated */
+void ethernet_unregister_proto(ether_proto_t *proto);
+void ethernet_register_proto(ether_proto_t *proto);
+
 void ethernet_detach_etherif(etherif_t *ethif);
 void ethernet_attach_etherif(etherif_t *ethif);
 

@@ -29,10 +29,14 @@
 #include "net/net_debug.h"
 #include "mem/tmalloc.h"
 
+static ether_proto_t *protocols;
+
 static void ethernet_packet_received(event_t *e, u32 resource_id)
 {
     etherif_t *ethif;
     eth_hdr_t *eth_hdr;
+    ether_proto_t *proto;
+    u16 eth_type;
     int len;
 
     ethif = etherif_get_by_id(RES_MAJ(resource_id));
@@ -49,12 +53,38 @@ static void ethernet_packet_received(event_t *e, u32 resource_id)
 
     g_packet.length = len;
     eth_hdr = (eth_hdr_t *)g_packet.ptr;
-    eth_hdr_dump(eth_hdr);
+    eth_type = eth_hdr->eth_type;
+    for (proto = protocols; proto && proto->eth_type != eth_type;
+	proto = proto->next);
+    if (!proto)
+    {
+	tp_debug(("Unsupported Ethernet Protocol %04x\n", ntohs(eth_type)));
+	return;
+    }
+
+    packet_pull(&g_packet, sizeof(eth_hdr_t));
+    proto->recv(ethif);
 }
 
 static event_t ethernet_packet_received_event = {
     .trigger = ethernet_packet_received,
 };
+
+void ethernet_unregister_proto(ether_proto_t *proto)
+{
+    ether_proto_t **iter;
+
+    for (iter = &protocols; *iter && *iter != proto; iter = &(*iter)->next);
+    tp_assert(*iter);
+    (*iter) = (*iter)->next;
+    proto->next = NULL;
+}
+
+void ethernet_register_proto(ether_proto_t *proto)
+{
+    proto->next = protocols;
+    protocols = proto;
+}
 
 void ethernet_detach_etherif(etherif_t *ethif)
 {
