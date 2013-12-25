@@ -72,7 +72,7 @@ typedef struct {
 typedef struct {
     eth_mac_t dst;
     eth_mac_t src;
-    u16 proto;
+    u16 eth_type;
 } eth_hdr_t;
 
 typedef struct __attribute__((packed)) {

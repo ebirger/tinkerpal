@@ -41,7 +41,7 @@ void eth_hdr_dump(eth_hdr_t *hdr)
 {
     D("DST", "%s", eth_mac_serialize(&hdr->dst));
     D("SRC", "%s", eth_mac_serialize(&hdr->src));
-    D("PROTO", "%04x", ntohs(hdr->proto));
+    D("ETHERTYPE", "%04x", ntohs(hdr->eth_type));
 }
 
 static char *ip_addr_serialize(u8 ip[])
