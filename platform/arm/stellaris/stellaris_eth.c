@@ -49,6 +49,11 @@ static int stellaris_eth_link_status(etherif_t *ethif)
     return MAP_EthernetPHYRead(ETH_BASE, PHY_MR1) & PHY_MR1_LINK ? 1 : 0;
 }
 
+static void stellaris_eth_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
+{
+    MAP_EthernetMACAddrGet(ETH_BASE, mac->mac);
+}
+
 static int stellaris_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
     long length;
@@ -76,6 +81,7 @@ static void stellaris_eth_free(etherif_t *ethif)
 
 static const etherif_ops_t stellaris_eth_etherif_ops = {
     .link_status = stellaris_eth_link_status,
+    .mac_addr_get = stellaris_eth_mac_addr_get,
     .packet_recv = stellaris_eth_packet_recv,
     .packet_xmit = stellaris_eth_packet_xmit,
     .free = stellaris_eth_free,
