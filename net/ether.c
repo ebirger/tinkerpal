@@ -39,7 +39,7 @@ static void ethernet_packet_received(event_t *e, u32 resource_id)
 
     tp_debug(("Packet received\n"));
 
-    packet_reset(&g_packet, 1);
+    packet_reset(&g_packet, PACKET_RESET_HEAD);
     len = etherif_packet_recv(ethif, g_packet.ptr, g_packet.length);
     if (len < 0)
     {

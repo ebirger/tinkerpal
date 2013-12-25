@@ -56,9 +56,14 @@ static inline void *packet_pull(packet_t *pkt, int len)
     return pkt->ptr;
 }
 
-static inline void packet_reset(packet_t *pkt, int head)
+typedef enum {
+    PACKET_RESET_HEAD = 0,
+    PACKET_RESET_TAIL = 1,
+} packet_reset_t;
+
+static inline void packet_reset(packet_t *pkt, packet_reset_t type)
 {
-    if (head)
+    if (type == PACKET_RESET_HEAD)
     {
 	pkt->ptr = pkt->head;
 	pkt->length = pkt->tail - pkt->head;
