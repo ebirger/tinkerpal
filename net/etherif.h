@@ -25,6 +25,7 @@
 #ifndef __ETHERIF_H__
 #define __ETHERIF_H__
 
+#include "net/net_types.h"
 #include "util/event.h"
 #include "util/tp_types.h"
 #include "drivers/resources.h"
@@ -44,6 +45,7 @@ typedef struct etherif_t etherif_t;
 
 typedef struct {
     int (*link_status)(etherif_t *ethif);
+    void (*mac_addr_get)(etherif_t *ethif, eth_mac_t *mac);
     int (*packet_size)(etherif_t *ethif);
     int (*packet_recv)(etherif_t *ethif, u8 *buf, int size);
     void (*packet_xmit)(etherif_t *ethif, u8 *buf, int size);
@@ -64,6 +66,11 @@ etherif_t *etherif_get_by_id(int id);
 static inline int etherif_link_status(etherif_t *ethif)
 {
     return ethif->ops->link_status(ethif);
+}
+
+static inline void etherif_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
+{
+    ethif->ops->mac_addr_get(ethif, mac);
 }
 
 static inline int etherif_packet_recv(etherif_t *ethif, u8 *buf, int size)
