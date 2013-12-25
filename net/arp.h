@@ -22,70 +22,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __NET_TYPES_H__
-#define __NET_TYPES_H__
+#ifndef __ARP_H__
+#define __ARP_H__
 
-#include "util/tp_types.h"
+#ifdef CONFIG_ARP
 
-#ifdef CONFIG_BIG_ENDIAN
+#include "net/net_types.h"
+#include "net/etherif.h"
 
-#ifndef htonl
-#define htonl(a) (a)
-#endif
+typedef struct arp_resolve_t arp_resolve_t;
 
-#ifndef htons
-#define htons(a) (a)
-#endif
+struct arp_resolve_t {
+    etherif_t *ethif;
+    u32 ip; /* Host order */
+    void (*resolved)(arp_resolve_t *ar, int status, eth_mac_t mac);
+};
+
+int arp_resolve(arp_resolve_t *resolve);
+
+void arp_uninit(void);
+void arp_init(void);
 
 #else
 
-#ifndef htonl
-#define htonl(a) \
-    ((((a) >> 24) & 0x000000ff) | \
-     (((a) >>  8) & 0x0000ff00) | \
-     (((a) <<  8) & 0x00ff0000) | \
-     (((a) << 24) & 0xff000000))
-#endif
-
-#ifndef ntohl
-#define ntohl(a) htonl((a))
-#endif
-
-#ifndef htons
-#define htons(a) \
-    ((((a) >> 8) & 0x00ff) | \
-     (((a) << 8) & 0xff00))
-#endif
-
-#ifndef ntohs
-#define ntohs(a) htons((a))
-#endif
+static inline void arp_uninit(void) { }
+static inline void arp_init(void) { }
 
 #endif
-
-#define ETHER_PROTOCOL_ARP 0x0806
-#define ETHER_PROTOCOL_IP 0x0800
-
-typedef struct {
-    u8 mac[6];
-} eth_mac_t;
-
-typedef struct {
-    eth_mac_t dst;
-    eth_mac_t src;
-    u16 eth_type;
-} eth_hdr_t;
-
-typedef struct __attribute__((packed)) {
-    u16 htype;
-    u16 ptype;
-    u8 hlen;
-    u8 plen;
-    u16 oper;
-    eth_mac_t sha;
-    u8 spa[4];
-    eth_mac_t tha;
-    u8 tpa[4];
-} arp_packet_t;
 
 #endif

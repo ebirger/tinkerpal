@@ -16,6 +16,13 @@ config ETHERNET
 	help
 		Support for Ethernet protocols handling
 
+config ARP
+	bool "ARP"
+	depends on ETHERNET
+	default y
+	help
+		Support for the Address Resolution Protocol (ARP)
+
 config NET_DEBUG
 	bool "Netork Debugging"
 	default n
