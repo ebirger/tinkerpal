@@ -339,6 +339,11 @@ static inline array_buffer_t *to_array_buffer(obj_t *o)
     return (array_buffer_t *)o;
 }
 
+static inline void *array_buffer_ptr(obj_t *o)
+{
+    return (void *)TPTR(&(to_array_buffer(o)->value));
+}
+
 static inline int is_array_buffer_view(obj_t *o)
 {
     return o && OBJ_CLASS(o) == ARRAY_BUFFER_VIEW_CLASS;
