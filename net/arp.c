@@ -33,9 +33,20 @@
 #define ARP_OPER_REQUEST 0x1
 #define ARP_OPER_REPLY 0x2
 
+#define ARP_TIMEOUT (2 * 1000)
+#define ARP_RETRIES 4
+
 static ether_proto_t arp_proto;
 static arp_resolve_t *pending_resolve;
 static eth_mac_t bcast_mac = { .mac = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
+static int arp_timeout_event_id;
+static int arp_retries;
+
+static void arp_timeout(event_t *e, u32 resource_id);
+
+static event_t arp_timeout_event = {
+    .trigger = arp_timeout
+};
 
 static void arp_pkt_xmit(etherif_t *ethif, u16 oper, eth_mac_t *sha, u8 spa[],
     u8 tpa[])
@@ -57,7 +68,40 @@ static void arp_pkt_xmit(etherif_t *ethif, u16 oper, eth_mac_t *sha, u8 spa[],
     eth_hdr->eth_type = htons(ETHER_PROTOCOL_ARP);
     eth_hdr->dst = bcast_mac;
     eth_hdr->src = *sha;
+    arp_timeout_event_id = event_timer_set(ARP_TIMEOUT, &arp_timeout_event);
     etherif_packet_xmit(ethif, g_packet.ptr, g_packet.length);
+}
+
+static void arp_resolve_pending(void)
+{
+    etherif_t *ethif;
+    eth_mac_t mac;
+    u32 sip, tip;
+
+    ethif = pending_resolve->ethif;
+    etherif_mac_addr_get(ethif, &mac);
+
+    sip = htonl(ethif->ip);
+    tip = htonl(pending_resolve->ip);
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), &mac, (u8 *)&sip, (u8 *)&tip);
+}
+
+static void arp_timeout(event_t *e, u32 resource_id)
+{
+    if (!pending_resolve)
+	return;
+
+    if (arp_retries)
+    {
+	arp_retries--;
+	arp_timeout_event_id = event_timer_set(ARP_TIMEOUT, &arp_timeout_event);
+	arp_resolve_pending();
+	return;
+    }
+
+    tp_err(("ARP request timed out\n"));
+    pending_resolve->resolved(pending_resolve, -1, bcast_mac);
+    pending_resolve = NULL;
 }
 
 static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
@@ -114,10 +158,6 @@ static void arp_recv(etherif_t *ethif)
 
 int arp_resolve(arp_resolve_t *resolve)
 {
-    etherif_t *ethif;
-    eth_mac_t mac;
-    u32 sip, tip;
-
     if (pending_resolve)
     {
 	tp_err(("An ARP resolve request is already pending\n"));
@@ -125,13 +165,8 @@ int arp_resolve(arp_resolve_t *resolve)
     }
 
     pending_resolve = resolve;
-    ethif = resolve->ethif;
-
-    etherif_mac_addr_get(ethif, &mac);
-
-    sip = htonl(ethif->ip);
-    tip = htonl(resolve->ip);
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), &mac, (u8 *)&sip, (u8 *)&tip);
+    arp_retries = ARP_RETRIES;
+    arp_resolve_pending();
     return 0;
 }
 
