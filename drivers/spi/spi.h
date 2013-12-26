@@ -72,6 +72,18 @@ static inline unsigned long spi_receive(int port)
     return platform.spi.receive(RES_MAJ(port));
 }
 
+static inline void spi_receive_mult(int port, u8 buf[], int len)
+{
+    while (len--)
+	*buf++ = (u8)spi_receive(port);
+}
+
+static inline void spi_send_mult(int port, u8 buf[], int len)
+{
+    while (len--)
+	spi_send(port, *buf++);
+}
+
 static inline int spi_get_constant(int *constant, char *buf, int len)
 {
 #define SPI_PREFIX "SPI"
