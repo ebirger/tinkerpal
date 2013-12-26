@@ -52,10 +52,7 @@ int do_etherif_packet_recv(obj_t **ret, obj_t *this, int argc,
     obj_t *array_buffer;
     etherif_t *ethif = etherif_obj_get_etherif(this);
 
-    if (ethif->ops->packet_size)
-	size = ethif->ops->packet_size(ethif);
-    else
-	size = 400; /* Arbitrary, but should be good enough */
+    size = 400; /* Arbitrary, but should be good enough */
     array_buffer = array_buffer_new(size);
     size = etherif_packet_recv(ethif, array_buffer_ptr(array_buffer), size);
     if (size <= 0)

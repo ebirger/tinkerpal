@@ -46,7 +46,6 @@ typedef struct etherif_t etherif_t;
 typedef struct {
     int (*link_status)(etherif_t *ethif);
     void (*mac_addr_get)(etherif_t *ethif, eth_mac_t *mac);
-    int (*packet_size)(etherif_t *ethif);
     int (*packet_recv)(etherif_t *ethif, u8 *buf, int size);
     void (*packet_xmit)(etherif_t *ethif, u8 *buf, int size);
     void (*free)(etherif_t *ethif);
