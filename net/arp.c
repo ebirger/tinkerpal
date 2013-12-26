@@ -178,6 +178,7 @@ int arp_resolve(arp_resolve_t *resolve)
 
 void arp_uninit(void)
 {
+    event_timer_del(arp_timeout_event_id);
     ethernet_unregister_proto(&arp_proto);
 }
 
