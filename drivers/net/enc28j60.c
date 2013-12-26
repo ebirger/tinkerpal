@@ -327,8 +327,6 @@ typedef struct {
     int intr;
     u8 bank;
     u16 next_pkt_ptr;
-    u16 cur_pkt_ptr;
-    u16 cur_pkt_byte_count;
 } enc28j60_t;
 
 #define ETHIF_TO_ENC28J60(x) container_of(x, enc28j60_t, ethif)
@@ -419,27 +417,6 @@ static inline void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
 {
     bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_BFS, reg, mask);
-}
-
-static int buf_mem_read(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
-{
-    ctrl_wreg_write(e, ERDPTL, addr);
-    cs_low(e);
-    spi_send(e->spi_port, ENC28J60_OPCODE_RBM);
-    while (len--)
-	*buf++ = (u8)spi_receive(e->spi_port);
-    cs_high(e);
-    return len;
-}
-
-static void buf_mem_write(enc28j60_t *e, u16 addr, u8 buf[], u16 len)
-{
-    ctrl_wreg_write(e, EWRPTL, addr);
-    cs_low(e);
-    spi_send(e->spi_port, ENC28J60_OPCODE_WBM);
-    while (len--)
-	spi_send(e->spi_port, *buf++);
-    cs_high(e);
 }
 
 static u16 phy_reg_read(enc28j60_t *e, u8 phy_reg)
@@ -587,20 +564,37 @@ static void packet_complete(enc28j60_t *e)
     ctrl_reg_bits_set(e, EIE, PKTIE); /* Unmask packet received interrupt */
 }
 
-static int enc28j60_packet_size(etherif_t *ethif)
-{
-    return ETHIF_TO_ENC28J60(ethif)->cur_pkt_byte_count;
-}
-
 static int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
     enc28j60_t *e = ETHIF_TO_ENC28J60(ethif);
+    u8 header[6];
+    u16 stat, packet_length;
 
-    if (size > e->cur_pkt_byte_count)
-	size = e->cur_pkt_byte_count;
+    ctrl_wreg_write(e, ERDPTL, e->next_pkt_ptr);
 
-    e->cur_pkt_ptr += buf_mem_read(e, e->cur_pkt_ptr, buf, size);
-    packet_complete(e); /* XXX: do we want to allow partial read ? */
+    cs_low(e);
+
+    spi_send(e->spi_port, ENC28J60_OPCODE_RBM);
+    spi_receive_mult(e->spi_port, header, 6);
+
+#define MK_U16(a, b) ((((u16)a) << 8) | b)
+    e->next_pkt_ptr = MK_U16(header[1], header[0]);
+    packet_length = MK_U16(header[3], header[2]);
+    stat = MK_U16(header[5], header[4]);
+    if (!(stat & RX_STAT_OK))
+    {
+	tp_info(("Invalid packet received\n"));
+	goto Exit;
+    }
+
+    if (size > packet_length)
+	size = packet_length;
+    
+    spi_receive_mult(e->spi_port, buf, size);
+
+Exit:
+    cs_high(e);
+    packet_complete(e);
     return size;
 }
 
@@ -610,10 +604,14 @@ static void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size)
     u8 ctrl = 0;
 
     /* Set buffer start */
+    ctrl_wreg_write(e, EWRPTL, TX_BUF_START);
     ctrl_wreg_write(e, ETXSTL, TX_BUF_START);
+    cs_low(e);
+    spi_send(e->spi_port, ENC28J60_OPCODE_WBM);
     /* Write ctrl byte + data */
-    buf_mem_write(e, TX_BUF_START, &ctrl, 1);
-    buf_mem_write(e, TX_BUF_START + 1, buf, size);
+    spi_send(e->spi_port, ctrl);
+    spi_send_mult(e->spi_port, buf, size);
+    cs_high(e);
     /* Set buffer end */
     ctrl_wreg_write(e, ETXNDL, TX_BUF_START + size + 1);
     /* Start xmit */
@@ -622,26 +620,7 @@ static void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 
 static void packet_received(enc28j60_t *e)
 {
-    u8 header[6];
-    u16 stat;
-
     tp_info(("ENC28J60 packet received\n"));
-
-    e->cur_pkt_ptr = e->next_pkt_ptr;
-
-    /* header - 2 bytes of next pkt ptr + 4 bytes status */
-    e->cur_pkt_ptr += buf_mem_read(e, e->cur_pkt_ptr, header, sizeof(header));
-
-#define MK_U16(a, b) ((((u16)a) << 8) | b)
-    e->next_pkt_ptr = MK_U16(header[1], header[0]);
-    e->cur_pkt_byte_count = MK_U16(header[3], header[2]);
-    stat = MK_U16(header[5], header[4]);
-
-    if (!(stat & RX_STAT_OK))
-    {
-	tp_err(("Invalid packet received\n"));
-	return;
-    }
 
     etherif_packet_received(&e->ethif);
 }
@@ -702,7 +681,6 @@ static void enc28j60_free(etherif_t *ethif)
 static const etherif_ops_t enc28j60_etherif_ops = {
     .link_status = enc28j60_link_status,
     .mac_addr_get = enc28j60_mac_addr_get,
-    .packet_size = enc28j60_packet_size,
     .packet_recv = enc28j60_packet_recv,
     .packet_xmit = enc28j60_packet_xmit,
     .free = enc28j60_free,
