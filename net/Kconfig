@@ -23,6 +23,13 @@ config ARP
 	help
 		Support for the Address Resolution Protocol (ARP)
 
+config IPV4
+	bool "IPv4"
+	depends on ETHERNET
+	default y
+	help
+		Support for IPv4
+
 config NET_DEBUG
 	bool "Network Debugging"
 	default n
