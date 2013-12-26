@@ -72,6 +72,14 @@ static void arp_pkt_xmit(etherif_t *ethif, u16 oper, eth_mac_t *sha, u8 spa[],
     etherif_packet_xmit(ethif, g_packet.ptr, g_packet.length);
 }
 
+static void arp_resolve_complete(int status, eth_mac_t mac)
+{
+    pending_resolve->resolved(pending_resolve, status, mac);
+    pending_resolve = NULL;
+    event_timer_del(arp_timeout_event_id);
+    arp_timeout_event_id = -1;
+}
+
 static void arp_resolve_pending(void)
 {
     etherif_t *ethif;
@@ -100,8 +108,7 @@ static void arp_timeout(event_t *e, u32 resource_id)
     }
 
     tp_err(("ARP request timed out\n"));
-    pending_resolve->resolved(pending_resolve, -1, bcast_mac);
-    pending_resolve = NULL;
+    arp_resolve_complete(-1, bcast_mac);
 }
 
 static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
@@ -115,8 +122,7 @@ static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
     if (memcmp((void *)&ip, arp->spa, 4))
 	return;
 
-    pending_resolve->resolved(pending_resolve, 0, arp->sha);
-    pending_resolve = NULL;
+    arp_resolve_complete(0, arp->sha);
 }
 
 static void arp_request_recv(etherif_t *ethif, arp_packet_t *arp)
