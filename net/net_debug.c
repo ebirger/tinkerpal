@@ -62,3 +62,18 @@ void arp_packet_dump(arp_packet_t *arp)
     D("THA", "%s", eth_mac_serialize(&arp->tha));
     D("TPA", "%s", ip_addr_serialize(arp->tpa));
 }
+
+void ip_hdr_dump(ip_hdr_t *iph)
+{
+    D("Version", "%d", iph->ver);
+    D("IHL", "%d", iph->ihl);
+    D("DSCP", "%x", iph->dscp);
+    D("Total Length", "%d", iph->tot_len);
+    D("ID", "%x", iph->id);
+    D("Frag Offset", "%x", iph->frag_off);
+    D("TTL", "%d", iph->ttl);
+    D("Protocol", "%x", iph->protocol);
+    D("Checksum", "%x", iph->checksum);
+    D("SRC", "%s", ip_addr_serialize(iph->src_addr));
+    D("DST", "%s", ip_addr_serialize(iph->dst_addr));
+}

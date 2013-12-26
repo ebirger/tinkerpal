@@ -88,4 +88,23 @@ typedef struct __attribute__((packed)) {
     u8 tpa[4];
 } arp_packet_t;
 
+typedef struct __attribute__((packed)) {
+#ifdef CONFIG_BIG_ENDIAN_BITFIELD
+    u8 ver : 4;
+    u8 ihl : 4;
+#else
+    u8 ihl : 4;
+    u8 ver : 4;
+#endif
+    u8 dscp;
+    u16 tot_len;
+    u16 id;
+    u16 frag_off;
+    u8 ttl;
+    u8 protocol;
+    u16 checksum;
+    u8 src_addr[4];
+    u8 dst_addr[4];
+} ip_hdr_t;
+
 #endif
