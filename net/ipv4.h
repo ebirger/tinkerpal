@@ -27,6 +27,15 @@
 
 #ifdef CONFIG_IPV4
 
+#include "net/net_types.h"
+#include "net/etherif.h"
+
+/* - packet ptr is expected to point to the IPv4 payload
+ * - addresses are in host order
+ */
+void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
+    u32 dst_addr, u16 payload_len);
+
 void ipv4_uninit(void);
 void ipv4_init(void);
 

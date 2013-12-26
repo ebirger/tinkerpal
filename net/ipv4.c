@@ -22,12 +22,63 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <string.h> /* memcpy */
 #include "net/ipv4.h"
 #include "net/ether.h"
 #include "net/packet.h"
 #include "net/net_debug.h"
+#include "net/net_types.h"
 
 static ether_proto_t ipv4_proto;
+
+static u16 ipv4_hdr_checksum(ip_hdr_t *iph)
+{
+    u16 *addr = (u16 *)iph, count;
+    u32 sum = 0;
+
+    for (count = 20; count; count -= 2)
+        sum += *addr++;
+
+    while (sum >> 16)
+        sum = (sum & 0xffff) + (sum >> 16);
+
+    return (u16)~sum;
+}
+
+void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
+    u32 dst_addr, u16 payload_len)
+{
+    ip_hdr_t *iph;
+    eth_hdr_t *eth_hdr;
+    eth_mac_t src_mac;
+
+    src_addr = htonl(src_addr);
+    dst_addr = htonl(dst_addr);
+    etherif_mac_addr_get(ethif, &src_mac);
+
+    /* IPv4 Header */
+    iph = packet_push(&g_packet, sizeof(*iph));
+    iph->ver = 4;
+    iph->ihl = 5; /* No support for options */
+    iph->dscp = 0;
+    iph->tot_len = sizeof(*iph) + payload_len;
+    iph->id = htons(0xdead); //0; /* Per RFC 6864 - no frags -> field is meaningless */
+    iph->frag_off = 0; /* No frags */
+    iph->ttl = 255;
+    iph->protocol = protocol;
+    iph->checksum = 0;
+    memcpy(iph->src_addr, (u8 *)&src_addr, 4);
+    memcpy(iph->dst_addr, (u8 *)&dst_addr, 4);
+    iph->checksum = ipv4_hdr_checksum(iph);
+
+    /* Ethernet Header */
+    eth_hdr = packet_push(&g_packet, sizeof(eth_hdr_t));
+    eth_hdr->eth_type = htons(ETHER_PROTOCOL_IP);
+    eth_hdr->dst = *dst_mac;
+    eth_hdr->src = src_mac;
+
+    etherif_packet_xmit(ethif, g_packet.ptr, g_packet.length);
+}
 
 static void ipv4_recv(etherif_t *ethif)
 {
