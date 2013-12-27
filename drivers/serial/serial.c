@@ -104,17 +104,15 @@ void serial_event_trigger(int u)
     event_watch_trigger(RES(UART_RESOURCE_ID_BASE, u, 0));
 }
 
-int serial_enable(int id, int enabled)
+int serial_enable(resource_t id, int enabled)
 {
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
 	return -1;
 
-    id = RES_MAJ(id);
-
 #ifdef CONFIG_BUFFERED_SERIAL
-    if (buffered_serial_enable(id, enabled))
+    if (buffered_serial_enable(RES_MAJ(id), enabled))
 	return -1;
 #endif
 
-    return platform.serial.enable(id, enabled);
+    return platform.serial.enable(RES_MAJ(id), enabled);
 }

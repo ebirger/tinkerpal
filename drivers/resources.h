@@ -25,11 +25,16 @@
 #ifndef __RESOURCES_H__
 #define __RESOURCES_H__
 
+#include "util/tp_types.h"
+
+typedef u32 resource_t;
+
 #define RES_MIN_MASK 0xff
 #define RES_MAJ_MASK (0xff << 8)
 #define RES_BASE_MASK (0xff << 16)
 
-#define RES(base, maj, min) (((base) << 16) | ((maj) << 8) | (min))
+#define RES(base, maj, min) \
+    ((resource_t)(((base) << 16) | ((maj) << 8) | (min)))
 #define RES_MIN(res) ((res) & RES_MIN_MASK)
 #define RES_MAJ(res) (((res) & RES_MAJ_MASK) >> 8)
 #define RES_BASE(res) (((res) & RES_BASE_MASK) >> 16)

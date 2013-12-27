@@ -45,7 +45,7 @@ int do_digital_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 	array_iter_init(&iter, argv[1], 1);
 	while (array_iter_next(&iter))
 	{
-	    int pin = obj_get_int(iter.obj);
+	    resource_t pin = obj_get_int(iter.obj);
 
 	    if (gpio_set_pin_mode(pin, GPIO_PM_OUTPUT))
 	    {
@@ -60,7 +60,7 @@ int do_digital_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     }
     else
     {
-	int pin = obj_get_int(argv[1]);
+	resource_t pin = obj_get_int(argv[1]);
 
 	if (gpio_set_pin_mode(pin, GPIO_PM_OUTPUT))
 	    goto PinModeError;
@@ -77,7 +77,7 @@ PinModeError:
 
 int do_digital_pulse(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int pin;
+    resource_t pin;
 
     if (argc != 4)
 	return js_invalid_args(ret);
@@ -110,7 +110,7 @@ int do_digital_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 	array_iter_init(&iter, argv[1], 0);
 	while (array_iter_next(&iter))
 	{
-	    int pin = obj_get_int(iter.obj);
+	    resource_t pin = obj_get_int(iter.obj);
 
 	    if (gpio_set_pin_mode(pin, GPIO_PM_INPUT_PULLUP))
 	    {
@@ -125,7 +125,7 @@ int do_digital_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     }
     else
     {
-	int pin = obj_get_int(argv[1]);
+	resource_t pin = obj_get_int(argv[1]);
 
 	if (gpio_set_pin_mode(pin, GPIO_PM_INPUT_PULLUP))
 	    goto PinModeError;
@@ -142,7 +142,7 @@ PinModeError:
 
 int do_analog_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int pin;
+    resource_t pin;
     double value;
 
     if (argc != 3)
@@ -163,7 +163,7 @@ int do_analog_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_analog_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int pin;
+    resource_t pin;
     double value;
 
     if (argc != 2)

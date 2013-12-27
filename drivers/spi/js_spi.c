@@ -33,7 +33,7 @@
 
 /* XXX: provide CS */
 
-static int get_spi_id(obj_t *o)
+static resource_t get_spi_id(obj_t *o)
 {
     int ret = -1;
     
@@ -63,7 +63,7 @@ int do_spi_send(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_spi_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int id;
+    resource_t id;
 
     if (argc != 2)
 	return js_invalid_args(ret);

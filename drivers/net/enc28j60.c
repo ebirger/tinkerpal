@@ -322,9 +322,9 @@ typedef struct {
     etherif_t ethif;
     event_t irq_event;
     int irq_event_id;
-    int spi_port;
-    int cs;
-    int intr;
+    resource_t spi_port;
+    resource_t cs;
+    resource_t intr;
     u8 bank;
     u16 next_pkt_ptr;
 } enc28j60_t;
@@ -686,7 +686,7 @@ static const etherif_ops_t enc28j60_etherif_ops = {
     .free = enc28j60_free,
 };
 
-etherif_t *enc28j60_new(int spi_port, int cs, int intr)
+etherif_t *enc28j60_new(resource_t spi_port, resource_t cs, resource_t intr)
 {
     enc28j60_t *e = tmalloc_type(enc28j60_t);
 

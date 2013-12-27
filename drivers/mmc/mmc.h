@@ -25,9 +25,11 @@
 #ifndef __DRIVERS_MMC_H__
 #define __DRIVERS_MMC_H__
 
+#include "drivers/resources.h"
+
 typedef struct mmc_t mmc_t;
 
-void mmc_init(int spi_port, int mosi, int cs);
+void mmc_init(resource_t spi_port, resource_t mosi, resource_t cs);
 
 int mmc_spi_disk_init(void);
 int mmc_spi_disk_status(void);

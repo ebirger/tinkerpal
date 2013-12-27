@@ -32,7 +32,7 @@
 /* XXX: API should provide error indication
  * CS should be part of the SPI driver */
 
-static inline int spi_init(int port)
+static inline int spi_init(resource_t port)
 {
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return -1;
@@ -40,7 +40,7 @@ static inline int spi_init(int port)
     return platform.spi.init(RES_MAJ(port));
 }
 
-static inline void spi_reconf(int port)
+static inline void spi_reconf(resource_t port)
 {
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return;
@@ -48,7 +48,7 @@ static inline void spi_reconf(int port)
     platform.spi.reconf(RES_MAJ(port));
 }
 
-static inline void spi_set_max_speed(int port, int speed)
+static inline void spi_set_max_speed(resource_t port, int speed)
 {
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return;
@@ -56,7 +56,7 @@ static inline void spi_set_max_speed(int port, int speed)
     platform.spi.set_max_speed(RES_MAJ(port), speed);
 }
 
-static inline void spi_send(int port, unsigned long data)
+static inline void spi_send(resource_t port, unsigned long data)
 {
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return;
@@ -64,7 +64,7 @@ static inline void spi_send(int port, unsigned long data)
     platform.spi.send(RES_MAJ(port), data);
 }
 
-static inline unsigned long spi_receive(int port)
+static inline unsigned long spi_receive(resource_t port)
 {
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return 0;
@@ -72,13 +72,13 @@ static inline unsigned long spi_receive(int port)
     return platform.spi.receive(RES_MAJ(port));
 }
 
-static inline void spi_receive_mult(int port, u8 buf[], int len)
+static inline void spi_receive_mult(resource_t port, u8 buf[], int len)
 {
     while (len--)
 	*buf++ = (u8)spi_receive(port);
 }
 
-static inline void spi_send_mult(int port, u8 buf[], int len)
+static inline void spi_send_mult(resource_t port, u8 buf[], int len)
 {
     while (len--)
 	spi_send(port, *buf++);
@@ -100,7 +100,7 @@ static inline int spi_get_constant(int *constant, char *buf, int len)
     if (len != 1)
 	return -1;
 
-    *constant = RES(SPI_RESOURCE_ID_BASE, buf[0] - '0', 0);
+    *constant = (int)RES(SPI_RESOURCE_ID_BASE, buf[0] - '0', 0);
     return 0;
 }
 

@@ -44,9 +44,9 @@
 #define CMD_READ_OCR (0x40+58)
 
 struct mmc_t {
-    int spi_port;
-    int mosi;
-    int cs;
+    resource_t spi_port;
+    resource_t mosi;
+    resource_t cs;
     volatile int disc_status;
 };
 
@@ -535,7 +535,7 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
     return res;
 }
 
-void mmc_init(int spi_port, int mosi, int cs)
+void mmc_init(resource_t spi_port, resource_t mosi, resource_t cs)
 {
     g_mmc.mosi = mosi;
     g_mmc.cs = cs;

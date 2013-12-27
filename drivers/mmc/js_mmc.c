@@ -30,7 +30,7 @@
 
 int do_mmc_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int spi_port, mosi, cs;
+    resource_t spi_port, mosi, cs;
 
     if (argc != 4)
 	return COMPLETION_THROW;

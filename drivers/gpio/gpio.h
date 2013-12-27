@@ -29,60 +29,54 @@
 #include "drivers/resources.h"
 #include "platform/platform.h"
 
-static inline void gpio_digital_write(int pin, int value)
+static inline void gpio_digital_write(resource_t pin, int value)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return;
 
-    pin = RES_MAJ(pin);
-    platform.gpio.digital_write(pin, value);
+    platform.gpio.digital_write(RES_MAJ(pin), value);
 }
 
-static inline void gpio_digital_pulse(int pin, int value, double ms)
+static inline void gpio_digital_pulse(resource_t pin, int value, double ms)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return;
 
-    pin = RES_MAJ(pin);
-    platform.gpio.digital_write(pin, value);
+    platform.gpio.digital_write(RES_MAJ(pin), value);
     platform.msleep(ms);
-    platform.gpio.digital_write(pin, !value);
+    platform.gpio.digital_write(RES_MAJ(pin), !value);
 }
 
-static inline int gpio_digital_read(int pin)
+static inline int gpio_digital_read(resource_t pin)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return 0;
 
-    pin = RES_MAJ(pin);
-    return platform.gpio.digital_read(pin);
+    return platform.gpio.digital_read(RES_MAJ(pin));
 }
 
-static inline void gpio_analog_write(int pin, double value)
+static inline void gpio_analog_write(resource_t pin, double value)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return;
 
-    pin = RES_MAJ(pin);
-    platform.gpio.analog_write(pin, value);
+    platform.gpio.analog_write(RES_MAJ(pin), value);
 }
 
-static inline double gpio_analog_read(int pin)
+static inline double gpio_analog_read(resource_t pin)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return 0;
 
-    pin = RES_MAJ(pin);
-    return platform.gpio.analog_read(pin);
+    return platform.gpio.analog_read(RES_MAJ(pin));
 }
 
-static inline int gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
+static inline int gpio_set_pin_mode(resource_t pin, gpio_pin_mode_t mode)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
 	return -1;
 
-    pin = RES_MAJ(pin);
-    return platform.gpio.set_pin_mode(pin, mode);
+    return platform.gpio.set_pin_mode(RES_MAJ(pin), mode);
 }
 
 /* XXX: should receive tstr */
@@ -108,7 +102,7 @@ static inline int gpio_get_constant(int *constant, char *buf, int len)
     else 
 	return -1;
 
-    *constant = RES(GPIO_RESOURCE_ID_BASE, pin, 0);
+    *constant = (int)RES(GPIO_RESOURCE_ID_BASE, pin, 0);
     return 0;
 }
 
