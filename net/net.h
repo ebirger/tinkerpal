@@ -22,54 +22,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/event.h"
-#include "util/debug.h"
-#include "mem/tmalloc.h"
-#include "main/console.h"
-#include "platform/platform.h"
-#include "drivers/fs/vfs.h"
-#include "js/js.h"
-#include "net/net.h"
-#include "version.h"
+#ifndef __NET_H__
+#define __NET_H__
 
-extern void app_start(int argc, char *argv[]);
+#ifdef CONFIG_NET
 
-static inline void tp_banner(void)
-{
-    console_printf("TinkerPal version %s\n", TINKERPAL_VERSION);
-    if (platform.desc)
-	console_printf("Running on %s\n", platform.desc);
-}
+void net_uninit(void);
+void net_init(void);
 
-int tp_main(int argc, char *argv[])
-{
-    debugfn_t dbg = {};
+#else
 
-    platform_init();
-    tmalloc_init();
-    console_init();
-    tp_banner();
+static inline void net_uninit(void) { }
+static inline void net_init(void) { }
 
-    dbg.print = console_printf;
-    dbg.panic = platform.panic;
+#endif
 
-    debug_init(&dbg);
-
-    vfs_init();
-    js_init();
-    net_init();
-
-    platform_meminfo();
-
-    app_start(argc, argv);
-    
-    event_loop();
-
-    net_uninit();
-    js_uninit();
-    vfs_uninit();
-
-    tmalloc_uninit();
-    platform_uninit();
-    return 0;
-}
+#endif
