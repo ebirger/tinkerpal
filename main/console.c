@@ -28,7 +28,7 @@
 #include "drivers/serial/serial.h"
 #include <stdarg.h>
 
-static int console_id = -1;
+static resource_t console_id;
 static int console_event_id = -1;
 static event_t *user_e;
 
@@ -42,13 +42,13 @@ static event_t console_e = { .trigger = console_watch_event };
 
 int console_read(char *buf, int size)
 {
-    tp_assert(console_id != -1);
+    tp_assert(console_id);
     return serial_read(console_id, buf, size);
 }
 
 int console_write(char *buf, int size)
 {
-    tp_assert(console_id != -1);
+    tp_assert(console_id);
     for (; size--; buf++)
     {
         if (*buf == '\n')
@@ -104,7 +104,7 @@ static void str_dump(printer_t *printer, void *o)
     }
 }
 
-void console_set_id(int id)
+void console_set_id(resource_t id)
 {
     console_id = id;
     /* refresh event listener */
@@ -127,7 +127,7 @@ void console_printf(char *fmt, ...)
 
 void console_init(void)
 {
-    int id = serial_default_console_id();
+    resource_t id = serial_default_console_id();
 
     serial_enable(id, 1);
     console_set_id(id);

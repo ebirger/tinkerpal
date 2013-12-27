@@ -29,6 +29,7 @@
 
 #ifdef CONFIG_PLAT_HAS_SERIAL
 
+#include "drivers/resources.h"
 #include "util/tprintf.h"
 
 void console_printf(char *fmt, ...);
@@ -38,7 +39,7 @@ void console_event_watch_set(event_t *e);
 int console_read(char *buf, int size);
 int console_write(char *buf, int size);
 
-void console_set_id(int id);
+void console_set_id(resource_t id);
 
 void console_init(void);
 
@@ -48,7 +49,7 @@ static inline void console_printf(char *fmt, ...) {}
 static inline void console_event_watch_set(event_t *e) {}
 static inline int console_read(char *buf, int size) { return 0; }
 static inline int console_write(char *buf, int size) { return 0; }
-static inline void console_set_id(int id) {}
+static inline void console_set_id(resource_t id) {}
 static inline void console_init(void) {}
 
 #endif
