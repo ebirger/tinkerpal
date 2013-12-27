@@ -25,6 +25,9 @@ config BUFFERED_SERIAL
 config PLAT_HAS_BLK
 	bool
 
+config 16_BIT
+	bool
+
 config STELLARIS
 	bool
 	select ARM
@@ -59,6 +62,7 @@ config MSP430
 	bool
 	select PLAT_HAS_TI_CCS5
 	select PLAT_HAS_MALLOC
+	select 16_BIT
 
 config UNIX
 	bool

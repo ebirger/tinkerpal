@@ -25,7 +25,7 @@
 #ifndef __TP_TYPES_H__
 #define __TP_TYPES_H__
 
-#ifdef CONFIG_MSP430
+#ifdef CONFIG_16_BIT
 
 typedef char s8;
 typedef unsigned char u8;
