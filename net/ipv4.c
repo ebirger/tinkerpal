@@ -59,7 +59,7 @@ void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
     iph->ihl = 5; /* No support for options */
     iph->dscp = 0;
     iph->tot_len = sizeof(*iph) + payload_len;
-    iph->id = htons(0xdead); //0; /* Per RFC 6864 - no frags -> field is meaningless */
+    iph->id = 0; /* Per RFC 6864 - no frags -> field is meaningless */
     iph->frag_off = 0; /* No frags */
     iph->ttl = 255;
     iph->protocol = protocol;
