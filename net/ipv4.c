@@ -50,9 +50,11 @@ int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     u32 src_addr, u32 dst_addr, u16 payload_len)
 {
     ip_hdr_t *iph;
+    u16 tot_len;
 
     src_addr = htonl(src_addr);
     dst_addr = htonl(dst_addr);
+    tot_len = sizeof(ip_hdr_t) + payload_len;
 
     /* IPv4 Header */
     if (!(iph = packet_push(&g_packet, sizeof(ip_hdr_t))))
@@ -61,7 +63,7 @@ int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     iph->ver = 4;
     iph->ihl = 5; /* No support for options */
     iph->dscp = 0;
-    iph->tot_len = sizeof(*iph) + payload_len;
+    iph->tot_len = htons(tot_len);
     iph->id = 0; /* Per RFC 6864 - no frags -> field is meaningless */
     iph->frag_off = 0; /* No frags */
     iph->ttl = 255;
