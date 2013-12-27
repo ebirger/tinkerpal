@@ -25,8 +25,6 @@
 #ifndef __IPV4_H__
 #define __IPV4_H__
 
-#ifdef CONFIG_IPV4
-
 #include "net/net_types.h"
 #include "net/etherif.h"
 
@@ -50,12 +48,5 @@ void ipv4_register_proto(ipv4_proto_t *proto);
 
 void ipv4_uninit(void);
 void ipv4_init(void);
-
-#else
-
-static inline void ipv4_uninit(void) { }
-static inline void ipv4_init(void) { }
-
-#endif
 
 #endif

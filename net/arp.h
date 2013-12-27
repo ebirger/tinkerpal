@@ -25,8 +25,6 @@
 #ifndef __ARP_H__
 #define __ARP_H__
 
-#ifdef CONFIG_ARP
-
 #include "net/net_types.h"
 #include "net/etherif.h"
 
@@ -42,12 +40,5 @@ int arp_resolve(arp_resolve_t *resolve);
 
 void arp_uninit(void);
 void arp_init(void);
-
-#else
-
-static inline void arp_uninit(void) { }
-static inline void arp_init(void) { }
-
-#endif
 
 #endif

@@ -25,8 +25,6 @@
 #ifndef __UDP_H__
 #define __UDP_H__
 
-#ifdef CONFIG_UDP
-
 /* - packet ptr is expected to point to the UDP payload
  * - ports and addresses are in host order
  */
@@ -35,12 +33,5 @@ int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
 
 void udp_uninit(void);
 void udp_init(void);
-
-#else
-
-static inline void udp_uninit(void) { }
-static inline void udp_init(void) { }
-
-#endif
 
 #endif

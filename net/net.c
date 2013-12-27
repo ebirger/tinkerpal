@@ -31,15 +31,27 @@
 void net_uninit(void)
 {
     tp_out(("NET Uninit\n"));
+#ifdef CONFIG_UDP
     udp_uninit();
+#endif
+#ifdef CONFIG_IPV4
     ipv4_uninit();
+#endif
+#ifdef CONFIG_ARP
     arp_uninit();
+#endif
 }
 
 void net_init(void)
 {
     tp_out(("NET Init\n"));
+#ifdef CONFIG_ARP
     arp_init();
+#endif
+#ifdef CONFIG_IPV4
     ipv4_init();
+#endif
+#ifdef CONFIG_UDP
     udp_init();
+#endif
 }
