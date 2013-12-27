@@ -30,6 +30,7 @@
 #include "net/net_types.h"
 
 static ether_proto_t ipv4_proto;
+static ipv4_proto_t *ipv4_protocols;
 
 static u16 ipv4_hdr_checksum(ip_hdr_t *iph)
 {
@@ -74,10 +75,37 @@ void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
 static void ipv4_recv(etherif_t *ethif)
 {
     ip_hdr_t *iph = (ip_hdr_t *)g_packet.ptr;
+    ipv4_proto_t *proto;
 
-    tp_out(("IPv4 packet received\n"));
+    tp_debug(("IPv4 packet received\n"));
 
-    ip_hdr_dump(iph);
+    for (proto = ipv4_protocols; proto && proto->protocol != iph->protocol;
+	proto = proto->next);
+    if (!proto)
+    {
+	tp_debug(("Unsupported IPv4 Protocol %02x\n", iph->protocol));
+	return;
+    }
+
+    packet_pull(&g_packet, sizeof(ip_hdr_t));
+    proto->recv(ethif);
+}
+
+void ipv4_unregister_proto(ipv4_proto_t *proto)
+{
+    ipv4_proto_t **iter;
+
+    for (iter = &ipv4_protocols; *iter && *iter != proto;
+	iter = &(*iter)->next);
+    tp_assert(*iter);
+    (*iter) = (*iter)->next;
+    proto->next = NULL;
+}
+
+void ipv4_register_proto(ipv4_proto_t *proto)
+{
+    proto->next = ipv4_protocols;
+    ipv4_protocols = proto;
 }
 
 void ipv4_uninit(void)

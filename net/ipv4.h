@@ -30,11 +30,23 @@
 #include "net/net_types.h"
 #include "net/etherif.h"
 
+typedef struct ipv4_proto_t ipv4_proto_t;
+
+struct ipv4_proto_t {
+    ipv4_proto_t *next;
+    u16 protocol;
+    void (*recv)(etherif_t *ethif);
+};
+
 /* - packet ptr is expected to point to the IPv4 payload
  * - addresses are in host order
  */
 void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
     u32 dst_addr, u16 payload_len);
+
+/* protocols are assumed to be statically allocated */
+void ipv4_unregister_proto(ipv4_proto_t *proto);
+void ipv4_register_proto(ipv4_proto_t *proto);
 
 void ipv4_uninit(void);
 void ipv4_init(void);
