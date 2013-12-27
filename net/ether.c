@@ -29,9 +29,11 @@
 #include "net/net_debug.h"
 #include "mem/tmalloc.h"
 
+const eth_mac_t bcast_mac = { .mac = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
+
 static ether_proto_t *protocols;
 
-void ethernet_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u16 eth_type)
+void ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type)
 {
     eth_hdr_t *hdr;
     eth_mac_t src_mac;

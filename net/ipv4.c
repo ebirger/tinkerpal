@@ -46,8 +46,8 @@ static u16 ipv4_hdr_checksum(ip_hdr_t *iph)
     return (u16)~sum;
 }
 
-void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
-    u32 dst_addr, u16 payload_len)
+void ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
+    u32 src_addr, u32 dst_addr, u16 payload_len)
 {
     ip_hdr_t *iph;
 

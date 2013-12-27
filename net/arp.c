@@ -38,7 +38,6 @@
 
 static ether_proto_t arp_proto;
 static arp_resolve_t *pending_resolve;
-static eth_mac_t bcast_mac = { .mac = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
 static int arp_timeout_event_id;
 static int arp_retries;
 
