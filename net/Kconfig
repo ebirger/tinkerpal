@@ -30,6 +30,13 @@ config IPV4
 	help
 		Support for IPv4
 
+config UDP
+	bool "UDP"
+	depends on IPV4
+	default y
+	help
+		Support for UDP
+
 config NET_DEBUG
 	bool "Network Debugging"
 	default n

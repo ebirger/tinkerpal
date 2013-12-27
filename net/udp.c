@@ -22,98 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __NET_TYPES_H__
-#define __NET_TYPES_H__
+#include "net/net_types.h"
+#include "net/net_debug.h"
+#include "net/ipv4.h"
+#include "net/packet.h"
 
-#include "util/tp_types.h"
+static ipv4_proto_t udp_proto;
 
-#ifdef CONFIG_BIG_ENDIAN
+static void udp_recv(etherif_t *ethif)
+{
+    udp_hdr_t *udph = (udp_hdr_t *)g_packet.ptr;
 
-#ifndef htonl
-#define htonl(a) (a)
-#endif
+    tp_debug(("IPv4 packet received\n"));
 
-#ifndef htons
-#define htons(a) (a)
-#endif
+    udp_hdr_dump(udph);
+}
 
-#else
+void udp_uninit(void)
+{
+    ipv4_unregister_proto(&udp_proto);
+}
 
-#ifndef htonl
-#define htonl(a) \
-    ((((a) >> 24) & 0x000000ff) | \
-     (((a) >>  8) & 0x0000ff00) | \
-     (((a) <<  8) & 0x00ff0000) | \
-     (((a) << 24) & 0xff000000))
-#endif
-
-#ifndef ntohl
-#define ntohl(a) htonl((a))
-#endif
-
-#ifndef htons
-#define htons(a) \
-    ((((a) >> 8) & 0x00ff) | \
-     (((a) << 8) & 0xff00))
-#endif
-
-#ifndef ntohs
-#define ntohs(a) htons((a))
-#endif
-
-#endif
-
-#define ETHER_PROTOCOL_ARP 0x0806
-#define ETHER_PROTOCOL_IP 0x0800
-
-#define IP_PROTOCOL_UDP 17
-
-typedef struct {
-    u8 mac[6];
-} eth_mac_t;
-
-typedef struct {
-    eth_mac_t dst;
-    eth_mac_t src;
-    u16 eth_type;
-} eth_hdr_t;
-
-typedef struct __attribute__((packed)) {
-    u16 htype;
-    u16 ptype;
-    u8 hlen;
-    u8 plen;
-    u16 oper;
-    eth_mac_t sha;
-    u8 spa[4];
-    eth_mac_t tha;
-    u8 tpa[4];
-} arp_packet_t;
-
-typedef struct __attribute__((packed)) {
-#ifdef CONFIG_BIG_ENDIAN_BITFIELD
-    u8 ver : 4;
-    u8 ihl : 4;
-#else
-    u8 ihl : 4;
-    u8 ver : 4;
-#endif
-    u8 dscp;
-    u16 tot_len;
-    u16 id;
-    u16 frag_off;
-    u8 ttl;
-    u8 protocol;
-    u16 checksum;
-    u8 src_addr[4];
-    u8 dst_addr[4];
-} ip_hdr_t;
-
-typedef struct __attribute__((packed)) {
-    u16 src_port;
-    u16 dst_port;
-    u16 length;
-    u16 checksum;
-} udp_hdr_t;
-
-#endif
+void udp_init(void)
+{
+    udp_proto.protocol = IP_PROTOCOL_UDP;
+    udp_proto.recv = udp_recv;
+    ipv4_register_proto(&udp_proto);
+}
