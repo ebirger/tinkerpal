@@ -41,7 +41,7 @@ extern const eth_mac_t bcast_mac;
 /* - packet ptr is expected to point to the IPv4 payload
  * - eth_type is in network order
  */
-void ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type);
+int ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type);
 
 /* protocols are assumed to be statically allocated */
 void ethernet_unregister_proto(ether_proto_t *proto);

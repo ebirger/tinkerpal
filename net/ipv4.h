@@ -41,7 +41,7 @@ struct ipv4_proto_t {
 /* - packet ptr is expected to point to the IPv4 payload
  * - addresses are in host order
  */
-void ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
+int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     u32 src_addr, u32 dst_addr, u16 payload_len);
 
 /* protocols are assumed to be statically allocated */

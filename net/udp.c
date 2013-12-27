@@ -29,7 +29,7 @@
 
 static ipv4_proto_t udp_proto;
 
-void udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
+int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     u32 dst_addr, u16 src_port, u16 dst_port, u16 payload_len)
 {
     udp_hdr_t *udph;
@@ -38,13 +38,15 @@ void udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     len = sizeof(udp_hdr_t) + payload_len;
 
     /* UDP Header */
-    udph = packet_push(&g_packet, sizeof(*udph));
+    if (!(udph = packet_push(&g_packet, sizeof(udp_hdr_t))))
+	return -1;
+
     udph->src_port = htons(src_port);
     udph->dst_port = htons(dst_port);
     udph->length = htons(len);
     udph->checksum = 0;
 
-    ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_UDP, src_addr, dst_addr, len);
+    return ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_UDP, src_addr, dst_addr, len);
 }
 static void udp_recv(etherif_t *ethif)
 {

@@ -33,7 +33,7 @@ const eth_mac_t bcast_mac = { .mac = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
 
 static ether_proto_t *protocols;
 
-void ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type)
+int ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type)
 {
     eth_hdr_t *hdr;
     eth_mac_t src_mac;
@@ -41,12 +41,15 @@ void ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type)
     etherif_mac_addr_get(ethif, &src_mac);
 
     /* Prepare Ethernet Header */
-    hdr = packet_push(&g_packet, sizeof(eth_hdr_t));
+    if (!(hdr = packet_push(&g_packet, sizeof(eth_hdr_t))))
+	return -1;
+
     hdr->eth_type = eth_type;
     hdr->dst = *dst_mac;
     hdr->src = src_mac;
 
     etherif_packet_xmit(ethif, g_packet.ptr, g_packet.length);
+    return 0;
 }
 
 static void ethernet_packet_received(event_t *e, u32 resource_id)

@@ -25,6 +25,7 @@
 #ifndef __PACKET_H__
 #define __PACKET_H__
 
+#include <stdio.h> /* NULL */
 #include "util/tp_types.h"
 #include "util/debug.h"
 
@@ -42,7 +43,9 @@ extern packet_t g_packet;
 
 static inline void *packet_push(packet_t *pkt, int len)
 {
-    tp_assert(pkt->ptr - pkt->head >= len);
+    if (pkt->ptr - pkt->head < len)
+	return NULL;
+
     pkt->ptr -= len;
     pkt->length += len;
     return pkt->ptr;
@@ -50,7 +53,9 @@ static inline void *packet_push(packet_t *pkt, int len)
 
 static inline void *packet_pull(packet_t *pkt, int len)
 {
-    tp_assert(pkt->length >= len);
+    if (pkt->length < len)
+	return NULL;
+
     pkt->ptr += len;
     pkt->length += len;
     return pkt->ptr;

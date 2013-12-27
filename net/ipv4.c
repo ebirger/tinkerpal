@@ -46,7 +46,7 @@ static u16 ipv4_hdr_checksum(ip_hdr_t *iph)
     return (u16)~sum;
 }
 
-void ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
+int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     u32 src_addr, u32 dst_addr, u16 payload_len)
 {
     ip_hdr_t *iph;
@@ -55,7 +55,9 @@ void ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     dst_addr = htonl(dst_addr);
 
     /* IPv4 Header */
-    iph = packet_push(&g_packet, sizeof(*iph));
+    if (!(iph = packet_push(&g_packet, sizeof(ip_hdr_t))))
+	return -1;
+
     iph->ver = 4;
     iph->ihl = 5; /* No support for options */
     iph->dscp = 0;
@@ -69,7 +71,7 @@ void ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     memcpy(iph->dst_addr, (u8 *)&dst_addr, 4);
     iph->checksum = ipv4_hdr_checksum(iph);
 
-    ethernet_xmit(ethif, dst_mac, htons(ETHER_PROTOCOL_IP));
+    return ethernet_xmit(ethif, dst_mac, htons(ETHER_PROTOCOL_IP));
 }
 
 static void ipv4_recv(etherif_t *ethif)
