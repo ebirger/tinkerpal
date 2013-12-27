@@ -36,6 +36,11 @@ struct ether_proto_t {
     void (*recv)(etherif_t *ethif);
 };
 
+/* - packet ptr is expected to point to the IPv4 payload
+ * - eth_type is in network order
+ */
+void ethernet_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u16 eth_type);
+
 /* protocols are assumed to be statically allocated */
 void ethernet_unregister_proto(ether_proto_t *proto);
 void ethernet_register_proto(ether_proto_t *proto);
