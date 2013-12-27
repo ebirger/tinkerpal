@@ -27,17 +27,47 @@
 
 #include "util/tp_types.h"
 
+#ifndef CONFIG_16_BIT
+
+/* Resource structure in 32 bits:
+ * minor: bits [0-7]
+ * major: bits [8-23]
+ * base: bits [24-31]
+ */
 typedef u32 resource_t;
 
+#define RES_MIN_SHIFT 0
 #define RES_MIN_MASK 0xff
-#define RES_MAJ_MASK (0xff << 8)
-#define RES_BASE_MASK (0xff << 16)
+#define RES_MAJ_SHIFT 8
+#define RES_MAJ_MASK 0xffff
+#define RES_BASE_SHIFT 24
+#define RES_BASE_MASK 0xff
+
+#else
+
+/* Resource structure in 16 bits:
+ * minor: bits [0-1]
+ * major: bits [2-9]
+ * base: bits [10-15]
+ */
+typedef u16 resource_t;
+
+#define RES_MIN_SHIFT 0
+#define RES_MIN_MASK 0x3
+#define RES_MAJ_SHIFT 2
+#define RES_MAJ_MASK 0x3fc
+#define RES_BASE_SHIFT 10
+#define RES_BASE_MASK 0x3f
+
+#endif
 
 #define RES(base, maj, min) \
-    ((resource_t)(((base) << 16) | ((maj) << 8) | (min)))
-#define RES_MIN(res) ((res) & RES_MIN_MASK)
-#define RES_MAJ(res) (((res) & RES_MAJ_MASK) >> 8)
-#define RES_BASE(res) (((res) & RES_BASE_MASK) >> 16)
+    ((resource_t)((((base) & RES_BASE_MASK) << RES_BASE_SHIFT) | \
+	(((maj) & RES_MAJ_MASK) << RES_MAJ_SHIFT) | \
+	(((min) & RES_MIN_MASK) << RES_MIN_SHIFT)))
+#define RES_MIN(res) (((res) >> RES_MIN_SHIFT) & RES_MIN_MASK)
+#define RES_MAJ(res) (((res) >> RES_MAJ_SHIFT) & RES_MAJ_MASK)
+#define RES_BASE(res) (((res) >> RES_BASE_SHIFT) & RES_BASE_MASK)
 
 #define GPIO_RESOURCE_ID_BASE 0x01
 #define UART_RESOURCE_ID_BASE 0x02
