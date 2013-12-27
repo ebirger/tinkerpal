@@ -107,4 +107,11 @@ typedef struct __attribute__((packed)) {
     u8 dst_addr[4];
 } ip_hdr_t;
 
+typedef struct __attribute__((packed)) {
+    u16 src_port;
+    u16 dst_port;
+    u16 length;
+    u16 checksum;
+} udp_hdr_t;
+
 #endif

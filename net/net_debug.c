@@ -77,3 +77,11 @@ void ip_hdr_dump(ip_hdr_t *iph)
     D("SRC", "%s", ip_addr_serialize(iph->src_addr));
     D("DST", "%s", ip_addr_serialize(iph->dst_addr));
 }
+
+void udp_hdr_dump(udp_hdr_t *udph)
+{
+    D("SPORT", "%d", ntohs(udph->src_port));
+    D("DPORT", "%d", ntohs(udph->dst_port));
+    D("Length", "%d", ntohs(udph->length));
+    D("Checksum", "%x", ntohs(udph->checksum));
+}
