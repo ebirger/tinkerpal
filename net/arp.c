@@ -48,12 +48,14 @@ static event_t arp_timeout_event = {
     .trigger = arp_timeout
 };
 
-static void arp_pkt_xmit(etherif_t *ethif, u16 oper, eth_mac_t *sha, u8 spa[],
-    u8 tpa[])
+static void arp_pkt_xmit(etherif_t *ethif, u16 oper, u8 spa[], u8 tpa[])
 {
     arp_packet_t *arp;
-    eth_hdr_t *eth_hdr;
+    eth_mac_t sha;
 
+    etherif_mac_addr_get(ethif, &sha);
+
+    /* Prepare ARP header */
     packet_reset(&g_packet, PACKET_RESET_TAIL);
     arp = packet_push(&g_packet, sizeof(arp_packet_t));
     arp->htype = htons(ARP_HTYPE_ETHERNET);
@@ -61,15 +63,13 @@ static void arp_pkt_xmit(etherif_t *ethif, u16 oper, eth_mac_t *sha, u8 spa[],
     arp->hlen = 6;
     arp->plen = 4;
     arp->oper = oper;
-    arp->sha = *sha;
+    arp->sha = sha;
     memcpy(arp->spa, spa, 4);
     memcpy(arp->tpa, tpa, 4);
-    eth_hdr = packet_push(&g_packet, sizeof(eth_hdr_t));
-    eth_hdr->eth_type = htons(ETHER_PROTOCOL_ARP);
-    eth_hdr->dst = bcast_mac;
-    eth_hdr->src = *sha;
+
     arp_timeout_event_id = event_timer_set(ARP_TIMEOUT, &arp_timeout_event);
-    etherif_packet_xmit(ethif, g_packet.ptr, g_packet.length);
+
+    ethernet_xmit(ethif, &bcast_mac, htons(ETHER_PROTOCOL_ARP));
 }
 
 static void arp_resolve_complete(int status, eth_mac_t mac)
@@ -83,15 +83,13 @@ static void arp_resolve_complete(int status, eth_mac_t mac)
 static void arp_resolve_pending(void)
 {
     etherif_t *ethif;
-    eth_mac_t mac;
     u32 sip, tip;
 
     ethif = pending_resolve->ethif;
-    etherif_mac_addr_get(ethif, &mac);
 
     sip = htonl(ethif->ip);
     tip = htonl(pending_resolve->ip);
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), &mac, (u8 *)&sip, (u8 *)&tip);
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), (u8 *)&sip, (u8 *)&tip);
 }
 
 static void arp_timeout(event_t *e, u32 resource_id)
@@ -128,14 +126,12 @@ static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
 static void arp_request_recv(etherif_t *ethif, arp_packet_t *arp)
 {
     u32 ip;
-    eth_mac_t mac;
 
     ip = htonl(ethif->ip);
     if (memcmp((void *)&ip, arp->tpa, 4))
 	return;
 
-    etherif_mac_addr_get(ethif, &mac);
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), &mac, (u8 *)&ip, arp->spa);
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), (u8 *)&ip, arp->spa);
 }
 
 static void arp_recv(etherif_t *ethif)

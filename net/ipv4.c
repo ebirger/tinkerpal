@@ -49,12 +49,9 @@ void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
     u32 dst_addr, u16 payload_len)
 {
     ip_hdr_t *iph;
-    eth_hdr_t *eth_hdr;
-    eth_mac_t src_mac;
 
     src_addr = htonl(src_addr);
     dst_addr = htonl(dst_addr);
-    etherif_mac_addr_get(ethif, &src_mac);
 
     /* IPv4 Header */
     iph = packet_push(&g_packet, sizeof(*iph));
@@ -71,13 +68,7 @@ void ipv4_xmit(etherif_t *ethif, eth_mac_t *dst_mac, u8 protocol, u32 src_addr,
     memcpy(iph->dst_addr, (u8 *)&dst_addr, 4);
     iph->checksum = ipv4_hdr_checksum(iph);
 
-    /* Ethernet Header */
-    eth_hdr = packet_push(&g_packet, sizeof(eth_hdr_t));
-    eth_hdr->eth_type = htons(ETHER_PROTOCOL_IP);
-    eth_hdr->dst = *dst_mac;
-    eth_hdr->src = src_mac;
-
-    etherif_packet_xmit(ethif, g_packet.ptr, g_packet.length);
+    ethernet_xmit(ethif, dst_mac, htons(ETHER_PROTOCOL_IP));
 }
 
 static void ipv4_recv(etherif_t *ethif)
