@@ -33,7 +33,7 @@
 #include "platform/arm/stm32/stm32f3discovery/stm32f3discovery.h"
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32.h"
-#include "drivers/serial/serial.h"
+#include "drivers/serial/serial_platform.h"
 
 extern uint32_t SystemCoreClock;
 

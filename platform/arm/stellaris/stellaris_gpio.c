@@ -28,7 +28,7 @@
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
-#include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_platform.h"
 #include "platform/arm/stellaris/stellaris.h"
 
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS

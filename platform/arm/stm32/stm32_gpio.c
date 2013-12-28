@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "platform/arm/stm32/stm32_gpio.h"
-#include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_platform.h"
 
 #define GPIO_PERIPH(p) (stm32_gpio_ports[((p) >> 4)].periph)
 #define GPIO_PORT(p) (stm32_gpio_ports[((p) >> 4)].port)

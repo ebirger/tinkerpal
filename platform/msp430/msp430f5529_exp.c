@@ -26,7 +26,7 @@
 #include "platform/platform.h"
 #include "platform/msp430/msp430f5529_gpio.h"
 #include "platform/msp430/msp430f5529.h"
-#include "drivers/serial/serial.h"
+#include "drivers/serial/serial_platform.h"
 
 int msp430f5529_exp_serial_enable(int u, int enabled)
 {

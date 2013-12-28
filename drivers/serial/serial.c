@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "drivers/serial/serial.h"
+#include "drivers/serial/serial_platform.h"
 #include "util/event.h"
 #include "mem/tmalloc.h"
 #include <string.h> /* memcpy */

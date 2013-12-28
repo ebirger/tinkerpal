@@ -25,7 +25,7 @@
 #include <msp430.h>
 #include "platform/platform.h"
 #include "platform/msp430/msp430f5529_gpio.h"
-#include "drivers/serial/serial.h"
+#include "drivers/serial/serial_platform.h"
 
 /* We need to disable the WDT before system start since buffer initialization
  * may take to long.

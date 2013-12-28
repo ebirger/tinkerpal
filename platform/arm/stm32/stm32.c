@@ -24,7 +24,7 @@
  */
 #include "platform/arm/stm32/stm32.h"
 #include "platform/arm/cortex-m.h"
-#include "drivers/serial/serial.h"
+#include "drivers/serial/serial_platform.h"
 
 int stm32_select(int ms)
 {

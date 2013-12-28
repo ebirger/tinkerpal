@@ -38,7 +38,7 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include "platform/unix/unix.h"
-#include "drivers/serial/serial.h"
+#include "drivers/serial/serial_platform.h"
 
 static struct timeval boot;
 

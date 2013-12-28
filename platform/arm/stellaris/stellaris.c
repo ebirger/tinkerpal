@@ -29,9 +29,9 @@
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
 #include "driverlib/uart.h"
-#include "drivers/serial/serial.h"
+#include "drivers/serial/serial_platform.h"
 #ifdef CONFIG_GPIO
-#include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_platform.h"
 #endif
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stellaris/stellaris.h"

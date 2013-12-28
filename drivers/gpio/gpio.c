@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_platform.h"
 #include "util/event.h"
 
 gpio_port_t gpio_int_state[NUM_GPIO_PORTS] = {};

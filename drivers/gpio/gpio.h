@@ -106,13 +106,4 @@ static inline int gpio_get_constant(int *constant, char *buf, int len)
     return 0;
 }
 
-/* API for the platform layer */
-static inline void gpio_state_set(int port, gpio_port_t state)
-{
-    extern gpio_port_t gpio_int_state[NUM_GPIO_PORTS];
-    gpio_int_state[port] = state;
-}
-
-int gpio_events_process(void);
-
 #endif
