@@ -27,6 +27,27 @@
 
 #ifdef CONFIG_NET
 
+#include "net/net_debug.h"
+
+#ifdef CONFIG_ETHERIF
+#include "net/etherif.h"
+#endif
+#ifdef CONFIG_PACKET
+#include "net/packet.h"
+#endif
+#ifdef CONFIG_ETHERNET
+#include "net/ether.h"
+#endif
+#ifdef CONFIG_ARP
+#include "net/arp.h"
+#endif
+#ifdef CONFIG_IPV4
+#include "net/ipv4.h"
+#endif
+#ifdef CONFIG_UDP
+#include "net/udp.h"
+#endif
+
 void net_uninit(void);
 void net_init(void);
 

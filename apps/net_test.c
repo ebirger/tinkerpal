@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "net/ether.h"
+#include "net/net.h"
 #include "platform/platform_consts.h"
 #include "apps/cli.h"
 #if defined(CONFIG_LINUX_PACKET_ETH)
