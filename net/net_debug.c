@@ -44,9 +44,11 @@ void eth_hdr_dump(eth_hdr_t *hdr)
     D("ETHERTYPE", "%04x", ntohs(hdr->eth_type));
 }
 
-static char *ip_addr_serialize(u8 ip[])
+static char *ip_addr_serialize(u32 ip)
 {
-    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+    u8 *p = (u8 *)&ip;
+
+    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
     return buf;
 }
 
@@ -95,9 +97,9 @@ void dhcp_msg_dump(dhcp_msg_t *msg)
     D("XID", "%x", htonl(msg->xid));
     D("SECS", "%x", htons(msg->secs));
     D("FLAGS", "%x", htons(msg->flags));
-    D("CIADDR", "%s", ip_addr_serialize((u8 *)&msg->ciaddr));
-    D("YIADDR", "%s", ip_addr_serialize((u8 *)&msg->yiaddr));
-    D("SIADDR", "%s", ip_addr_serialize((u8 *)&msg->siaddr));
-    D("GIADDR", "%s", ip_addr_serialize((u8 *)&msg->giaddr));
+    D("CIADDR", "%s", ip_addr_serialize(msg->ciaddr));
+    D("YIADDR", "%s", ip_addr_serialize(msg->yiaddr));
+    D("SIADDR", "%s", ip_addr_serialize(msg->siaddr));
+    D("GIADDR", "%s", ip_addr_serialize(msg->giaddr));
     D("CHADDR", "%s", eth_mac_serialize((eth_mac_t *)&msg->chaddr));
 }

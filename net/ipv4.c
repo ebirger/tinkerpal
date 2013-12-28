@@ -22,7 +22,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <string.h> /* memcpy */
 #include "net/ipv4.h"
 #include "net/ether.h"
 #include "net/packet.h"
@@ -52,8 +51,6 @@ int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     ip_hdr_t *iph;
     u16 tot_len;
 
-    src_addr = htonl(src_addr);
-    dst_addr = htonl(dst_addr);
     tot_len = sizeof(ip_hdr_t) + payload_len;
 
     /* IPv4 Header */
@@ -69,8 +66,8 @@ int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     iph->ttl = 255;
     iph->protocol = protocol;
     iph->checksum = 0;
-    memcpy(iph->src_addr, (u8 *)&src_addr, 4);
-    memcpy(iph->dst_addr, (u8 *)&dst_addr, 4);
+    iph->src_addr = htonl(src_addr);
+    iph->dst_addr = htonl(dst_addr);
     iph->checksum = ipv4_hdr_checksum(iph);
 
     return ethernet_xmit(ethif, dst_mac, htons(ETHER_PROTOCOL_IP));

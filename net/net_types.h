@@ -85,9 +85,9 @@ typedef struct __attribute__((packed)) {
     u8 plen;
     u16 oper;
     eth_mac_t sha;
-    u8 spa[4];
+    u32 spa;
     eth_mac_t tha;
-    u8 tpa[4];
+    u32 tpa;
 } arp_packet_t;
 
 typedef struct __attribute__((packed)) {
@@ -105,8 +105,8 @@ typedef struct __attribute__((packed)) {
     u8 ttl;
     u8 protocol;
     u16 checksum;
-    u8 src_addr[4];
-    u8 dst_addr[4];
+    u32 src_addr;
+    u32 dst_addr;
 } ip_hdr_t;
 
 typedef struct __attribute__((packed)) {

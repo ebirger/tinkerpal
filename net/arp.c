@@ -22,7 +22,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <string.h> /* memcpy */
 #include "util/debug.h"
 #include "net/arp.h"
 #include "net/ether.h"
@@ -47,7 +46,7 @@ static event_t arp_timeout_event = {
     .trigger = arp_timeout
 };
 
-static void arp_pkt_xmit(etherif_t *ethif, u16 oper, u8 spa[], u8 tpa[])
+static void arp_pkt_xmit(etherif_t *ethif, u16 oper, u32 spa, u32 tpa)
 {
     arp_packet_t *arp;
     eth_mac_t sha;
@@ -63,8 +62,8 @@ static void arp_pkt_xmit(etherif_t *ethif, u16 oper, u8 spa[], u8 tpa[])
     arp->plen = 4;
     arp->oper = oper;
     arp->sha = sha;
-    memcpy(arp->spa, spa, 4);
-    memcpy(arp->tpa, tpa, 4);
+    arp->spa = spa;
+    arp->tpa = tpa;
 
     arp_timeout_event_id = event_timer_set(ARP_TIMEOUT, &arp_timeout_event);
 
@@ -81,14 +80,10 @@ static void arp_resolve_complete(int status, eth_mac_t mac)
 
 static void arp_resolve_pending(void)
 {
-    etherif_t *ethif;
-    u32 sip, tip;
+    etherif_t *ethif = pending_resolve->ethif;
 
-    ethif = pending_resolve->ethif;
-
-    sip = htonl(ethif->ip);
-    tip = htonl(pending_resolve->ip);
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), (u8 *)&sip, (u8 *)&tip);
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), htonl(ethif->ip),
+	htonl(pending_resolve->ip));
 }
 
 static void arp_timeout(event_t *e, u32 resource_id)
@@ -110,13 +105,10 @@ static void arp_timeout(event_t *e, u32 resource_id)
 
 static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
 {
-    u32 ip;
-
     if (!pending_resolve || pending_resolve->ethif != ethif)
 	return;
 
-    ip = htonl(pending_resolve->ip);
-    if (memcmp((void *)&ip, arp->spa, 4))
+    if (arp->spa != htonl(pending_resolve->ip))
 	return;
 
     arp_resolve_complete(0, arp->sha);
@@ -127,10 +119,10 @@ static void arp_request_recv(etherif_t *ethif, arp_packet_t *arp)
     u32 ip;
 
     ip = htonl(ethif->ip);
-    if (memcmp((void *)&ip, arp->tpa, 4))
+    if (ip != arp->tpa)
 	return;
 
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), (u8 *)&ip, arp->spa);
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), ip, arp->spa);
 }
 
 static void arp_recv(etherif_t *ethif)
