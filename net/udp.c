@@ -24,10 +24,12 @@
  */
 #include "net/net_types.h"
 #include "net/net_debug.h"
+#include "net/udp.h"
 #include "net/ipv4.h"
 #include "net/packet.h"
 
 static ipv4_proto_t udp_proto;
+static udp_socket_t *udp_sockets;
 
 int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     u32 dst_addr, u16 src_port, u16 dst_port, u16 payload_len)
@@ -48,13 +50,54 @@ int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
 
     return ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_UDP, src_addr, dst_addr, len);
 }
+
 static void udp_recv(etherif_t *ethif)
 {
     udp_hdr_t *udph = (udp_hdr_t *)g_packet.ptr;
+    udp_socket_t *sock;
 
     tp_debug(("IPv4 packet received\n"));
 
-    udp_hdr_dump(udph);
+    for (sock = udp_sockets; sock; sock = sock->next)
+    {
+	int src_fit, dst_fit;
+
+	if (sock->ethif != ethif)
+	    continue;
+
+	src_fit = (sock->flags & UDP_SRC_ANY) ||
+	    (sock->remote_port == ntohs(udph->src_port));
+	dst_fit = (sock->flags & UDP_DST_ANY) ||
+	    (sock->local_port == ntohs(udph->dst_port));
+	if (src_fit && dst_fit)
+	    break;
+    }
+
+    if (!sock)
+    {
+	tp_info(("No matching socket found\n"));
+	return;
+    }
+
+    packet_pull(&g_packet, sizeof(udp_hdr_t));
+    sock->recv(sock);
+}
+
+void udp_unregister_socket(udp_socket_t *sock)
+{
+    udp_socket_t **iter;
+
+    for (iter = &udp_sockets; *iter && *iter != sock;
+	iter = &(*iter)->next);
+    tp_assert(*iter);
+    (*iter) = (*iter)->next;
+    sock->next = NULL;
+}
+
+void udp_register_socket(udp_socket_t *sock)
+{
+    sock->next = udp_sockets;
+    udp_sockets = sock;
 }
 
 void udp_uninit(void)
