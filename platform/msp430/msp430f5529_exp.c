@@ -49,16 +49,9 @@ const platform_t platform = {
     .gpio = {
 	.digital_write = msp430f5529_gpio_digital_write,
 	.digital_read = msp430f5529_gpio_digital_read,
-	.analog_write = NULL,
-	.analog_read = NULL,
 	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
     },
 #endif
     .init = msp430f5529_init,
-    .meminfo = NULL,
-    .panic = NULL,
     .select = msp430f5529_select,
-    .get_ticks_from_boot = NULL,
-    .get_system_clock = NULL,
-    .msleep = NULL,
 };

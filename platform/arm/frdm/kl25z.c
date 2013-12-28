@@ -199,18 +199,9 @@ const platform_t platform = {
 	.irq_enable = kl25z_serial_irq_enable,
 	.default_console_id = 0,
     },
-#ifdef CONFIG_GPIO
-    .gpio = {
-	.digital_write = NULL,
-	.digital_read = NULL,
-	.set_pin_mode = NULL,
-    },
-#endif
     .init = kl25z_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = kl25z_select,
     .get_ticks_from_boot = cortex_m_get_ticks_from_boot,
-    .get_system_clock = NULL,
-    .msleep = NULL,
 };

@@ -193,7 +193,6 @@ const platform_t platform = {
     .gpio = {
 	.digital_write = stellaris_gpio_digital_write,
 	.digital_read = stellaris_gpio_digital_read,
-	.analog_write = NULL,
 	.set_pin_mode = lm3s6918_set_pin_mode,
     },
 #endif

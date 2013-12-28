@@ -40,7 +40,7 @@ int main(void)
 {
     extern int tp_main(int argc, char *argv[]);
 
-    tp_main(0, NULL);
+    tp_main(0, 0);
     return 0;
 }
 
