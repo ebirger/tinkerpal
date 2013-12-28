@@ -116,4 +116,22 @@ typedef struct __attribute__((packed)) {
     u16 checksum;
 } udp_hdr_t;
 
+typedef struct __attribute__((packed)) {
+    u8 op;
+    u8 htype;
+    u8 hlen;
+    u8 hops;
+    u32 xid;
+    u16 secs;
+    u16 flags;
+    u32 ciaddr;
+    u32 yiaddr;
+    u32 siaddr;
+    u32 giaddr;
+    u8 chaddr[16];
+    u8 sname[64];
+    u8 boot_fname[128];
+    u32 magic_cookie;
+} dhcp_msg_t;
+
 #endif

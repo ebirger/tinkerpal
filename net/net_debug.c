@@ -85,3 +85,19 @@ void udp_hdr_dump(udp_hdr_t *udph)
     D("Length", "%d", ntohs(udph->length));
     D("Checksum", "%x", ntohs(udph->checksum));
 }
+
+void dhcp_msg_dump(dhcp_msg_t *msg)
+{
+    D("OP", "%x", msg->op);
+    D("HTYPE", "%x", msg->htype);
+    D("HLEN", "%x", msg->hlen);
+    D("HOPS", "%x", msg->hops);
+    D("XID", "%x", htonl(msg->xid));
+    D("SECS", "%x", htons(msg->secs));
+    D("FLAGS", "%x", htons(msg->flags));
+    D("CIADDR", "%s", ip_addr_serialize((u8 *)&msg->ciaddr));
+    D("YIADDR", "%s", ip_addr_serialize((u8 *)&msg->yiaddr));
+    D("SIADDR", "%s", ip_addr_serialize((u8 *)&msg->siaddr));
+    D("GIADDR", "%s", ip_addr_serialize((u8 *)&msg->giaddr));
+    D("CHADDR", "%s", eth_mac_serialize((eth_mac_t *)&msg->chaddr));
+}
