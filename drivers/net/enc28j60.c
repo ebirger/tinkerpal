@@ -627,7 +627,7 @@ static void packet_received(enc28j60_t *e)
 
 static void packet_xmitted(enc28j60_t *e)
 {
-    tp_err(("ENC28J60 packet transmitted\n"));
+    tp_info(("ENC28J60 packet transmitted\n"));
 
     /* TODO: read packet xmit status */
 
