@@ -38,6 +38,7 @@ typedef struct event_internal_t {
     struct event_internal_t *next;
     event_t *e;
     u32 resource_id;
+    u32 resource_mask;
     int event_id;
     int period;
     int expire;
@@ -163,29 +164,20 @@ static void get_next_timeout(int *timeout)
     tp_debug(("Next timeout: %d ms\n", *timeout));
 }
 
-static event_internal_t *watch_lookup(u32 resource_id)
+void event_watch_trigger(u32 resource_id)
 {
     event_internal_t *e;
 
     watches_foreach(e)
     {
-	if (e->resource_id == resource_id)
-	    return e;
+	if ((e->resource_id ^ resource_id) & e->resource_mask)
+	    continue;
+
+	EVENT_ON(e);
     }
-    return NULL;
 }
 
-void event_watch_trigger(u32 resource_id)
-{
-    event_internal_t *e;
-
-    if (!(e = watch_lookup(resource_id)))
-	return;
-
-    EVENT_ON(e);
-}
-
-int event_watch_set(u32 resource_id, event_t *e)
+int _event_watch_set(u32 resource_id, u32 resource_mask, event_t *e)
 {
     event_internal_t *n;
     
@@ -193,6 +185,7 @@ int event_watch_set(u32 resource_id, event_t *e)
 
     n->event_id = g_event_id++;
     n->resource_id = resource_id;
+    n->resource_mask = resource_mask;
     n->e = e;
     n->next = watches;
     n->flags = 0;

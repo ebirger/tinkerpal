@@ -34,7 +34,13 @@ struct event_t {
     void (*free)(event_t *e);
 };
 
-int event_watch_set(u32 resource_id, event_t *e);
+int _event_watch_set(u32 resource_id, u32 resource_mask, event_t *e);
+
+static inline int event_watch_set(u32 resource_id, event_t *e)
+{
+    return _event_watch_set(resource_id, (u32)-1, e);
+}
+
 void event_watch_del(int watch_id);
 void event_watch_del_by_resource(u32 resource_id);
 void event_watch_del_all(void);
