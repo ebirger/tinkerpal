@@ -242,35 +242,39 @@ void event_purge_deleted(event_internal_t **events)
     }
 }
 
-static void watches_process(void)
+static int watches_process(void)
 {
     event_internal_t *e;
+    int more = 0;
 
     watches_foreach(e)
     {
 	if (EVENT_IS_DELETED(e) || !(EVENT_IS_ON(e)))
 	    continue;
 
-	e->e->trigger(e->e, e->resource_id);
 	EVENT_OFF(e);
+	e->e->trigger(e->e, e->resource_id);
+	/* trigger may have triggered new watches */
+	more = 1;
     }
+
+    return more;
 }
 
 void event_loop(void)
 {
     while (watches || timers) 
     {
-	int timeout, rc = 0;
+	int timeout, more_watches;
+
+	more_watches = watches_process();
 
 	get_next_timeout(&timeout);
 
-	if (timeout >= 0)
-	    rc = platform.select(timeout);
+	if (timeout >= 0 && !more_watches)
+	    platform.select(timeout);
 
-	if (rc)
-	    watches_process();
-	else
-	    timeout_process();
+	timeout_process();
 
 	event_purge_deleted(&timers);
 	event_purge_deleted(&watches);
