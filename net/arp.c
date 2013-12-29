@@ -129,9 +129,7 @@ static void arp_recv(etherif_t *ethif)
 {
     arp_packet_t *arp = (arp_packet_t *)g_packet.ptr;
 
-    tp_out(("ARP packet received\n"));
-
-    arp_packet_dump(arp);
+    tp_debug(("ARP packet received\n"));
 
     if (arp->htype != htons(ARP_HTYPE_ETHERNET) ||
 	arp->ptype != htons(ETHER_PROTOCOL_IP) ||
