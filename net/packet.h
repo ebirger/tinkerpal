@@ -57,7 +57,7 @@ static inline void *packet_pull(packet_t *pkt, int len)
 	return NULL;
 
     pkt->ptr += len;
-    pkt->length += len;
+    pkt->length -= len;
     return pkt->ptr;
 }
 
