@@ -30,6 +30,8 @@
 #ifdef CONFIG_NET_DEBUG
 
 char *eth_mac_serialize(eth_mac_t *m);
+/* Address is expected in network order */
+char *ip_addr_serialize(u32 ip);
 void eth_hdr_dump(eth_hdr_t *hdr);
 void arp_packet_dump(arp_packet_t *arp);
 void ip_hdr_dump(ip_hdr_t *iph);
@@ -39,6 +41,7 @@ void dhcp_msg_dump(dhcp_msg_t *msg);
 #else
 
 static inline char *eth_mac_serialize(eth_mac_t *m) { return ""; }
+static inline char *ip_addr_serialize(u32 ip) { return ""; }
 static inline void eth_hdr_dump(eth_hdr_t *hdr) { }
 static inline void arp_packet_dump(arp_packet_t *arp) { }
 static inline void ip_hdr_dump(ip_hdr_t *iph) { }

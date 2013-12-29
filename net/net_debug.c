@@ -44,7 +44,7 @@ void eth_hdr_dump(eth_hdr_t *hdr)
     D("ETHERTYPE", "%04x", ntohs(hdr->eth_type));
 }
 
-static char *ip_addr_serialize(u32 ip)
+char *ip_addr_serialize(u32 ip)
 {
     u8 *p = (u8 *)&ip;
 
