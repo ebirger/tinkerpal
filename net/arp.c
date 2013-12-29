@@ -24,6 +24,7 @@
  */
 #include "util/debug.h"
 #include "net/arp.h"
+#include "net/ipv4.h"
 #include "net/ether.h"
 #include "net/packet.h"
 #include "net/net_debug.h"
@@ -82,7 +83,7 @@ static void arp_resolve_pending(void)
 {
     etherif_t *ethif = pending_resolve->ethif;
 
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), htonl(ethif->ip),
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), htonl(ipv4_addr(ethif)),
 	htonl(pending_resolve->ip));
 }
 
@@ -116,13 +117,10 @@ static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
 
 static void arp_request_recv(etherif_t *ethif, arp_packet_t *arp)
 {
-    u32 ip;
-
-    ip = htonl(ethif->ip);
-    if (ip != arp->tpa)
+    if (ipv4_addr(ethif) != ntohl(arp->tpa))
 	return;
 
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), ip, arp->spa);
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), arp->tpa, arp->spa);
 }
 
 static void arp_recv(etherif_t *ethif)

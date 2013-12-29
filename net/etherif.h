@@ -55,7 +55,7 @@ struct etherif_t {
     etherif_t *next;
     int id;
     const etherif_ops_t *ops;
-    u32 ip; /* Interface IP address in host order */
+    void *ipv4_info;
 };
 
 void etherif_destruct(etherif_t *ethif);

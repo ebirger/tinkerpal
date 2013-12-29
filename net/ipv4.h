@@ -28,6 +28,12 @@
 #include "net/net_types.h"
 #include "net/etherif.h"
 
+typedef struct {
+    u32 ip;
+    u32 netmask;
+    u32 router;
+} ipv4_info_t;
+
 typedef struct ipv4_proto_t ipv4_proto_t;
 
 struct ipv4_proto_t {
@@ -41,6 +47,12 @@ struct ipv4_proto_t {
  */
 int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     u32 src_addr, u32 dst_addr, u16 payload_len);
+
+static inline u32 ipv4_addr(etherif_t *ethif)
+{
+    ipv4_info_t *ip_info = ethif->ipv4_info;
+    return ip_info ? ip_info->ip : 0;
+}
 
 /* protocols are assumed to be statically allocated */
 void ipv4_unregister_proto(ipv4_proto_t *proto);
