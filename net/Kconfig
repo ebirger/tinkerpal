@@ -37,6 +37,14 @@ config UDP
 	help
 		Support for UDP
 
+config DHCP_CLIENT
+	bool "DHCP Client"
+	depends on UDP
+	default y
+	help
+		Support for obtaining an IP address using Dynamic Host
+		Configuration Protocol (DHCP)
+
 config NET_DEBUG
 	bool "Network Debugging"
 	default n

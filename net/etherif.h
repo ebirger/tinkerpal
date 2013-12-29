@@ -56,6 +56,7 @@ struct etherif_t {
     int id;
     const etherif_ops_t *ops;
     void *ipv4_info;
+    void *dhcpc;
 };
 
 void etherif_destruct(etherif_t *ethif);
