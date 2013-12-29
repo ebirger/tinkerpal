@@ -34,6 +34,8 @@ void etherif_destruct(etherif_t *ethif)
     etherif_event_t event;
     etherif_t **iter;
 
+    etherif_event_trigger(ethif, ETHERIF_EVENT_REMOVE);
+
     /* Unlink from list */
     for (iter = &etherifs; *iter && *iter != ethif; iter = &(*iter)->next);
     tp_assert(*iter);
@@ -54,6 +56,8 @@ void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
     /* Link to list */
     ethif->next = etherifs;
     etherifs = ethif;
+
+    etherif_event_trigger(ethif, ETHERIF_EVENT_ADD);
 }
 
 etherif_t *etherif_get_by_id(int id)
