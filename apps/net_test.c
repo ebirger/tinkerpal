@@ -38,14 +38,19 @@
 
 static etherif_t *ethif;
 
-void net_test_quit(void)
+static void net_test_quit(void)
 {
+    dhcpc_stop(ethif);
     ethernet_detach_etherif(ethif);
     etherif_free(ethif);
 }
 
-void net_test_process_line(tstr_t *line)
+static void net_test_process_line(tstr_t *line)
 {
+#ifdef CONFIG_DHCP_CLIENT
+    if (!tstr_cmp(line, &S("dhcp")))
+	dhcpc_start(ethif);
+#endif
     console_printf("Ok\n");
 }
 
