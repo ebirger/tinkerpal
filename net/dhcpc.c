@@ -266,6 +266,7 @@ static void dhcpc_recv(udp_socket_t *sock)
     case DHCP_MSG_ACK:
 	tp_debug(("DHCP ACK\n"));
 	dhcpc->udp_sock.ethif->ipv4_info = &dhcpc->ip_info;
+	etherif_ipv4_info_set(dhcpc->udp_sock.ethif, &dhcpc->ip_info); 
 	break;
     }
 }

@@ -35,6 +35,7 @@ typedef enum {
     ETHERIF_EVENT_PORT_CHANGE = 0,
     ETHERIF_EVENT_PACKET_RECEIVED = 1,
     ETHERIF_EVENT_PACKET_XMITTED = 2,
+    ETHERIF_EVENT_IPV4_INFO_SET = 3,
     ETHERIF_EVENT_COUNT
 } etherif_event_t;
 
@@ -105,6 +106,12 @@ static inline void etherif_event_trigger(etherif_t *ethif,
     etherif_event_t event)
 {
     event_watch_trigger(ETHERIF_RES(ethif, event));
+}
+
+static inline void etherif_ipv4_info_set(etherif_t *ethif, void *ipv4_info)
+{
+    ethif->ipv4_info = ipv4_info;
+    etherif_event_trigger(ethif, ETHERIF_EVENT_IPV4_INFO_SET);
 }
 
 #define etherif_on_port_change_event_set(ethif, ev) \
