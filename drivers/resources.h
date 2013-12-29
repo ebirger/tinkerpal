@@ -46,16 +46,16 @@ typedef u32 resource_t;
 #else
 
 /* Resource structure in 16 bits:
- * minor: bits [0-1]
- * major: bits [2-9]
+ * minor: bits [0-2]
+ * major: bits [3-9]
  * base: bits [10-15]
  */
 typedef u16 resource_t;
 
 #define RES_MIN_SHIFT 0
-#define RES_MIN_MASK 0x3
-#define RES_MAJ_SHIFT 2
-#define RES_MAJ_MASK 0x3fc
+#define RES_MIN_MASK 0x7
+#define RES_MAJ_SHIFT 3
+#define RES_MAJ_MASK 0x7f
 #define RES_BASE_SHIFT 10
 #define RES_BASE_MASK 0x3f
 
