@@ -39,6 +39,7 @@ typedef struct {
 /* All network transactions are synchronous. So we only need one packet
  * at a time.
  */
+#define NET_PACKET_SIZE 400
 extern packet_t g_packet;
 
 static inline void *packet_push(packet_t *pkt, int len)

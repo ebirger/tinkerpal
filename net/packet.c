@@ -24,7 +24,7 @@
  */
 #include "net/packet.h"
 
-u8 packet_buf[400];
+static u8 packet_buf[NET_PACKET_SIZE];
 
 packet_t g_packet = {
     .head = packet_buf,
