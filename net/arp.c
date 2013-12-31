@@ -47,7 +47,8 @@ static event_t arp_timeout_event = {
     .trigger = arp_timeout
 };
 
-static void arp_pkt_xmit(etherif_t *ethif, u16 oper, u32 spa, u32 tpa)
+static void arp_pkt_xmit(etherif_t *ethif, u16 oper, const eth_mac_t *tha,
+    u32 spa, u32 tpa)
 {
     arp_packet_t *arp;
     eth_mac_t sha;
@@ -64,6 +65,7 @@ static void arp_pkt_xmit(etherif_t *ethif, u16 oper, u32 spa, u32 tpa)
     arp->oper = oper;
     arp->sha = sha;
     arp->spa = spa;
+    arp->tha = *tha;
     arp->tpa = tpa;
 
     arp_timeout_event_id = event_timer_set(ARP_TIMEOUT, &arp_timeout_event);
@@ -83,8 +85,8 @@ static void arp_resolve_pending(void)
 {
     etherif_t *ethif = pending_resolve->ethif;
 
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), htonl(ipv4_addr(ethif)),
-	htonl(pending_resolve->ip));
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), &zero_mac,
+	htonl(ipv4_addr(ethif)), htonl(pending_resolve->ip));
 }
 
 static void arp_timeout(event_t *e, u32 resource_id)
@@ -120,7 +122,7 @@ static void arp_request_recv(etherif_t *ethif, arp_packet_t *arp)
     if (ipv4_addr(ethif) != ntohl(arp->tpa))
 	return;
 
-    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), arp->tpa, arp->spa);
+    arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), &arp->sha, arp->tpa, arp->spa);
 }
 
 static void arp_recv(etherif_t *ethif)

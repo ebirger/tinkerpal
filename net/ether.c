@@ -30,6 +30,7 @@
 #include "mem/tmalloc.h"
 
 const eth_mac_t bcast_mac = { .mac = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
+const eth_mac_t zero_mac;
 
 static ether_proto_t *protocols;
 

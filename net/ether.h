@@ -37,6 +37,7 @@ struct ether_proto_t {
 };
 
 extern const eth_mac_t bcast_mac;
+extern const eth_mac_t zero_mac;
 
 /* - packet ptr is expected to point to the IPv4 payload
  * - eth_type is in network order
