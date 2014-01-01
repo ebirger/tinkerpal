@@ -56,7 +56,7 @@ static void udp_recv(etherif_t *ethif)
     udp_socket_t *sock;
     u16 dst_port, src_port;
 
-    tp_debug(("IPv4 packet received\n"));
+    tp_debug(("UDP packet received\n"));
 
     src_port = ntohs(udph->src_port);
     dst_port = ntohs(udph->dst_port);
