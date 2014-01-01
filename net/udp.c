@@ -106,8 +106,7 @@ void udp_unregister_socket(udp_socket_t *sock)
 {
     udp_socket_t **iter;
 
-    for (iter = &udp_sockets; *iter && *iter != sock;
-	iter = &(*iter)->next);
+    for (iter = &udp_sockets; *iter && *iter != sock; iter = &(*iter)->next);
     tp_assert(*iter);
     (*iter) = (*iter)->next;
     sock->next = NULL;
