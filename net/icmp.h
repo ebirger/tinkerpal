@@ -22,46 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __NET_H__
-#define __NET_H__
+#ifndef __ICMP_H__
+#define __ICMP_H__
 
-#ifdef CONFIG_NET
-
-#include "net/net_debug.h"
-
-#ifdef CONFIG_ETHERIF
 #include "net/etherif.h"
-#endif
-#ifdef CONFIG_PACKET
-#include "net/packet.h"
-#endif
-#ifdef CONFIG_ETHERNET
-#include "net/ether.h"
-#endif
-#ifdef CONFIG_ARP
-#include "net/arp.h"
-#endif
-#ifdef CONFIG_IPV4
-#include "net/ipv4.h"
-#endif
-#ifdef CONFIG_ICMP
-#include "net/icmp.h"
-#endif
-#ifdef CONFIG_UDP
-#include "net/udp.h"
-#endif
-#ifdef CONFIG_DHCP_CLIENT
-#include "net/dhcpc.h"
-#endif
 
-void net_uninit(void);
-void net_init(void);
-
-#else
-
-static inline void net_uninit(void) { }
-static inline void net_init(void) { }
-
-#endif
+void icmp_uninit(void);
+void icmp_init(void);
 
 #endif

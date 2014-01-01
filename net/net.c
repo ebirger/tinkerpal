@@ -34,6 +34,9 @@ void net_uninit(void)
 #ifdef CONFIG_UDP
     udp_uninit();
 #endif
+#ifdef CONFIG_ICMP
+    icmp_uninit();
+#endif
 #ifdef CONFIG_IPV4
     ipv4_uninit();
 #endif
@@ -50,6 +53,9 @@ void net_init(void)
 #endif
 #ifdef CONFIG_IPV4
     ipv4_init();
+#endif
+#ifdef CONFIG_ICMP
+    icmp_init();
 #endif
 #ifdef CONFIG_UDP
     udp_init();

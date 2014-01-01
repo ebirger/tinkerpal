@@ -30,6 +30,13 @@ config IPV4
 	help
 		Support for IPv4
 
+config ICMP
+	bool "ICMP"
+	depends on IPV4
+	default y
+	help
+		Support for ICMP
+
 config UDP
 	bool "UDP"
 	depends on IPV4

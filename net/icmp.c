@@ -22,46 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __NET_H__
-#define __NET_H__
-
-#ifdef CONFIG_NET
-
+#include "net/net_types.h"
 #include "net/net_debug.h"
-
-#ifdef CONFIG_ETHERIF
-#include "net/etherif.h"
-#endif
-#ifdef CONFIG_PACKET
-#include "net/packet.h"
-#endif
-#ifdef CONFIG_ETHERNET
-#include "net/ether.h"
-#endif
-#ifdef CONFIG_ARP
-#include "net/arp.h"
-#endif
-#ifdef CONFIG_IPV4
-#include "net/ipv4.h"
-#endif
-#ifdef CONFIG_ICMP
 #include "net/icmp.h"
-#endif
-#ifdef CONFIG_UDP
-#include "net/udp.h"
-#endif
-#ifdef CONFIG_DHCP_CLIENT
-#include "net/dhcpc.h"
-#endif
+#include "net/ipv4.h"
+#include "net/packet.h"
 
-void net_uninit(void);
-void net_init(void);
+static ipv4_proto_t icmp_proto;
 
-#else
+static void icmp_recv(etherif_t *ethif)
+{
+    icmp_hdr_t *icmph = (icmp_hdr_t *)g_packet.ptr;
 
-static inline void net_uninit(void) { }
-static inline void net_init(void) { }
+    tp_err(("ICMP packet received\n"));
+    icmp_hdr_dump(icmph);
+}
 
-#endif
+void icmp_uninit(void)
+{
+    ipv4_unregister_proto(&icmp_proto);
+}
 
-#endif
+void icmp_init(void)
+{
+    icmp_proto.protocol = IP_PROTOCOL_ICMP;
+    icmp_proto.recv = icmp_recv;
+    ipv4_register_proto(&icmp_proto);
+}
