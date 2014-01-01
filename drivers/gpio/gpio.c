@@ -42,7 +42,7 @@ static int gpio_event(int port)
     {
 	if (state & GPIO_BIT(i))
 	{
-	    int res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i), 0);
+	    u32 res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i), 0);
 
 	    event_watch_trigger(res);
 	    ret = 1;
@@ -57,10 +57,8 @@ int gpio_events_process(void)
 
     for (i = 0; i < NUM_GPIO_PORTS; i++)
     {
-	if (!gpio_int_state[i])
-	    continue;
-
-	event |= gpio_event(i);
+	if (gpio_int_state[i])
+	    event |= gpio_event(i);
     }
     return event;
 }
