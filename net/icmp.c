@@ -26,16 +26,60 @@
 #include "net/net_debug.h"
 #include "net/icmp.h"
 #include "net/ipv4.h"
+#include "net/net.h"
 #include "net/packet.h"
 
+#define ICMP_ECHO_REPLY 0
+#define ICMP_ECHO_REQUEST 8
+
 static ipv4_proto_t icmp_proto;
+
+static void icmp_echo_req_recv(etherif_t *ethif)
+{
+    icmp_hdr_t *icmph = (icmp_hdr_t *)g_packet.ptr;
+    ip_hdr_t *iph;
+    eth_hdr_t *eth_hdr;
+    eth_mac_t *dst_mac;
+    u32 src_addr, dst_addr;
+
+    if (!ipv4_addr(ethif))
+	return;
+
+    /* Trick - fetch IP & Ethernet addresses from the packet */
+    iph = packet_push(&g_packet, sizeof(ip_hdr_t));
+    src_addr = ntohl(iph->dst_addr);
+    dst_addr = ntohl(iph->src_addr);
+
+    eth_hdr = packet_push(&g_packet, sizeof(eth_hdr_t));
+    dst_mac = &eth_hdr->src;
+    
+    packet_pull(&g_packet, sizeof(eth_hdr_t));
+    packet_pull(&g_packet, sizeof(ip_hdr_t));
+   
+    /* Construct ICMP reply */ 
+    icmph->type = ICMP_ECHO_REPLY;
+    icmph->code = 0;
+    icmph->checksum = net_csum((u16 *)icmph, g_packet.length);
+
+    ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_ICMP, src_addr, dst_addr,
+	g_packet.length);
+}
 
 static void icmp_recv(etherif_t *ethif)
 {
     icmp_hdr_t *icmph = (icmp_hdr_t *)g_packet.ptr;
 
-    tp_err(("ICMP packet received\n"));
-    icmp_hdr_dump(icmph);
+    tp_debug(("ICMP packet received\n"));
+
+    switch (icmph->type)
+    {
+    case ICMP_ECHO_REQUEST:
+	icmp_echo_req_recv(ethif);
+	break;
+    default:
+	tp_warn(("unsupported ICMP message type %d\n", icmph->type));
+	break;
+    }
 }
 
 void icmp_uninit(void)
