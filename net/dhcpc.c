@@ -95,7 +95,7 @@ static int dhcpc_msg_xmit(dhcpc_t *dhcpc)
     msg->htype = DHCP_HW_TYPE_ETH;
     msg->hlen = 6;
     msg->hops = 0;
-    dhcpc->xid = msg->xid = xid_seed++;
+    msg->xid = dhcpc->xid;
     msg->secs = 0;
     msg->flags = htons(BROADCAST_FLAG);
     msg->ciaddr = 0;
@@ -138,6 +138,7 @@ static int dhcp_discover(dhcpc_t *dhcpc)
     if (dhcpc_pad())
 	return -1;
 
+    dhcpc->xid = xid_seed++;
     return dhcpc_msg_xmit(dhcpc);
 }
 
