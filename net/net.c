@@ -28,6 +28,21 @@
 #include "net/ipv4.h"
 #include "net/udp.h"
 
+u16 net_csum(u16 *addr, u16 byte_len)
+{
+    u32 sum = 0;
+
+    for (; byte_len > 1; byte_len -= 2)
+        sum += *addr++;
+
+    if (byte_len)
+	sum += *(u8 *)addr;
+    while (sum >> 16)
+        sum = (sum & 0xffff) + (sum >> 16);
+
+    return (u16)~sum;
+}
+
 void net_uninit(void)
 {
     tp_out(("NET Uninit\n"));

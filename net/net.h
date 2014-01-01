@@ -54,6 +54,8 @@
 #include "net/dhcpc.h"
 #endif
 
+u16 net_csum(u16 *addr, u16 byte_len);
+
 void net_uninit(void);
 void net_init(void);
 
