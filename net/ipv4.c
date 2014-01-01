@@ -24,26 +24,13 @@
  */
 #include "net/ipv4.h"
 #include "net/ether.h"
+#include "net/net.h"
 #include "net/packet.h"
 #include "net/net_debug.h"
 #include "net/net_types.h"
 
 static ether_proto_t ipv4_proto;
 static ipv4_proto_t *ipv4_protocols;
-
-static u16 ipv4_hdr_checksum(ip_hdr_t *iph)
-{
-    u16 *addr = (u16 *)iph, count;
-    u32 sum = 0;
-
-    for (count = 20; count; count -= 2)
-        sum += *addr++;
-
-    while (sum >> 16)
-        sum = (sum & 0xffff) + (sum >> 16);
-
-    return (u16)~sum;
-}
 
 int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     u32 src_addr, u32 dst_addr, u16 payload_len)
@@ -68,7 +55,7 @@ int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     iph->checksum = 0;
     iph->src_addr = htonl(src_addr);
     iph->dst_addr = htonl(dst_addr);
-    iph->checksum = ipv4_hdr_checksum(iph);
+    iph->checksum = net_csum((u16 *)iph, sizeof(ip_hdr_t));
 
     return ethernet_xmit(ethif, dst_mac, htons(ETHER_PROTOCOL_IP));
 }
@@ -84,7 +71,7 @@ static int ipv4_filter(etherif_t *ethif, ip_hdr_t *iph)
 	return 0; /* No options */
     if (!iph->ttl)
 	return 0;
-    if (ipv4_hdr_checksum(iph))
+    if (net_csum((u16 *)iph, sizeof(ip_hdr_t)))
 	return 0;
     if (!iph->dst_addr)
 	return 0;
