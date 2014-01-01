@@ -51,6 +51,16 @@ int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     return ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_UDP, src_addr, dst_addr, len);
 }
 
+int udp_socket_xmit(udp_socket_t *sock, const eth_mac_t *dst_mac, u32 src_addr,
+    u32 dst_addr, u16 payload_len)
+{
+    if (sock->flags)
+	return -1;
+
+    return udp_xmit(sock->ethif, dst_mac, src_addr, dst_addr, sock->local_port,
+        sock->remote_port, payload_len);
+}
+
 static void udp_recv(etherif_t *ethif)
 {
     udp_hdr_t *udph = (udp_hdr_t *)g_packet.ptr;
