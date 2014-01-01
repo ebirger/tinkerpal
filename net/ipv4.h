@@ -28,6 +28,9 @@
 #include "net/net_types.h"
 #include "net/etherif.h"
 
+#define IP_ADDR_ANY 0x00000000
+#define IP_ADDR_BCAST 0xffffffff
+
 typedef struct {
     u32 ip;
     u32 netmask;

@@ -75,7 +75,7 @@ static int ipv4_filter(etherif_t *ethif, ip_hdr_t *iph)
 	return 0;
     if (!iph->dst_addr)
 	return 0;
-    if (iph->dst_addr == (u32)-1)
+    if (iph->dst_addr == IP_ADDR_BCAST)
 	return 1; /* Allow network broadcast */
     if (!ip_info)
 	return 0;

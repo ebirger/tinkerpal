@@ -32,9 +32,6 @@
 #include "net/udp.h"
 #include "net/net_debug.h"
 
-#define IP_ADDR_ANY 0x00000000
-#define IP_ADDR_BCAST 0xffffffff
-
 #define DHCP_MIN_PACKET_LEN 300
 
 #define BROADCAST_FLAG 0x8000
