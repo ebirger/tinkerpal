@@ -28,13 +28,44 @@
 #include "net/ipv4.h"
 #include "net/packet.h"
 
+#define UDP_FREE_PORT_START 1024
+#define UDP_FREE_PORT_END 65535
+
 static ipv4_proto_t udp_proto;
+
+static int udp_is_port_taken(etherif_t *ethif, u16 port)
+{
+    udp_socket_t *sock;
+
+    for (sock = ethif->udp; sock; sock = sock->next)
+    {
+	if (sock->local_port == port)
+	    return 1;
+    }
+    return 0;
+}
+
+static int udp_get_free_port(u16 *port, etherif_t *ethif)
+{
+    for (*port = UDP_FREE_PORT_START; *port < UDP_FREE_PORT_END; (*port)++)
+    {
+	if (!udp_is_port_taken(ethif, *port))
+	    return 0;
+    }
+    return -1;
+}
 
 int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     u32 dst_addr, u16 src_port, u16 dst_port, u16 payload_len)
 {
     udp_hdr_t *udph;
     u16 len;
+
+    if (dst_port == UDP_PORT_ANY)
+	return -1;
+
+    if (src_port == UDP_PORT_ANY && udp_get_free_port(&src_port, ethif))
+        return -1;
 
     len = sizeof(udp_hdr_t) + payload_len;
 
@@ -48,6 +79,26 @@ int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     udph->checksum = 0;
 
     return ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_UDP, src_addr, dst_addr, len);
+}
+
+int udp_sock_xmit(etherif_t *ethif, udp_socket_t *sock,
+    const eth_mac_t *dst_mac, u32 src_addr, u32 dst_addr, u16 payload_len)
+{
+    if (sock->remote_port == UDP_PORT_ANY)
+	return -1;
+
+    if (sock->local_port == UDP_PORT_ANY)
+    {
+	u16 local_port;
+
+	if (udp_get_free_port(&local_port, ethif))
+	    return -1;
+
+	sock->local_port = local_port;
+    }
+
+    return udp_xmit(ethif, dst_mac, src_addr, dst_addr, sock->local_port,
+	sock->remote_port, payload_len);
 }
 
 static void udp_recv(etherif_t *ethif)

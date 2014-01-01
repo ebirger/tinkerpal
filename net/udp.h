@@ -44,6 +44,10 @@ struct udp_socket_t {
 int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     u32 dst_addr, u16 src_port, u16 dst_port, u16 payload_len);
 
+/* If the socket's local port is not provided, it is selected and set on xmit */
+int udp_sock_xmit(etherif_t *ethif, udp_socket_t *sock,
+    const eth_mac_t *dst_mac, u32 src_addr, u32 dst_addr, u16 payload_len);
+
 /* Sockets are assumed to be statically allocated */
 void udp_unregister_socket(etherif_t *ethif, udp_socket_t *sock);
 void udp_register_socket(etherif_t *ethif, udp_socket_t *sock);

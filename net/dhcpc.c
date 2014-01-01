@@ -103,9 +103,8 @@ static int dhcpc_msg_xmit(dhcpc_t *dhcpc)
     memcpy(msg->chaddr, mac.mac, 6);
     memset(msg->chaddr + 6, 0, 192 + 10);
     msg->magic_cookie = htonl(DHCP_MAGIC_COOKIE);
-    return udp_xmit(dhcpc->ethif, &bcast_mac, IP_ADDR_ANY, IP_ADDR_BCAST,
-	dhcpc->udp_sock.local_port, dhcpc->udp_sock.remote_port,
-	g_packet.length);
+    return udp_sock_xmit(dhcpc->ethif, &dhcpc->udp_sock, &bcast_mac,
+	IP_ADDR_ANY, IP_ADDR_BCAST, g_packet.length);
 }
 
 static int dhcpc_pad(void)
