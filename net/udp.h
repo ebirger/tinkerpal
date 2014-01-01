@@ -29,15 +29,13 @@
 
 typedef struct udp_socket_t udp_socket_t;
 
-#define UDP_SRC_ANY 0x01
-#define UDP_DST_ANY 0x02
+#define UDP_PORT_ANY 0
 
 struct udp_socket_t {
     udp_socket_t *next;
     etherif_t *ethif;
     u16 local_port; /* host order */
     u16 remote_port; /* host order */
-    u32 flags;
     void (*recv)(udp_socket_t *sock);
 };
 
