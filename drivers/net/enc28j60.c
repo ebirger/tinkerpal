@@ -333,13 +333,13 @@ typedef struct {
 
 static u8 test_mac[] = { 0, 1, 2, 3, 4, 5 };
 
-static inline void cs_low(enc28j60_t *e)
+static void cs_low(enc28j60_t *e)
 {
     /* asserts the CS pin to the card */
     gpio_digital_write(e->cs, 0);
 }
 
-static inline void cs_high(enc28j60_t *e)
+static void cs_high(enc28j60_t *e)
 {
     /* de-asserts the CS pin to the card */
     gpio_digital_write(e->cs, 1);
@@ -388,32 +388,32 @@ static void bank_select(enc28j60_t *e, u8 addr)
     e->bank = bank;
 }
 
-static inline u8 ctrl_reg_read(enc28j60_t *e, u8 reg)
+static u8 ctrl_reg_read(enc28j60_t *e, u8 reg)
 {
     bank_select(e, reg);
     return read_op(e, ENC28J60_OPCODE_RCR, reg);
 }
 
-static inline void ctrl_reg_write(enc28j60_t *e, u8 reg, u8 data)
+static void ctrl_reg_write(enc28j60_t *e, u8 reg, u8 data)
 {
     bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_WCR, reg, data);
 }
 
-static inline void ctrl_wreg_write(enc28j60_t *e, u8 reg, u16 data)
+static void ctrl_wreg_write(enc28j60_t *e, u8 reg, u16 data)
 {
     bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_WCR, reg, data & 0xff);
     write_op(e, ENC28J60_OPCODE_WCR, reg + 1, data >> 8);
 }
 
-static inline void ctrl_reg_bits_clear(enc28j60_t *e, u8 reg, u8 mask)
+static void ctrl_reg_bits_clear(enc28j60_t *e, u8 reg, u8 mask)
 {
     bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_BFC, reg, mask);
 }
 
-static inline void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
+static void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
 {
     bank_select(e, reg);
     write_op(e, ENC28J60_OPCODE_BFS, reg, mask);
