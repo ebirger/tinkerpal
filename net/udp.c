@@ -29,7 +29,6 @@
 #include "net/packet.h"
 
 static ipv4_proto_t udp_proto;
-static udp_socket_t *udp_sockets;
 
 int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     u32 dst_addr, u16 src_port, u16 dst_port, u16 payload_len)
@@ -51,19 +50,6 @@ int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     return ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_UDP, src_addr, dst_addr, len);
 }
 
-int udp_socket_xmit(udp_socket_t *sock, const eth_mac_t *dst_mac, u32 src_addr,
-    u32 dst_addr, u16 payload_len)
-{
-    if (sock->remote_port == UDP_PORT_ANY)
-	return -1;
-
-    if (sock->local_port == UDP_PORT_ANY)
-	return -1;
-
-    return udp_xmit(sock->ethif, dst_mac, src_addr, dst_addr, sock->local_port,
-        sock->remote_port, payload_len);
-}
-
 static void udp_recv(etherif_t *ethif)
 {
     udp_hdr_t *udph = (udp_hdr_t *)g_packet.ptr;
@@ -77,11 +63,8 @@ static void udp_recv(etherif_t *ethif)
     if (!src_port || !dst_port)
 	return; /* Malformed header */
 
-    for (sock = udp_sockets; sock; sock = sock->next)
+    for (sock = ethif->udp; sock; sock = sock->next)
     {
-	if (sock->ethif != ethif)
-	    continue;
-
 	if (sock->local_port != dst_port)
 	    continue;
 
@@ -102,20 +85,21 @@ static void udp_recv(etherif_t *ethif)
     sock->recv(sock);
 }
 
-void udp_unregister_socket(udp_socket_t *sock)
+void udp_unregister_socket(etherif_t *ethif, udp_socket_t *sock)
 {
     udp_socket_t **iter;
 
-    for (iter = &udp_sockets; *iter && *iter != sock; iter = &(*iter)->next);
+    for (iter = (udp_socket_t **)&ethif->udp; *iter && *iter != sock;
+	iter = &(*iter)->next);
     tp_assert(*iter);
     (*iter) = (*iter)->next;
     sock->next = NULL;
 }
 
-void udp_register_socket(udp_socket_t *sock)
+void udp_register_socket(etherif_t *ethif, udp_socket_t *sock)
 {
-    sock->next = udp_sockets;
-    udp_sockets = sock;
+    sock->next = ethif->udp;
+    ethif->udp = sock;
 }
 
 void udp_uninit(void)

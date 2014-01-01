@@ -33,7 +33,6 @@ typedef struct udp_socket_t udp_socket_t;
 
 struct udp_socket_t {
     udp_socket_t *next;
-    etherif_t *ethif;
     u16 local_port; /* host order */
     u16 remote_port; /* host order */
     void (*recv)(udp_socket_t *sock);
@@ -49,8 +48,8 @@ int udp_socket_xmit(udp_socket_t *sock, const eth_mac_t *dst_mac, u32 src_addr,
     u32 dst_addr, u16 payload_len);
 
 /* Sockets are assumed to be statically allocated */
-void udp_unregister_socket(udp_socket_t *sock);
-void udp_register_socket(udp_socket_t *sock);
+void udp_unregister_socket(etherif_t *ethif, udp_socket_t *sock);
+void udp_register_socket(etherif_t *ethif, udp_socket_t *sock);
 
 void udp_uninit(void);
 void udp_init(void);

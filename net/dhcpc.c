@@ -47,6 +47,7 @@
 
 typedef struct {
     udp_socket_t udp_sock;
+    etherif_t *ethif;
     ipv4_info_t ip_info;
     u32 xid;
     u8 waited_message;
@@ -86,7 +87,7 @@ static int dhcpc_msg_xmit(dhcpc_t *dhcpc)
     if (!(msg = packet_push(&g_packet, sizeof(dhcp_msg_t))))
 	return -1;
 
-    etherif_mac_addr_get(dhcpc->udp_sock.ethif, &mac);
+    etherif_mac_addr_get(dhcpc->ethif, &mac);
 
     msg->op = DHCP_OP_REQUEST;
     msg->htype = DHCP_HW_TYPE_ETH;
@@ -102,8 +103,9 @@ static int dhcpc_msg_xmit(dhcpc_t *dhcpc)
     memcpy(msg->chaddr, mac.mac, 6);
     memset(msg->chaddr + 6, 0, 192 + 10);
     msg->magic_cookie = htonl(DHCP_MAGIC_COOKIE);
-    return udp_socket_xmit(&dhcpc->udp_sock, &bcast_mac, IP_ADDR_ANY,
-	IP_ADDR_BCAST, g_packet.length);
+    return udp_xmit(dhcpc->ethif, &bcast_mac, IP_ADDR_ANY, IP_ADDR_BCAST,
+	dhcpc->udp_sock.local_port, dhcpc->udp_sock.remote_port,
+	g_packet.length);
 }
 
 static int dhcpc_pad(void)
@@ -241,7 +243,7 @@ static void dhcpc_recv(udp_socket_t *sock)
 	return;
     }
 
-    etherif_mac_addr_get(dhcpc->udp_sock.ethif, &mac);
+    etherif_mac_addr_get(dhcpc->ethif, &mac);
     if (memcmp(msg->chaddr, mac.mac, 6))
 	return;
 
@@ -263,8 +265,7 @@ static void dhcpc_recv(udp_socket_t *sock)
 	break;
     case DHCP_MSG_ACK:
 	tp_debug(("DHCP ACK\n"));
-	dhcpc->udp_sock.ethif->ipv4_info = &dhcpc->ip_info;
-	etherif_ipv4_info_set(dhcpc->udp_sock.ethif, &dhcpc->ip_info); 
+	etherif_ipv4_info_set(dhcpc->ethif, &dhcpc->ip_info); 
 	break;
     }
 }
@@ -276,7 +277,7 @@ void dhcpc_stop(etherif_t *ethif)
     if (!dhcpc)
 	return;
 
-    udp_unregister_socket(&dhcpc->udp_sock);
+    udp_unregister_socket(ethif, &dhcpc->udp_sock);
     tfree(dhcpc);
 }
 
@@ -285,13 +286,13 @@ int dhcpc_start(etherif_t *ethif)
     dhcpc_t *dhcpc = tmalloc_type(dhcpc_t);
 
     dhcpc->udp_sock.recv = dhcpc_recv;
-    dhcpc->udp_sock.ethif = ethif;
     dhcpc->udp_sock.local_port = 68;
     dhcpc->udp_sock.remote_port = 67;
     dhcpc->waited_message = DHCP_MSG_OFFER;
 
-    udp_register_socket(&dhcpc->udp_sock);
+    udp_register_socket(ethif, &dhcpc->udp_sock);
 
+    dhcpc->ethif = ethif;
     ethif->dhcpc = dhcpc;
 
     if (dhcp_discover(dhcpc))
