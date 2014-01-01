@@ -73,12 +73,29 @@ int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     return ethernet_xmit(ethif, dst_mac, htons(ETHER_PROTOCOL_IP));
 }
 
+static int ipv4_filter(ip_hdr_t *iph)
+{
+    if (iph->ver != 4)
+	return 0;
+    if (iph->ihl != 5)
+	return 0; /* No options */
+    if (!iph->ttl)
+	return 0;
+    if (ipv4_hdr_checksum(iph))
+	return 0;
+
+    return 1;
+}
+
 static void ipv4_recv(etherif_t *ethif)
 {
     ip_hdr_t *iph = (ip_hdr_t *)g_packet.ptr;
     ipv4_proto_t *proto;
 
     tp_debug(("IPv4 packet received\n"));
+
+    if (!ipv4_filter(iph))
+	return;
 
     for (proto = ipv4_protocols; proto && proto->protocol != iph->protocol;
 	proto = proto->next);
