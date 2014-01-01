@@ -88,6 +88,14 @@ void udp_hdr_dump(udp_hdr_t *udph)
     D("Checksum", "%x", ntohs(udph->checksum));
 }
 
+void icmp_hdr_dump(icmp_hdr_t *icmph)
+{
+    D("Type", "%d", icmph->type);
+    D("Code", "%d", icmph->code);
+    D("Checksum", "%x", ntohs(icmph->checksum));
+    D("Header Data", "%x", ntohl(icmph->hdr_data));
+}
+
 void dhcp_msg_dump(dhcp_msg_t *msg)
 {
     D("OP", "%x", msg->op);

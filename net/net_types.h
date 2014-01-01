@@ -117,6 +117,13 @@ typedef struct __attribute__((packed)) {
 } udp_hdr_t;
 
 typedef struct __attribute__((packed)) {
+    u8 type;
+    u8 code;
+    u16 checksum;
+    u32 hdr_data;
+} icmp_hdr_t;
+
+typedef struct __attribute__((packed)) {
     u8 op;
     u8 htype;
     u8 hlen;
