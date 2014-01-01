@@ -73,8 +73,11 @@ int ipv4_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u8 protocol,
     return ethernet_xmit(ethif, dst_mac, htons(ETHER_PROTOCOL_IP));
 }
 
-static int ipv4_filter(ip_hdr_t *iph)
+static int ipv4_filter(etherif_t *ethif, ip_hdr_t *iph)
 {
+    ipv4_info_t *ip_info = ethif->ipv4_info;
+    u32 ip_be, netmask_be;
+
     if (iph->ver != 4)
 	return 0;
     if (iph->ihl != 5)
@@ -82,6 +85,16 @@ static int ipv4_filter(ip_hdr_t *iph)
     if (!iph->ttl)
 	return 0;
     if (ipv4_hdr_checksum(iph))
+	return 0;
+    if (!iph->dst_addr)
+	return 0;
+    if (iph->dst_addr == (u32)-1)
+	return 1; /* Allow network broadcast */
+    if (!ip_info)
+	return 0;
+    ip_be = htonl(ip_info->ip);
+    netmask_be = htonl(ip_info->netmask);
+    if (iph->dst_addr != ip_be && iph->dst_addr != (ip_be | ~netmask_be))
 	return 0;
 
     return 1;
@@ -94,7 +107,7 @@ static void ipv4_recv(etherif_t *ethif)
 
     tp_debug(("IPv4 packet received\n"));
 
-    if (!ipv4_filter(iph))
+    if (!ipv4_filter(ethif, iph))
 	return;
 
     for (proto = ipv4_protocols; proto && proto->protocol != iph->protocol;
