@@ -65,7 +65,7 @@ static mmc_t g_mmc = {
 
 static inline int TICKS(void)
 {
-    return platform.get_ticks_from_boot();
+    return platform_get_ticks_from_boot();
 }
 
 static inline void cs_low(void)

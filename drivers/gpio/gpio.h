@@ -43,7 +43,7 @@ static inline void gpio_digital_pulse(resource_t pin, int value, double ms)
 	return;
 
     platform.gpio.digital_write(RES_MAJ(pin), value);
-    platform.msleep(ms);
+    platform_msleep(ms);
     platform.gpio.digital_write(RES_MAJ(pin), !value);
 }
 

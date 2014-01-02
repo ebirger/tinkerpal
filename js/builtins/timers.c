@@ -115,7 +115,7 @@ int do_clear_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_get_time(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int ticks = platform.get_ticks_from_boot();
+    int ticks = platform_get_ticks_from_boot();
 
     /* Ticking every ms */
     *ret = num_new_fp((double)ticks / 1000);

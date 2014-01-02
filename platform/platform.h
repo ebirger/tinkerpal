@@ -96,4 +96,16 @@ static inline void platform_meminfo(void)
     platform.meminfo();
 }
 
+static inline int platform_get_ticks_from_boot(void)
+{
+    tp_assert(platform.get_ticks_from_boot);
+    return platform.get_ticks_from_boot();
+}
+
+static inline void platform_msleep(double ms)
+{
+    tp_assert(platform.msleep);
+    platform.msleep(ms);
+}
+
 #endif

@@ -63,7 +63,7 @@ void event_timer_insert(event_internal_t *t, int ms)
 {
     event_internal_t **iter;
 
-    t->expire = platform.get_ticks_from_boot() + ms;
+    t->expire = platform_get_ticks_from_boot() + ms;
 
     /* Bug: we do not properly handle wrap-around */
     for (iter = &timers; *iter && (*iter)->expire < t->expire; 
@@ -132,7 +132,7 @@ static void timeout_process(void)
 	    continue;
 	}
 
-	if (platform.get_ticks_from_boot() < t->expire)
+	if (platform_get_ticks_from_boot() < t->expire)
 	    break;
 
 	if (EVENT_IS_PERIODIC(t))
@@ -160,7 +160,7 @@ static void get_next_timeout(int *timeout)
 	*timeout = 0;
 	return;
     }
-    *timeout = timers->expire - platform.get_ticks_from_boot();
+    *timeout = timers->expire - platform_get_ticks_from_boot();
     tp_debug(("Next timeout: %d ms\n", *timeout));
 }
 

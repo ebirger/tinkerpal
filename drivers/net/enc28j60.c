@@ -447,7 +447,7 @@ static int enc28j60_link_status(etherif_t *ethif)
 
 static inline u32 ticks(void)
 {
-    return (u32)platform.get_ticks_from_boot();
+    return (u32)platform_get_ticks_from_boot();
 }
 
 static int chip_reset(enc28j60_t *e)
@@ -463,7 +463,7 @@ static int chip_reset(enc28j60_t *e)
      * 1 ms after reset since the CLKRDY bit may not be cleared in time, and
      * the declared timeout is not guarenteed
      */
-    platform.msleep(3);
+    platform_msleep(3);
 
     /* Wait for reset to complete */
     while (!(ready = (ctrl_reg_read(e, ESTAT) & CLKRDY)) && 
