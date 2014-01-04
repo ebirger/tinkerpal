@@ -26,19 +26,6 @@
 #include "platform/msp430/msp430f5529.h"
 #include "platform/msp430/msp430f5529_usci.h"
 
-void msp430f5529_spi_set_max_speed(int port, unsigned long speed)
-{
-    const msp430f5529_usci_t *usci = &msp430f5529_uscis[port];
-    unsigned long presc;
-
-    presc = msp430f5529_get_system_clock() / speed;
-    
-    *usci->ctl1 |= UCSWRST; /* Put USCI state machine in reset */
-    *usci->br0 = presc & 0xff;
-    *usci->br1 = (presc >> 8) & 0xff;
-    *usci->ctl1 &= ~UCSWRST; /* Release USCI state machine */
-}
-
 void msp430f5529_spi_send(int port, unsigned long data)
 {
     const msp430f5529_usci_t *usci = &msp430f5529_uscis[port];
@@ -101,8 +88,6 @@ void msp430f5529_spi_reconf(int port)
 int msp430f5529_spi_init(int port)
 {
     msp430f5529_spi_reconf(port);
-
-    /* Configure the SSI port and enable the port */
-    msp430f5529_spi_set_max_speed(port, 400000); 
+    msp430f5529_usci_set_speed(port, 300000); 
     return 0;
 }

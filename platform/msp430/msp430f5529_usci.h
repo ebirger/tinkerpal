@@ -43,6 +43,7 @@ typedef struct {
 
 extern const msp430f5529_usci_t msp430f5529_uscis[];
 
+void msp430f5529_usci_set_speed(int port, unsigned long speed);
 void msp430f5529_usci_init(int port);
 
 #endif

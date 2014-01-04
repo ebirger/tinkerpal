@@ -43,7 +43,6 @@ unsigned long msp430f5529_get_system_clock(void);
 void msp430f5529_msleep(double ms);
 
 #ifdef CONFIG_SPI
-void msp430f5529_spi_set_max_speed(int port, unsigned long speed);
 void msp430f5529_spi_send(int port, unsigned long data);
 unsigned long msp430f5529_spi_receive(int port);
 void msp430f5529_spi_reconf(int port);

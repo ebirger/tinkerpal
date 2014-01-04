@@ -25,6 +25,7 @@
 #include <msp430.h>
 #include "platform/platform.h"
 #include "platform/msp430/msp430f5529_gpio.h"
+#include "platform/msp430/msp430f5529_usci.h"
 #include "platform/msp430/msp430f5529.h"
 #include "drivers/serial/serial_platform.h"
 
@@ -48,7 +49,7 @@ const platform_t platform = {
     .spi = {
 	.init = msp430f5529_spi_init,
 	.reconf = msp430f5529_spi_reconf,
-	.set_max_speed = msp430f5529_spi_set_max_speed,
+	.set_max_speed = msp430f5529_usci_set_speed,
 	.send = msp430f5529_spi_send,
 	.receive = msp430f5529_spi_receive,
     },

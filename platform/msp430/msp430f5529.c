@@ -104,11 +104,11 @@ int msp430f5529_serial_enable(int u, int enabled)
     *usci->ctl1 |= UCSWRST; /* Put state machine in reset */
     *usci->ctl0 = 0x00;
     *usci->ctl1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
-    *usci->br0 = 0xe2; /* 9600 Baud */
-    *usci->br1 = 0x04;
     *usci->mctl = UCBRF_0; /* Modulation UCBRFx=0 */
     *usci->ctl1 &= ~UCSWRST; /* Initialize USCI state machine */
     *usci->ie &= ~UCTXIE;
+
+    msp430f5529_usci_set_speed(u, 9600);
     return 0;
 }
 

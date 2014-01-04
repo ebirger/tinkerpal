@@ -55,6 +55,19 @@ const msp430f5529_usci_t msp430f5529_uscis[] = {
 #undef U
 };
 
+void msp430f5529_usci_set_speed(int port, unsigned long speed)
+{
+    const msp430f5529_usci_t *usci = &msp430f5529_uscis[port];
+    unsigned long presc;
+
+    presc = msp430f5529_get_system_clock() / speed;
+    
+    *usci->ctl1 |= UCSWRST; /* Put USCI state machine in reset */
+    *usci->br0 = presc & 0xff;
+    *usci->br1 = (presc >> 8) & 0xff;
+    *usci->ctl1 &= ~UCSWRST; /* Release USCI state machine */
+}
+
 void msp430f5529_usci_init(int port)
 {
     const msp430f5529_usci_t *usci = &msp430f5529_uscis[port];
