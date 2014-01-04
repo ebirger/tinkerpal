@@ -35,10 +35,11 @@ void msp430f5529_spi_send(int port, unsigned long data)
     gie = __get_SR_register() & GIE; /* Store current GIE state */
     __disable_interrupt();
 
-    // Clock the actual data transfer and send the bytes. Note that we
-    // intentionally not read out the receive buffer during frame transmission
-    // in order to optimize transfer speed, however we need to take care of the
-    // resulting overrun condition.
+    /* Clock the actual data transfer and send the bytes. Note that we
+     * intentionally not read out the receive buffer during frame transmission
+     * in order to optimize transfer speed, however we need to take care of the
+     * resulting overrun condition
+     */
     while (!(*usci->ifg & UCTXIFG)); /* Wait while not ready for TX */
     *usci->txbuf = data; /* Write byte */
     while (*usci->stat & UCBUSY); /* Wait for all TX/RX to finish */
