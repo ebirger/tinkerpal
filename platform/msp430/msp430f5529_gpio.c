@@ -79,6 +79,13 @@ static inline int msp430f5529_gpio_in(int port, int bit)
     return bit_get(*msp430f5529_gpio_ports[port].in, bit);
 }
 
+void msp430f5529_set_gpio_pin_function(int pin, int non_io)
+{
+    int port = GPIO_PORT(pin), bit = GPIO_BIT(pin);
+
+    msp430f5529_gpio_function(port, bit, non_io);
+}
+
 int msp430f5529_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
     int port = GPIO_PORT(pin), bit = GPIO_BIT(pin);
