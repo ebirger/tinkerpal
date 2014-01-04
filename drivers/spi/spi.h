@@ -48,7 +48,7 @@ static inline void spi_reconf(resource_t port)
     platform.spi.reconf(RES_MAJ(port));
 }
 
-static inline void spi_set_max_speed(resource_t port, int speed)
+static inline void spi_set_max_speed(resource_t port, unsigned long speed)
 {
     if (RES_BASE(port) != SPI_RESOURCE_ID_BASE)
 	return;
