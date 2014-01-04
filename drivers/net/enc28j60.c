@@ -694,6 +694,7 @@ etherif_t *enc28j60_new(resource_t spi_port, resource_t cs, resource_t intr)
     e->cs = cs;
     e->intr = intr;
     e->irq_event.trigger = enc28j60_isr;
+    e->bank = 255; /* make sure bank is selected on the first register access */
     etherif_construct(&e->ethif, &enc28j60_etherif_ops);
 
     spi_init(spi_port);
