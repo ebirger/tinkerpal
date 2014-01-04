@@ -22,36 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <msp430.h>
-#include "platform/platform.h"
-#include "platform/msp430/msp430f5529_gpio.h"
-#include "platform/msp430/msp430f5529.h"
-#include "drivers/serial/serial_platform.h"
+#ifndef __MSP430F5529_USCI_H__
+#define __MSP430F5529_USCI_H__
 
-int msp430f5529_exp_serial_enable(int u, int enabled)
-{
-    P4SEL = BIT4 + BIT5; /* P4.4,5 = USCI_A1 TXD/RXD */
-    P4DIR |= (1<<4); /* Set P4.4 to output direction */
-    P5DIR &= ~(1<<5); /* Set P4.5 to input direction */
-    return msp430f5529_serial_enable(u, enabled);
-}
+typedef struct {
+    volatile unsigned char *ctl0;
+    volatile unsigned char *ctl1;
+    volatile unsigned char *br0;
+    volatile unsigned char *br1;
+    volatile unsigned char *mctl;
+    volatile unsigned char *stat;
+    volatile unsigned char *ie;
+    volatile unsigned char *txbuf;
+    volatile unsigned char *rxbuf;
+    volatile unsigned char *ifg;
+} msp430f5529_usci_t;
 
-const platform_t platform = {
-    .desc = "TI MSP430F5529 USB Experimenter Board",
-    .serial = {
-	.enable = msp430f5529_exp_serial_enable,
-	.read = buffered_serial_read,
-	.write = msp430f5529_serial_write,
-	.irq_enable = msp430f5529_serial_irq_enable,
-	.default_console_id = USCIA1,
-    },
-#ifdef CONFIG_GPIO
-    .gpio = {
-	.digital_write = msp430f5529_gpio_digital_write,
-	.digital_read = msp430f5529_gpio_digital_read,
-	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
-    },
+extern const msp430f5529_usci_t msp430f5529_uscis[];
+
 #endif
-    .init = msp430f5529_init,
-    .select = msp430f5529_select,
-};

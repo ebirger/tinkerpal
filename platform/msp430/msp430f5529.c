@@ -25,6 +25,7 @@
 #include <msp430.h>
 #include "platform/platform.h"
 #include "platform/msp430/msp430f5529_gpio.h"
+#include "platform/msp430/msp430f5529_usci.h"
 #include "drivers/serial/serial_platform.h"
 
 /* We need to disable the WDT before system start since buffer initialization
@@ -81,57 +82,30 @@ void msp430f5529_init(void)
     __bis_SR_register(GIE); /* Enable interrupts */
 }
 
-typedef struct {
-    volatile unsigned char *ctl0;
-    volatile unsigned char *ctl1;
-    volatile unsigned char *br0;
-    volatile unsigned char *br1;
-    volatile unsigned char *mctl;
-    volatile unsigned char *ie;
-    volatile unsigned char *txbuf;
-    volatile unsigned char *ifg;
-} msp430f5529_uart_t;
-
-static const msp430f5529_uart_t msp430f5529_uarts[] = {
-#define U(uca) { \
-    .ctl0 = &uca##CTL0, \
-    .ctl1 = &uca##CTL1, \
-    .br0 = &uca##BR0, \
-    .br1 = &uca##BR1, \
-    .mctl = &uca##MCTL, \
-    .ie = &uca##IE, \
-    .txbuf = &uca##TXBUF, \
-    .ifg = &uca##IFG, \
-}
-    [UART0] = U(UCA0),
-    [UART1] = U(UCA1),
-#undef U
-};
-
 int msp430f5529_serial_enable(int u, int enabled)
 {
-    const msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+    const msp430f5529_usci_t *usci = &msp430f5529_uscis[u];
 
-    *uca->ctl1 |= UCSWRST; /* Put state machine in reset */
-    *uca->ctl0 = 0x00;
-    *uca->ctl1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
-    *uca->br0 = 0xe2; /* 9600 Baud */
-    *uca->br1 = 0x04;
-    *uca->mctl = UCBRF_0; /* Modulation UCBRFx=0 */
-    *uca->ctl1 &= ~UCSWRST; /* Initialize USCI state machine */
-    *uca->ie &= ~UCTXIE;
+    *usci->ctl1 |= UCSWRST; /* Put state machine in reset */
+    *usci->ctl0 = 0x00;
+    *usci->ctl1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
+    *usci->br0 = 0xe2; /* 9600 Baud */
+    *usci->br1 = 0x04;
+    *usci->mctl = UCBRF_0; /* Modulation UCBRFx=0 */
+    *usci->ctl1 &= ~UCSWRST; /* Initialize USCI state machine */
+    *usci->ie &= ~UCTXIE;
     return 0;
 }
 
 int msp430f5529_serial_write(int u, char *buf, int size)
 {
-    const msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+    const msp430f5529_usci_t *usci = &msp430f5529_uscis[u];
 
     while (size-- > 0)
     {
 	/* Wait until transmit buffer is empty */
-	while (!(*uca->ifg & UCTXIFG));
-	*uca->txbuf = *buf++;
+	while (!(*usci->ifg & UCTXIFG));
+	*usci->txbuf = *buf++;
     }
     return 0;
 }
@@ -139,23 +113,23 @@ int msp430f5529_serial_write(int u, char *buf, int size)
 #pragma vector = USCI_A0_VECTOR
 __interrupt void uscia0rx_isr(void)
 {
-    buffered_serial_push(UART0, UCA0RXBUF & 0xff);
+    buffered_serial_push(USCIA0, UCA0RXBUF & 0xff);
 }
 
 #pragma vector = USCI_A1_VECTOR
 __interrupt void uscia1rx_isr(void)
 {
-    buffered_serial_push(UART1, UCA1RXBUF & 0xff);
+    buffered_serial_push(USCIA1, UCA1RXBUF & 0xff);
 }
 
 void msp430f5529_serial_irq_enable(int u, int enabled)
 {
-    const msp430f5529_uart_t *uca = &msp430f5529_uarts[u];
+    const msp430f5529_usci_t *usci = &msp430f5529_uscis[u];
 
     if (enabled)
-	*uca->ie |= UCRXIE;
+	*usci->ie |= UCRXIE;
     else
-	*uca->ie &= ~UCRXIE;
+	*usci->ie &= ~UCRXIE;
 }
 
 int msp430f5529_select(int ms)

@@ -40,8 +40,10 @@ int msp430f5529_serial_write(int u, char *buf, int size);
 void msp430f5529_serial_irq_enable(int u, int enabled);
 int msp430f5529_select(int ms);
 
-#define UART0 0
-#define UART1 1
+#define USCIA0 0
+#define USCIA1 1
+#define USCIB0 2
+#define USCIB1 3
 
 #define PA0 0x00 
 #define PA1 0x01 
