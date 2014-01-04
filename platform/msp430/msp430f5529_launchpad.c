@@ -28,18 +28,10 @@
 #include "platform/msp430/msp430f5529.h"
 #include "drivers/serial/serial_platform.h"
 
-int msp430f5529_launch_serial_enable(int u, int enabled)
-{
-    P4SEL = BIT4 + BIT5; /* P4.4,5 = USCI_A1 TXD/RXD */
-    P4DIR |= (1<<4); /* Set P4.4 to output direction */
-    P4DIR &= ~(1<<5); /* Set P4.5 to input direction */
-    return msp430f5529_serial_enable(u, enabled);
-}
-
 const platform_t platform = {
     .desc = "TI MSP430F5529 Launchpad",
     .serial = {
-	.enable = msp430f5529_launch_serial_enable,
+	.enable = msp430f5529_serial_enable,
 	.read = buffered_serial_read,
 	.write = msp430f5529_serial_write,
 	.irq_enable = msp430f5529_serial_irq_enable,

@@ -36,8 +36,13 @@ typedef struct {
     volatile unsigned char *txbuf;
     volatile unsigned char *rxbuf;
     volatile unsigned char *ifg;
+    int txpin;
+    int rxpin;
+    int clkpin;
 } msp430f5529_usci_t;
 
 extern const msp430f5529_usci_t msp430f5529_uscis[];
+
+void msp430f5529_usci_init(int port);
 
 #endif

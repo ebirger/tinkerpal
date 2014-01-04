@@ -86,6 +86,8 @@ int msp430f5529_serial_enable(int u, int enabled)
 {
     const msp430f5529_usci_t *usci = &msp430f5529_uscis[u];
 
+    msp430f5529_usci_init(u);
+
     *usci->ctl1 |= UCSWRST; /* Put state machine in reset */
     *usci->ctl0 = 0x00;
     *usci->ctl1 = UCSSEL__SMCLK + UCSWRST; /* Use SMCLK, keep RESET */
