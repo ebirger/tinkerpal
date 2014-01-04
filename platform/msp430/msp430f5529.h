@@ -40,6 +40,7 @@ int msp430f5529_serial_write(int u, char *buf, int size);
 void msp430f5529_serial_irq_enable(int u, int enabled);
 int msp430f5529_select(int ms);
 unsigned long msp430f5529_get_system_clock(void);
+void msp430f5529_msleep(double ms);
 
 #ifdef CONFIG_SPI
 void msp430f5529_spi_set_max_speed(int port, unsigned long speed);

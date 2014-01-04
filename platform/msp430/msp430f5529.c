@@ -28,6 +28,8 @@
 #include "platform/msp430/msp430f5529_usci.h"
 #include "drivers/serial/serial_platform.h"
 
+#define SYSCLK 12000000
+
 /* We need to disable the WDT before system start since buffer initialization
  * may take to long.
  */
@@ -43,6 +45,12 @@ int main(void)
 
     tp_main(0, 0);
     return 0;
+}
+
+void msp430f5529_msleep(double ms)
+{
+    volatile unsigned long c = ms * (SYSCLK/10000);
+    while (c--);
 }
 
 static void clock_init(void)
@@ -77,7 +85,7 @@ static void clock_init(void)
 
 unsigned long msp430f5529_get_system_clock(void)
 {
-    return 12000000;
+    return SYSCLK;
 }
 
 void msp430f5529_init(void)

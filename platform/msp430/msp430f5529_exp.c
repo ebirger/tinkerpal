@@ -56,4 +56,5 @@ const platform_t platform = {
     .init = msp430f5529_init,
     .select = msp430f5529_select,
     .get_system_clock = msp430f5529_get_system_clock,
+    .msleep = msp430f5529_msleep,
 };
