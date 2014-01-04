@@ -40,7 +40,7 @@ static inline unsigned long stellaris_ssi_periph(int port)
     return stellaris_ssis[port].periph;
 }
 
-void stellaris_spi_set_max_speed(int port, int speed)
+void stellaris_spi_set_max_speed(int port, unsigned long speed)
 {
     MAP_SSIDisable(stellaris_ssi_base(port));
 

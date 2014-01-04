@@ -64,14 +64,14 @@ typedef struct {
 	int (*init)(int port);
 	/* reconf - set all pins to SPI mode */
 	void (*reconf)(int port);
-	void (*set_max_speed)(int port, int speed);
+	void (*set_max_speed)(int port, unsigned long speed);
 	void (*send)(int port, unsigned long data);
 	unsigned long (*receive)(int port);
     } spi;
     void (*init)(void);
     void (*meminfo)(void);
     int (*get_ticks_from_boot)(void);
-    int (*get_system_clock)(void);
+    unsigned long (*get_system_clock)(void);
     void (*msleep)(double ms);
     int (*select)(int ms);
     void (*panic)(void);

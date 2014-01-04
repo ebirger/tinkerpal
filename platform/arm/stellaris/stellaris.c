@@ -47,7 +47,7 @@ void stellaris_systick_init(void)
     MAP_IntMasterEnable();
 }
 
-int stellaris_get_system_clock(void)
+unsigned long stellaris_get_system_clock(void)
 {
     return MAP_SysCtlClockGet();
 }

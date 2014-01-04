@@ -73,7 +73,7 @@ extern const stellaris_timer_t stellaris_timers[];
 extern const stellaris_gpio_pin_t stellaris_gpio_pins[];
 
 void stellaris_systick_init(void);
-int stellaris_get_system_clock(void);
+unsigned long stellaris_get_system_clock(void);
 void stellaris_msleep(double ms);
 
 void stellaris_uart_enable(int u, int enabled);
@@ -148,7 +148,7 @@ double stellaris_gpio_analog_read(int pin);
 #ifdef CONFIG_SPI
 int stellaris_spi_init(int port);
 void stellaris_spi_reconf(int port);
-void stellaris_spi_set_max_speed(int port, int speed);
+void stellaris_spi_set_max_speed(int port, unsigned long speed);
 void stellaris_spi_send(int port, unsigned long data);
 unsigned long stellaris_spi_receive(int port);
 #endif
