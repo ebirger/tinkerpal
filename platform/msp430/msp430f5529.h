@@ -39,6 +39,7 @@ int msp430f5529_serial_enable(int u, int enabled);
 int msp430f5529_serial_write(int u, char *buf, int size);
 void msp430f5529_serial_irq_enable(int u, int enabled);
 int msp430f5529_select(int ms);
+unsigned long msp430f5529_get_system_clock(void);
 
 #define USCIA0 0
 #define USCIA1 1

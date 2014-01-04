@@ -75,6 +75,11 @@ static void clock_init(void)
     } while (SFRIFG1&OFIFG); /* Test oscillator fault flag */
 }
 
+unsigned long msp430f5529_get_system_clock(void)
+{
+    return 12000000;
+}
+
 void msp430f5529_init(void)
 {
     clock_init();
