@@ -29,7 +29,7 @@
 void msp430f5529_spi_send(int port, unsigned long data)
 {
     const msp430f5529_usci_t *usci = &msp430f5529_uscis[port];
-    unsigned long dummy;
+    volatile unsigned long dummy;
     unsigned short gie;
 
     gie = __get_SR_register() & GIE; /* Store current GIE state */
