@@ -74,6 +74,7 @@ config MSP430F5529
 	select MSP430
 	select PLAT_HAS_GPIO
 	select PLAT_HAS_SERIAL
+	select PLAT_HAS_SPI
 	select BUFFERED_SERIAL
 
 config LM3S6918

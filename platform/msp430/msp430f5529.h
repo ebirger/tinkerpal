@@ -41,6 +41,14 @@ void msp430f5529_serial_irq_enable(int u, int enabled);
 int msp430f5529_select(int ms);
 unsigned long msp430f5529_get_system_clock(void);
 
+#ifdef CONFIG_SPI
+void msp430f5529_spi_set_max_speed(int port, unsigned long speed);
+void msp430f5529_spi_send(int port, unsigned long data);
+unsigned long msp430f5529_spi_receive(int port);
+void msp430f5529_spi_reconf(int port);
+int msp430f5529_spi_init(int port);
+#endif
+
 #define USCIA0 0
 #define USCIA1 1
 #define USCIB0 2

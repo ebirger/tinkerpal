@@ -44,6 +44,15 @@ const platform_t platform = {
 	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
     },
 #endif
+#ifdef CONFIG_SPI
+    .spi = {
+	.init = msp430f5529_spi_init,
+	.reconf = msp430f5529_spi_reconf,
+	.set_max_speed = msp430f5529_spi_set_max_speed,
+	.send = msp430f5529_spi_send,
+	.receive = msp430f5529_spi_receive,
+    },
+#endif
     .init = msp430f5529_init,
     .select = msp430f5529_select,
     .get_system_clock = msp430f5529_get_system_clock,
