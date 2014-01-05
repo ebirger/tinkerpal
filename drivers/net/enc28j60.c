@@ -419,6 +419,7 @@ static void ctrl_reg_bits_set(enc28j60_t *e, u8 reg, u8 mask)
     write_op(e, ENC28J60_OPCODE_BFS, reg, mask);
 }
 
+#ifdef CONFIG_ENC28J60_PHY_ACCESS
 static u16 phy_reg_read(enc28j60_t *e, u8 phy_reg)
 {
     u16 ret;
@@ -439,10 +440,15 @@ static void phy_reg_write(enc28j60_t *e, u8 phy_reg, u16 data)
     ctrl_reg_write(e, MIWRH, (data >> 8) & 0xff);
     while (ctrl_reg_read(e, MISTAT) & BUSY);
 }
+#endif
 
 static int enc28j60_link_status(etherif_t *ethif)
 {
+#ifdef CONFIG_ENC28J60_PHY_ACCESS
     return phy_reg_read(ETHIF_TO_ENC28J60(ethif), PHSTAT2) & LSTAT ? 1 : 0;
+#else
+    return 1;
+#endif
 }
 
 static inline u32 ticks(void)
@@ -523,7 +529,9 @@ static void chip_init(enc28j60_t *e)
     }
 
     tp_out(("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
+#ifdef CONFIG_ENC28J60_PHY_ACCESS
     tp_out(("PHY ID %x:%x\n", phy_reg_read(e, PHID1), phy_reg_read(e, PHID2)));
+#endif
 
     /* Enable auto increment of the ERDPT/EWRPT pointers */
     ctrl_reg_bits_set(e, ECON2, AUTOINC);
@@ -545,14 +553,18 @@ static void chip_init(enc28j60_t *e)
     /* Enable packet reception */
     ctrl_reg_bits_set(e, ECON1, RXEN);
 
+#ifdef CONFIG_ENC28J60_PHY_ACCESS
     /* PHY config */
     phy_reg_write(e, PHCON1, 0); /* Normal operation - Half-Duplex */
     phy_reg_write(e, PHCON2, HDLDIS); /* Do not loop back xmitted packets */
+#endif
 
     /* Enable interrupts */
     ctrl_reg_bits_set(e, EIE, LINKIE | INTIE | PKTIE | TXIE);
+#ifdef CONFIG_ENC28J60_PHY_ACCESS
     /* Enable PHY interrupts */
     phy_reg_write(e, PHIE, PGEIE | PLNKIE);
+#endif
 }
 
 static void packet_complete(enc28j60_t *e)
@@ -651,7 +663,9 @@ static void enc28j60_isr(event_t *ev, u32 resource_id)
 
     if (eir & LINKIF)
     {
+#ifdef CONFIG_ENC28J60_PHY_ACCESS
 	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
+#endif
 	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
 	link_status_changed(e);
     }

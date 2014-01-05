@@ -6,6 +6,14 @@ config ENC28J60
 	select ETHERIF
 	default y
 
+config ENC28J60_PHY_ACCESS
+	bool "ENC28J60 PHY Configuration Access"
+	depends on ENC28J60
+	default y
+	help
+		On some platforms, PHY access does not seem to work 
+		(probably SPI timing issues). This allows disabling it
+
 config LINUX_PACKET_ETH
 	bool "Linux User Mode Ethernet using Packet Socket"
 	depends on PLATFORM_EMULATION
