@@ -190,22 +190,25 @@ static int dhcpc_options_iter(int (*cb)(dhcpc_t *dhcpc, u8 opt, u8 len),
 
 static int dhcpc_options_cb(dhcpc_t *dhcpc, u8 opt, u8 len)
 {
-#define VAL_U8 (*(u8 *)g_packet.ptr)
-#define VAL_U32 (*(u32 *)g_packet.ptr)
+#define VAL_U8(p) (*(u8 *)(p))
+#define VAL_U32(p) (((u32)VAL_U8(p)) | ((u32)VAL_U8(p + 1) << 8) | \
+    ((u32)VAL_U8(p + 2) << 16) | ((u32)VAL_U8(p + 3) << 24))
+
     switch (opt)
     {
     case 53:
-	if (VAL_U8 != dhcpc->waited_message)
+	if (VAL_U8(g_packet.ptr) != dhcpc->waited_message)
 	{
-	    tp_err(("Expected %d, got %d\n",dhcpc->waited_message, VAL_U8));
+	    tp_err(("Expected %d, got %d\n",dhcpc->waited_message,
+		VAL_U8(g_packet.ptr)));
 	    return -1;
 	}
 	break;
     case 1:
-	dhcpc->ip_info.netmask = ntohl(VAL_U32);
+	dhcpc->ip_info.netmask = ntohl(VAL_U32(g_packet.ptr));
 	break;
     case 3:
-	dhcpc->ip_info.router = ntohl(VAL_U32);
+	dhcpc->ip_info.router = ntohl(VAL_U32(g_packet.ptr));
 	break;
     }
     return 0;
