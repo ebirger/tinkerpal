@@ -24,7 +24,7 @@
  */
 #include <msp430.h>
 #include "util/tp_misc.h"
-#include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_platform.h"
 #include "platform/msp430/msp430f5529_gpio.h"
 
 typedef struct {
@@ -54,6 +54,23 @@ static const msp430f5529_gpio_t msp430f5529_gpio_ports[] = {
 #undef P
 };
 
+typedef struct {
+    volatile unsigned char *ie; /* Interrupt enable */
+    volatile unsigned char *ies; /* Interrupt edge selection, 0 - low to high */
+    volatile unsigned char *ifg; /* Interrupt flag */
+} msp430f5529_gpio_int_cfg_t;
+
+static const msp430f5529_gpio_int_cfg_t msp430f5529_gpio_ports_int_cfg[] = {
+#define P(p) { \
+    .ie = (volatile unsigned char *)&p##IE, \
+    .ies = (volatile unsigned char *)&p##IES, \
+    .ifg = (volatile unsigned char *)&p##IFG, \
+}
+    [GPIO_PORT_A] = P(P1),
+    [GPIO_PORT_B] = P(P2),
+#undef P
+};
+
 static inline void msp430f5529_gpio_function(int port, int bit, int non_io)
 {
     bit_set(*msp430f5529_gpio_ports[port].sel, bit, non_io);
@@ -77,6 +94,16 @@ static inline void msp430f5529_gpio_out(int port, int bit, int out)
 static inline int msp430f5529_gpio_in(int port, int bit)
 {
     return bit_get(*msp430f5529_gpio_ports[port].in, bit);
+}
+
+static inline void msp430f5529_gpio_int_enable(int port, int bit)
+{
+    if (port != GPIO_PORT_A && port != GPIO_PORT_B)
+	return;
+
+    bit_set(*msp430f5529_gpio_ports_int_cfg[port].ie, bit, 1);
+    bit_set(*msp430f5529_gpio_ports_int_cfg[port].ies, bit, 1);
+    bit_set(*msp430f5529_gpio_ports_int_cfg[port].ifg, bit, 0);
 }
 
 void msp430f5529_set_gpio_pin_function(int pin, int non_io)
@@ -103,10 +130,12 @@ int msp430f5529_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     case GPIO_PM_INPUT_PULLUP:
 	msp430f5529_gpio_dir(port, bit, 0);
 	msp430f5529_gpio_pullup(port, bit, 1);
+	msp430f5529_gpio_int_enable(port, bit);
 	break;
     case GPIO_PM_INPUT_PULLDOWN:
 	msp430f5529_gpio_dir(port, bit, 0);
 	msp430f5529_gpio_pullup(port, bit, 0);
+	msp430f5529_gpio_int_enable(port, bit);
 	break;
     case GPIO_PM_INPUT_ANALOG:
     case GPIO_PM_OUTPUT_ANALOG:
@@ -126,3 +155,18 @@ int msp430f5529_gpio_digital_read(int pin)
 {
     return msp430f5529_gpio_in(GPIO_PORT(pin), GPIO_BIT(pin));
 }
+
+#define GPIO_ISR(n) \
+__interrupt void msp430f5529_gpio_port_##n##_isr(void) \
+{ \
+    unsigned char istat; \
+    istat = P##n##IFG; \
+    P##n##IFG &= ~istat; \
+    gpio_state_set(n - 1, istat); \
+}
+
+#pragma vector=PORT1_VECTOR
+GPIO_ISR(1)
+
+#pragma vector=PORT2_VECTOR
+GPIO_ISR(2)
