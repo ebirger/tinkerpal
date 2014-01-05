@@ -50,6 +50,7 @@ void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
     ethif->id = etherifs_last_id++;
     ethif->ipv4_info = NULL;
     ethif->dhcpc = NULL;
+    ethif->udp = NULL;
 
     /* Link to list */
     ethif->next = etherifs;

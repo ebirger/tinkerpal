@@ -287,6 +287,7 @@ int dhcpc_start(etherif_t *ethif)
     dhcpc->udp_sock.recv = dhcpc_recv;
     dhcpc->udp_sock.local_port = 68;
     dhcpc->udp_sock.remote_port = 67;
+    dhcpc->udp_sock.next = NULL;
     dhcpc->waited_message = DHCP_MSG_OFFER;
 
     udp_register_socket(ethif, &dhcpc->udp_sock);
