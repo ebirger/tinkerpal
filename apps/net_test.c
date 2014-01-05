@@ -73,9 +73,15 @@ void app_start(int argc, char *argv[])
 #elif defined(CONFIG_STELLARIS_ETH)
     ethif = stellaris_eth_new();
 #elif defined(CONFIG_ENC28J60)
+#if defined(CONFIG_LM4F120XL)
     ethif = enc28j60_new(RES(SPI_RESOURCE_ID_BASE, 1, 0),
 	RES(GPIO_RESOURCE_ID_BASE, PE3, 0),
 	RES(GPIO_RESOURCE_ID_BASE, PF4, 0));
+#elif defined(CONFIG_MSP430F5529_LAUNCHPAD)
+    ethif = enc28j60_new(RES(SPI_RESOURCE_ID_BASE, 0, 0),
+	RES(GPIO_RESOURCE_ID_BASE, PC5, 0),
+	RES(GPIO_RESOURCE_ID_BASE, PA4, 0));
+#endif
 #endif
 
     tp_assert(ethif);
