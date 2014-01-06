@@ -69,7 +69,7 @@ static const fs_t *get_fs(tstr_t *file_name)
     fs_name = tstr_cut(file_name, '/');
     foreach_fs(fs)
     {
-	if (!tstr_cmp(&(*fs)->name, &fs_name))
+	if (!tstr_cmp_str(&fs_name, (*fs)->name))
 	    return *fs;
     }
 
@@ -144,7 +144,7 @@ void vfs_init(void)
     foreach_fs(fs)
     {
 	(*fs)->init();
-	tp_out(("Initialized %S FS\n", &(*fs)->name));
+	tp_out(("Initialized %s FS\n", (*fs)->name));
     }
 }
 
@@ -155,6 +155,6 @@ void vfs_uninit(void)
     foreach_fs(fs)
     {
 	(*fs)->uninit();
-	tp_out(("Uninitialized %S FS\n", &(*fs)->name));
+	tp_out(("Uninitialized %s FS\n", (*fs)->name));
     }
 }

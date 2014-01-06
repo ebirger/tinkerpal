@@ -72,7 +72,7 @@ static void builtin_fs_uninit(void)
 }
 
 const fs_t builtin_fs = {
-    .name = S("Builtin"),
+    .name = "Builtin",
     .init = builtin_fs_init,
     .uninit = builtin_fs_uninit,
     .file_read = builtin_fs_file_read,

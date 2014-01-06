@@ -32,7 +32,7 @@
 typedef int (*readdir_cb_t)(tstr_t *file_name, void *ctx);
 
 typedef struct {
-    tstr_t name;
+    const char *name;
     int (*file_read)(tstr_t *content, tstr_t *file_name);
     int (*file_write)(tstr_t *content, tstr_t *file_name);
     int (*readdir)(tstr_t *path, readdir_cb_t cb, void *ctx);

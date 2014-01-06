@@ -208,7 +208,7 @@ static void fat_uninit(void)
 }
 
 const fs_t fat_fs = {
-    .name = S("FAT"),
+    .name = "FAT",
     .init = fat_init,
     .uninit = fat_uninit,
     .file_read = fat_file_read,

@@ -112,7 +112,7 @@ static void local_uninit(void)
 }
 
 const fs_t local_fs = {
-    .name = S("Local"),
+    .name = "Local",
     .init = local_init,
     .uninit = local_uninit,
     .file_read = local_file_read,
