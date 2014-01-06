@@ -37,7 +37,9 @@
 #define CLASS_PROTOTYPE(n, o, p, c...) OBJECT(n, o)
 #define PROTOTYPE(n, o, ...) OBJECT(n, o)
 #define CATEGORY(n, o, ...) static obj_t *n;
-#define CATEGORY_INIT(init, uninit, ...)
+#define CATEGORY_INIT(init, uninit, ...) \
+    extern void init(void); \
+    extern void uninit(void);
 
 #include "descs.h"
 
@@ -62,7 +64,6 @@ void js_builtins_uninit(void)
     obj_class_set_prototype(c, NULL); \
     obj_put(o);
 #define CATEGORY_INIT(init, uninit, ...) \
-    extern void uninit(void); \
     uninit();
 
 #include "descs.h"
@@ -103,7 +104,6 @@ void js_builtins_init(void)
 #define PROTOTYPE(...)
 #define CATEGORY(n, o, ...) n = o;
 #define CATEGORY_INIT(init, uninit, ...) \
-    extern void init(void); \
     init();
 
 #include "descs.h"
