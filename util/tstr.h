@@ -71,6 +71,20 @@ static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
 	memcmp(TPTR(a), TPTR(b), b->len);
 }
 
+static inline int _tstr_cmp_str(const tstr_t *a, const char *b,
+    unsigned short blen)
+{
+    return a->len != blen || (blen && (*TPTR(a) != *b)) ||
+	memcmp(TPTR(a), b, blen);
+}
+
+static inline int tstr_cmp_str(const tstr_t *a, const char *b)
+{
+    unsigned short blen = strlen(b);
+
+    return _tstr_cmp_str(a, b, blen);
+}
+
 int tstr_find(tstr_t *haystack, tstr_t *needle);
 tstr_t tstr_dup(tstr_t s);
 /* Return a tstr_t pointing to s[index] - with count bytes */
