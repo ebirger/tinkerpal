@@ -9,7 +9,8 @@ OBJCOPY=$(CROSS_COMPILE)objcopy
 #LDFLAGS+=$(if $(CONFIG_UNIX),-Wl,)-Map=$@.map
 LINK_DEPS=$(LINKER_SCRIPT)
 
-CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h -Wall -Werror -g
+CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h -Wall -Werror -g -ansi \
+  -std=c99
 
 # Build commands
 compile=$(CC) $(CFLAGS) $(MK_CFLAGS_$@) -c -o $@ $<
