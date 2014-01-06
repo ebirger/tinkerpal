@@ -213,11 +213,11 @@ static inline tstr_t extract_identifier(scan_t *scan)
  * but TI CCS5 doesn't support it. sigh...
  */
 typedef struct {
-    const tstr_t str;
+    const char *str;
     const token_type_t tok;
 } keyword_t;
 
-#define K(n, o) { .str = S(n), .tok = o }
+#define K(n, o) { .str = n, .tok = o }
 
 static const keyword_t keywords2[] = {
     K("if", TOK_IF), 
@@ -289,14 +289,15 @@ static const keyword_t *keywords[] = {
 static inline token_type_t identifier_to_tok(const tstr_t *str)
 {
     const keyword_t *k;
+    int len = str->len;
 
-    if (str->len < 2 || str->len > 9)
+    if (len < 2 || len > 9)
 	return TOK_ID;
 
-    for (k = keywords[str->len]; k->tok; k++)
+    for (k = keywords[len]; k->tok; k++)
     {
 	/* Exit on exact match */
-	if (!tstr_cmp(&k->str, str))
+	if (!_tstr_cmp_str(str, k->str, len))
 	    return k->tok;
     }
 
