@@ -28,8 +28,9 @@
 #include "util/tstr.h"
 
 typedef struct {
-    tstr_t name;
-    tstr_t *content;
+    const char *name;
+    char **content;
+    const int *content_len;
 } builtin_fs_file_t;
 
 #endif
