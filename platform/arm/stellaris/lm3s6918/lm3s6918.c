@@ -60,7 +60,7 @@ const stellaris_gpio_port_t stellaris_gpio_ports[] = {
 
 const stellaris_uart_t stellaris_uarts[] = {
     [UART0] = { SYSCTL_PERIPH_UART0, UART0_BASE, INT_UART0, PA0, PA1 },
-    [UART0] = { SYSCTL_PERIPH_UART1, UART1_BASE, INT_UART1, PD2, PD3 },
+    [UART1] = { SYSCTL_PERIPH_UART1, UART1_BASE, INT_UART1, PD2, PD3 },
 };
 
 const stellaris_ssi_t stellaris_ssis[] = {
