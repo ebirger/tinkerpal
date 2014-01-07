@@ -160,6 +160,7 @@ const platform_t platform = {
     .gpio = {
 	.digital_write = stm32_gpio_digital_write,
 	.set_pin_mode = stm32_gpio_set_pin_mode,
+	.set_port_val = stm32_gpio_set_port_val,
     },
 #endif
     .init = stm32f3discovery_init,

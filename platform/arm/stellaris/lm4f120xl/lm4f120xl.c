@@ -287,6 +287,8 @@ const platform_t platform = {
 	.analog_write = stellaris_gpio_analog_write,
 	.analog_read = stellaris_gpio_analog_read,
 	.set_pin_mode = lm4120xl_set_pin_mode,
+	.set_port_val = stellaris_gpio_set_port_val,
+	.get_port_val = stellaris_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI

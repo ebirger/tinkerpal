@@ -92,9 +92,14 @@ static inline unsigned long stellaris_gpio_periph(int pin)
     return stellaris_gpio_ports[GPIO_PORT(pin)].periph;
 }
 
+static inline unsigned long stellaris_gpio_port_base(int port)
+{
+    return stellaris_gpio_ports[port].base;
+}
+
 static inline unsigned long stellaris_gpio_base(int pin)
 {
-    return stellaris_gpio_ports[GPIO_PORT(pin)].base;
+    return stellaris_gpio_port_base(GPIO_PORT(pin));
 }
 
 static inline void stellaris_pin_mode_output(int pin)
@@ -144,6 +149,8 @@ void stellaris_gpio_input(int pin);
 void stellaris_gpio_digital_write(int pin, int value);
 int stellaris_gpio_digital_read(int pin);
 double stellaris_gpio_analog_read(int pin);
+void stellaris_gpio_set_port_val(int port, unsigned short value);
+unsigned short stellaris_gpio_get_port_val(int port);
 #endif
 #ifdef CONFIG_SPI
 int stellaris_spi_init(int port);

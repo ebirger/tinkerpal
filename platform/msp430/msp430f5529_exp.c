@@ -43,6 +43,8 @@ const platform_t platform = {
 	.digital_write = msp430f5529_gpio_digital_write,
 	.digital_read = msp430f5529_gpio_digital_read,
 	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
+	.set_port_val = msp430f5529_gpio_set_port_val,
+	.get_port_val = msp430f5529_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI

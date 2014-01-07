@@ -59,6 +59,8 @@ typedef struct {
 	void (*analog_write)(int pin, double value);
 	double (*analog_read)(int pin);
 	int (*set_pin_mode)(int pin, gpio_pin_mode_t mode);
+	void (*set_port_val)(int port, unsigned short value);
+	unsigned short (*get_port_val)(int port);
     } gpio;
     struct {
 	int (*init)(int port);

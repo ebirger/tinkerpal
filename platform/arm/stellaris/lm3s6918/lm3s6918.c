@@ -194,6 +194,8 @@ const platform_t platform = {
 	.digital_write = stellaris_gpio_digital_write,
 	.digital_read = stellaris_gpio_digital_read,
 	.set_pin_mode = lm3s6918_set_pin_mode,
+	.set_port_val = stellaris_gpio_set_port_val,
+	.get_port_val = stellaris_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI

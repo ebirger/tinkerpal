@@ -156,6 +156,16 @@ int msp430f5529_gpio_digital_read(int pin)
     return msp430f5529_gpio_in(GPIO_PORT(pin), GPIO_BIT(pin));
 }
 
+void msp430f5529_gpio_set_port_val(int port, unsigned short value)
+{
+    *msp430f5529_gpio_ports[port].out = (unsigned char)value;
+}
+
+unsigned short msp430f5529_gpio_get_port_val(int port)
+{
+    return *msp430f5529_gpio_ports[port].in;
+}
+
 #define GPIO_ISR(n) \
 __interrupt void msp430f5529_gpio_port_##n##_isr(void) \
 { \
