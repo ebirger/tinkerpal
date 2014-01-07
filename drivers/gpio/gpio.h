@@ -79,6 +79,22 @@ static inline int gpio_set_pin_mode(resource_t pin, gpio_pin_mode_t mode)
     return platform.gpio.set_pin_mode(RES_MAJ(pin), mode);
 }
 
+static inline void gpio_set_port_val(resource_t port, u16 value)
+{
+    if (RES_BASE(port) != GPIO_RESOURCE_ID_BASE)
+	return;
+
+    platform.gpio.set_port_val(RES_MAJ(port), value);
+}
+
+static inline u16 gpio_get_port_val(resource_t port)
+{
+    if (RES_BASE(port) != GPIO_RESOURCE_ID_BASE)
+	return 0;
+
+    return platform.gpio.get_port_val(RES_MAJ(port));
+}
+
 /* XXX: should receive tstr */
 static inline int gpio_get_constant(int *constant, char *buf, int len)
 {
