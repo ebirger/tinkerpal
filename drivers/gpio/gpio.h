@@ -29,6 +29,8 @@
 #include "drivers/resources.h"
 #include "platform/platform.h"
 
+#define GPIO_RES(maj) RES(GPIO_RESOURCE_ID_BASE, maj, 0)
+
 static inline void gpio_digital_write(resource_t pin, int value)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
