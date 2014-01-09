@@ -65,7 +65,7 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     y = obj_get_int(argv[2]);
     s = to_string(argv[3]);
 
-    string_draw(canvas_get_by_id(canvas_id), x, y, &s->value);
+    string_draw(canvas_get_by_id(canvas_id), x, y, &s->value, 1);
     return 0;
 }
 

@@ -27,8 +27,9 @@
 #define __TEXT_H__
 
 #include "graphics/canvas.h"
+#include "util/tp_types.h"
 #include "util/tstr.h"
 
-void string_draw(canvas_t *c, int x, int y, tstr_t *str);
+void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
 
 #endif
