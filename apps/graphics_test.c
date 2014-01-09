@@ -31,8 +31,20 @@
 #error No graphics device available
 #endif
 
+static canvas_t *canvas;
+
 static void graphics_test_process_line(tstr_t *line)
 {
+    if (!tstr_cmp(line, &S("fill")))
+    {
+	int i, j;
+
+	for (i = 0; i < canvas->width; i++)
+	{
+	    for (j = 0; j < canvas->height; j++)
+		canvas->ops->pixel_set(canvas, i, j, (i * j) & 0xffff);
+	}
+    }
     console_printf("Ok\n");
 }
 
@@ -53,7 +65,7 @@ static void lcd_init(void)
 	.data_port_high = GPIO_RES(GPIO_PORT_A),
     };
 
-    ili93xx_init(&params);
+    canvas = ili93xx_new(&params);
 }
 #else
 #error No LCD hookup information available
