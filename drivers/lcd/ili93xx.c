@@ -24,6 +24,7 @@
  */
 #include "drivers/resources.h"
 #include "drivers/lcd/ili93xx.h"
+#include "drivers/lcd/ili93xx_controllers.h"
 
 #define RST(i) ((i)->params.rst)
 #define RS(i) ((i)->params.rs)
@@ -59,6 +60,15 @@ static u16 ili93xx_read_data(ili93xx_t *i)
     return ret;
 }
 
+static void ili93xx_write_data(ili93xx_t *i, u16 data)
+{
+    gpio_set_port_val(DH(i), (data >> 8) & 0xff);
+    gpio_set_port_val(DL(i), data & 0xff);
+
+    gpio_digital_write(WR(i), 0);
+    gpio_digital_write(WR(i), 1);
+}
+
 static void ili93xx_write_cmd(ili93xx_t *i, u8 cmd)
 {
     gpio_set_port_val(DH(i), 0);
@@ -76,8 +86,17 @@ static u16 ili93xx_reg_read(ili93xx_t *i, u8 reg)
     return ili93xx_read_data(i);
 }
 
+static void ili93xx_reg_write(ili93xx_t *i, u8 reg, u16 data)
+{
+    ili93xx_write_cmd(i, reg);
+    ili93xx_write_data(i, data);
+}
+
 static int chip_init(ili93xx_t *i)
 {
+    const ili93xx_cmd_t *sequence = NULL;
+    u16 chip_id;
+
     /* Set GPIO Modes */
     if (gpio_set_pin_mode(RST(i), GPIO_PM_OUTPUT) ||
         gpio_set_pin_mode(BL(i), GPIO_PM_OUTPUT) ||
@@ -114,7 +133,29 @@ static int chip_init(ili93xx_t *i)
     /* Wait for reset to complete */
     platform_msleep(60);
 
-    tp_out(("Chip ID: %x\n", ili93xx_reg_read(i, 0x00)));
+    chip_id = ili93xx_reg_read(i, 0x00);
+
+    tp_out(("Found ILI93xx controller. Chip ID: %x\n", chip_id));
+
+    /* Process init sequence */
+#ifdef CONFIG_ILI9328
+    if (chip_id == 0x9328)
+	sequence = ili9328_init_cmds;
+#endif
+
+    if (!sequence)
+    {
+	tp_err(("Unsupported ILI93xx controller\n"));
+	return -1;
+    }
+
+    for (; sequence->cmd != CMD_END; sequence++)
+    {
+	if (sequence->cmd == CMD_DELAY)
+	    platform_msleep(sequence->data);
+	else
+	    ili93xx_reg_write(i, (u8)sequence->cmd, sequence->data);
+    }
     return 0;
 }
 
