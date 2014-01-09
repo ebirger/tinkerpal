@@ -53,17 +53,20 @@ int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y;
+    int x, y, canvas_id;
     string_t *s;
 
     if (argc != 4)
+	return js_invalid_args(ret);
+    
+    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
 	return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
     s = to_string(argv[3]);
 
-    string_draw(x, y, &s->value, js_painter_pixel_draw, js_painter_ctx(this));
+    string_draw(canvas_get_by_id(canvas_id), x, y, &s->value);
     return 0;
 }
 

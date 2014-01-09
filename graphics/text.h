@@ -26,9 +26,9 @@
 #ifndef __TEXT_H__
 #define __TEXT_H__
 
+#include "graphics/canvas.h"
 #include "util/tstr.h"
 
-void string_draw(int x, int y, tstr_t *str, 
-    void (*pixel_draw)(int x, int y, int enable, void *ctx), void *ctx);
+void string_draw(canvas_t *c, int x, int y, tstr_t *str);
 
 #endif

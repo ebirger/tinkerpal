@@ -35,8 +35,7 @@ static inline int text_point(int x, int y, const char *str)
     return c[y] & (1<<(x & 0x7));
 }
 
-void string_draw(int x, int y, tstr_t *str, 
-    void (*pixel_draw)(int x, int y, int enable, void *ctx), void *ctx)
+void string_draw(canvas_t *c, int x, int y, tstr_t *str)
 {
     int end = (str->len * 8) - 1, i, j;
     
@@ -45,6 +44,6 @@ void string_draw(int x, int y, tstr_t *str,
     for (i = 0; i < end; i++)
     {
 	for (j = 0; j < 7; j++)
-	    pixel_draw(i + x, j + y, text_point(i, j, TPTR(str)), ctx);
+	    canvas_pixel_set(c, i + x, j + y, text_point(i, j, TPTR(str)));
     }
 }
