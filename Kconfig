@@ -22,4 +22,12 @@ if NET
 source "net/Kconfig"
 endif
 
+config GRAPHICS
+	bool "Graphics support"
+	default y
+
+if GRAPHICS
+source "graphics/Kconfig"
+endif
+
 source "drivers/Kconfig"

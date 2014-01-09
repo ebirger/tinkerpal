@@ -22,8 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "drivers/graphics/text.h"
-#include "drivers/graphics/font.h"
+#include "graphics/text.h"
+#include "graphics/font.h"
 #include "util/debug.h"
 
 static inline int text_point(int x, int y, const char *str)

@@ -27,9 +27,9 @@
 #include "main/console.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
-#include "drivers/graphics/text.h"
-#include "drivers/graphics/circle.h"
-#include "drivers/graphics/js_painter.h"
+#include "graphics/text.h"
+#include "graphics/circle.h"
+#include "graphics/js_painter.h"
 
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {

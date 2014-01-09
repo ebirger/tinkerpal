@@ -22,8 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "drivers/graphics/painter.desc"
-#include "drivers/graphics/js_painter.h"
+#include "graphics/painter.desc"
+#include "graphics/js_painter.h"
 #include "js/js_obj.h"
 #include "util/debug.h"
 

@@ -43,8 +43,12 @@ include scripts/text_to_c.mk
 
 d=.
 
-MK_SUBDIRS=$(if $(CONFIG_JS),js) apps main platform mem util \
-  $(if $(CONFIG_NET),net) drivers
+MK_SUBDIRS=apps main platform mem util
+MK_SUBDIRS+=$(if $(CONFIG_JS),js)
+MK_SUBDIRS+=$(if $(CONFIG_NET),net)
+MK_SUBDIRS+=$(if $(CONFIG_GRAPHICS),graphics)
+# XXX: drivers must be last for now, see drivers/Makefile
+MK_SUBDIRS+=drivers
 
 include scripts/Rules.mk
 
