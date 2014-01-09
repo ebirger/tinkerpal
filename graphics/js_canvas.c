@@ -71,6 +71,7 @@ int js_canvas_get_id(obj_t *o)
      */
     jscanvas = tmalloc_type(js_canvas_t);
     jscanvas->canvas.ops = &js_canvas_ops;
+    jscanvas->obj = o;
     /* XXX: get width + height */
     canvas_register(&jscanvas->canvas);
     return jscanvas->canvas.id;
