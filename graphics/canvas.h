@@ -39,4 +39,9 @@ struct canvas_t {
     u16 height;
 };
 
+static inline void canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+{
+    c->ops->pixel_set(c, x, y, val);
+}
+
 #endif

@@ -42,7 +42,7 @@ static void graphics_test_process_line(tstr_t *line)
 	for (i = 0; i < canvas->width; i++)
 	{
 	    for (j = 0; j < canvas->height; j++)
-		canvas->ops->pixel_set(canvas, i, j, (i * j) & 0xffff);
+		canvas_pixel_set(canvas, i, j, (i * j) & 0xffff);
 	}
     }
     console_printf("Ok\n");
