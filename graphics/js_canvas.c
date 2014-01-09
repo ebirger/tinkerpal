@@ -34,13 +34,13 @@
 typedef struct {
     canvas_t canvas;
     obj_t *obj;
-} js_canvas_t;
+} js_evaluated_canvas_t;
 
-#define JS_CANVAS_FROM_CANVAS(c) container_of(c, js_canvas_t, canvas);
+#define JS_CANVAS_FROM_CANVAS(c) container_of(c, js_evaluated_canvas_t, canvas);
 
-void js_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+void js_evaluated_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
-    js_canvas_t *jscanvas = JS_CANVAS_FROM_CANVAS(c);
+    js_evaluated_canvas_t *jscanvas = JS_CANVAS_FROM_CANVAS(c);
     obj_t *argv[4];
     obj_t *ret = UNDEF;
 
@@ -56,21 +56,22 @@ void js_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     obj_put(argv[3]);
 }
 
-static const canvas_ops_t js_canvas_ops = {
-    .pixel_set = js_canvas_pixel_set,
+static const canvas_ops_t js_evaluated_canvas_ops = {
+    .pixel_set = js_evaluated_canvas_pixel_set,
 };
 
 int js_canvas_get_id(obj_t *o)
 {
-    js_canvas_t *jscanvas;
+    js_evaluated_canvas_t *jscanvas;
+    int canvas_id;
    
-    /* TODO: try to fetch canvas_id from object */
+    if (!obj_get_property_int(&canvas_id, o, &Scanvas_id))
+	return canvas_id;
 
-    /* No existing canvas_id in object. Create a js_canvas canvas object and
-     * return its ID 
+    /* No existing canvas_id in object. create an evaluated js canvas
      */
-    jscanvas = tmalloc_type(js_canvas_t);
-    jscanvas->canvas.ops = &js_canvas_ops;
+    jscanvas = tmalloc_type(js_evaluated_canvas_t);
+    jscanvas->canvas.ops = &js_evaluated_canvas_ops;
     jscanvas->obj = o;
     /* XXX: get width + height */
     canvas_register(&jscanvas->canvas);
