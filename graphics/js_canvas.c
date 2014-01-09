@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "graphics/painter.desc"
-#include "graphics/js_painter.h"
+#include "graphics/js_canvas.h"
 #include "js/js_obj.h"
 #include "util/debug.h"
 

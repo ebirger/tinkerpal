@@ -29,7 +29,7 @@
 #include "js/js_utils.h"
 #include "graphics/text.h"
 #include "graphics/circle.h"
-#include "graphics/js_painter.h"
+#include "graphics/js_canvas.h"
 
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
