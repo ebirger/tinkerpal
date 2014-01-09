@@ -27,9 +27,6 @@
 
 #include "js/js_obj.h"
 
-void js_painter_pixel_draw(int x, int y, int enable, void *ctx);
-void *js_painter_ctx(obj_t *o);
-
 int js_canvas_get_id(obj_t *o);
 
 #endif

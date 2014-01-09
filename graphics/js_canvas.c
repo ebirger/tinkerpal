@@ -29,7 +29,6 @@
 #include "util/debug.h"
 #include "util/tp_misc.h"
 
-#define Spainter S("painter")
 #define SpixelDraw S(TpixelDraw)
 
 typedef struct {
@@ -38,23 +37,6 @@ typedef struct {
 } js_canvas_t;
 
 #define JS_CANVAS_FROM_CANVAS(c) container_of(c, js_canvas_t, canvas);
-
-void js_painter_pixel_draw(int x, int y, int enable, void *ctx)
-{
-    obj_t *argv[4], *painter = ctx;
-    obj_t *ret = UNDEF;
-
-    argv[0] = obj_get_property(NULL, painter, &SpixelDraw);
-    argv[1] = num_new_int(x);
-    argv[2] = num_new_int(y);
-    argv[3] = num_new_int(enable);
-    function_call(&ret, painter, 4, argv);
-    obj_put(ret);
-    obj_put(argv[0]);
-    obj_put(argv[1]);
-    obj_put(argv[2]);
-    obj_put(argv[3]);
-}
 
 void js_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
@@ -72,15 +54,6 @@ void js_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     obj_put(argv[1]);
     obj_put(argv[2]);
     obj_put(argv[3]);
-}
-
-void *js_painter_ctx(obj_t *o)
-{
-    obj_t *painter;
-    
-    tp_assert((painter = obj_get_property(NULL, o, &Spainter)));
-    obj_put(painter); /* Return our reference. No need for a new one */
-    return (void *)painter;
 }
 
 static const canvas_ops_t js_canvas_ops = {
