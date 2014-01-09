@@ -60,6 +60,14 @@ static const canvas_ops_t js_evaluated_canvas_ops = {
     .pixel_set = js_evaluated_canvas_pixel_set,
 };
 
+int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
+    int argc, obj_t *argv[])
+{
+    *ret = object_new();
+    _obj_set_property(*ret, Scanvas_id, num_new_int(canvas->id));
+    return 0;
+}
+
 int js_canvas_get_id(obj_t *o)
 {
     js_evaluated_canvas_t *jscanvas;

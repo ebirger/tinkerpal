@@ -30,8 +30,6 @@
 #include "graphics/graphics.h"
 #include "graphics/js_canvas.h"
 
-#define Scanvas_id S("canvas_id")
-
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int x, y, radius, canvas_id;
