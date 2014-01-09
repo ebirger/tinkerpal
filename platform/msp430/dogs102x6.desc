@@ -1,4 +1,4 @@
-#include "drivers/graphics/painter.desc"
+#include "graphics/painter.desc"
 
 PROTOTYPE("dogs102x6", dogs102x6, {
 })
