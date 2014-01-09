@@ -22,6 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "util/tp_misc.h"
 #include "drivers/resources.h"
 #include "drivers/lcd/ili93xx.h"
 #include "drivers/lcd/ili93xx_controllers.h"
@@ -35,8 +36,11 @@
 #define DL(i) ((i)->params.data_port_low)
 
 typedef struct {
+    canvas_t canvas;
     ili93xx_params_t params;
 } ili93xx_t;
+
+#define ILI93XX_FROM_CANVAS(c) container_of(c, ili93xx_t, canvas);
 
 static ili93xx_t g_ili93xx;
 
@@ -159,10 +163,38 @@ static int chip_init(ili93xx_t *i)
     return 0;
 }
 
-void ili93xx_init(ili93xx_params_t *params)
+void ili93xx_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+{
+    ili93xx_t *i = ILI93XX_FROM_CANVAS(c);
+
+    /* X value */
+    ili93xx_write_cmd(i, 0x20);
+    ili93xx_write_data(i, x);
+
+    /* Y value */
+    ili93xx_write_cmd(i, 0x21);
+    ili93xx_write_data(i, y);
+
+    /* Pixel value */
+    ili93xx_write_cmd(i, 0x22);
+    ili93xx_write_data(i, val);
+}
+
+static const canvas_ops_t ili93xx_ops = {
+    .pixel_set = ili93xx_pixel_set,
+};
+
+canvas_t *ili93xx_new(ili93xx_params_t *params)
 {
     ili93xx_t *i = &g_ili93xx;
 
+    i->canvas.width = 240;
+    i->canvas.height = 320;
+    i->canvas.ops = &ili93xx_ops;
+
     i->params = *params;
     chip_init(i);
+
+    gpio_digital_write(BL(i), 1);
+    return &i->canvas;
 }

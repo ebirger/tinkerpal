@@ -25,6 +25,7 @@
 #ifndef __ILI93XX_H__
 #define __ILI93XX_H__
 
+#include "graphics/canvas.h"
 #include "drivers/resources.h"
 #include "drivers/gpio/gpio.h"
 
@@ -38,6 +39,6 @@ typedef struct {
     resource_t data_port_high;
 } ili93xx_params_t;
 
-void ili93xx_init(ili93xx_params_t *params);
+canvas_t *ili93xx_new(ili93xx_params_t *params);
 
 #endif
