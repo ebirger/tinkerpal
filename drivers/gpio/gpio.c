@@ -78,4 +78,3 @@ int gpio_set_port_mode(resource_t port, gpio_pin_mode_t mode)
 
     return 0;
 }
-
