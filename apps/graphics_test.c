@@ -46,6 +46,17 @@ static void graphics_test_process_line(tstr_t *line)
 		canvas_pixel_set(canvas, i, j, (i * j) & 0xffff);
 	}
     }
+    if (!tstr_cmp(line, &S("clear")))
+    {
+	/* XXX: When rect API is available, use it */
+	int i, j;
+
+	for (i = 0; i < canvas->width; i++)
+	{
+	    for (j = 0; j < canvas->height; j++)
+		canvas_pixel_set(canvas, i, j, 0);
+	}
+    }
     if (!tstr_cmp(line, &S("circle")))
     {
 	circle_draw(canvas, canvas->width / 2, canvas->height / 2,
