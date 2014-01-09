@@ -29,6 +29,7 @@
 #include "js/js_utils.h"
 #include "graphics/graphics.h"
 #include "graphics/js_canvas.h"
+#include "graphics/js_evaluated_canvas.h"
 
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
@@ -69,11 +70,27 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
+    int canvas_id;
+    obj_t *o;
+
     if (argc != 2)
 	return js_invalid_args(ret);
 
+    o = argv[1];
+
+    if ((canvas_id = canvas_obj_get_id(o)) < 0)
+    {
+	canvas_t *canvas;
+       
+	/* No canvas ID found. Try to create an evaluated canvas */
+	if (!(canvas = js_evaluated_canvas_new(o)))
+	    return js_invalid_args(ret);
+
+	canvas_id = canvas->id;
+    }
+
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
-    obj_set_property_int(*ret, Scanvas_id, js_canvas_get_id(argv[1]));
+    obj_set_property_int(*ret, Scanvas_id, canvas_id);
     return 0;
 }

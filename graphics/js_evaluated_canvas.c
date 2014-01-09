@@ -22,16 +22,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __JS_CANVAS_H__
-#define __JS_CANVAS_H__
-
+#include "graphics/painter.desc"
+#include "graphics/js_evaluated_canvas.h"
 #include "js/js_obj.h"
+#include "util/tp_misc.h"
 
-#define Scanvas_id S("canvas_id")
+#define SpixelDraw S(TpixelDraw)
 
-int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
-    int argc, obj_t *argv[]);
+typedef struct {
+    canvas_t canvas;
+    obj_t *obj;
+} js_evaluated_canvas_t;
 
-int canvas_obj_get_id(obj_t *o);
+#define JS_CANVAS_FROM_CANVAS(c) container_of(c, js_evaluated_canvas_t, canvas);
 
-#endif
+void js_evaluated_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+{
+    js_evaluated_canvas_t *jscanvas = JS_CANVAS_FROM_CANVAS(c);
+    obj_t *argv[4];
+    obj_t *ret = UNDEF;
+
+    argv[0] = obj_get_property(NULL, jscanvas->obj, &SpixelDraw);
+    argv[1] = num_new_int(x);
+    argv[2] = num_new_int(y);
+    argv[3] = num_new_int(val);
+    function_call(&ret, jscanvas->obj, 4, argv);
+    obj_put(ret);
+    obj_put(argv[0]);
+    obj_put(argv[1]);
+    obj_put(argv[2]);
+    obj_put(argv[3]);
+}
+
+static const canvas_ops_t js_evaluated_canvas_ops = {
+    .pixel_set = js_evaluated_canvas_pixel_set,
+};
+
+canvas_t *js_evaluated_canvas_new(obj_t *o)
+{
+    js_evaluated_canvas_t *jscanvas;
+
+    /* XXX: assert that required functionality is provided by o */
+    jscanvas = tmalloc_type(js_evaluated_canvas_t);
+    jscanvas->canvas.ops = &js_evaluated_canvas_ops;
+    jscanvas->obj = o;
+    /* XXX: get width + height */
+    canvas_register(&jscanvas->canvas);
+    return &jscanvas->canvas;
+}

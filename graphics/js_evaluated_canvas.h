@@ -22,16 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __JS_CANVAS_H__
-#define __JS_CANVAS_H__
+#ifndef __JS_EVALUATED_CANVAS_H__
+#define __JS_EVALUATED_CANVAS_H__
 
 #include "js/js_obj.h"
+#include "graphics/canvas.h"
 
-#define Scanvas_id S("canvas_id")
-
-int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
-    int argc, obj_t *argv[]);
-
-int canvas_obj_get_id(obj_t *o);
+canvas_t *js_evaluated_canvas_new(obj_t *o);
 
 #endif

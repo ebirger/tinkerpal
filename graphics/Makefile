@@ -1,2 +1,5 @@
-MK_OBJS+=canvas.o text.o circle.o $(if $(CONFIG_JS),js_graphics.o js_canvas.o)
-MK_DESCS=graphics.desc
+MK_OBJS+=canvas.o text.o circle.o
+ifneq ($(CONFIG_JS),)
+  MK_OBJS+=js_graphics.o js_canvas.o js_evaluated_canvas.o
+endif
+MK_DESCS=graphics.desc canvas.desc
