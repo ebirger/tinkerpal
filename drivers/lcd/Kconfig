@@ -10,7 +10,7 @@ config ILI93XX
 
 config ILI9328
 	bool "Support for the ILI9328 LCD controller"
-	depends on GPIO
+	depends on GPIO && GRAPHICS
 	default y if RDK_IDM
 	select ILI93XX
 	help

@@ -188,13 +188,15 @@ canvas_t *ili93xx_new(ili93xx_params_t *params)
 {
     ili93xx_t *i = &g_ili93xx;
 
-    i->canvas.width = 240;
-    i->canvas.height = 320;
-    i->canvas.ops = &ili93xx_ops;
-
     i->params = *params;
     chip_init(i);
 
     gpio_digital_write(BL(i), 1);
+
+    i->canvas.width = 240;
+    i->canvas.height = 320;
+    i->canvas.ops = &ili93xx_ops;
+
+    canvas_register(&i->canvas);
     return &i->canvas;
 }
