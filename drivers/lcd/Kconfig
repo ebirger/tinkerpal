@@ -5,4 +5,15 @@ config TEXT_LCD
 	depends on GPIO && JS
 	default y
 
+config ILI93XX
+	bool
+
+config ILI9328
+	bool "Support for the ILI9328 LCD controller"
+	depends on GPIO
+	default y if RDK_IDM
+	select ILI93XX
+	help
+		Access is via a 16 bit GPIO interface for data
+
 endmenu

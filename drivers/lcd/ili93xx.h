@@ -22,48 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/debug.h"
-#include "platform/platform_consts.h"
-#include "apps/cli.h"
-#if defined(CONFIG_ILI93XX)
-#include "drivers/lcd/ili93xx.h"
-#else
-#error No graphics device available
+#ifndef __ILI93XX_H__
+#define __ILI93XX_H__
+
+#include "drivers/resources.h"
+#include "drivers/gpio/gpio.h"
+
+typedef struct {
+    resource_t rst;
+    resource_t backlight;
+    resource_t rs;
+    resource_t wr;
+    resource_t rd;
+    resource_t data_port_low;
+    resource_t data_port_high;
+} ili93xx_params_t;
+
+void ili93xx_init(ili93xx_params_t *params);
+
 #endif
-
-static void graphics_test_process_line(tstr_t *line)
-{
-    console_printf("Ok\n");
-}
-
-static cli_client_t graphics_test_cli_client = {
-    .process_line = graphics_test_process_line,
-};
-
-#ifdef CONFIG_RDK_IDM
-static void lcd_init(void)
-{
-    ili93xx_params_t params = {
-	.rst = GPIO_RES(PG0),
-	.backlight = GPIO_RES(PC6),
-	.rs = GPIO_RES(PF2),
-	.wr = GPIO_RES(PF1),
-	.rd = GPIO_RES(PF0),
-	.data_port_low = GPIO_RES(GPIO_PORT_B),
-	.data_port_high = GPIO_RES(GPIO_PORT_A),
-    };
-
-    ili93xx_init(&params);
-}
-#else
-#error No LCD hookup information available
-#endif
-
-void app_start(int argc, char *argv[])
-{
-    tp_out(("TinkerPal Application - Graphics Test\n"));
-
-    lcd_init();
-
-    cli_start(&graphics_test_cli_client);
-}
