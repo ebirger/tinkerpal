@@ -26,7 +26,8 @@
 #ifndef __CIRCLE_H__
 #define __CIRCLE_H__
 
-void circle_draw(int x0, int y0, int radius, 
-    void (*pixel_draw)(int x, int y, int enable, void *ctx), void *ctx);
+#include "graphics/canvas.h"
+
+void circle_draw(canvas_t *c, int x0, int y0, int radius);
 
 #endif

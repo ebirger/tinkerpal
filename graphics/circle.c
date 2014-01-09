@@ -28,18 +28,17 @@
  * Adapted from http://en.wikipedia.org/wiki/Midpoint_circle_algorithm 
  */
 
-void circle_draw(int x0, int y0, int radius, 
-	void (*pixel_draw)(int x, int y, int enable, void *ctx), void *ctx)
+void circle_draw(canvas_t *c, int x0, int y0, int radius)
 {
     int error = 1 - radius;
     int errorY = 1;
     int errorX = -2 * radius;
     int x = radius, y = 0;
 
-    pixel_draw(x0, y0 + radius, 1, ctx);
-    pixel_draw(x0, y0 - radius, 1, ctx);
-    pixel_draw(x0 + radius, y0, 1, ctx);
-    pixel_draw(x0 - radius, y0, 1, ctx);
+    canvas_pixel_set(c, x0, y0 + radius, 1);
+    canvas_pixel_set(c, x0, y0 - radius, 1);
+    canvas_pixel_set(c, x0 + radius, y0, 1);
+    canvas_pixel_set(c, x0 - radius, y0, 1);
 
     while (y < x)
     {
@@ -55,13 +54,13 @@ void circle_draw(int x0, int y0, int radius,
 	y++;
 	errorY += 2;
 	error += errorY;    
-	pixel_draw(x0 + x, y0 + y, 1, ctx);
-	pixel_draw(x0 - x, y0 + y, 1, ctx);
-	pixel_draw(x0 + x, y0 - y, 1, ctx);
-	pixel_draw(x0 - x, y0 - y, 1, ctx);
-	pixel_draw(x0 + y, y0 + x, 1, ctx);
-	pixel_draw(x0 - y, y0 + x, 1, ctx);
-	pixel_draw(x0 + y, y0 - x, 1, ctx);
-	pixel_draw(x0 - y, y0 - x, 1, ctx);
+	canvas_pixel_set(c, x0 + x, y0 + y, 1);
+	canvas_pixel_set(c, x0 - x, y0 + y, 1);
+	canvas_pixel_set(c, x0 + x, y0 - y, 1);
+	canvas_pixel_set(c, x0 - x, y0 - y, 1);
+	canvas_pixel_set(c, x0 + y, y0 + x, 1);
+	canvas_pixel_set(c, x0 - y, y0 + x, 1);
+	canvas_pixel_set(c, x0 + y, y0 - x, 1);
+	canvas_pixel_set(c, x0 - y, y0 - x, 1);
     }
 }

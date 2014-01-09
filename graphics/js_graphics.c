@@ -35,16 +35,19 @@
 
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, radius;
+    int x, y, radius, canvas_id;
 
     if (argc != 4)
+	return js_invalid_args(ret);
+
+    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
 	return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
     radius = obj_get_int(argv[3]);
 
-    circle_draw(x, y, radius, js_painter_pixel_draw, js_painter_ctx(this));
+    circle_draw(canvas_get_by_id(canvas_id), x, y, radius);
     return 0;
 }
 
