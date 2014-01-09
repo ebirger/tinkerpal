@@ -60,7 +60,7 @@ static void graphics_test_process_line(tstr_t *line)
     if (!tstr_cmp(line, &S("circle")))
     {
 	circle_draw(canvas, canvas->width / 2, canvas->height / 2,
-	    canvas->width / 4);
+	    canvas->width / 4, 0xffff);
     }
     if (!tstr_cmp(line, &S("text")))
 	string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 0xffff);

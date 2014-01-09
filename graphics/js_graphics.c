@@ -46,7 +46,7 @@ int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     y = obj_get_int(argv[2]);
     radius = obj_get_int(argv[3]);
 
-    circle_draw(canvas_get_by_id(canvas_id), x, y, radius);
+    circle_draw(canvas_get_by_id(canvas_id), x, y, radius, 0xffff);
     return 0;
 }
 
