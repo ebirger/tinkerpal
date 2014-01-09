@@ -25,6 +25,7 @@
 #include "util/debug.h"
 #include "platform/platform_consts.h"
 #include "apps/cli.h"
+#include "graphics/graphics.h"
 #if defined(CONFIG_ILI93XX)
 #include "drivers/lcd/ili93xx.h"
 #else
