@@ -28,6 +28,11 @@ config APP_NET_TEST
 	depends on ETHERNET
 	select CLI
 
+config APP_GRAPHICS_TEST
+	bool "Graphics test"
+	depends on GRAPHICS
+	select CLI
+
 config APP_DUMMY
 	bool "Dummy. Does nothing. Used for testing"
 
