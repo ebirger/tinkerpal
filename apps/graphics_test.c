@@ -63,7 +63,7 @@ static void graphics_test_process_line(tstr_t *line)
 	    canvas->width / 4);
     }
     if (!tstr_cmp(line, &S("text")))
-	string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 50);
+	string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 0xffff);
 
     console_printf("Ok\n");
 }
