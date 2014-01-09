@@ -22,32 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __CANVAS_H__
-#define __CANVAS_H__
+#include "util/debug.h"
+#include "graphics/canvas.h"
 
-#include "util/tp_types.h"
+static canvas_t *canvases;
+static int canvases_last_id;
 
-typedef struct canvas_t canvas_t;
-
-typedef struct {
-    void (*pixel_set)(canvas_t *c, u16 x, u16 y, u16 val);
-} canvas_ops_t;
-
-struct canvas_t {
-    canvas_t *next;
-    int id;
-    const canvas_ops_t *ops;
-    u16 width;
-    u16 height;
-};
-
-static inline void canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+void canvas_register(canvas_t *c)
 {
-    c->ops->pixel_set(c, x, y, val);
+    c->id = ++canvases_last_id;
+    c->next = canvases;
+    canvases = c;
 }
 
-canvas_t *canvas_get_by_id(int id);
+canvas_t *canvas_get_by_id(int id)
+{
+    canvas_t *ret;
 
-void canvas_register(canvas_t *c);
-
-#endif
+    for (ret = canvases; ret && ret->id != id; ret = ret->next);
+    tp_assert(ret);
+    return ret;
+}
