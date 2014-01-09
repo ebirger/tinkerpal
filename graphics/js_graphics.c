@@ -31,6 +31,8 @@
 #include "graphics/circle.h"
 #include "graphics/js_canvas.h"
 
+#define Scanvas_id S("canvas_id")
+
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int x, y, radius;
@@ -69,6 +71,6 @@ int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
-    js_painter_init(*ret, argv[1]);
+    obj_set_property_int(*ret, Scanvas_id, js_canvas_get_id(argv[1]));
     return 0;
 }
