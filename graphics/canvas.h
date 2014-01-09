@@ -35,7 +35,7 @@ typedef struct {
 } canvas_ops_t;
 
 struct canvas_t {
-    canvas_ops_t *ops;
+    const canvas_ops_t *ops;
     u16 width;
     u16 height;
 };
