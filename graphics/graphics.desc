@@ -1,7 +1,15 @@
+#include "graphics/colors.h"
+
 PROTOTYPE("Graphics", graphics, {
 })
 
 CONSTRUCTOR("Graphics", graphics, do_graphics_constructor)
+
+CONST("BLACK", graphics, blue, STATIC_NUM(COLOR_BLACK))
+CONST("WHITE", graphics, blue, STATIC_NUM(COLOR_WHITE))
+CONST("RED", graphics, red, STATIC_NUM(COLOR_RED))
+CONST("GREEN", graphics, green, STATIC_NUM(COLOR_GREEN))
+CONST("BLUE", graphics, blue, STATIC_NUM(COLOR_BLUE))
 
 FUNCTION("stringDraw", graphics, do_graphics_string_draw, {
     .params = {
