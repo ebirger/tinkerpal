@@ -10,7 +10,7 @@ FUNCTION("send", spi, do_spi_send, {
     .description = "Sends data via SPI bus",
     .return_value = "None",
     .example = "var s = new SPI(SPI1);\n"
-        "s.send([ 0x0f, 0x0f]);",
+        "s.send(0x1f);",
 })
 
 FUNCTION("receive", spi, do_spi_receive, {
