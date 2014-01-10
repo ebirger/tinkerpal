@@ -5,8 +5,8 @@ PROTOTYPE("Graphics", graphics, {
 
 CONSTRUCTOR("Graphics", graphics, do_graphics_constructor)
 
-CONST("BLACK", graphics, blue, STATIC_NUM(COLOR_BLACK))
-CONST("WHITE", graphics, blue, STATIC_NUM(COLOR_WHITE))
+CONST("BLACK", graphics, black, STATIC_NUM(COLOR_BLACK))
+CONST("WHITE", graphics, white, STATIC_NUM(COLOR_WHITE))
 CONST("RED", graphics, red, STATIC_NUM(COLOR_RED))
 CONST("GREEN", graphics, green, STATIC_NUM(COLOR_GREEN))
 CONST("BLUE", graphics, blue, STATIC_NUM(COLOR_BLUE))
