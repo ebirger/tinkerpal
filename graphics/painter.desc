@@ -1,1 +1,6 @@
+#ifndef __PAINTER_DESC__
+#define __PAINTER_DESC__
+
 #define TpixelDraw "pixelDraw"
+
+#endif
