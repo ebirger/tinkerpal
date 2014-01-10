@@ -25,7 +25,33 @@
 #include "graphics/canvas.h"
 #include "graphics/js_canvas.h"
 #include "js/js_obj.h"
+#include "js/js_utils.h"
 #include "util/debug.h"
+
+int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    u16 x, y, color;
+    canvas_t *c;
+
+    if (argc != 4)
+	return js_invalid_args(ret);
+
+    c = canvas_get_by_id(canvas_obj_get_id(this));
+    if (!c)
+    {
+	tp_err(("'this' is not a valid canvas object\n"));
+	return js_invalid_args(ret);
+    }
+
+    x = (u16)obj_get_int(argv[1]);
+    y = (u16)obj_get_int(argv[2]);
+    color = (u16)obj_get_int(argv[3]);
+
+    canvas_pixel_set(c, x, y, color);
+
+    *ret = UNDEF;
+    return 0;
+}
 
 int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])

@@ -1,2 +1,16 @@
+#include "graphics/painter.desc"
+
 PROTOTYPE("Canvas", canvas, {
+})
+
+FUNCTION(TpixelDraw, canvas, do_canvas_pixel_draw, {
+    .params = {
+        { .name = "x" , .description = "X Coordinate" },
+        { .name = "y" , .description = "Y Coordinate" },
+        { .name = "value" , .description = "Color Value" }
+    },
+    .description = "Draw a pixel on the screen",
+    .return_value = "None",
+    .example = "var l = new ILI93XX();\n"
+        "l.pixelDraw(10, 10, 1);",
 })
