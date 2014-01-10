@@ -33,9 +33,9 @@
 
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, radius, canvas_id;
+    int x, y, radius, canvas_id, color;
 
-    if (argc != 4)
+    if (argc != 5)
 	return js_invalid_args(ret);
 
     if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
@@ -44,17 +44,18 @@ int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
     radius = obj_get_int(argv[3]);
+    color = obj_get_int(argv[4]);
 
-    circle_draw(canvas_get_by_id(canvas_id), x, y, radius, 0xffff);
+    circle_draw(canvas_get_by_id(canvas_id), x, y, radius, color);
     return 0;
 }
 
 int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, canvas_id;
+    int x, y, canvas_id, color;
     string_t *s;
 
-    if (argc != 4)
+    if (argc != 5)
 	return js_invalid_args(ret);
     
     if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
@@ -63,8 +64,9 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
     s = to_string(argv[3]);
+    color = obj_get_int(argv[4]);
 
-    string_draw(canvas_get_by_id(canvas_id), x, y, &s->value, 0xffff);
+    string_draw(canvas_get_by_id(canvas_id), x, y, &s->value, color);
     return 0;
 }
 
