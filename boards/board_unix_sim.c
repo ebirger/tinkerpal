@@ -28,4 +28,10 @@
 const board_t board = {
     .desc = "Unix based simulator",
     .default_console_id = UART_RES(STDIO_ID),
+#ifdef CONFIG_SDL_SCREEN
+    .sdl_screen_params = {
+	.width = 320,
+	.height = 200,
+    },
+#endif
 };

@@ -22,34 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __BOARD_H__
-#define __BOARD_H__
+#ifndef __SDL_SCREEN_H__
+#define __SDL_SCREEN_H__
 
-#include "drivers/resources.h"
-#include "platform/platform.h"
-#include "drivers/serial/serial.h"
-#ifdef CONFIG_GPIO
-#include "drivers/gpio/gpio.h"
-#endif
-#ifdef CONFIG_ILI93XX
-#include "drivers/lcd/ili93xx.h"
-#endif
-#ifdef CONFIG_SDL_SCREEN
-#include "drivers/lcd/sdl_screen.h"
-#endif
+#include "util/tp_types.h"
+#include "graphics/canvas.h"
 
 typedef struct {
-    char *desc;
-    resource_t default_console_id;
-#ifdef CONFIG_ILI93XX
-    ili93xx_params_t ili93xx_params;
-#endif
-#ifdef CONFIG_SDL_SCREEN
-    sdl_screen_params_t sdl_screen_params;
-#endif
-} board_t;
+    u16 width;
+    u16 height;
+} sdl_screen_params_t;
 
-/* Boards are defined in board_*.c files */
-extern const board_t board;
+canvas_t *sdl_screen_new(const sdl_screen_params_t *params);
 
 #endif

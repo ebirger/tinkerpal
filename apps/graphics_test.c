@@ -69,14 +69,16 @@ static cli_client_t graphics_test_cli_client = {
     .process_line = graphics_test_process_line,
 };
 
-#ifdef CONFIG_ILI93XX
 static void lcd_init(void)
 {
+#ifdef CONFIG_ILI93XX
     canvas = ili93xx_new(&board.ili93xx_params);
-}
+#elif defined(CONFIG_SDL_SCREEN)
+    canvas = sdl_screen_new(&board.sdl_screen_params);
 #else
 #error No LCD hookup information available
 #endif
+}
 
 void app_start(int argc, char *argv[])
 {

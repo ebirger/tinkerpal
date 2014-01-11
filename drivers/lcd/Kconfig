@@ -16,4 +16,9 @@ config ILI9328
 	help
 		Access is via a 16 bit GPIO interface for data
 
+config SDL_SCREEN
+	bool "LCD emulation via the SDL library"
+	depends on UNIX && GRAPHICS
+	default y if PLATFORM_EMULATION
+
 endmenu
