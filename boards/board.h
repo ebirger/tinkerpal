@@ -26,6 +26,7 @@
 #define __BOARD_H__
 
 #include "drivers/resources.h"
+#include "platform/platform.h"
 #include "drivers/serial/serial.h"
 #include "drivers/gpio/gpio.h"
 #ifdef CONFIG_ILI93XX
