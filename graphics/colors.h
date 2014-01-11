@@ -25,6 +25,10 @@
 #ifndef __COLORS_H__
 #define __COLORS_H__
 
+#define COLOR_RED_SHIFT 0
+#define COLOR_GREEN_SHIFT 5
+#define COLOR_BLUE_SHIFT 11
+
 #define COLOR_BLACK 0x0000
 #define COLOR_RED 0x001f
 #define COLOR_GREEN 0x07e0
