@@ -73,7 +73,7 @@ static void sdl_screen_init(sdl_screen_t *screen)
 
 static void sdl_screen_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
-    sdl_screen_t *screen = container_of(c, sdl_screen_t, canvas)
+    sdl_screen_t *screen = container_of(c, sdl_screen_t, canvas);
     u16 *ptr = (u16 *)screen->surface->pixels, bgr_val;
     int lineoffset;
 
