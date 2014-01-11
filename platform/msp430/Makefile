@@ -1,8 +1,6 @@
 MK_OBJS=msp430f5529.o msp430f5529_usci.o
 MK_OBJS+=$(if $(CONFIG_GPIO),msp430f5529_gpio.o)
 MK_OBJS+=$(if $(CONFIG_SPI),msp430f5529_spi.o)
-MK_OBJS+=$(if $(CONFIG_MSP430F5529_EXP),msp430f5529_exp.o)
-MK_OBJS+=$(if $(CONFIG_MSP430F5529_LAUNCHPAD),msp430f5529_launchpad.o)
 
 ifneq ($(CONFIG_DOGS102X6),)
   MK_OBJS+=dogs102x6.o $(if $(CONFIG_JS),js_dogs102x6.o)
