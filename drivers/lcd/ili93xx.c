@@ -40,7 +40,7 @@ typedef struct {
     ili93xx_params_t params;
 } ili93xx_t;
 
-#define ILI93XX_FROM_CANVAS(c) container_of(c, ili93xx_t, canvas);
+#define ILI93XX_FROM_CANVAS(c) container_of(c, ili93xx_t, canvas)
 
 static ili93xx_t g_ili93xx;
 
@@ -163,7 +163,7 @@ static int chip_init(ili93xx_t *i)
     return 0;
 }
 
-void ili93xx_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+static void ili93xx_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
     ili93xx_t *i = ILI93XX_FROM_CANVAS(c);
 
