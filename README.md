@@ -53,7 +53,7 @@ Building for a specific target
 ------------------------------
 ```
 > make <defconfig file>
-Where defconfig files can be found in boards/env/
+Where defconfig files can be found in boards/configs/
 > . ./boards/env/setenv_<target>.sh
 > make
 ```
