@@ -184,7 +184,7 @@ static const canvas_ops_t ili93xx_ops = {
     .pixel_set = ili93xx_pixel_set,
 };
 
-canvas_t *ili93xx_new(ili93xx_params_t *params)
+canvas_t *ili93xx_new(const ili93xx_params_t *params)
 {
     ili93xx_t *i = &g_ili93xx;
 

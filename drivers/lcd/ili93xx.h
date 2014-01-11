@@ -39,6 +39,6 @@ typedef struct {
     resource_t data_port_high;
 } ili93xx_params_t;
 
-canvas_t *ili93xx_new(ili93xx_params_t *params);
+canvas_t *ili93xx_new(const ili93xx_params_t *params);
 
 #endif
