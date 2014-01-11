@@ -23,28 +23,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "drivers/gpio/gpio.h"
-#include "drivers/lcd/ili93xx.h"
 #include "graphics/js_canvas.h"
+#include "boards/board.h"
 #include "js/js_obj.h"
 
 int do_ili93xx_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     canvas_t *canvas;
-    /* TODO: allow providing pinout */
-#ifdef CONFIG_RDK_IDM
-    ili93xx_params_t params = {
-	.rst = GPIO_RES(PG0),
-	.backlight = GPIO_RES(PC6),
-	.rs = GPIO_RES(PF2),
-	.wr = GPIO_RES(PF1),
-	.rd = GPIO_RES(PF0),
-	.data_port_low = GPIO_RES(GPIO_PORT_B),
-	.data_port_high = GPIO_RES(GPIO_PORT_A),
-    };
-#else
-#error ILI93XX pinout not available
-#endif
 
-    canvas = ili93xx_new(&params);
+    /* TODO: allow providing pinout */
+
+    canvas = ili93xx_new(&board.ili93xx_params);
     return canvas_obj_constructor(canvas, ret, this, argc, argv);
 }

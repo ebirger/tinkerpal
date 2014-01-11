@@ -27,10 +27,17 @@
 
 #include "drivers/resources.h"
 #include "drivers/serial/serial.h"
+#include "drivers/gpio/gpio.h"
+#ifdef CONFIG_ILI93XX
+#include "drivers/lcd/ili93xx.h"
+#endif
 
 typedef struct {
     char *desc;
     resource_t default_console_id;
+#ifdef CONFIG_ILI93XX
+    ili93xx_params_t ili93xx_params;
+#endif
 } board_t;
 
 /* Boards are defined in board_*.c files */

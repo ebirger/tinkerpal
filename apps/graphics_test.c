@@ -24,13 +24,10 @@
  */
 #include "util/debug.h"
 #include "platform/platform_consts.h"
+#include "boards/board.h"
 #include "apps/cli.h"
 #include "graphics/graphics.h"
-#if defined(CONFIG_ILI93XX)
-#include "drivers/lcd/ili93xx.h"
-#else
-#error No graphics device available
-#endif
+#include "graphics/colors.h"
 
 static canvas_t *canvas;
 
@@ -72,20 +69,10 @@ static cli_client_t graphics_test_cli_client = {
     .process_line = graphics_test_process_line,
 };
 
-#ifdef CONFIG_RDK_IDM
+#ifdef CONFIG_ILI93XX
 static void lcd_init(void)
 {
-    ili93xx_params_t params = {
-	.rst = GPIO_RES(PG0),
-	.backlight = GPIO_RES(PC6),
-	.rs = GPIO_RES(PF2),
-	.wr = GPIO_RES(PF1),
-	.rd = GPIO_RES(PF0),
-	.data_port_low = GPIO_RES(GPIO_PORT_B),
-	.data_port_high = GPIO_RES(GPIO_PORT_A),
-    };
-
-    canvas = ili93xx_new(&params);
+    canvas = ili93xx_new(&board.ili93xx_params);
 }
 #else
 #error No LCD hookup information available
