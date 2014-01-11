@@ -47,14 +47,14 @@ Building
 
 ### Environment Variables
 - CROSS_COMPILE - compiler prefix
-- Other platform specific variables are required. See targets/
+- Other platform specific variables are required. See boards/env/
 
 Building for a specific target
 ------------------------------
 ```
 > make <defconfig file>
-Where defconfig files can be found in targets/
-> . ./targets/setenv_<target>.sh
+Where defconfig files can be found in boards/env/
+> . ./boards/env/setenv_<target>.sh
 > make
 ```
 
@@ -63,7 +63,7 @@ Where defconfig files can be found in targets/
 Building as a Linux executable
 ```
 > make unix_sim_gcc_defconfig
-> . ./targets/setenv_unix_sim.sh
+> . ./boards/env/setenv_unix_sim.sh
 > make
 ```
 The output executable can be found at ./build.Linux/tp
@@ -71,7 +71,7 @@ The output executable can be found at ./build.Linux/tp
 Building for the Stellaris Launchpad on Linux
 ```
 > make lm4f120xl_gcc_defconfig
-> . ./targets/setenv_lm4f120xl.sh
+> . ./boards/env/setenv_lm4f120xl.sh
 > make
 ```
 
