@@ -28,7 +28,9 @@
 #include "drivers/resources.h"
 #include "platform/platform.h"
 #include "drivers/serial/serial.h"
+#ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio.h"
+#endif
 #ifdef CONFIG_ILI93XX
 #include "drivers/lcd/ili93xx.h"
 #endif
