@@ -148,13 +148,11 @@ static void stm32f4discovery_init(void)
 }
 
 const platform_t platform = {
-    .desc = "STM32F4Discovery",
     .serial = {
 	.enable = stm32_serial_enable,
 	.read = buffered_serial_read,
 	.write = stm32_serial_write,
 	.irq_enable = stm32_serial_irq_enable,
-	.default_console_id = 0,
     },
 #ifdef CONFIG_GPIO
     .gpio = {

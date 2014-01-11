@@ -181,13 +181,11 @@ static void lm3s6918_init(void)
 }
 
 const platform_t platform = {
-    .desc = "LM3S6918",
     .serial = {
 	.enable = stellaris_serial_enable,
 	.read = buffered_serial_read,
 	.write = stellaris_serial_write,
 	.irq_enable = stellaris_serial_irq_enable,
-	.default_console_id = UART1,
     },
 #ifdef CONFIG_GPIO
     .gpio = {

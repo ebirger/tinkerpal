@@ -38,13 +38,11 @@ typedef enum {
 } gpio_pin_mode_t;
 
 typedef struct {
-    char *desc;
     struct {
 	int (*enable)(int u, int enabled);
 	int (*read)(int u, char *buf, int size);
 	int (*write)(int u, char *buf, int size);
 	void (*irq_enable)(int u, int enable);
-	int default_console_id;
     } serial;
     struct {
 	int (*init)(void);

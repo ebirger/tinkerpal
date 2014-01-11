@@ -25,6 +25,7 @@
 #include "util/tnum.h"
 #include "util/debug.h"
 #include "main/console.h"
+#include "boards/board.h"
 #include "drivers/serial/serial.h"
 #include <stdarg.h>
 
@@ -127,7 +128,7 @@ void console_printf(char *fmt, ...)
 
 void console_init(void)
 {
-    resource_t id = serial_default_console_id();
+    resource_t id = board.default_console_id;
 
     serial_enable(id, 1);
     console_set_id(id);

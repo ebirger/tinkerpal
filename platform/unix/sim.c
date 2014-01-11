@@ -217,12 +217,10 @@ static void sim_unix_init(void)
 }
 
 const platform_t platform = {
-    .desc = "Unix based simulator",
     .serial = {
 	.enable = sim_unix_serial_enable,
 	.read = sim_unix_serial_read,
 	.write = sim_unix_serial_write,
-	.default_console_id = STDIO_ID, 
     },
 #ifdef CONFIG_PLATFORM_EMULATION_BLOCK_DISK
     .block = {

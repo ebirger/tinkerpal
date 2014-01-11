@@ -204,13 +204,11 @@ static void lm3s6965_init(void)
 }
 
 const platform_t platform = {
-    .desc = "EK LM3S6965",
     .serial = {
 	.enable = stellaris_serial_enable,
 	.read = buffered_serial_read,
 	.write = stellaris_serial_write,
 	.irq_enable = stellaris_serial_irq_enable,
-	.default_console_id = UART0,
     },
 #ifdef CONFIG_GPIO
     .gpio = {

@@ -22,40 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <msp430.h>
+#include "boards/board.h"
 #include "platform/platform.h"
-#include "platform/msp430/msp430f5529_gpio.h"
-#include "platform/msp430/msp430f5529_usci.h"
-#include "platform/msp430/msp430f5529.h"
-#include "drivers/serial/serial_platform.h"
 
-const platform_t platform = {
-    .serial = {
-	.enable = msp430f5529_serial_enable,
-	.read = buffered_serial_read,
-	.write = msp430f5529_serial_write,
-	.irq_enable = msp430f5529_serial_irq_enable,
-    },
-#ifdef CONFIG_GPIO
-    .gpio = {
-	.digital_write = msp430f5529_gpio_digital_write,
-	.digital_read = msp430f5529_gpio_digital_read,
-	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
-	.set_port_val = msp430f5529_gpio_set_port_val,
-	.get_port_val = msp430f5529_gpio_get_port_val,
-    },
-#endif
-#ifdef CONFIG_SPI
-    .spi = {
-	.init = msp430f5529_spi_init,
-	.reconf = msp430f5529_spi_reconf,
-	.set_max_speed = msp430f5529_usci_set_speed,
-	.send = msp430f5529_spi_send,
-	.receive = msp430f5529_spi_receive,
-    },
-#endif
-    .init = msp430f5529_init,
-    .select = msp430f5529_select,
-    .get_system_clock = msp430f5529_get_system_clock,
-    .msleep = msp430f5529_msleep,
+const board_t board = {
+    .desc = "TI MSP430F5529",
+    .default_console_id = UART_RES(USCIA1),
 };

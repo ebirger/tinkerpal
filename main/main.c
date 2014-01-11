@@ -27,6 +27,7 @@
 #include "mem/tmalloc.h"
 #include "main/console.h"
 #include "platform/platform.h"
+#include "boards/board.h"
 #include "drivers/fs/vfs.h"
 #include "js/js.h"
 #include "net/net.h"
@@ -37,8 +38,8 @@ extern void app_start(int argc, char *argv[]);
 static inline void tp_banner(void)
 {
     console_printf("TinkerPal version %s\n", TINKERPAL_VERSION);
-    if (platform.desc)
-	console_printf("Running on %s\n", platform.desc);
+    if (board.desc)
+	console_printf("Running on %s\n", board.desc);
 }
 
 int tp_main(int argc, char *argv[])

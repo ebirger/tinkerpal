@@ -29,6 +29,8 @@
 #include "drivers/resources.h"
 #include "platform/platform.h"
 
+#define UART_RES(u) RES(UART_RESOURCE_ID_BASE, u, 0)
+
 static inline int serial_read(resource_t id, char *buf, int size)
 {
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
@@ -46,11 +48,6 @@ static inline int serial_write(resource_t id, char *buf, int size)
 }
 
 int serial_enable(resource_t id, int enabled);
-
-static inline resource_t serial_default_console_id(void)
-{
-    return RES(UART_RESOURCE_ID_BASE, platform.serial.default_console_id, 0);
-}
 
 /* XXX: should receive tstr */
 static inline int serial_get_constant(int *constant, char *buf, int len)

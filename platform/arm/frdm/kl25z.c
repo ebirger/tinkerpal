@@ -191,13 +191,11 @@ static void kl25z_init(void)
 }
 
 const platform_t platform = {
-    .desc = "Freescale FRDM-KL-25Z",
     .serial = {
 	.enable = kl25z_serial_enable,
 	.read = buffered_serial_read,
 	.write = kl25z_serial_write,
 	.irq_enable = kl25z_serial_irq_enable,
-	.default_console_id = 0,
     },
     .init = kl25z_init,
     .meminfo = cortex_m_meminfo,

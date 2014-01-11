@@ -43,7 +43,7 @@ include scripts/text_to_c.mk
 
 d=.
 
-MK_SUBDIRS=apps main platform mem util
+MK_SUBDIRS=apps main platform mem util boards
 MK_SUBDIRS+=$(if $(CONFIG_JS),js)
 MK_SUBDIRS+=$(if $(CONFIG_NET),net)
 MK_SUBDIRS+=$(if $(CONFIG_GRAPHICS),graphics)
