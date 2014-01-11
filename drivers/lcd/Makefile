@@ -7,6 +7,8 @@ endif
 
 ifneq ($(CONFIG_SDL_SCREEN),)
   MK_OBJS+=sdl_screen.o
+  MK_OBJS+=$(if $(CONFIG_JS),js_sdl_screen.o)
+  MK_DESCS=sdl_screen.desc
   CFLAGS+=$(shell sdl-config --cflags)
   LIBS+=$(shell sdl-config --libs)
 endif

@@ -1,0 +1,1 @@
+CONSTRUCTOR("SDLScreen", canvas, do_sdl_screen_constructor)
