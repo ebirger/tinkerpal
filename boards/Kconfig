@@ -24,11 +24,11 @@ config RDK_IDM
 
 config STM32F3DISCOVERY
 	bool "ST Micro STM32F3 Discovery board"
-	select STM32
+	select STM32F3XX
 
 config STM32F4DISCOVERY
 	bool "ST Micro STM32F4 Discovery board"
-	select STM32
+	select STM32F4XX
 
 config FRDM_KL25Z
 	bool "Freescale FRDM-KL25Z"

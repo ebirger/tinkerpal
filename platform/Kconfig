@@ -62,6 +62,14 @@ config STM32
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
 
+config STM32F3XX
+	bool
+	select STM32
+
+config STM32F4XX
+	bool
+	select STM32
+
 config MSP430
 	bool
 	select PLAT_HAS_TI_CCS5
