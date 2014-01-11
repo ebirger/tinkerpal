@@ -1,5 +1,3 @@
-menu "Toolchain"
-
 config PLAT_HAS_GCC
 	bool
 
@@ -19,5 +17,3 @@ config TI_CCS5
 	depends on PLAT_HAS_TI_CCS5
 
 endchoice
-
-endmenu
