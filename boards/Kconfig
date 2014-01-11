@@ -1,0 +1,45 @@
+choice
+
+prompt "Board"
+
+config PLATFORM_EMULATION
+	bool "Unix Platform Emulation"
+	select UNIX
+	select PLAT_HAS_SERIAL
+	help
+		Simulator using STDIO as console and PTY as UART
+		Uses Posix API, tested on Linux & Cygwin
+
+config EK_LM4F120XL
+	bool "TI LM4F120XL (Stellaris Launchpad)"
+	select LM4F120XL
+
+config EK_LM3S6965
+	bool "TI EK-LM3S6965"
+	select LM3S6965
+
+config RDK_IDM
+	bool "TI RDK-IDM (LM3S6918)"
+	select LM3S6918
+
+config STM32F3DISCOVERY
+	bool "ST Micro STM32F3 Discovery board"
+	select STM32
+
+config STM32F4DISCOVERY
+	bool "ST Micro STM32F4 Discovery board"
+	select STM32
+
+config FRDM_KL25Z
+	bool "Freescale FRDM-KL25Z"
+	select FRDM
+
+config MSP430F5529_EXP
+	bool "TI MSP430F5529 Experimenter Board"
+	select MSP430F5529
+
+config MSP430F5529_LAUNCHPAD
+	bool "TI MSP430F5529 Launchpad"
+	select MSP430F5529
+
+endchoice

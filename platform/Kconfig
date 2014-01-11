@@ -50,6 +50,8 @@ config FRDM
 	select ARM
 	select PLAT_HAS_GCC
 	select PLAT_HAS_MALLOC
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
 
 config STM32
 	bool
@@ -57,6 +59,8 @@ config STM32
 	select PLAT_HAS_GCC
 	select PLAT_HAS_MALLOC
 	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
 
 config MSP430
 	bool
@@ -83,59 +87,15 @@ config LM3S6918
 	select STELLARIS
 	select PLAT_HAS_EMBEDDED_ETH
 
-choice 
-
-prompt "Platform"
-
-config PLATFORM_EMULATION
-	bool "Unix Platform Emulation"
-	select UNIX
-	select PLAT_HAS_SERIAL
-	help
-		Simulator using STDIO as console and PTY as UART
-		Uses Posix API, tested on Linux & Cygwin
-
-config LM4F120XL
-	bool "TI LM4F120XL (Stellaris Launchpad)"
-	select STELLARIS
-	select PLAT_HAS_GPIO_INTERRUPTS
-
 config LM3S6965
-	bool "TI LM3S6965"
+	bool
 	select STELLARIS
 	select PLAT_HAS_EMBEDDED_ETH
 
-config RDK_IDM
-	bool "TI RDK-IDM (LM3S6918)"
-	select LM3S6918
-
-config STM32F3DISCOVERY
-	bool "ST Micro STM32F3 Discovery board"
-	select STM32
-	select PLAT_HAS_SERIAL
-	select BUFFERED_SERIAL
-
-config STM32F4DISCOVERY
-	bool "ST Micro STM32F4 Discovery board"
-	select STM32
-	select PLAT_HAS_SERIAL
-	select BUFFERED_SERIAL
-
-config FRDM_KL25Z
-	bool "Freescale FRDM-KL25Z"
-	select FRDM
-	select PLAT_HAS_SERIAL
-	select BUFFERED_SERIAL
-
-config MSP430F5529_EXP
-	bool "TI MSP430F5529 Experimenter Board"
-	select MSP430F5529
-
-config MSP430F5529_LAUNCHPAD
-	bool "TI MSP430F5529 Launchpad"
-	select MSP430F5529
-
-endchoice
+config LM4F120XL
+	bool
+	select STELLARIS
+	select PLAT_HAS_GPIO_INTERRUPTS
 
 if UNIX
 source "platform/unix/Kconfig"

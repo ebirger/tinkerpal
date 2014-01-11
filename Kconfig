@@ -4,6 +4,7 @@ config TINKERPAL
 	bool
 	default y
 
+source "boards/Kconfig"
 source "platform/Kconfig"
 source "apps/Kconfig"
 source "main/Kconfig"
