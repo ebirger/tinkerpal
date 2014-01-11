@@ -26,6 +26,7 @@
 #define __JS_CANVAS_H__
 
 #include "js/js_obj.h"
+#include "graphics/canvas.h"
 
 #define Scanvas_id S("canvas_id")
 
