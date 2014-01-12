@@ -31,6 +31,9 @@
 #ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio.h"
 #endif
+#ifdef CONFIG_SPI
+#include "drivers/spi/spi.h"
+#endif
 #ifdef CONFIG_ILI93XX
 #include "drivers/lcd/ili93xx.h"
 #endif

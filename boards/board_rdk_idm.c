@@ -24,9 +24,6 @@
  */
 #include "boards/board.h"
 #include "platform/platform.h"
-#ifdef CONFIG_SPI
-#include "drivers/spi/spi.h"
-#endif
 
 const board_t board = {
     .desc = "RDK-IDM (LM3S6918)",
