@@ -28,4 +28,11 @@
 const board_t board = {
     .desc = "EK LM3S6965",
     .default_console_id = UART_RES(UART0),
+#ifdef CONFIG_MMC
+    .mmc_params = {
+	.spi_port = SPI_RES(SSI0),
+	.mosi = GPIO_RES(PA5),
+	.cs = GPIO_RES(PD0),
+    },
+#endif
 };
