@@ -700,25 +700,25 @@ static const etherif_ops_t enc28j60_etherif_ops = {
     .free = enc28j60_free,
 };
 
-etherif_t *enc28j60_new(resource_t spi_port, resource_t cs, resource_t intr)
+etherif_t *enc28j60_new(const enc28j60_params_t *params)
 {
     enc28j60_t *e = tmalloc_type(enc28j60_t);
 
-    e->spi_port = spi_port;
-    e->cs = cs;
-    e->intr = intr;
+    e->spi_port = params->spi_port;
+    e->cs = params->cs;
+    e->intr = params->intr;
     e->irq_event.trigger = enc28j60_isr;
     e->bank = 255; /* make sure bank is selected on the first register access */
     etherif_construct(&e->ethif, &enc28j60_etherif_ops);
 
-    spi_init(spi_port);
-    spi_set_max_speed(spi_port, 8000000);
+    spi_init(e->spi_port);
+    spi_set_max_speed(e->spi_port, 8000000);
 
-    gpio_set_pin_mode(cs, GPIO_PM_OUTPUT);
-    gpio_set_pin_mode(intr, GPIO_PM_INPUT_PULLUP);
+    gpio_set_pin_mode(e->cs, GPIO_PM_OUTPUT);
+    gpio_set_pin_mode(e->intr, GPIO_PM_INPUT_PULLUP);
     cs_high(e);
 
-    e->irq_event_id = event_watch_set(intr, &e->irq_event);
+    e->irq_event_id = event_watch_set(e->intr, &e->irq_event);
 
     chip_init(e);
     return &e->ethif;

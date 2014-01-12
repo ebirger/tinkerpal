@@ -26,6 +26,7 @@
 #include "net/net.h"
 #include "platform/platform_consts.h"
 #include "apps/cli.h"
+#include "boards/board.h"
 #if defined(CONFIG_LINUX_PACKET_ETH)
 #include "drivers/net/linux_packet_eth.h"
 #elif defined(CONFIG_STELLARIS_ETH)
@@ -62,6 +63,9 @@ static cli_client_t net_test_cli_client = {
 void app_start(int argc, char *argv[])
 {
     eth_mac_t mac;
+#if defined(CONFIG_ENC28J60)
+    enc28j60_params_t enc28j60_params;
+#endif
 
     tp_out(("TinkerPal Application - Net Test\n"));
 
@@ -73,15 +77,18 @@ void app_start(int argc, char *argv[])
 #elif defined(CONFIG_STELLARIS_ETH)
     ethif = stellaris_eth_new();
 #elif defined(CONFIG_ENC28J60)
+
 #if defined(CONFIG_LM4F120XL)
-    ethif = enc28j60_new(RES(SPI_RESOURCE_ID_BASE, 1, 0),
-	RES(GPIO_RESOURCE_ID_BASE, PE3, 0),
-	RES(GPIO_RESOURCE_ID_BASE, PF4, 0));
+    enc28j60_params.spi_port = SPI_RES(SSI1);
+    enc28j60_params.cs = GPIO_RES(PE3);
+    enc28j60_params.intr = GPIO_RES(PF4);
 #elif defined(CONFIG_MSP430F5529_LAUNCHPAD)
-    ethif = enc28j60_new(RES(SPI_RESOURCE_ID_BASE, 0, 0),
-	RES(GPIO_RESOURCE_ID_BASE, PC5, 0),
-	RES(GPIO_RESOURCE_ID_BASE, PA4, 0));
+    enc28j60_params.spi_port = SPI_RES(USCIA0);
+    enc28j60_params.cs = GPIO_RES(PC5);
+    enc28j60_params.intr = GPIO_RES(PA4);
 #endif
+
+    ethif = enc28j60_new(&enc28j60_params);
 #endif
 
     tp_assert(ethif);

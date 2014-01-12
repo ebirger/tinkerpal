@@ -31,15 +31,17 @@
 int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int spi_port, cs, intr;
+    enc28j60_params_t params;
+    const enc28j60_params_t *p = &params;
     etherif_t *ethif;
 
     if (argc != 4)
 	return js_invalid_args(ret);
 
-    spi_port = obj_get_int(argv[1]);
-    cs = obj_get_int(argv[2]);
-    intr = obj_get_int(argv[3]);
+    params.spi_port = obj_get_int(argv[1]);
+    params.cs = obj_get_int(argv[2]);
+    params.intr = obj_get_int(argv[3]);
 
-    ethif = enc28j60_new(spi_port, cs, intr);
+    ethif = enc28j60_new(p);
     return etherif_obj_constructor(ethif, ret, this, argc, argv);
 }
