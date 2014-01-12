@@ -29,6 +29,8 @@
 #include "platform/platform.h"
 #include "util/tstr.h"
 
+#define SPI_RES(port) RES(SPI_RESOURCE_ID_BASE, port, 0)
+
 /* XXX: API should provide error indication
  * CS should be part of the SPI driver */
 
