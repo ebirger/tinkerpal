@@ -1,9 +1,5 @@
 MK_OBJS+=lm3s6965.o interrupts.o
 
-ifeq ($(CONFIG_JS)$(CONFIG_MODULES),yy)
-  MK_BUILTIN_FS_INTERNAL_FILES=board_init.js
-endif
-
 ifneq ($(CONFIG_TI_CCS5),)
   CFLAGS+=-mv7M3 --code_state=16 --define=PART_LM3S6965
   LDFLAGS+=-mv7M3

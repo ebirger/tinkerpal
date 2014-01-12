@@ -1,9 +1,5 @@
 MK_OBJS=lm4f120xl.o interrupts.o
 
-ifeq ($(CONFIG_JS)$(CONFIG_MODULES),yy)
-  MK_BUILTIN_FS_INTERNAL_FILES=board_init.js
-endif
-
 ifneq ($(CONFIG_TI_CCS5),)
   LINKER_SCRIPT:=$(d)/lm4f120xl.cmd 
   CFLAGS+=-mv7M4 --code_state=16 --float_support=FPv4SPD16 \
