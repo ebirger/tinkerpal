@@ -28,6 +28,7 @@
 const board_t board = {
     .desc = "RDK-IDM (LM3S6918)",
     .default_console_id = UART_RES(UART1),
+#ifdef CONFIG_ILI93XX
     .ili93xx_params = {
 	.rst = GPIO_RES(PG0),
 	.backlight = GPIO_RES(PC6),
@@ -37,4 +38,5 @@ const board_t board = {
 	.data_port_low = GPIO_RES(GPIO_PORT_B),
 	.data_port_high = GPIO_RES(GPIO_PORT_A),
     },
+#endif
 };
