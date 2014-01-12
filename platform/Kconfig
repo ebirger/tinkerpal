@@ -109,10 +109,6 @@ if UNIX
 source "platform/unix/Kconfig"
 endif
 
-if MSP430
-source "platform/msp430/Kconfig"
-endif
-
 source "platform/Kconfig.toolchain"
 
 endmenu
