@@ -23,12 +23,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
+#include "util/tstr.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
+#include "drivers/fs/vfs.h"
+#include "drivers/mmc/mmc.h"
 #include "apps/cli.h"
+
+static int fat_mmc_test_readdir_cb(tstr_t *file_name, void *ctx)
+{
+    tp_out(("%S\n", file_name));
+    return 0;
+}
 
 static void fat_mmc_test_process_line(tstr_t *line)
 {
+    if (!tstr_cmp(line, &S("dir")))
+	vfs_readdir(&S("FAT/"), fat_mmc_test_readdir_cb, NULL);
+
     console_printf("Ok\n");
 }
 
@@ -39,6 +51,8 @@ static cli_client_t fat_mmc_test_cli_client = {
 void app_start(int argc, char *argv[])
 {
     tp_out(("TinkerPal Application - FAT MMC Test\n"));
+
+    mmc_init(&board.mmc_params);
 
     cli_start(&fat_mmc_test_cli_client);
 }
