@@ -27,20 +27,25 @@
 #include "js/js_event.h"
 #include "net/js_etherif.h"
 #include "drivers/net/enc28j60.h"
+#include "boards/board.h"
 
 int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int spi_port, cs, intr;
     enc28j60_params_t params;
     const enc28j60_params_t *p = &params;
     etherif_t *ethif;
 
-    if (argc != 4)
+    /* XXX: ideally, we should receive an object with optional override info */
+    if (argc == 1)
+	p = &board.enc28j60_params;
+    else if (argc != 4)
 	return js_invalid_args(ret);
-
-    params.spi_port = obj_get_int(argv[1]);
-    params.cs = obj_get_int(argv[2]);
-    params.intr = obj_get_int(argv[3]);
+    else
+    {
+	params.spi_port = obj_get_int(argv[1]);
+	params.cs = obj_get_int(argv[2]);
+	params.intr = obj_get_int(argv[3]);
+    }
 
     ethif = enc28j60_new(p);
     return etherif_obj_constructor(ethif, ret, this, argc, argv);
