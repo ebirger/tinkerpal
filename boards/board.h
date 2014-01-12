@@ -40,6 +40,9 @@
 #ifdef CONFIG_DOGS102X6
 #include "drivers/lcd/dogs102x6.h"
 #endif
+#ifdef CONFIG_MMC
+#include "drivers/mmc/mmc.h"
+#endif
 
 typedef struct {
     char *desc;
@@ -52,6 +55,9 @@ typedef struct {
 #endif
 #ifdef CONFIG_DOGS102X6
     dogs102x6_params_t dogs102x6_params;
+#endif
+#ifdef CONFIG_MMC
+    mmc_params_t mmc_params;
 #endif
 } board_t;
 

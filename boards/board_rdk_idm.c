@@ -24,6 +24,9 @@
  */
 #include "boards/board.h"
 #include "platform/platform.h"
+#ifdef CONFIG_SPI
+#include "drivers/spi/spi.h"
+#endif
 
 const board_t board = {
     .desc = "RDK-IDM (LM3S6918)",
@@ -37,6 +40,13 @@ const board_t board = {
 	.rd = GPIO_RES(PF0),
 	.data_port_low = GPIO_RES(GPIO_PORT_B),
 	.data_port_high = GPIO_RES(GPIO_PORT_A),
+    },
+#endif
+#ifdef CONFIG_MMC
+    .mmc_params = {
+	.spi_port = SPI_RES(SSI1),
+	.mosi = GPIO_RES(PE3),
+	.cs = GPIO_RES(PE1),
     },
 #endif
 };
