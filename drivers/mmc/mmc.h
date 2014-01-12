@@ -29,7 +29,13 @@
 
 typedef struct mmc_t mmc_t;
 
-void mmc_init(resource_t spi_port, resource_t mosi, resource_t cs);
+typedef struct {
+    resource_t spi_port;
+    resource_t mosi;
+    resource_t cs;;
+} mmc_params_t;
+
+void mmc_init(const mmc_params_t *params);
 
 int mmc_spi_disk_init(void);
 int mmc_spi_disk_status(void);

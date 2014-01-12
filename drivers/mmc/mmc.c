@@ -535,10 +535,10 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
     return res;
 }
 
-void mmc_init(resource_t spi_port, resource_t mosi, resource_t cs)
+void mmc_init(const mmc_params_t *params)
 {
-    g_mmc.mosi = mosi;
-    g_mmc.cs = cs;
-    g_mmc.spi_port = spi_port;
+    g_mmc.mosi = params->mosi;
+    g_mmc.cs = params->cs;
+    g_mmc.spi_port = params->spi_port;
     g_mmc.disc_status = BLOCK_DISK_STATUS_NO_INIT;
 }

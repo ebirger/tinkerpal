@@ -30,16 +30,16 @@
 
 int do_mmc_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    resource_t spi_port, mosi, cs;
+    mmc_params_t params;
 
     if (argc != 4)
 	return COMPLETION_THROW;
 
-    spi_port = obj_get_int(argv[1]);
-    mosi = obj_get_int(argv[2]);
-    cs = obj_get_int(argv[3]);
+    params.spi_port = obj_get_int(argv[1]);
+    params.mosi = obj_get_int(argv[2]);
+    params.cs = obj_get_int(argv[3]);
 
-    mmc_init(spi_port, mosi, cs);
+    mmc_init(&params);
     *ret = object_new();
     return 0;
 }
