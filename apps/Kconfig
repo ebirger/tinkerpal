@@ -33,6 +33,11 @@ config APP_GRAPHICS_TEST
 	depends on GRAPHICS
 	select CLI
 
+config APP_FAT_MMC_TEST
+	bool "FAT over MMC test"
+	depends on FAT_FS && MMC
+	select CLI
+
 config APP_DUMMY
 	bool "Dummy. Does nothing. Used for testing"
 
