@@ -63,9 +63,6 @@ static cli_client_t net_test_cli_client = {
 void app_start(int argc, char *argv[])
 {
     eth_mac_t mac;
-#if defined(CONFIG_ENC28J60)
-    enc28j60_params_t enc28j60_params;
-#endif
 
     tp_out(("TinkerPal Application - Net Test\n"));
 
@@ -77,18 +74,7 @@ void app_start(int argc, char *argv[])
 #elif defined(CONFIG_STELLARIS_ETH)
     ethif = stellaris_eth_new();
 #elif defined(CONFIG_ENC28J60)
-
-#if defined(CONFIG_LM4F120XL)
-    enc28j60_params.spi_port = SPI_RES(SSI1);
-    enc28j60_params.cs = GPIO_RES(PE3);
-    enc28j60_params.intr = GPIO_RES(PF4);
-#elif defined(CONFIG_MSP430F5529_LAUNCHPAD)
-    enc28j60_params.spi_port = SPI_RES(USCIA0);
-    enc28j60_params.cs = GPIO_RES(PC5);
-    enc28j60_params.intr = GPIO_RES(PA4);
-#endif
-
-    ethif = enc28j60_new(&enc28j60_params);
+    ethif = enc28j60_new(&board.enc28j60_params);
 #endif
 
     tp_assert(ethif);

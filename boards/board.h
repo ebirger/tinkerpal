@@ -46,6 +46,9 @@
 #ifdef CONFIG_MMC
 #include "drivers/mmc/mmc.h"
 #endif
+#ifdef CONFIG_ENC28J60
+#include "drivers/net/enc28j60.h"
+#endif
 
 typedef struct {
     char *desc;
@@ -61,6 +64,9 @@ typedef struct {
 #endif
 #ifdef CONFIG_MMC
     mmc_params_t mmc_params;
+#endif
+#ifdef CONFIG_ENC28J60
+    enc28j60_params_t enc28j60_params;
 #endif
 } board_t;
 

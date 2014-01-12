@@ -46,4 +46,11 @@ const board_t board = {
 	.cs = GPIO_RES(PC7),
     },
 #endif
+#ifdef CONFIG_ENC28J60
+    .enc28j60_params = {
+	.spi_port = SPI_RES(USCIA0),
+	.cs = GPIO_RES(PC5),
+	.intr = GPIO_RES(PA4),
+    },
+#endif
 };
