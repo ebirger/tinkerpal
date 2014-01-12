@@ -39,4 +39,11 @@ const board_t board = {
 	.backlight = GPIO_RES(PG6),
     },
 #endif
+#ifdef CONFIG_MMC
+    .mmc_params = {
+	.spi_port = SPI_RES(USCIB1),
+	.mosi = GPIO_RES(PD1),
+	.cs = GPIO_RES(PC7),
+    },
+#endif
 };
