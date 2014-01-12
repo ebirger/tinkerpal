@@ -1,0 +1,1 @@
+CONSTRUCTOR("Dogs102x6", canvas, do_dogs102x6_constructor)

@@ -15,6 +15,8 @@ endif
 
 ifneq ($(CONFIG_DOGS102X6),)
   MK_OBJS+=dogs102x6.o
+  MK_DESCS=dogs102x6.desc
+  MK_OBJS+=$(if $(CONFIG_JS),js_dogs102x6.o)
 endif
 
 MODULES=$(if $(CONFIG_TEXT_LCD),text_lcd.js)
