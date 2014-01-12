@@ -27,19 +27,31 @@
 #include "js/js_types.h"
 #include "js/js_obj.h"
 #include "drivers/mmc/mmc.h"
+#include "boards/board.h"
 
 int do_mmc_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     mmc_params_t params;
+    const mmc_params_t *p;
 
-    if (argc != 4)
+    /* XXX: would preferebly receive an object with optional hookup info */
+    if (argc == 1)
+    {
+	tp_info(("Using default hookup info\n"));
+
+	p = &board.mmc_params;
+    }
+    else if (argc != 4)
 	return COMPLETION_THROW;
+    else
+    {
+	params.spi_port = obj_get_int(argv[1]);
+	params.mosi = obj_get_int(argv[2]);
+	params.cs = obj_get_int(argv[3]);
+	p = &params;
+    }
 
-    params.spi_port = obj_get_int(argv[1]);
-    params.mosi = obj_get_int(argv[2]);
-    params.cs = obj_get_int(argv[3]);
-
-    mmc_init(&params);
+    mmc_init(p);
     *ret = object_new();
     return 0;
 }
