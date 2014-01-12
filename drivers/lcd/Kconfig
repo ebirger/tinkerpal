@@ -16,6 +16,11 @@ config ILI9328
 	help
 		Access is via a 16 bit GPIO interface for data
 
+config DOGS102X6
+	bool "Support for EA DOGS-102x6 LCD controllers"
+	depends on GPIO && SPI && GRAPHICS
+	default y if MSP430F5529_EXP
+
 config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS

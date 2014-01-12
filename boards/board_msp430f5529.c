@@ -24,8 +24,19 @@
  */
 #include "boards/board.h"
 #include "platform/platform.h"
+#include "drivers/gpio/gpio.h"
+#include "drivers/spi/spi.h"
 
 const board_t board = {
     .desc = "TI MSP430F5529",
     .default_console_id = UART_RES(USCIA1),
+#ifdef CONFIG_DOGS102X6
+    .dogs102x6_params = {
+	.rst = GPIO_RES(PE7),
+	.cs = GPIO_RES(PG4),
+	.cd = GPIO_RES(PE6),
+	.spi_port = SPI_RES(USCIB1),
+	.backlight = GPIO_RES(PG6),
+    },
+#endif
 };

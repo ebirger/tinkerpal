@@ -22,40 +22,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __BOARD_H__
-#define __BOARD_H__
+#ifndef __DOGS102X6_H__
+#define __DOGS102X6_H__
 
+#include "util/tp_types.h"
+#include "graphics/canvas.h"
 #include "drivers/resources.h"
-#include "platform/platform.h"
-#include "drivers/serial/serial.h"
-#ifdef CONFIG_GPIO
-#include "drivers/gpio/gpio.h"
-#endif
-#ifdef CONFIG_ILI93XX
-#include "drivers/lcd/ili93xx.h"
-#endif
-#ifdef CONFIG_SDL_SCREEN
-#include "drivers/lcd/sdl_screen.h"
-#endif
-#ifdef CONFIG_DOGS102X6
-#include "drivers/lcd/dogs102x6.h"
-#endif
 
 typedef struct {
-    char *desc;
-    resource_t default_console_id;
-#ifdef CONFIG_ILI93XX
-    ili93xx_params_t ili93xx_params;
-#endif
-#ifdef CONFIG_SDL_SCREEN
-    sdl_screen_params_t sdl_screen_params;
-#endif
-#ifdef CONFIG_DOGS102X6
-    dogs102x6_params_t dogs102x6_params;
-#endif
-} board_t;
+    resource_t rst;
+    resource_t cs;
+    resource_t cd;
+    resource_t spi_port;
+    resource_t backlight;
+} dogs102x6_params_t;
 
-/* Boards are defined in board_*.c files */
-extern const board_t board;
+canvas_t *dogs102x6_new(const dogs102x6_params_t *params);
 
 #endif
