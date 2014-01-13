@@ -10,9 +10,6 @@ ifneq ($(CONFIG_GCC),)
   ifeq ($(LIBC_DIR),)
     $(error Please set LIBC environment variable)
   endif
-  ifeq ($(LIBGCC_DIR),)
-    $(error Please set LIBGCC environment variable)
-  endif
   MK_OBJS+=stm32_entry_gcc.o
   INC:=-include $(d)/stm32_conf.h
   CFLAGS+=$(INC)
