@@ -65,6 +65,7 @@
 #define TOK_DEFAULT 27
 #define TOK_IN 29
 #define TOK_DO 30
+#define TOK_ARGUMENTS 31
 #define TOK_DOT '.'
 #define TOK_COMMA ','
 #define TOK_COLON ':'

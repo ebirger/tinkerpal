@@ -272,6 +272,7 @@ static const keyword_t keywords8[] = {
 static const keyword_t keywords9[] = {
     K("prototype", TOK_PROTOTYPE),
     K("undefined", TOK_UNDEFINED),
+    K("arguments", TOK_ARGUMENTS),
     {}
 };
 
@@ -578,6 +579,7 @@ token_group_t js_scan_get_token_group(scan_t *scan)
     case TOK_STRING:
     case TOK_TRUE:
     case TOK_FALSE:
+    case TOK_ARGUMENTS:
 	return TOKEN_GRP_DATA;
     case TOK_CONSTANT:
 	return TOKEN_GRP_CONSTANT;
