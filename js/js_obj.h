@@ -235,17 +235,6 @@ static inline void function_args_init(function_args_t *args, obj_t *func)
     args->argv[args->argc++] = func; /* argv[0] is our very own function */
 }
 
-static inline void function_args_clone(function_args_t *dst,
-    function_args_t *src)
-{
-    int i;
-
-    dst->argc = src->argc;
-    dst->argv = tmalloc(src->argc * sizeof(obj_t *), "Cloned Args");
-    for (i = 0; i < src->argc; i++)
-	dst->argv[i] = obj_get(src->argv[i]);
-}
-
 static inline void function_args_add(function_args_t *args, obj_t *obj)
 {
     args->argv[args->argc++] = obj;

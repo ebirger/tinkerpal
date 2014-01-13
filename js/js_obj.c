@@ -1437,8 +1437,15 @@ obj_t *array_buffer_view_new(obj_t *array_buffer, u32 flags, u32 offset,
 obj_t *arguments_new(function_args_t *args)
 {
     arguments_t *ret = (arguments_t *)obj_new(ARGUMENTS_CLASS);
+    function_args_t *dst = &ret->args;
+    int i;
 
-    function_args_clone(&ret->args, args);
+    /* argv[0] is the called function. Don't copy it */
+    dst->argc = args->argc - 1;
+    dst->argv = tmalloc(dst->argc * sizeof(obj_t *), "Cloned Args");
+    for (i = 0; i < dst->argc; i++)
+	dst->argv[i] = obj_get(args->argv[i + 1]);
+
     return (obj_t *)ret;
 }
 
