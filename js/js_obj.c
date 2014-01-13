@@ -1433,6 +1433,53 @@ obj_t *array_buffer_view_new(obj_t *array_buffer, u32 flags, u32 offset,
     return (obj_t *)ret;
 }
 
+/*** "arguments" Class ***/
+obj_t *arguments_new(function_args_t *args)
+{
+    arguments_t *ret = (arguments_t *)obj_new(ARGUMENTS_CLASS);
+
+    function_args_clone(&ret->args, args);
+    return (obj_t *)ret;
+}
+
+static void arguments_free(obj_t *o)
+{
+    arguments_t *arguments = to_arguments(o);
+    int i;
+
+    /* XXX: perhaps always take a reference when adding objs to function args,
+     * this way we can alway put them on release - move this code to
+     * function_args_uninit()...
+     */
+    for (i = 0; i < arguments->args.argc; i++)
+	obj_put(arguments->args.argv[i]);
+    
+    function_args_uninit(&arguments->args);
+}
+
+static obj_t *arguments_get_own_property(obj_t ***lval, obj_t *o, 
+    const tstr_t *str)
+{
+    arguments_t *arguments = to_arguments(o);
+    tnum_t tidx;
+    int idx;
+
+    if (lval)
+	*lval = NULL;
+
+    if (!tstr_cmp(str, &Slength))
+	return num_new_int(arguments->args.argc);
+
+    if (tstr_to_tnum(&tidx, str))
+	return NULL;
+
+    idx = NUMERIC_INT(tidx);
+    if (idx < 0 || arguments->args.argc < idx)
+	return NULL;
+
+    return obj_get(arguments->args.argv[idx]);
+}
+
 /*** Initialization Sequence Functions ***/
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {
@@ -1529,5 +1576,10 @@ const obj_class_t classes[] = {
 	.free = array_buffer_view_free,
 	.get_own_property = array_buffer_view_get_own_property,
 	.set_own_property = array_buffer_view_set_own_property,
+    },
+    [ ARGUMENTS_CLASS ] = {
+	.dump = array_dump,
+	.free = arguments_free,
+	.get_own_property = arguments_get_own_property,
     },
 };

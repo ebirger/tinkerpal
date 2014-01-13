@@ -62,6 +62,11 @@ typedef struct {
 } function_t;
 
 typedef struct {
+    int argc;
+    obj_t **argv;
+} function_args_t;
+
+typedef struct {
     obj_t obj;
     union {
 	int i;
@@ -111,6 +116,11 @@ typedef struct {
     u32 length; /* in view units */
 } array_buffer_view_t;
 
+typedef struct {
+    obj_t obj;
+    function_args_t args;
+} arguments_t;
+
 /* Class types.
  * Note: ENV_CLASS is a special class - it is not exposed as a JS type,
  * but shares a lot of common properties with other classes.
@@ -126,7 +136,8 @@ typedef struct {
 #define ENV_CLASS 9
 #define ARRAY_BUFFER_CLASS 10
 #define ARRAY_BUFFER_VIEW_CLASS 11
-#define CLASS_LAST ARRAY_BUFFER_VIEW_CLASS
+#define ARGUMENTS_CLASS 12
+#define CLASS_LAST ARGUMENTS_CLASS
 #define OBJ_CLASS(obj) (OBJ_IS_INT_VAL(obj) ? NUM_CLASS : (obj)->class)
 
 /* Global objects */
@@ -215,11 +226,6 @@ obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope,
     call_t call);
 int function_call(obj_t **ret, obj_t *this_obj, int argc, obj_t *argv[]);
 int function_call_construct(obj_t **ret, int argc, obj_t *argv[]);
-
-typedef struct {
-    int argc;
-    obj_t **argv;
-} function_args_t;
 
 static inline void function_args_init(function_args_t *args, obj_t *func)
 {
@@ -365,6 +371,21 @@ static inline array_buffer_view_t *to_array_buffer_view(obj_t *o)
     tp_assert(is_array_buffer_view(o));
     return (array_buffer_view_t *)o;
 }
+
+/* "arguments" objects methods */
+obj_t *arguments_new(function_args_t *args);
+
+static inline int is_arguments(obj_t *o)
+{
+    return o && OBJ_CLASS(o) == ARGUMENTS_CLASS;
+}
+
+static inline arguments_t *to_arguments(obj_t *o)
+{
+    tp_assert(is_arguments(o));
+    return (arguments_t *)o;
+}
+
 
 /* Initialization sequence functions */
 void obj_class_set_prototype(unsigned char class, obj_t *proto);
