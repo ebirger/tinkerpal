@@ -442,6 +442,14 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
 	ref_invalidate(ref);
 	*po = obj_get(this);
 	break;
+    case TOK_ARGUMENTS:
+	js_scan_next_token(scan);
+	if (!cur_function_args.argc)
+	    return throw_exception(po, &S("Exception: Not in function call"));
+
+	ref_invalidate(ref);
+	*po = arguments_new(&cur_function_args);
+	break;
     case TOK_PROTOTYPE:
 	js_scan_next_token(scan);
 	tp_assert(obj);
