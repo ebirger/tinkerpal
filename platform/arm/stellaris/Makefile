@@ -33,7 +33,4 @@ ifneq ($(CONFIG_GCC),)
   ifeq ($(LIBC_DIR),)
     $(error Please set LIBC environment variable)
   endif
-  ifeq ($(LIBGCC_DIR),)
-    $(error Please set LIBGCC environment variable)
-  endif
 endif

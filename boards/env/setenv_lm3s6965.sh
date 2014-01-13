@@ -15,7 +15,6 @@ elif [[ $CONFIG_GCC == "y" ]] ; then
 
     export STELLARISWARE_DIR=/usr/local/tinkerpal/stellarisware
     export LIBC_DIR=$TOOLCHAIN_DIR/arm-none-eabi/lib/thumb/cortex-m3
-    export LIBGCC_DIR=$TOOLCHAIN_DIR/lib/gcc/arm-none-eabi/4.7.3/thumb/cortex-m3
     export CROSS_COMPILE=$TOOLCHAIN_DIR/bin/arm-none-eabi-
 
 elif [[ $CONFIG_TI_CCS5 == "y" ]] ; then

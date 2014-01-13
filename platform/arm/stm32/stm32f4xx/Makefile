@@ -18,5 +18,5 @@ ifneq ($(CONFIG_GCC),)
     -DSTM32F4XX -DSTM32F40_41xxx $(INCS) -mlittle-endian
 
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
-  LIBS+=-L$(LIBC_DIR) -lm -lc -L$(LIBGCC_DIR) -lgcc
+  LIBS+=-L$(LIBC_DIR) -lm -lc -L$(call get_libgcc_dir) -lgcc
 endif

@@ -21,5 +21,5 @@ ifneq ($(CONFIG_GCC),)
     -ffunction-sections -fdata-sections -DPART_LM4F120H5QR \
     -I$(STELLARISWARE_DIR) -DTARGET_IS_BLIZZARD_RA1 -Dgcc -fsingle-precision-constant
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
-  LIBS+=-L$(LIBC_DIR) -lm -lc -L$(LIBGCC_DIR) -lgcc
+  LIBS+=-L$(LIBC_DIR) -lm -lc -L$(call get_libgcc_dir) -lgcc
 endif
