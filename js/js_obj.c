@@ -1511,6 +1511,7 @@ void js_obj_init(void)
     OBJ_CACHE_INIT(env_t, ENV_CLASS);
     OBJ_CACHE_INIT(array_buffer_t, ARRAY_BUFFER_CLASS);
     OBJ_CACHE_INIT(array_buffer_view_t, ARRAY_BUFFER_VIEW_CLASS);
+    OBJ_CACHE_INIT(arguments_t, ARGUMENTS_CLASS);
 }
 
 const obj_class_t classes[] = {
