@@ -47,6 +47,7 @@ extern obj_t *global_env;
 
 static obj_t *cur_env;
 static obj_t *this = NULL;
+static function_args_t cur_function_args;
 
 static int eval_expression(obj_t **po, scan_t *scan);
 static int eval_block(obj_t **ret, scan_t *scan);
@@ -123,12 +124,14 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
 static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
     int construct)
 {
-    function_args_t args;
+    function_args_t args, saved_args;
     int i, rc;
     obj_t *saved_this = this, *o_func = *po;
 
     if ((rc = eval_assert_is_function(po, scan)))
 	return rc;
+
+    saved_args = cur_function_args;
 
     function_args_init(&args, o_func);
 
@@ -160,6 +163,7 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
     }
 
     *po = UNDEF;
+    cur_function_args = args;
     if (construct)
 	rc = function_call_construct(po, args.argc, args.argv);
     else
@@ -174,6 +178,7 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
 
 Exit:
     this = saved_this;
+    cur_function_args = saved_args;
     for (i = 1; i < args.argc; i++)
 	obj_put(args.argv[i]);
     function_args_uninit(&args);
