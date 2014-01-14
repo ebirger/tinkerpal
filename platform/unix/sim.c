@@ -192,6 +192,8 @@ static void sim_unix_uninit(void)
     printf("Unix Platform Simulator Uninit\n");
     if (pty_fd != -1)
 	close(pty_fd);
+    if (block_disk)
+	fclose(block_disk);
     unix_set_term_raw(STDIN_FD, 0);
     unix_uninit();
 }
