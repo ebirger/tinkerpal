@@ -1481,7 +1481,7 @@ static obj_t *arguments_get_own_property(obj_t ***lval, obj_t *o,
 	return NULL;
 
     idx = NUMERIC_INT(tidx);
-    if (idx < 0 || arguments->args.argc < idx)
+    if (idx < 0 || idx > arguments->args.argc - 1)
 	return NULL;
 
     return obj_get(arguments->args.argv[idx]);
