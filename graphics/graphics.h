@@ -25,7 +25,11 @@
 #ifndef __GRAPHICS_H__
 #define __GRAPHICS_H__
 
-#include "graphics/text.h"
-#include "graphics/circle.h"
+#include "util/tp_types.h"
+#include "util/tstr.h"
+#include "graphics/canvas.h"
+
+void circle_draw(canvas_t *c, int x0, int y0, int radius, u16 color);
+void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
 
 #endif

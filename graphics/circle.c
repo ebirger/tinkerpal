@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "graphics/circle.h"
+#include "graphics/graphics.h"
 
 /* Uses Bresenham Algorithm.
  * Adapted from http://en.wikipedia.org/wiki/Midpoint_circle_algorithm 
