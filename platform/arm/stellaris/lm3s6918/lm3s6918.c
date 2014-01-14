@@ -126,9 +126,26 @@ const stellaris_gpio_pin_t stellaris_gpio_pins[] = {
 
 #ifdef CONFIG_GPIO
 
+static void lm3s6918_set_locked_pin_as_gpio(int pin)
+{
+    unsigned long base = stellaris_gpio_base(pin);
+
+    tp_warn(("Setting locked JTAG pin as GPIO\n"));
+
+    HWREG(base + GPIO_O_LOCK) = GPIO_LOCK_KEY;
+    HWREG(base + GPIO_O_CR) = GPIO_BIT(pin);
+    HWREG(base + GPIO_O_AFSEL) &= ~GPIO_BIT(pin);
+    HWREG(base + GPIO_O_LOCK) = GPIO_LOCK_KEY;
+    HWREG(base + GPIO_O_CR) = 0x00;
+    HWREG(base + GPIO_O_LOCK) = 0;
+}
+
 static int lm3s6918_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
     stellaris_periph_enable(stellaris_gpio_periph(pin));
+
+    if (pin == PB7 || pin == PC0 || pin == PC1 || pin == PC2 || pin == PC3)
+	lm3s6918_set_locked_pin_as_gpio(pin);
 
     switch (mode)
     {
