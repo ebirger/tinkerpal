@@ -22,15 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __GRAPHICS_H__
-#define __GRAPHICS_H__
+#include <stdlib.h> /* abs */
+#include "graphics/graphics.h"
 
-#include "util/tp_types.h"
-#include "util/tstr.h"
-#include "graphics/canvas.h"
+void line_draw(canvas_t *c, int x0, int y0, int x1, int y1, u16 color)
+{
+    /* Bresenham's line algorithm */
+    int dx, dy, sx, sy, err;
 
-void circle_draw(canvas_t *c, int x0, int y0, int radius, u16 color);
-void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
-void line_draw(canvas_t *c, int x0, int y0, int x1, int y1, u16 color);
+    dx = abs(x1 - x0);
+    dy = abs(y1 - y0);
+    sx = x0 < x1 ? 1 : -1;
+    sy = y0 < y1 ? 1 : -1;
+    err = dx - dy;
+ 
+    while (1)
+    {
+	int e2;
 
-#endif
+	canvas_pixel_set(c, x0, y0, color);
+
+	if (x0 == x1 && y0 == y1)
+	    break;
+
+	e2 = 2 * err;
+	if (e2 > -dy)
+	{
+	    err = err - dy;
+	    x0 = x0 + sx;
+	}
+
+	if (x0 == x1 && y0 == y1)
+	{ 
+	    canvas_pixel_set(c, x0, y0, color);
+	    break;
+	}
+
+	if (e2 < dx)
+	{
+	    err = err + dx;
+	    y0 = y0 + sy;
+	}
+    }
+}

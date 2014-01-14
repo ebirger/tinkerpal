@@ -31,6 +31,26 @@
 #include "graphics/js_canvas.h"
 #include "graphics/js_evaluated_canvas.h"
 
+int do_graphics_line_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    int x0, y0, x1, y1, canvas_id, color;
+
+    if (argc != 6)
+	return js_invalid_args(ret);
+
+    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
+	return js_invalid_args(ret);
+
+    x0 = obj_get_int(argv[1]);
+    y0 = obj_get_int(argv[2]);
+    x1 = obj_get_int(argv[3]);
+    y1 = obj_get_int(argv[4]);
+    color = obj_get_int(argv[5]);
+
+    line_draw(canvas_get_by_id(canvas_id), x0, y0, x1, y1, color);
+    return 0;
+}
+
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int x, y, radius, canvas_id, color;

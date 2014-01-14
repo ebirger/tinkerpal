@@ -47,3 +47,18 @@ FUNCTION("circleDraw", graphics, do_graphics_circle_draw, {
         "var g = new Graphics(lcd);\n"
         "g.circleDraw(20, 20, 10, 0xffff);",
 })
+
+FUNCTION("lineDraw", graphics, do_graphics_line_draw, {
+    .params = {
+        { .name = "x0" , .description = "X0 coordinate" },
+        { .name = "y0" , .description = "Y0 coordinate" },
+        { .name = "x1" , .description = "X1 coordinate" },
+        { .name = "y1" , .description = "Y1 coordinate" },
+        { .name = "color" , .description = "Color" },
+    },
+    .description = "Draws a line on LCD",
+    .return_value = "None",
+    .example = "var lcd = new Dogs102x6();\n"
+        "var g = new Graphics(lcd);\n"
+        "g.lineDraw(10, 10, 20, 20, 0xffff);",
+})
