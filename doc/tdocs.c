@@ -30,7 +30,6 @@
 static FILE *fp;
 
 #define CONST(...)
-#define CONSTRUCTOR(...)
 #define CATEGORY_INIT(...)
 
 static doc_object_t global_env_desc = {
@@ -42,9 +41,11 @@ static doc_object_t global_env_desc = {
 #define PROTOTYPE(disp_name, name, doc...) static doc_object_t name##_desc = doc;
 #define CLASS_PROTOTYPE(disp_name, name, proto, class, doc...) static doc_object_t name##_desc = doc;
 #define FUNCTION(disp_name, parent, name, doc...) static doc_function_t parent##_##name##_desc = doc;
+#define CONSTRUCTOR FUNCTION
 #define CATEGORY(name, o, doc...) static doc_object_t name##_desc = doc;
 #include "doc/doc.h"
 #undef FUNCTION
+#undef CONSTRUCTOR
 #undef OBJECT
 #undef CLASS_PROTOTYPE
 #undef PROTOTYPE
@@ -57,8 +58,10 @@ static doc_object_t *objs[] = {
 #define CLASS_PROTOTYPE(disp_name, name, proto, class, doc...) &name##_desc,
 #define CATEGORY(name, o, doc...) &name##_desc,
 #define FUNCTION(...)
+#define CONSTRUCTOR FUNCTION
 #include "doc/doc.h"
 #undef FUNCTION
+#undef CONSTRUCTOR
 #undef OBJECT
 #undef CLASS_PROTOTYPE
 #undef PROTOTYPE
@@ -72,8 +75,10 @@ static doc_function_t *funcs[] = {
 #define CLASS_PROTOTYPE(...)
 #define CATEGORY(...)
 #define FUNCTION(disp_name, parent, name, doc...) &parent##_##name##_desc,
+#define CONSTRUCTOR FUNCTION
 #include "doc/doc.h"
 #undef FUNCTION
+#undef CONSTRUCTOR
 #undef OBJECT
 #undef CLASS_PROTOTYPE
 #undef PROTOTYPE
@@ -100,6 +105,15 @@ static doc_element_t main_de = {
 };
 
 static int level;
+
+static char *function_file_path(doc_function_t *f)
+{
+    static char file_path[256];
+
+    snprintf(file_path, sizeof(file_path), "%s%s", f->display_name,
+        f->flags & FUNCTION_FLAG_CONSTRUCTOR ? "_constructor" : "");
+    return file_path;
+}
 
 static void print_breadcrumb(doc_element_t **e)
 {
@@ -222,7 +236,7 @@ static void print_object(void *ctx)
 
 	P("  <hr>");
 	P("  <div class='pull-right small'>");
-	P("    <a href='./%s.html'> >>> </a>", (*f)->display_name);
+	P("    <a href='./%s.html'> >>> </a>", function_file_path(*f));
 	P("  </div>");
 	P("  <div>");
 	P("    <h2>");
@@ -257,39 +271,95 @@ static void print_head(void)
     P("</head>");
 }
 
-static void print_functions_table(doc_object_t *o)
+static int object_has_constructors(doc_object_t *o)
 {
     doc_function_t **f;
 
-    P("<table class='table'>");
-    P("  <thead>");
-    P("    <tr>");
-    P("      <th>Function</th>");
-    P("      <th>Description</th>");
-    P("    </tr>");
-    P("  </thead>");
-    P("  <tbody>");
     for (f = funcs; *f; f++)
     {
 	if ((*f)->parent != o)
 	    continue;
 
-	P("    <tr>");
-	P("      <td><a href='./%s/%s.html'>%s</a></td>", o->name, 
-            (*f)->display_name, (*f)->display_name);
-	P("      <td width='60%%'>%s</td>", (*f)->description);
-	P("    </tr>");
+	if ((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR)
+	    return 1;
     }
-    P("  </tbody>");
-    P("</table>");
+    return 0;
 }
 
 static int object_has_methods(doc_object_t *o)
 {
     doc_function_t **f;
 
-    for (f = funcs; *f && (*f)->parent != o; f++);
-    return *f ? 1 : 0;
+    for (f = funcs; *f; f++)
+    {
+	if ((*f)->parent != o)
+	    continue;
+
+	if (!((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
+	    return 1;
+    }
+    return 0;
+}
+
+static int object_has_functions(doc_object_t *o)
+{
+    return object_has_constructors(o) || object_has_methods(o);
+}
+
+static void print_functions_table(doc_object_t *o)
+{
+    doc_function_t **f;
+
+    if (object_has_constructors(o))
+    {
+	P("<table class='table'>");
+	P("  <thead>");
+	P("    <tr>");
+	P("      <th>Constructor</th>");
+	P("    </tr>");
+	P("  </thead>");
+	P("  <tbody>");
+	for (f = funcs; *f; f++)
+	{
+	    if ((*f)->parent != o)
+		continue;
+
+	    if (!((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
+		continue;
+
+	    P("    <tr><td><a href='./%s/%s.html'>%s()</a></td></tr>", o->name, 
+		    function_file_path(*f), (*f)->display_name);
+	}
+	P("  </tbody>");
+	P("</table>");
+    }
+    if (object_has_methods(o))
+    {
+	P("<table class='table'>");
+	P("  <thead>");
+	P("    <tr>");
+	P("      <th>Method</th>");
+	P("      <th>Description</th>");
+	P("    </tr>");
+	P("  </thead>");
+	P("  <tbody>");
+	for (f = funcs; *f; f++)
+	{
+	    if ((*f)->parent != o)
+		continue;
+
+	    if (((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
+		continue;
+
+	    P("    <tr>");
+	    P("      <td><a href='./%s/%s.html'>%s()</a></td>", o->name, 
+		function_file_path(*f), (*f)->display_name);
+	    P("      <td width='60%%'>%s</td>", (*f)->description);
+	    P("    </tr>");
+	}
+	P("  </tbody>");
+	P("</table>");
+    }
 }
 
 static void print_objects_table(void)
@@ -298,7 +368,7 @@ static void print_objects_table(void)
 
     for (o = objs; *o; o++)
     {
-	if (!object_has_methods(*o))
+	if (!object_has_functions(*o))
 	    continue;
 
 	P("<h2>");
@@ -375,12 +445,17 @@ static void initialize(void)
     p##_##n##_desc.display_name = disp_name; \
     p##_##n##_desc.parent = &p##_desc; \
 } while(0);
+#define CONSTRUCTOR(disp_name, p, n, doc...) do { \
+    FUNCTION(disp_name, p, n, doc); \
+    p##_##n##_desc.flags = FUNCTION_FLAG_CONSTRUCTOR; \
+} while(0);
 #define CATEGORY(n, o, ...) do { \
     n##_desc.name = #n; \
     n##_desc.parent = &main_de; \
 } while(0);
 #include "doc/doc.h"
 #undef FUNCTION
+#undef CONSTRUCTOR
 #undef OBJECT
 #undef CLASS_PROTOTYPE
 #undef PROTOTYPE
@@ -411,8 +486,6 @@ int main(void)
     doc_function_t **f;
     doc_object_t **o;
 
-    char file_path[256];
-
     initialize();
 
     open_file(NULL, "index");
@@ -421,7 +494,7 @@ int main(void)
 
     for (o = objs; *o; o++)
     {
-	if (!object_has_methods(*o))
+	if (!object_has_functions(*o))
 	    continue;
 
 	open_file((*o)->name, (*o)->name);
@@ -430,7 +503,7 @@ int main(void)
 
     for (f = funcs; *f; f++)
     {
-	open_file((*f)->parent->name, (*f)->display_name);
+	open_file((*f)->parent->name, function_file_path(*f));
 	print_html(print_function, (void *)*f);
     }
 

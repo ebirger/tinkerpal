@@ -43,12 +43,15 @@ typedef struct {
     const char *description;
 } doc_function_param_t;
 
+#define FUNCTION_FLAG_CONSTRUCTOR 0x01
+
 typedef struct {
     DOC_ELEMENT_FIELDS;
     const doc_function_param_t params[CONFIG_MAX_FUNCTION_CALL_ARGS + 1];
     const char *description;
     const char *return_value;
     const char *example;
+    int flags;
 } doc_function_t;
 
 #endif
