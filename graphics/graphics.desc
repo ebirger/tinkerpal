@@ -3,7 +3,16 @@
 PROTOTYPE("Graphics", graphics, {
 })
 
-CONSTRUCTOR("Graphics", graphics, do_graphics_constructor)
+CONSTRUCTOR("Graphics", graphics, do_graphics_constructor, {
+    .params = {
+       { .name = "Canvas", .description = "Canvas Object" },
+    },
+    .description = "Graphics Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new Dogs102x6();\n"
+        "var g = new Graphics(lcd);\n"
+        "g.stringDraw(0, 0, 'Hello World!', 0xffff);",
+})
 
 CONST("BLACK", graphics, black, STATIC_NUM(COLOR_BLACK))
 CONST("WHITE", graphics, white, STATIC_NUM(COLOR_WHITE))

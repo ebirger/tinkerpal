@@ -1,7 +1,13 @@
 CLASS_PROTOTYPE("Object", object_prototype, NULL, OBJECT_CLASS, {
 })
 
-CONSTRUCTOR("Object", object_prototype, do_object_constructor)
+CONSTRUCTOR("Object", object_prototype, do_object_constructor, {
+    .params = {
+    },
+    .description = "Object Constructor",
+    .return_value = "Created Object",
+    .example = "var o = new Object(5);",
+})
 
 FUNCTION("toString", object_prototype, do_object_prototype_to_string, { 
     .params = { },

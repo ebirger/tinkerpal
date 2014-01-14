@@ -1,7 +1,14 @@
 CLASS_PROTOTYPE("String", string_prototype, object_prototype, STRING_CLASS, {
 })
 
-CONSTRUCTOR("String", string_prototype, do_string_constructor)
+CONSTRUCTOR("String", string_prototype, do_string_constructor, {
+    .params = {
+       { .name = "String", .description = "String" },
+    },
+    .description = "String Constructor",
+    .return_value = "Created String",
+    .example = "var s = new String('hello');",
+})
 
 FUNCTION("split", string_prototype, do_string_prototype_split, { 
     .params = { 

@@ -1,7 +1,15 @@
 PROTOTYPE("SPI", spi, {
 })
 
-CONSTRUCTOR("SPI", spi, do_spi_constructor)
+CONSTRUCTOR("SPI", spi, do_spi_constructor, {
+    .params = {
+       { .name = "Port ID", .description = "HW SPI Port ID" },
+    },
+    .description = "SPI Object Constructor",
+    .return_value = "Created object",
+    .example = "var s = new SPI(SPI1);\n"
+        "s.send(0xff);",
+})
 
 FUNCTION("send", spi, do_spi_send, {
     .params = {

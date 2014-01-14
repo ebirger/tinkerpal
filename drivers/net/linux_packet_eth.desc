@@ -1,1 +1,10 @@
-CONSTRUCTOR("LinuxPacketEth", etherif, do_linux_packet_eth_constructor)
+CONSTRUCTOR("LinuxPacketEth", etherif, do_linux_packet_eth_constructor, {
+    .params = {
+       { .name = "Net Device", .description = "Linux Network Interface Name" },
+    },
+    .description = "Linux Packet Ethernet Object Constructor",
+    .return_value = "Created object",
+    .example = "var enc = new LinuxPacketEth('eth0');\n"
+        "console.log('link status: ' + enc.linkState ? 'connected' : "
+        "'disconnected');",
+})

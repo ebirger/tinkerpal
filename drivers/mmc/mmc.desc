@@ -1,4 +1,10 @@
 PROTOTYPE("MMC", mmc, {
 })
 
-CONSTRUCTOR("MMC", mmc, do_mmc_constructor)
+CONSTRUCTOR("MMC", mmc, do_mmc_constructor, {
+    .params = {
+    },
+    .description = "MMC Constructor",
+    .return_value = "None",
+    .example = "new MMC();",
+})

@@ -1,1 +1,9 @@
-CONSTRUCTOR("StellarisEth", etherif, do_stellaris_eth_constructor)
+CONSTRUCTOR("StellarisEth", etherif, do_stellaris_eth_constructor, {
+    .params = {
+    },
+    .description = "Stellaris Ethernet Object Constructor",
+    .return_value = "Created object",
+    .example = "var enc = new StellarisEth();\n"
+        "console.log('link status: ' + enc.linkState ? 'connected' : "
+        "'disconnected');",
+})

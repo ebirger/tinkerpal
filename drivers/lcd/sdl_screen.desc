@@ -1,1 +1,8 @@
-CONSTRUCTOR("SDLScreen", canvas, do_sdl_screen_constructor)
+CONSTRUCTOR("SDLScreen", canvas, do_sdl_screen_constructor, {
+    .params = {
+    },
+    .description = "SDL screen Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new SDLScreen();\n"
+        "lcd.pixelDraw(10, 10, 1);",
+})

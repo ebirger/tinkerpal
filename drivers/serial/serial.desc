@@ -1,7 +1,15 @@
 PROTOTYPE("Serial", serial, {
 })
 
-CONSTRUCTOR("Serial", serial, do_serial_constructor)
+CONSTRUCTOR("Serial", serial, do_serial_constructor, {
+    .params = {
+       { .name = "UART", .description = "HW UART ID" },
+    },
+    .description = "Serial Constructor",
+    .return_value = "Created object",
+    .example = "var s = new Serial(UART1);\n"
+        "s.print('Hello World!);",
+})
 
 FUNCTION("enable", serial, do_serial_enable, {
     .params = { }, .description = "Enable a serial port",

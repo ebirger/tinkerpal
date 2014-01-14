@@ -1,1 +1,8 @@
-CONSTRUCTOR("ILI93XX", canvas, do_ili93xx_constructor)
+CONSTRUCTOR("ILI93XX", canvas, do_ili93xx_constructor, {
+    .params = {
+    },
+    .description = "ili93xx Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new ILI93XX();\n"
+        "lcd.pixelDraw(10, 10, 1);",
+})

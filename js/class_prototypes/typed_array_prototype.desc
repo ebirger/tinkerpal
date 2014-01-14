@@ -6,14 +6,74 @@ CLASS_PROTOTYPE("ArrayBufferView", array_buffer_view_prototype, object_prototype
     ARRAY_BUFFER_VIEW_CLASS, {
 })
 
-CONSTRUCTOR("ArrayBuffer", array_buffer_prototype, do_array_buffer_constructor)
+CONSTRUCTOR("ArrayBuffer", array_buffer_prototype, do_array_buffer_constructor, {
+    .params = {
+       { .name = "Size", .description = "Number of bytes in Array Buffer" },
+    },
+    .description = "ArrayBuffer Constructor",
+    .return_value = "Created ArrayBuffer",
+    .example = "var a = new ArrayBuffer(5);\n"
+})
 
-CONSTRUCTOR("Int8Array", array_buffer_view_prototype, do_int8array_constructor)
-CONSTRUCTOR("Uint8Array", array_buffer_view_prototype, do_uint8array_constructor)
-CONSTRUCTOR("Int16Array", array_buffer_view_prototype, do_int16array_constructor)
-CONSTRUCTOR("Uint16Array", array_buffer_view_prototype, do_uint16array_constructor)
-CONSTRUCTOR("Int32Array", array_buffer_view_prototype, do_int32array_constructor)
-CONSTRUCTOR("Uint32Array", array_buffer_view_prototype, do_uint32array_constructor)
+CONSTRUCTOR("Int8Array", array_buffer_view_prototype, do_int8array_constructor, {
+    .params = {
+       { .name = "ArrayBuffer/Size", .description = "ArrayBuffer or Number of "
+           "Elements in a newly created ArrayBuffer" },
+    },
+    .description = "Int8Array Constructor",
+    .return_value = "Created ArrayBufferView",
+    .example = "var a = new Int8Array(5);\n"
+})
+
+CONSTRUCTOR("Uint8Array", array_buffer_view_prototype, do_uint8array_constructor, {
+    .params = {
+       { .name = "ArrayBuffer/Size", .description = "ArrayBuffer or Number of "
+           "Elements in a newly created ArrayBuffer" },
+    },
+    .description = "UInt8Array Constructor",
+    .return_value = "Created ArrayBufferView",
+    .example = "var a = new UInt8Array(5);\n"
+})
+
+CONSTRUCTOR("Int16Array", array_buffer_view_prototype, do_int16array_constructor, {
+    .params = {
+       { .name = "ArrayBuffer/Size", .description = "ArrayBuffer or Number of "
+           "Elements in a newly created ArrayBuffer" },
+    },
+    .description = "Int16Array Constructor",
+    .return_value = "Created ArrayBufferView",
+    .example = "var a = new Int16Array(5);\n"
+})
+
+CONSTRUCTOR("Uint16Array", array_buffer_view_prototype, do_uint16array_constructor, {
+    .params = {
+       { .name = "ArrayBuffer/Size", .description = "ArrayBuffer or Number of "
+           "Elements in a newly created ArrayBuffer" },
+    },
+    .description = "UInt16Array Constructor",
+    .return_value = "Created ArrayBufferView",
+    .example = "var a = new UInt16Array(5);\n"
+})
+
+CONSTRUCTOR("Int32Array", array_buffer_view_prototype, do_int32array_constructor, {
+    .params = {
+       { .name = "ArrayBuffer/Size", .description = "ArrayBuffer or Number of "
+           "Elements in a newly created ArrayBuffer" },
+    },
+    .description = "Int32Array Constructor",
+    .return_value = "Created ArrayBufferView",
+    .example = "var a = new Int32Array(5);\n"
+})
+
+CONSTRUCTOR("Uint32Array", array_buffer_view_prototype, do_uint32array_constructor, {
+    .params = {
+       { .name = "ArrayBuffer/Size", .description = "ArrayBuffer or Number of "
+           "Elements in a newly created ArrayBuffer" },
+    },
+    .description = "UInt32Array Constructor",
+    .return_value = "Created ArrayBufferView",
+    .example = "var a = new UInt32Array(5);\n"
+})
 
 FUNCTION("subarray", array_buffer_view_prototype, do_array_buffer_view_subarray, {
     .params = { 

@@ -1,1 +1,8 @@
-CONSTRUCTOR("Dogs102x6", canvas, do_dogs102x6_constructor)
+CONSTRUCTOR("Dogs102x6", canvas, do_dogs102x6_constructor, {
+    .params = {
+    },
+    .description = "Dogs102x6 Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new Dogs102x6();\n"
+        "lcd.pixelDraw(10, 10, 1);",
+})

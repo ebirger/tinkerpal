@@ -1,7 +1,17 @@
 CLASS_PROTOTYPE("Array", array_prototype, object_prototype, ARRAY_CLASS, {
 })
 
-CONSTRUCTOR("Array", array_prototype, do_array_constructor)
+CONSTRUCTOR("Array", array_prototype, do_array_constructor, {
+    .params = {
+       { .name = "Length or [item1, item2, ..]", .description = 
+           "Number of entries to Allocate or comma separated list of items "
+	   "to push to the new array" },
+    },
+    .description = "Array Constructor",
+    .return_value = "Created Array",
+    .example = "var a = new Array(5);\n"
+        "var b = new Array(1, 2, 3);",
+})
 
 FUNCTION("push", array_prototype, do_array_prototype_push, { 
     .params = { 
