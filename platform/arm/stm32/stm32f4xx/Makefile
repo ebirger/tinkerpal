@@ -15,10 +15,11 @@ MK_OBJS=stm32f4discovery.o system_stm32f4xx.o interrupts.o $(BSP_SRCS:%.c=%.o)
 ifneq ($(CONFIG_GCC),)
   LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f4discovery.ld
 
-  CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -O3 \
+  CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -O3 \
     -ffunction-sections -fdata-sections -fsingle-precision-constant \
     -DSTM32F4XX -DSTM32F40_41xxx $(INCS) -mlittle-endian
 
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
+  LIBC_DIR:=$(LIBC_DIR)/float-abi-hard/fpuv4-sp-d16/
   LIBS+=-L$(LIBC_DIR) -lm -lc -L$(call get_libgcc_dir) -lgcc
 endif
