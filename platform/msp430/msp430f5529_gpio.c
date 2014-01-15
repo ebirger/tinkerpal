@@ -106,7 +106,7 @@ static inline void msp430f5529_gpio_int_enable(int port, int bit)
     bit_set(*msp430f5529_gpio_ports_int_cfg[port].ifg, bit, 0);
 }
 
-void msp430f5529_set_gpio_pin_function(int pin, int non_io)
+void msp430f5529_gpio_set_pin_function(int pin, int non_io)
 {
     int port = GPIO_PORT(pin), bit = GPIO_BIT(pin);
 

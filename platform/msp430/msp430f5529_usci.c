@@ -73,12 +73,12 @@ void msp430f5529_usci_init(int port)
     const msp430f5529_usci_t *usci = &msp430f5529_uscis[port];
     
     msp430f5529_gpio_set_pin_mode(usci->rxpin, GPIO_PM_INPUT_PULLUP);
-    msp430f5529_set_gpio_pin_function(usci->rxpin, 1);
+    msp430f5529_gpio_set_pin_function(usci->rxpin, 1);
     msp430f5529_gpio_set_pin_mode(usci->txpin, GPIO_PM_OUTPUT);
-    msp430f5529_set_gpio_pin_function(usci->txpin, 1);
+    msp430f5529_gpio_set_pin_function(usci->txpin, 1);
     if (usci->clkpin != -1)
     {
 	msp430f5529_gpio_set_pin_mode(usci->clkpin, GPIO_PM_OUTPUT);
-	msp430f5529_set_gpio_pin_function(usci->clkpin, 1);
+	msp430f5529_gpio_set_pin_function(usci->clkpin, 1);
     }
 }

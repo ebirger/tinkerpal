@@ -27,7 +27,7 @@
 
 #include "platform/platform.h"
 
-void msp430f5529_set_gpio_pin_function(int pin, int non_io);
+void msp430f5529_gpio_set_pin_function(int pin, int non_io);
 int msp430f5529_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode);
 void msp430f5529_gpio_digital_write(int pin, int value);
 int msp430f5529_gpio_digital_read(int pin);
