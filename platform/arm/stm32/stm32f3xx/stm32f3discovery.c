@@ -127,6 +127,11 @@ static void usarts_init(void)
     USART_Cmd(USART2, ENABLE);
 }
 
+static unsigned long stm32f3discovery_get_system_clock(void)
+{
+    return SystemCoreClock;
+}
+
 static void stm32f3discovery_init(void)
 {
     usarts_init();
@@ -152,4 +157,6 @@ const platform_t platform = {
     .panic = cortex_m_panic,
     .select = stm32_select,
     .get_ticks_from_boot = cortex_m_get_ticks_from_boot,
+    .get_system_clock = stm32f3discovery_get_system_clock,
+    .msleep = stm32_msleep,
 };

@@ -26,5 +26,6 @@
 #define __STM32_H__
 
 int stm32_select(int ms);
+void stm32_msleep(double ms);
 
 #endif

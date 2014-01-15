@@ -22,6 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "platform/platform.h"
 #include "platform/arm/stm32/stm32.h"
 #include "platform/arm/cortex-m.h"
 #include "drivers/serial/serial_platform.h"
@@ -38,4 +39,11 @@ int stm32_select(int ms)
     }
 
     return event;
+}
+
+void stm32_msleep(double ms)
+{
+    volatile unsigned long wait = (ms * platform.get_system_clock()) / 1000;
+
+    while (wait--);
 }
