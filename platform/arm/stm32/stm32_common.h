@@ -22,22 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __STM32_GPIO_H__
-#define __STM32_GPIO_H__
+#ifndef __STM32_COMMON_H__
+#define __STM32_COMMON_H__
 
-#include "platform/arm/stm32/stm32_common.h"
-#include "platform/platform.h"
-
-typedef struct {
-    unsigned long periph;
-    GPIO_TypeDef *port;
-} stm32_gpio_port_t;
-
-extern const stm32_gpio_port_t stm32_gpio_ports[];
-
-void stm32_gpio_digital_write(int pin, int value);
-void stm32_gpio_set_pin_function(int pin, uint8_t af);
-int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode);
-void stm32_gpio_set_port_val(int port, unsigned short value);
+#if defined(CONFIG_STM32F3XX)
+#include "platform/arm/stm32/stm32f3xx/stm32f3xx_common.h"
+#elif defined(CONFIG_STM32F4XX)
+#include "platform/arm/stm32/stm32f4xx/stm32f4xx_common.h"
+#endif
 
 #endif

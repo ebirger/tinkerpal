@@ -22,22 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __STM32_GPIO_H__
-#define __STM32_GPIO_H__
+#ifndef __STM32F3XX_COMMON_H__
+#define __STM32F3XX_COMMON_H__
 
-#include "platform/arm/stm32/stm32_common.h"
-#include "platform/platform.h"
-
-typedef struct {
-    unsigned long periph;
-    GPIO_TypeDef *port;
-} stm32_gpio_port_t;
-
-extern const stm32_gpio_port_t stm32_gpio_ports[];
-
-void stm32_gpio_digital_write(int pin, int value);
-void stm32_gpio_set_pin_function(int pin, uint8_t af);
-int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode);
-void stm32_gpio_set_port_val(int port, unsigned short value);
+#include "stm32f30x_rcc.h"
+#include "stm32f30x_gpio.h"
+#define PERIPH_ENABLE(p) RCC_AHBPeriphClockCmd(p, ENABLE)
 
 #endif
