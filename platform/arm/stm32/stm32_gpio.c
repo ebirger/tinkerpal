@@ -42,6 +42,20 @@ void stm32_gpio_set_port_val(int port, unsigned short value)
     GPIO_SetBits(stm32_gpio_ports[port].port, value);
 }
 
+void stm32_gpio_set_pin_function(int pin, uint8_t af)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    GPIO_PinAFConfig(GPIO_PORT(pin), pin & (GPIO_NUM_PORT_PINS - 1), af);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
+}
+
 int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
     GPIO_InitTypeDef GPIO_InitStructure;

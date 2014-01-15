@@ -99,7 +99,6 @@ void usart_isr(void)
 
 static void usarts_init(void)
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
 
     /* GPIO Clock */
@@ -107,23 +106,10 @@ static void usarts_init(void)
     /* USART Clock */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
-    /* Configure USART2 Tx (PA.02) as alternate function push-pull */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    
+    /* Configure USART Tx as alternate function push-pull */
+    stm32_gpio_set_pin_function(PA2, GPIO_AF_USART2);
     /* Configure USART Rx as alternate function push-pull */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    /* Map USART2 TX to A.02 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
-
-    /* Map USART2 PX to A.03 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
+    stm32_gpio_set_pin_function(PA3, GPIO_AF_USART2);
 
     /* Initialize USART */
     USART_InitStructure.USART_BaudRate = 115200;
