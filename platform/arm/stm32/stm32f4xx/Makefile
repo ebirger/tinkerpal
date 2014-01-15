@@ -4,7 +4,9 @@ INCS:=-I$(BSP_DRIVERS_DIR)/inc \
    -I$(BSP_DIR)/Libraries/CMSIS/Device/ST/STM32F4xx/Include \
    -I$(BSP_DIR)/Libraries/CMSIS/Include
 
-BSP_SRCS:=stm32f4xx_usart.c stm32f4xx_rcc.c stm32f4xx_gpio.c misc.c
+BSP_SRCS:=stm32f4xx_usart.c stm32f4xx_rcc.c misc.c
+BSP_SRCS+=$(if $(CONFIG_GPIO),stm32f4xx_gpio.c)
+BSP_SRCS+=$(if $(CONFIG_SPI),stm32f4xx_spi.c)
 
 MK_LINKS:=$(addprefix $(BSP_DRIVERS_DIR)/src/,$(BSP_SRCS))
 

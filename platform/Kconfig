@@ -69,6 +69,7 @@ config STM32F3XX
 config STM32F4XX
 	bool
 	select STM32
+	select PLAT_HAS_SPI
 
 config MSP430
 	bool

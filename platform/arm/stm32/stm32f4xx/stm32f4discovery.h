@@ -41,6 +41,10 @@ typedef short gpio_port_t;
 
 #define NUM_UARTS 1 /* XXX: temporary */
 
+#define SPI_PORT1 0
+#define SPI_PORT2 1
+#define SPI_PORT3 2
+
 #define PA0 0x00
 #define PA1 0x01
 #define PA2 0x02

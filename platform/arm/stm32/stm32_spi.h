@@ -22,12 +22,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __STM32F4XX_COMMON_H__
-#define __STM32F4XX_COMMON_H__
+#ifndef __STM32_SPI_H__
+#define __STM32_SPI_H__
 
-#include "stm32f4xx_rcc.h"
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_spi.h"
-#define PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
+#include "platform/arm/stm32/stm32_common.h"
+#include "platform/platform.h"
+
+typedef struct {
+    SPI_TypeDef *spix;
+    void (*periph_enable)(uint32_t periph, FunctionalState state);
+    uint32_t spi_clk;
+    int clk;
+    int mosi;
+    int miso;
+    uint8_t af;
+} stm32_spi_t;
+
+extern const stm32_spi_t stm32_spis[];
+
+void stm32_spi_set_max_speed(int port, unsigned long speed);
+void stm32_spi_send(int port, unsigned long data);
+unsigned long stm32_spi_receive(int port);
+void stm32_spi_reconf(int port);
+int stm32_spi_init(int port);
 
 #endif

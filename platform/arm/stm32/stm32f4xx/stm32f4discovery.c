@@ -32,6 +32,7 @@
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stm32/stm32f4xx/stm32f4discovery.h"
 #include "platform/arm/stm32/stm32_gpio.h"
+#include "platform/arm/stm32/stm32_spi.h"
 #include "platform/arm/stm32/stm32.h"
 #include "drivers/serial/serial_platform.h"
 
@@ -45,6 +46,38 @@ const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_E] = { RCC_AHB1Periph_GPIOE, GPIOE },
     [GPIO_PORT_F] = { RCC_AHB1Periph_GPIOF, GPIOF }
 };
+
+#ifdef CONFIG_SPI
+const stm32_spi_t stm32_spis[] = {
+    [SPI_PORT1] = {
+	.spix = SPI1,
+	.periph_enable = RCC_APB2PeriphClockCmd,
+	.spi_clk = RCC_APB2Periph_SPI1,
+	.clk = PA5,
+	.miso = PA6,
+	.mosi = PA7,
+	.af = GPIO_AF_SPI1
+    },
+    [SPI_PORT2] = {
+	.spix = SPI2,
+	.periph_enable = RCC_APB1PeriphClockCmd,
+	.spi_clk = RCC_APB1Periph_SPI2,
+	.clk = PB10,
+	.miso = PC2,
+	.mosi = PC3,
+	.af = GPIO_AF_SPI2 
+    },
+    [SPI_PORT3] = {
+	.spix = SPI3,
+	.periph_enable = RCC_APB1PeriphClockCmd,
+	.spi_clk = RCC_APB1Periph_SPI3,
+	.clk = PC10,
+	.miso = PC11,
+	.mosi = PC12,
+	.af = GPIO_AF_SPI3
+    }
+};
+#endif
 
 static void uart_int_enable(int enable)
 {
@@ -145,6 +178,15 @@ const platform_t platform = {
 	.digital_write = stm32_gpio_digital_write,
 	.set_pin_mode = stm32_gpio_set_pin_mode,
 	.set_port_val = stm32_gpio_set_port_val,
+    },
+#endif
+#ifdef CONFIG_SPI
+    .spi = {
+	.init = stm32_spi_init,
+	.reconf = stm32_spi_reconf,
+	.set_max_speed = stm32_spi_set_max_speed,
+	.send = stm32_spi_send,
+	.receive = stm32_spi_receive,
     },
 #endif
     .init = stm32f4discovery_init,
