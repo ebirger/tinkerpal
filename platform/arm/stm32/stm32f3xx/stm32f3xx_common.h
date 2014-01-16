@@ -27,6 +27,11 @@
 
 #include "stm32f30x_rcc.h"
 #include "stm32f30x_gpio.h"
+#include "stm32f30x_spi.h"
+
+#define STM32_SPI_SEND_DATA SPI_I2S_SendData16
+#define STM32_SPI_RECIEVE_DATA SPI_I2S_ReceiveData16
+
 #define PERIPH_ENABLE(p) RCC_AHBPeriphClockCmd(p, ENABLE)
 
 #endif

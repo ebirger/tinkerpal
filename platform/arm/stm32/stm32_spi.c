@@ -36,12 +36,12 @@ void stm32_spi_send(int port, unsigned long data)
     /* Wait for TX to clear */
     while (SPI_I2S_GetFlagStatus(spix, SPI_I2S_FLAG_TXE) == RESET);
 
-    SPI_I2S_SendData(spix, (uint16_t)data);
+    STM32_SPI_SEND_DATA(spix, (uint16_t)data);
 
     /* Wait to receive a byte */
     while (SPI_I2S_GetFlagStatus(spix, SPI_I2S_FLAG_RXNE) == RESET);
 
-    SPI_I2S_ReceiveData(spix);
+    STM32_SPI_RECIEVE_DATA(spix);
 }
 
 unsigned long stm32_spi_receive(int port)
@@ -51,12 +51,12 @@ unsigned long stm32_spi_receive(int port)
     /* Wait for TX to clear */
     while (SPI_I2S_GetFlagStatus(spix, SPI_I2S_FLAG_TXE) == RESET);
 
-    SPI_I2S_SendData(spix, 0xff /* dummy */);
+    STM32_SPI_SEND_DATA(spix, 0xff /* dummy */);
 
     /* Wait to receive a byte */
     while (SPI_I2S_GetFlagStatus(spix, SPI_I2S_FLAG_RXNE) == RESET);
 
-    return SPI_I2S_ReceiveData(spix);
+    return STM32_SPI_RECIEVE_DATA(spix);
 }
 
 void stm32_spi_reconf(int port)

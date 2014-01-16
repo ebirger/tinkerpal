@@ -28,6 +28,10 @@
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_spi.h"
+
+#define STM32_SPI_SEND_DATA SPI_I2S_SendData
+#define STM32_SPI_RECIEVE_DATA SPI_I2S_ReceiveData
+
 #define PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
 
 #endif
