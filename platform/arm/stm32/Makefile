@@ -1,7 +1,7 @@
 MK_SUBDIRS+=$(if $(CONFIG_STM32F3XX),stm32f3xx)
 MK_SUBDIRS+=$(if $(CONFIG_STM32F4XX),stm32f4xx)
 
-MK_OBJS+=stm32.o
+MK_OBJS+=stm32.o stm32_usart.o
 MK_OBJS+=$(if $(CONFIG_GPIO),stm32_gpio.o)
 MK_OBJS+=$(if $(CONFIG_SPI),stm32_spi.o)
 

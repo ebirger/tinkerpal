@@ -28,6 +28,7 @@
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stm32/stm32f4xx/stm32f4xx_common.h"
 #include "platform/arm/stm32/stm32f4xx/stm32f4discovery.h"
+#include "platform/arm/stm32/stm32_usart.h"
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32_spi.h"
 #include "platform/arm/stm32/stm32.h"
@@ -76,85 +77,9 @@ const stm32_spi_t stm32_spis[] = {
 };
 #endif
 
-static void uart_int_enable(int enable)
-{
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    /* Enable the USART2 Receive interrupt: this interrupt is generated when the
-     * USART2 receive data register is not empty.
-     */
-    USART_ITConfig(USART2, USART_IT_RXNE, enable ? ENABLE : DISABLE);
-
-    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = enable ? ENABLE : DISABLE;
-    NVIC_Init(&NVIC_InitStructure);
-}
-
-static int stm32_serial_enable(int u, int enabled)
-{
-    return 0;
-}
-
-static void stm32_serial_irq_enable(int u, int enabled)
-{
-    uart_int_enable(enabled);
-}
-
-static int stm32_serial_write(int u, char *buf, int size)
-{
-    for (; size--; buf++)
-    {
-	USART_SendData(USART2, *buf);
-	/* Wait until transmit finishes */
-	while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
-    }
-    return 0;
-}
-
 static void timers_init(void)
 {
     SysTick_Config(SystemCoreClock / 1000);
-}
-
-void usart_isr(void)
-{
-    if (USART_GetITStatus(USART2, USART_IT_RXNE) == RESET)
-	return;
-
-    /* Read a character */
-    buffered_serial_push(0, USART_ReceiveData(USART2) & 0x7F);
-}
-
-static void usarts_init(void)
-{
-    USART_InitTypeDef USART_InitStructure;
-
-    /* GPIO Clock */
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-    /* USART Clock */
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
-
-    /* Configure USART Tx as alternate function push-pull */
-    stm32_gpio_set_pin_function(PA2, GPIO_AF_USART2);
-    /* Configure USART Rx as alternate function push-pull */
-    stm32_gpio_set_pin_function(PA3, GPIO_AF_USART2);
-
-    /* Initialize USART */
-    USART_InitStructure.USART_BaudRate = 115200;
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-    USART_InitStructure.USART_StopBits = USART_StopBits_1;
-    USART_InitStructure.USART_Parity = USART_Parity_No;
-    USART_InitStructure.USART_HardwareFlowControl = 
-	USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    USART_Init(USART2, &USART_InitStructure);
-
-    uart_int_enable(1);
-
-    /* Enable the USART */
-    USART_Cmd(USART2, ENABLE);
 }
 
 static unsigned long stm32f4discovery_get_system_clock(void)
@@ -164,16 +89,15 @@ static unsigned long stm32f4discovery_get_system_clock(void)
 
 static void stm32f4discovery_init(void)
 {
-    usarts_init();
     timers_init();
 }
 
 const platform_t platform = {
     .serial = {
-	.enable = stm32_serial_enable,
+	.enable = stm32_usart_enable,
 	.read = buffered_serial_read,
-	.write = stm32_serial_write,
-	.irq_enable = stm32_serial_irq_enable,
+	.write = stm32_usart_write,
+	.irq_enable = stm32_usart_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {

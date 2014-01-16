@@ -22,19 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __STM32F4XX_COMMON_H__
-#define __STM32F4XX_COMMON_H__
+#ifndef __STM32_USART_H__
+#define __STM32_USART_H__
 
-#include "stm32f4xx_rcc.h"
-#include "stm32f4xx_usart.h"
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_spi.h"
-#include "misc.h"
+#include "platform/arm/stm32/stm32_common.h"
 
-#define STM32_SPI_SEND_DATA SPI_I2S_SendData
-#define STM32_SPI_RECIEVE_DATA SPI_I2S_ReceiveData
-
-#define STM32_GPIO_PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
-#define STM32_USART_AF GPIO_AF_USART2 /* Temporary */
+int stm32_usart_enable(int u, int enabled);
+void stm32_usart_irq_enable(int u, int enabled);
+int stm32_usart_write(int u, char *buf, int size);
 
 #endif
