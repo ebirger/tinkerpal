@@ -22,14 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_usart.h"
-#include "stm32f4xx_rcc.h"
-#include "misc.h"
 #include "util/debug.h"
 #include "util/tstr.h"
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
+#include "platform/arm/stm32/stm32f4xx/stm32f4xx_common.h"
 #include "platform/arm/stm32/stm32f4xx/stm32f4discovery.h"
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32_spi.h"

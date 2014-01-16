@@ -26,8 +26,10 @@
 #define __STM32F4XX_COMMON_H__
 
 #include "stm32f4xx_rcc.h"
+#include "stm32f4xx_usart.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_spi.h"
+#include "misc.h"
 
 #define STM32_SPI_SEND_DATA SPI_I2S_SendData
 #define STM32_SPI_RECIEVE_DATA SPI_I2S_ReceiveData

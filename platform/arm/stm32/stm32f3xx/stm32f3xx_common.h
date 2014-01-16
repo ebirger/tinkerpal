@@ -26,7 +26,9 @@
 #define __STM32F3XX_COMMON_H__
 
 #include "stm32f30x_rcc.h"
+#include "stm32f30x_usart.h"
 #include "stm32f30x_gpio.h"
+#include "stm32f30x_misc.h"
 #include "stm32f30x_spi.h"
 
 #define STM32_SPI_SEND_DATA SPI_I2S_SendData16
