@@ -60,7 +60,7 @@ int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    PERIPH_ENABLE(GPIO_PERIPH(pin));
+    STM32_GPIO_PERIPH_ENABLE(GPIO_PERIPH(pin));
 
     GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;

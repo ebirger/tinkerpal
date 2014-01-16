@@ -32,6 +32,6 @@
 #define STM32_SPI_SEND_DATA SPI_I2S_SendData
 #define STM32_SPI_RECIEVE_DATA SPI_I2S_ReceiveData
 
-#define PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
+#define STM32_GPIO_PERIPH_ENABLE(p) RCC_AHB1PeriphClockCmd(p, ENABLE)
 
 #endif
