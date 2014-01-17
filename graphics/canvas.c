@@ -40,6 +40,5 @@ canvas_t *canvas_get_by_id(int id)
     canvas_t *ret;
 
     for (ret = canvases; ret && ret->id != id; ret = ret->next);
-    tp_assert(ret);
     return ret;
 }
