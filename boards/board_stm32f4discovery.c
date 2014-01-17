@@ -27,5 +27,5 @@
 
 const board_t board = {
     .desc = "STM32F4Discovery",
-    .default_console_id = UART_RES(0),
+    .default_console_id = UART_RES(USART_PORT2),
 };
