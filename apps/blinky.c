@@ -47,6 +47,8 @@ void app_start(int argc, char *argv[])
 
     tp_out(("TinkerPal Application - Blinky\n"));
 
+    tp_assert(board.leds);
+
     for (led = board.leds; *led; led++)
 	gpio_set_pin_mode(*led, GPIO_PM_OUTPUT);
 
