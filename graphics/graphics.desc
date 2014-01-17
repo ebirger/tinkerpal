@@ -14,11 +14,11 @@ CONSTRUCTOR("Graphics", graphics, do_graphics_constructor, {
         "g.stringDraw(0, 0, 'Hello World!', 0xffff);",
 })
 
-CONST("BLACK", graphics, black, STATIC_NUM(COLOR_BLACK))
-CONST("WHITE", graphics, white, STATIC_NUM(COLOR_WHITE))
-CONST("RED", graphics, red, STATIC_NUM(COLOR_RED))
-CONST("GREEN", graphics, green, STATIC_NUM(COLOR_GREEN))
-CONST("BLUE", graphics, blue, STATIC_NUM(COLOR_BLUE))
+CONST_INT_VAL("BLACK", graphics, black, COLOR_BLACK)
+CONST_INT_VAL("WHITE", graphics, white, COLOR_WHITE)
+CONST_INT_VAL("RED", graphics, red, COLOR_RED)
+CONST_INT_VAL("GREEN", graphics, green, COLOR_GREEN)
+CONST_INT_VAL("BLUE", graphics, blue, COLOR_BLUE)
 
 FUNCTION("stringDraw", graphics, do_graphics_string_draw, {
     .params = {
