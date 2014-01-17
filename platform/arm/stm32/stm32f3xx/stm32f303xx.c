@@ -146,6 +146,6 @@ const platform_t platform = {
     .panic = cortex_m_panic,
     .select = stm32_select,
     .get_ticks_from_boot = cortex_m_get_ticks_from_boot,
-    .get_system_clock = stm32f3discovery_get_system_clock,
+    .get_system_clock = stm32_get_system_clock,
     .msleep = stm32_msleep,
 };
