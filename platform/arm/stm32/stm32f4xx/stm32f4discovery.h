@@ -39,7 +39,13 @@ typedef short gpio_port_t;
 #define GPIO_PORT_F 5
 #define NUM_GPIO_PORTS 6
 
-#define NUM_UARTS 1 /* XXX: temporary */
+#define USART_PORT1 0
+#define USART_PORT2 1
+#define USART_PORT3 2
+#define UART_PORT4 3
+#define UART_PORT5 4
+#define USART_PORT6 5
+#define NUM_UARTS 6
 
 #define SPI_PORT1 0
 #define SPI_PORT2 1

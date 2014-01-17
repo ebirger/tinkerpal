@@ -27,6 +27,17 @@
 
 #include "platform/arm/stm32/stm32_common.h"
 
+typedef struct {
+    USART_TypeDef *usartx;
+    uint32_t usart_clk;
+    int tx;
+    int rx;
+    uint8_t af;
+    IRQn_Type irqn;
+} stm32_usart_t;
+
+extern const stm32_usart_t stm32_usarts[];
+
 int stm32_usart_enable(int u, int enabled);
 void stm32_usart_irq_enable(int u, int enabled);
 int stm32_usart_write(int u, char *buf, int size);

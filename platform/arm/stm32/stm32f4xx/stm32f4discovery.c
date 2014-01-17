@@ -45,6 +45,57 @@ const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_F] = { RCC_AHB1Periph_GPIOF, GPIOF }
 };
 
+const stm32_usart_t stm32_usarts[] = {
+    [USART_PORT1] = {
+	.usartx = USART1,
+	.usart_clk = RCC_APB2Periph_USART1,
+	.tx = PA9,
+	.rx = PA10,
+	.af = GPIO_AF_USART1,
+	.irqn = USART1_IRQn,
+    },
+    [USART_PORT2] = {
+	.usartx = USART2,
+	.usart_clk = RCC_APB1Periph_USART2,
+	.tx = PA2,
+	.rx = PA3,
+	.af = GPIO_AF_USART2,
+	.irqn = USART2_IRQn,
+    },
+    [USART_PORT3] = {
+	.usartx = USART3,
+	.usart_clk = RCC_APB1Periph_USART3,
+	.tx = PB10,
+	.rx = PB11,
+	.af = GPIO_AF_USART3,
+	.irqn = USART3_IRQn,
+    },
+    [UART_PORT4] = {
+	.usartx = UART4,
+	.usart_clk = RCC_APB1Periph_UART4,
+	.tx = PA0,
+	.rx = PA1,
+	.af = GPIO_AF_UART4,
+	.irqn = UART4_IRQn,
+    },
+    [UART_PORT5] = {
+	.usartx = UART5,
+	.usart_clk = RCC_APB1Periph_UART5,
+	.tx = PC12,
+	.rx = PD2,
+	.af = GPIO_AF_UART5,
+	.irqn = UART5_IRQn,
+    },
+    [USART_PORT6] = {
+	.usartx = USART6,
+	.usart_clk = RCC_APB2Periph_USART6,
+	.tx = PC6,
+	.rx = PC7,
+	.af = GPIO_AF_USART6,
+	.irqn = USART6_IRQn,
+    },
+};
+
 #ifdef CONFIG_SPI
 const stm32_spi_t stm32_spis[] = {
     [SPI_PORT1] = {

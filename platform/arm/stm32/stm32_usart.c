@@ -26,29 +26,37 @@
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "drivers/serial/serial_platform.h"
 
-void usart_isr(void)
+void usart_isr(int u)
 {
-    if (USART_GetITStatus(USART2, USART_IT_RXNE) == RESET)
+    const stm32_usart_t *usart = &stm32_usarts[u];
+
+    if (USART_GetITStatus(usart->usartx, USART_IT_RXNE) == RESET)
 	return;
 
     /* Read a character */
-    buffered_serial_push(0, USART_ReceiveData(USART2) & 0x7F);
+    buffered_serial_push(u, USART_ReceiveData(usart->usartx) & 0x7F);
 }
 
 int stm32_usart_enable(int u, int enabled)
 {
+    const stm32_usart_t *usart = &stm32_usarts[u];
     USART_InitTypeDef USART_InitStructure;
 
+    /* XXX: support usart disable */
+    if (!enabled)
+	return 0;
+
     /* GPIO Clock */
-    stm32_gpio_set_pin_mode(PA2, GPIO_PM_OUTPUT);
-    stm32_gpio_set_pin_mode(PA3, GPIO_PM_INPUT);
+    stm32_gpio_set_pin_mode(usart->tx, GPIO_PM_OUTPUT);
+    stm32_gpio_set_pin_mode(usart->rx, GPIO_PM_INPUT);
+
     /* USART Clock */
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    RCC_APB1PeriphClockCmd(usart->usart_clk, ENABLE);
 
     /* Configure USART Tx as alternate function push-pull */
-    stm32_gpio_set_pin_function(PA2, STM32_USART_AF);
+    stm32_gpio_set_pin_function(usart->tx, usart->af);
     /* Configure USART Rx as alternate function push-pull */
-    stm32_gpio_set_pin_function(PA3, STM32_USART_AF);
+    stm32_gpio_set_pin_function(usart->rx, usart->af);
 
     /* Initialize USART */
     USART_InitStructure.USART_BaudRate = 115200;
@@ -58,25 +66,26 @@ int stm32_usart_enable(int u, int enabled)
     USART_InitStructure.USART_HardwareFlowControl = 
 	USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    USART_Init(USART2, &USART_InitStructure);
+    USART_Init(usart->usartx, &USART_InitStructure);
 
     stm32_usart_irq_enable(u, 1);
 
     /* Enable the USART */
-    USART_Cmd(USART2, ENABLE);
+    USART_Cmd(usart->usartx, ENABLE);
     return 0;
 }
 
 void stm32_usart_irq_enable(int u, int enabled)
 {
+    const stm32_usart_t *usart = &stm32_usarts[u];
     NVIC_InitTypeDef NVIC_InitStructure;
 
-    /* Enable the USART2 Receive interrupt: this interrupt is generated when the
-     * USART2 receive data register is not empty.
+    /* Enable the USART Receive interrupt: this interrupt is generated when the
+     * USART receive data register is not empty.
      */
-    USART_ITConfig(USART2, USART_IT_RXNE, enabled ? ENABLE : DISABLE);
+    USART_ITConfig(usart->usartx, USART_IT_RXNE, enabled ? ENABLE : DISABLE);
 
-    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = usart->irqn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = enabled ? ENABLE : DISABLE;
@@ -85,11 +94,13 @@ void stm32_usart_irq_enable(int u, int enabled)
 
 int stm32_usart_write(int u, char *buf, int size)
 {
+    const stm32_usart_t *usart = &stm32_usarts[u];
+
     for (; size--; buf++)
     {
-	USART_SendData(USART2, *buf);
+	USART_SendData(usart->usartx, *buf);
 	/* Wait until transmit finishes */
-	while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
+	while (USART_GetFlagStatus(usart->usartx, USART_FLAG_TXE) == RESET);
     }
     return 0;
 }

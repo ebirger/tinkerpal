@@ -22,9 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "platform/arm/stm32/stm32f4xx/stm32f4discovery.h"
+
 extern void reset_isr(void);
-extern void usart_isr(void);
+extern void usart_isr(int u);
 extern void cortex_m_systick_isr(void);
+
+static void usart1_isr(void) { usart_isr(USART_PORT1); }
+static void usart2_isr(void) { usart_isr(USART_PORT2); }
+static void usart3_isr(void) { usart_isr(USART_PORT3); }
+static void uart4_isr(void) { usart_isr(UART_PORT4); }
+static void uart5_isr(void) { usart_isr(UART_PORT5); }
+static void usart6_isr(void) { usart_isr(USART_PORT6); }
 
 static void nmi_isr(void)
 {
@@ -110,9 +119,9 @@ void (*const vector[])(void) =
     default_isr, /* I2C2 Error */
     default_isr, /* SPI1 */
     default_isr, /* SPI2 */
-    default_isr, /* USART1 */
-    usart_isr, /* USART2 */
-    default_isr, /* Reserved */
+    usart1_isr, /* USART1 */
+    usart2_isr, /* USART2 */
+    usart3_isr, /* USART3 */
     default_isr, /* External Line[15:10]s */
     default_isr, /* RTC Alarm (A and B) through EXTI Line */
     default_isr, /* USB OTG FS Wakeup through EXTI line */
@@ -125,8 +134,8 @@ void (*const vector[])(void) =
     default_isr, /* SDIO */
     default_isr, /* TIM5 */
     default_isr, /* SPI3 */
-    default_isr, /* Reserved */
-    default_isr, /* Reserved */
+    uart4_isr, /* UART4 */
+    uart5_isr, /* UART5 */
     default_isr, /* Reserved */
     default_isr, /* Reserved */
     default_isr, /* DMA2 Stream 0 */
@@ -144,7 +153,7 @@ void (*const vector[])(void) =
     default_isr, /* DMA2 Stream 5 */
     default_isr, /* DMA2 Stream 6 */
     default_isr, /* DMA2 Stream 7 */
-    default_isr, /* USART6 */
+    usart6_isr, /* USART6 */
     default_isr, /* I2C3 event */
     default_isr, /* I2C3 error */
     default_isr, /* Reserved */

@@ -22,9 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "platform/arm/stm32/stm32f3xx/stm32f3discovery.h"
+
 extern void reset_isr(void);
-extern void usart_isr(void);
+extern void usart_isr(int u);
 extern void cortex_m_systick_isr(void);
+
+static void usart1_isr(void) { usart_isr(USART_PORT1); }
+static void usart2_isr(void) { usart_isr(USART_PORT2); }
+static void usart3_isr(void) { usart_isr(USART_PORT3); }
+static void uart4_isr(void) { usart_isr(UART_PORT4); }
+static void uart5_isr(void) { usart_isr(UART_PORT5); }
 
 static void nmi_isr(void)
 {
@@ -110,9 +118,9 @@ void (*const vector[])(void) =
     default_isr, /* I2C2_ER_IRQHandler */
     default_isr, /* SPI1_IRQHandler */
     default_isr, /* SPI2_IRQHandler */
-    default_isr, /* USART1_IRQHandler */
-    usart_isr, /* USART2_IRQHandler */
-    default_isr, /* USART3_IRQHandler */
+    usart1_isr, /* USART1_IRQHandler */
+    usart2_isr, /* USART2_IRQHandler */
+    usart3_isr, /* USART3_IRQHandler */
     default_isr, /* EXTI15_10_IRQHandler */
     default_isr, /* RTC_Alarm_IRQHandler */
     default_isr, /* USBWakeUp_IRQHandler */
@@ -125,8 +133,8 @@ void (*const vector[])(void) =
     default_isr, /* 0 */
     default_isr, /* 0 */
     default_isr, /* SPI3_IRQHandler */
-    default_isr, /* UART4_IRQHandler */
-    default_isr, /* UART5_IRQHandler */
+    uart4_isr, /* UART4_IRQHandler */
+    uart5_isr, /* UART5_IRQHandler */
     default_isr, /* TIM6_DAC_IRQHandler */
     default_isr, /* TIM7_IRQHandler */
     default_isr, /* DMA2_Channel1_IRQHandler */
