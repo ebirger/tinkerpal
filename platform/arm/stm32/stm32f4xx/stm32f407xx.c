@@ -27,7 +27,7 @@
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stm32/stm32f4xx/stm32f4xx_common.h"
-#include "platform/arm/stm32/stm32f4xx/stm32f4discovery.h"
+#include "platform/arm/stm32/stm32f4xx/stm32f407xx.h"
 #include "platform/arm/stm32/stm32_usart.h"
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32_spi.h"

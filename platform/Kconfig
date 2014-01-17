@@ -67,9 +67,17 @@ config STM32F3XX
 	bool
 	select STM32
 
+config STM32F303XX
+	bool
+	select STM32F3XX
+
 config STM32F4XX
 	bool
 	select STM32
+
+config STM32F407XX
+	bool
+	select STM32F4XX
 
 config MSP430
 	bool

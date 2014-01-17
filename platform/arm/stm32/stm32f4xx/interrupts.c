@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "platform/arm/stm32/stm32f4xx/stm32f4discovery.h"
+#include "platform/arm/stm32/stm32f4xx/stm32f407xx.h"
 
 extern void reset_isr(void);
 extern void usart_isr(int u);
