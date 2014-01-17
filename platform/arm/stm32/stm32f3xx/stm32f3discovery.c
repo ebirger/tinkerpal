@@ -34,8 +34,6 @@
 #include "platform/arm/stm32/stm32.h"
 #include "drivers/serial/serial_platform.h"
 
-extern uint32_t SystemCoreClock;
-
 const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_A] = { RCC_AHBPeriph_GPIOA, GPIOA },
     [GPIO_PORT_B] = { RCC_AHBPeriph_GPIOB, GPIOB },
@@ -120,21 +118,6 @@ const stm32_spi_t stm32_spis[] = {
 };
 #endif
 
-static void timers_init(void)
-{
-    SysTick_Config(SystemCoreClock / 1000);
-}
-
-static unsigned long stm32f3discovery_get_system_clock(void)
-{
-    return SystemCoreClock;
-}
-
-static void stm32f3discovery_init(void)
-{
-    timers_init();
-}
-
 const platform_t platform = {
     .serial = {
 	.enable = stm32_usart_enable,
@@ -158,7 +141,7 @@ const platform_t platform = {
 	.receive = stm32_spi_receive,
     },
 #endif
-    .init = stm32f3discovery_init,
+    .init = stm32_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = stm32_select,

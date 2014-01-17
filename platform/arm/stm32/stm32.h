@@ -26,6 +26,8 @@
 #define __STM32_H__
 
 int stm32_select(int ms);
+unsigned long stm32_get_system_clock(void);
 void stm32_msleep(double ms);
+void stm32_init(void);
 
 #endif
