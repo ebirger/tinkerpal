@@ -10,10 +10,10 @@ BSP_SRCS+=$(if $(CONFIG_SPI),stm32f4xx_spi.c)
 
 MK_LINKS:=$(addprefix $(BSP_DRIVERS_DIR)/src/,$(BSP_SRCS))
 
-MK_OBJS=stm32f4discovery.o system_stm32f4xx.o interrupts.o $(BSP_SRCS:%.c=%.o)
+MK_OBJS=stm32f407xx.o system_stm32f4xx.o interrupts.o $(BSP_SRCS:%.c=%.o)
 
 ifneq ($(CONFIG_GCC),)
-  LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f4discovery.ld
+  LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f407xx.ld
 
   CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -O3 \
     -ffunction-sections -fdata-sections -fsingle-precision-constant \

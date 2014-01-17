@@ -10,10 +10,10 @@ BSP_SRCS+=$(if $(CONFIG_SPI),stm32f30x_spi.c)
 
 MK_LINKS:=$(addprefix $(BSP_DRIVERS_DIR)/src/,$(BSP_SRCS))
 
-MK_OBJS=stm32f3discovery.o system_stm32f30x.o interrupts.o $(BSP_SRCS:%.c=%.o)
+MK_OBJS=stm32f303xx.o system_stm32f30x.o interrupts.o $(BSP_SRCS:%.c=%.o)
 
 ifneq ($(CONFIG_GCC),)
-  LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f3discovery.ld
+  LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f303xx.ld
 
   CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -O3 \
     -ffunction-sections -fdata-sections -fsingle-precision-constant \
