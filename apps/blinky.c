@@ -22,32 +22,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "util/debug.h"
+#include "util/event.h"
+#include "drivers/gpio/gpio.h"
 #include "boards/board.h"
-#include "platform/platform.h"
 
-static const resource_t leds[] = {
-    GPIO_RES(PF1),
-    GPIO_RES(PF2),
-    GPIO_RES(PF3),
-    0
+static int cur_led;
+
+static void blinky_trigger(event_t *e, u32 resource_id)
+{
+    gpio_digital_write(board.leds[cur_led], 0);
+    if (!board.leds[++cur_led])
+	cur_led = 0;
+    gpio_digital_write(board.leds[cur_led], 1);
+}
+
+static event_t blinky_event = {
+    .trigger = blinky_trigger
 };
 
-const board_t board = {
-    .desc = "EK LM4F120XL (Stellaris Launchpad)",
-    .default_console_id = UART_RES(UART0),
-    .leds = leds,
-#ifdef CONFIG_MMC
-    .mmc_params = {
-	.spi_port = SPI_RES(SSI0),
-	.mosi = GPIO_RES(PA5),
-	.cs = GPIO_RES(PB6),
-    },
-#endif
-#ifdef CONFIG_ENC28J60
-    .enc28j60_params = {
-	.spi_port = SPI_RES(SSI1),
-	.cs = GPIO_RES(PE3),
-	.intr = GPIO_RES(PF4),
-    },
-#endif
-};
+void app_start(int argc, char *argv[])
+{
+    const resource_t *led;
+
+    tp_out(("TinkerPal Application - Blinky\n"));
+
+    for (led = board.leds; *led; led++)
+	gpio_set_pin_mode(*led, GPIO_PM_OUTPUT);
+
+    event_timer_set_period(500, &blinky_event);
+}

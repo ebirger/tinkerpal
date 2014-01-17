@@ -38,6 +38,10 @@ config APP_FAT_MMC_TEST
 	depends on FAT_FS && MMC
 	select CLI
 
+config APP_BLINKY
+	bool "Blink board LEDs"
+	depends on GPIO
+
 config APP_DUMMY
 	bool "Dummy. Does nothing. Used for testing"
 

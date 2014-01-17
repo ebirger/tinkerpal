@@ -53,6 +53,7 @@
 typedef struct {
     char *desc;
     resource_t default_console_id;
+    const resource_t *leds; /* 0 terminated */
 #ifdef CONFIG_ILI93XX
     ili93xx_params_t ili93xx_params;
 #endif
