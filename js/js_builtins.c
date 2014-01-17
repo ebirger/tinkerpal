@@ -34,6 +34,7 @@
     static function_t f##_func = STATIC_CONSTRUCTOR(f);
 #define OBJECT(n, o, ...) static obj_t o##_obj = STATIC_OBJ(OBJECT_CLASS), *o = &o##_obj;
 #define CONST(n, o, c, v) static num_t o##c = v;
+#define CONST_INT_VAL(n, o, c, v) static obj_t *o##c = (obj_t *)(((v)<<1)| 0x1);
 #define CLASS_PROTOTYPE(n, o, p, c...) OBJECT(n, o)
 #define PROTOTYPE(n, o, ...) OBJECT(n, o)
 #define CATEGORY(n, o, ...) static obj_t *n;
@@ -49,6 +50,7 @@
 #undef CLASS_PROTOTYPE
 #undef PROTOTYPE
 #undef CONST
+#undef CONST_INT_VAL
 #undef CATEGORY
 #undef CATEGORY_INIT
 
@@ -59,6 +61,7 @@ void js_builtins_uninit(void)
 #define OBJECT(...)
 #define PROTOTYPE(...)
 #define CONST(...)
+#define CONST_INT_VAL(...)
 #define CATEGORY(...)
 #define CLASS_PROTOTYPE(n, o, p, c, ...) \
     obj_class_set_prototype(c, NULL); \
@@ -74,6 +77,7 @@ void js_builtins_uninit(void)
 #undef CLASS_PROTOTYPE
 #undef PROTOTYPE
 #undef CONST
+#undef CONST_INT_VAL
 #undef CATEGORY
 #undef CATEGORY_INIT
 }
@@ -101,6 +105,10 @@ void js_builtins_init(void)
     tstr_t cname = S(n); \
     _obj_set_property(o, cname, (obj_t *)&o##c); \
 } while(0);
+#define CONST_INT_VAL(n, o, c, v, ...) do { \
+    tstr_t cname = S(n); \
+    _obj_set_property(o, cname, o##c); \
+} while(0);
 #define PROTOTYPE(...)
 #define CATEGORY(n, o, ...) n = o;
 #define CATEGORY_INIT(init, uninit, ...) \
@@ -114,6 +122,7 @@ void js_builtins_init(void)
 #undef CLASS_PROTOTYPE
 #undef PROTOTYPE
 #undef CONST
+#undef CONST_INT_VAL
 #undef CATEGORY
 #undef CATEGORY_INIT
 }

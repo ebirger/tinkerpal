@@ -62,7 +62,9 @@ canvas_t *js_evaluated_canvas_new(obj_t *o)
 {
     js_evaluated_canvas_t *jscanvas;
 
-    /* XXX: assert that required functionality is provided by o */
+    if (obj_has_property(o, &SpixelDraw) == FALSE)
+	return NULL;
+
     jscanvas = tmalloc_type(js_evaluated_canvas_t);
     jscanvas->canvas.ops = &js_evaluated_canvas_ops;
     jscanvas->obj = o;
