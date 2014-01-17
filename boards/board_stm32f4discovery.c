@@ -28,4 +28,11 @@
 const board_t board = {
     .desc = "STM32F4Discovery",
     .default_console_id = UART_RES(USART_PORT2),
+#ifdef CONFIG_ENC28J60
+    .enc28j60_params = {
+	.spi_port = SPI_RES(SPI_PORT1),
+	.cs = GPIO_RES(PC5),
+	.intr = GPIO_RES(PB1),
+    },
+#endif
 };
