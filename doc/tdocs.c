@@ -30,6 +30,7 @@
 static FILE *fp;
 
 #define CONST(...)
+#define CONST_INT_VAL(...)
 #define CATEGORY_INIT(...)
 
 static doc_object_t global_env_desc = {
