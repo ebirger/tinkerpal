@@ -22,14 +22,16 @@ MK_OBJS+=$(BSP_SRCS:%.c=%.o)
 ifneq ($(CONFIG_GCC),)
   ifneq ($(CONFIG_STM32F407XX),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f407xx.ld
+    CFLAGS+=-DSTM32F40_41xxx
   endif
   ifneq ($(CONFIG_STM32F429XX),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f429xx.ld
+    CFLAGS+=-DSTM32F429_439xx
   endif
 
   CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -O3 \
     -ffunction-sections -fdata-sections -fsingle-precision-constant \
-    -DSTM32F4XX -DSTM32F40_41xxx $(INCS) -mlittle-endian
+    -DSTM32F4XX $(INCS) -mlittle-endian
 
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
   LIBC_DIR:=$(LIBC_DIR)/float-abi-hard/fpuv4-sp-d16/
