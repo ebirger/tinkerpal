@@ -62,6 +62,7 @@ config STM32
 	select PLAT_HAS_SERIAL
 	select PLAT_HAS_SPI
 	select BUFFERED_SERIAL
+	select GPIO
 
 config STM32F3XX
 	bool
