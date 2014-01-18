@@ -20,8 +20,8 @@ endif
 
 MK_OBJS+=$(BSP_SRCS:%.c=%.o)
 ifneq ($(CONFIG_GCC),)
-  LINKER_SCRIPT:=$(if $(CONFIG_STM32F407XX),$(BUILD)/$(d)/stm32f407xx.ld)
-  LINKER_SCRIPT:=$(if $(CONFIG_STM32F429XX),$(BUILD)/$(d)/stm32f429xx.ld)
+  LINKER_SCRIPT+=$(if $(CONFIG_STM32F407XX),$(BUILD)/$(d)/stm32f407xx.ld)
+  LINKER_SCRIPT+=$(if $(CONFIG_STM32F429XX),$(BUILD)/$(d)/stm32f429xx.ld)
 
   CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -O3 \
     -ffunction-sections -fdata-sections -fsingle-precision-constant \
