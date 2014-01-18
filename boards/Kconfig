@@ -30,6 +30,10 @@ config STM32F4DISCOVERY
 	bool "ST Micro STM32F4 Discovery board"
 	select STM32F407XX
 
+config STM32F429IDISCOVERY
+	bool "ST Micro STM32F429I Discovery board"
+	select STM32F429XX
+
 config FRDM_KL25Z
 	bool "Freescale FRDM-KL25Z"
 	select FRDM

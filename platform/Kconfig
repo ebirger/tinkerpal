@@ -79,6 +79,10 @@ config STM32F407XX
 	bool
 	select STM32F4XX
 
+config STM32F429XX
+	bool
+	select STM32F4XX
+
 config MSP430
 	bool
 	select PLAT_HAS_TI_CCS5
