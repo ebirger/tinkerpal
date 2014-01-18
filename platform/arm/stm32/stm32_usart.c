@@ -41,6 +41,7 @@ int stm32_usart_enable(int u, int enabled)
 {
     const stm32_usart_t *usart = &stm32_usarts[u];
     USART_InitTypeDef USART_InitStructure;
+    USART_ClockInitTypeDef USART_ClockInitStructure;
 
     /* XXX: support usart disable */
     if (!enabled)
@@ -51,7 +52,10 @@ int stm32_usart_enable(int u, int enabled)
     stm32_gpio_set_pin_mode(usart->rx, GPIO_PM_INPUT);
 
     /* USART Clock */
+    /* XXX: Not all USARTs are APB1! */
     RCC_APB1PeriphClockCmd(usart->usart_clk, ENABLE);
+    USART_ClockStructInit(&USART_ClockInitStructure);
+    USART_ClockInit(usart->usartx, &USART_ClockInitStructure);
 
     /* Configure USART Tx as alternate function push-pull */
     stm32_gpio_set_pin_function(usart->tx, usart->af);
