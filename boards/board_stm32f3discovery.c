@@ -25,7 +25,20 @@
 #include "boards/board.h"
 #include "platform/platform.h"
 
+static const resource_t leds[] = {
+    GPIO_RES(PE8),
+    GPIO_RES(PE9),
+    GPIO_RES(PE10),
+    GPIO_RES(PE11),
+    GPIO_RES(PE12),
+    GPIO_RES(PE13),
+    GPIO_RES(PE14),
+    GPIO_RES(PE15),
+    0
+};
+
 const board_t board = {
     .desc = "STM32F3Discovery",
     .default_console_id = UART_RES(USART_PORT2),
+    .leds = leds,
 };
