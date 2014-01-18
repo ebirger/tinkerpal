@@ -65,7 +65,6 @@ int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 
     /* XXX: not all pins are actually available */
     switch (mode)
@@ -73,6 +72,7 @@ int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     case GPIO_PM_INPUT:
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 	break;
     case GPIO_PM_OUTPUT:
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
