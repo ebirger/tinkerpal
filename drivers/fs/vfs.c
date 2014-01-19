@@ -112,7 +112,10 @@ static void readdir_root(readdir_cb_t cb, void *ctx)
 
     foreach_fs(fs)
     {
-	if (cb((tstr_t *)&(*fs)->name, ctx))
+	tstr_t t;
+
+	tstr_init(&t, (char *)(*fs)->name, strlen((*fs)->name), 0);
+	if (cb(&t, ctx))
 	    break;
     }
 }
