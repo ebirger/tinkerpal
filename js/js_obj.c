@@ -344,8 +344,11 @@ int obj_get_int(obj_t *o)
     int ret;
     num_t *n;
 
+    if (OBJ_IS_INT_VAL(o))
+	return INT_VAL(o);
+
     n = to_num(obj_cast(o, NUM_CLASS));
-    ret = NUM_INT(n);
+    ret = NUM_IS_FP(n) ? (int)NUM_FP(n) : NUM_INT(n);
     obj_put(&n->obj);
     return ret;
 }
