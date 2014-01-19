@@ -20,8 +20,7 @@ endef
 
 # $1 source file path
 define file_desc
-{ .name = \"$(call file_id,$1)\", .content = &$(call file_name,$1), \
-  .content_len = &$(call file_name,$1)_len }
+{ .name = \"$(call file_id,$1)\", .content = &$(call file_name,$1), }
 endef
 
 FILES+=$(BUILTIN_FS_INTERNAL_FILES)
@@ -46,7 +45,6 @@ $(FS_FILE): $(FILES) $(BUILD)/auto.conf
 	$(Q)echo "/* Automatically generated file, DO NOT MANUALLY EDIT */" > $@
 	$(Q)echo "#include \"drivers/fs/builtin_fs/builtin_fs.h\"" >> $@
 	$(Q)$(foreach f,$(FILES),printf "extern char *$(call file_name,$f);\n" >> $@;)
-	$(Q)$(foreach f,$(FILES),printf "extern const int $(call file_name,$f)_len;\n" >> $@;)
 	$(Q)echo "const builtin_fs_file_t builtin_fs_files[] = {" >> $@
 	$(Q)$(foreach f,$(FILES),printf "$(call file_desc,$f),\n" >> $@;)
 	$(Q)echo "{}" >> $@

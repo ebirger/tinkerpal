@@ -15,9 +15,8 @@ MK_OBJS+=$(notdir $(1:%.c=%.o))
 $1:: $2 scripts/text_to_c_str.sed
 	@echo GEN $$@
 	$$(Q)echo "#include \"util/tstr.h\"" > $1
-	$$(Q)echo -n "char $3[] = " >> $1
+	$$(Q)echo -n "char *$3 = " >> $1
 	$$(Q)cpp -P $2 | sed -f scripts/text_to_c_str.sed  >> $1
 	$$(Q)echo ";" >> $1
-	$$(Q)echo -n "const int $3_len = sizeof($3);" >> $1
 
 endef

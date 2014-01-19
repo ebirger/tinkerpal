@@ -41,7 +41,7 @@ static int builtin_fs_file_read(tstr_t *content, tstr_t *file_name)
     }
 
     /* No need to dup the tstr as it is builtin */
-    tstr_init(content, *f->content, *f->content_len, 0);
+    tstr_init(content, *f->content, strlen(*f->content), 0);
     return 0;
 }
 
