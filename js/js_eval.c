@@ -589,6 +589,7 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
 	if (o == UNDEF)
 	{
 	    ref_invalidate(ref);
+	    js_scan_trace(scan);
 	    return throw_exception(po, 
 		&S("Exception: Can't access property of undefined"));
 	}
