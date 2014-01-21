@@ -33,6 +33,8 @@ void usart_isr(int u)
     if (USART_GetITStatus(usart->usartx, USART_IT_RXNE) == RESET)
 	return;
 
+    USART_ClearITPendingBit(usart->usartx, USART_IT_RXNE);
+
     /* Read a character */
     buffered_serial_push(u, USART_ReceiveData(usart->usartx) & 0x7F);
 }
@@ -86,6 +88,7 @@ void stm32_usart_irq_enable(int u, int enabled)
     /* Enable the USART Receive interrupt: this interrupt is generated when the
      * USART receive data register is not empty.
      */
+    USART_ClearITPendingBit(usart->usartx, USART_IT_RXNE);
     USART_ITConfig(usart->usartx, USART_IT_RXNE, enabled ? ENABLE : DISABLE);
 
     NVIC_InitStructure.NVIC_IRQChannel = usart->irqn;
