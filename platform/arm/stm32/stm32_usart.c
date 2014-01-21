@@ -85,17 +85,18 @@ void stm32_usart_irq_enable(int u, int enabled)
     const stm32_usart_t *usart = &stm32_usarts[u];
     NVIC_InitTypeDef NVIC_InitStructure;
 
+    NVIC_InitStructure.NVIC_IRQChannel = usart->irqn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = enabled ? ENABLE : DISABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
     /* Enable the USART Receive interrupt: this interrupt is generated when the
      * USART receive data register is not empty.
      */
     USART_ClearITPendingBit(usart->usartx, USART_IT_RXNE);
     USART_ITConfig(usart->usartx, USART_IT_RXNE, enabled ? ENABLE : DISABLE);
 
-    NVIC_InitStructure.NVIC_IRQChannel = usart->irqn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = enabled ? ENABLE : DISABLE;
-    NVIC_Init(&NVIC_InitStructure);
 }
 
 int stm32_usart_write(int u, char *buf, int size)
