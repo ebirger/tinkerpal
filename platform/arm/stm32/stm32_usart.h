@@ -33,7 +33,7 @@ typedef struct {
     uint32_t usart_clk;
     int tx;
     int rx;
-    uint8_t af;
+    stm32_gpio_af_t af;
     IRQn_Type irqn;
 } stm32_usart_t;
 
