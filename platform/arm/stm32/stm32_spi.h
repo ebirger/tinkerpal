@@ -35,7 +35,7 @@ typedef struct {
     int clk;
     int mosi;
     int miso;
-    uint8_t af;
+    stm32_gpio_af_t af;
 } stm32_spi_t;
 
 extern const stm32_spi_t stm32_spis[];
