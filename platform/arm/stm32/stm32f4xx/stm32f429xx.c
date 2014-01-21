@@ -51,6 +51,7 @@ const stm32_gpio_port_t stm32_gpio_ports[] = {
 const stm32_usart_t stm32_usarts[] = {
     [USART_PORT1] = {
 	.usartx = USART1,
+	.periph_enable = RCC_APB2PeriphClockCmd,
 	.usart_clk = RCC_APB2Periph_USART1,
 	.tx = PA9,
 	.rx = PA10,
@@ -60,6 +61,7 @@ const stm32_usart_t stm32_usarts[] = {
     /* XXX: could not make port2 work for console */
     [USART_PORT2] = {
 	.usartx = USART2,
+	.periph_enable = RCC_APB1PeriphClockCmd,
 	.usart_clk = RCC_APB1Periph_USART2,
 	.tx = PA2,
 	.rx = PA3,
@@ -68,6 +70,7 @@ const stm32_usart_t stm32_usarts[] = {
     },
     [USART_PORT3] = {
 	.usartx = USART3,
+	.periph_enable = RCC_APB1PeriphClockCmd,
 	.usart_clk = RCC_APB1Periph_USART3,
 	.tx = PB10,
 	.rx = PB11,
@@ -76,6 +79,7 @@ const stm32_usart_t stm32_usarts[] = {
     },
     [UART_PORT4] = {
 	.usartx = UART4,
+	.periph_enable = RCC_APB1PeriphClockCmd,
 	.usart_clk = RCC_APB1Periph_UART4,
 	.tx = PA0,
 	.rx = PA1,
@@ -84,6 +88,7 @@ const stm32_usart_t stm32_usarts[] = {
     },
     [UART_PORT5] = {
 	.usartx = UART5,
+	.periph_enable = RCC_APB1PeriphClockCmd,
 	.usart_clk = RCC_APB1Periph_UART5,
 	.tx = PC12,
 	.rx = PD2,
@@ -92,6 +97,7 @@ const stm32_usart_t stm32_usarts[] = {
     },
     [USART_PORT6] = {
 	.usartx = USART6,
+	.periph_enable = RCC_APB2PeriphClockCmd,
 	.usart_clk = RCC_APB2Periph_USART6,
 	.tx = PC6,
 	.rx = PC7,
@@ -100,6 +106,7 @@ const stm32_usart_t stm32_usarts[] = {
     },
     [UART_PORT7] = {
 	.usartx = UART7,
+	.periph_enable = RCC_APB1PeriphClockCmd,
 	.usart_clk = RCC_APB1Periph_UART7,
 	.tx = PE9,
 	.rx = PE7,
@@ -108,6 +115,7 @@ const stm32_usart_t stm32_usarts[] = {
     },
     [UART_PORT8] = {
 	.usartx = UART8,
+	.periph_enable = RCC_APB1PeriphClockCmd,
 	.usart_clk = RCC_APB1Periph_UART8,
 	.tx = PE1,
 	.rx = PE0,

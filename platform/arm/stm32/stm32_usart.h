@@ -29,6 +29,7 @@
 
 typedef struct {
     USART_TypeDef *usartx;
+    void (*periph_enable)(uint32_t periph, FunctionalState state);
     uint32_t usart_clk;
     int tx;
     int rx;
