@@ -72,9 +72,12 @@ void stm32_spi_reconf(int port)
     stm32_gpio_set_pin_mode(spi->mosi, GPIO_PM_OUTPUT);
     stm32_gpio_set_pin_mode(spi->miso, GPIO_PM_INPUT);
 
-    stm32_gpio_set_pin_function(spi->clk, spi->af);
-    stm32_gpio_set_pin_function(spi->mosi, spi->af);
-    stm32_gpio_set_pin_function(spi->miso, spi->af);
+    if (spi->af)
+    {
+	stm32_gpio_set_pin_function(spi->clk, spi->af);
+	stm32_gpio_set_pin_function(spi->mosi, spi->af);
+	stm32_gpio_set_pin_function(spi->miso, spi->af);
+    }
 
     /* Configure SPI */
     SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
