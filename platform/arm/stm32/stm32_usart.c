@@ -60,8 +60,10 @@ int stm32_usart_enable(int u, int enabled)
 
     /* Configure USART Tx as alternate function push-pull */
     stm32_gpio_set_pin_function(usart->tx, usart->af);
+#ifndef CONFIG_STM32_USART_NO_IN_AF
     /* Configure USART Rx as alternate function push-pull */
     stm32_gpio_set_pin_function(usart->rx, usart->af);
+#endif
 
     /* Initialize USART */
     USART_InitStructure.USART_BaudRate = 115200;

@@ -64,6 +64,9 @@ config STM32
 	select BUFFERED_SERIAL
 	select GPIO
 
+config STM32_USART_NO_IN_AF
+	bool
+
 config STM32_GPIO_API_LEGACY
 	bool
 
@@ -71,6 +74,7 @@ config STM32F1XX
 	bool
 	select STM32
 	select STM32_GPIO_API_LEGACY
+	select STM32_USART_NO_IN_AF
 
 config STM32F103XX
 	bool
