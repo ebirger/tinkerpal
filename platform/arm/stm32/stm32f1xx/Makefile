@@ -13,7 +13,9 @@ MK_LINKS:=$(addprefix $(BSP_DRIVERS_DIR)/src/,$(BSP_SRCS))
 MK_OBJS=stm32f103xx.o system_stm32f10x.o interrupts.o $(BSP_SRCS:%.c=%.o)
 
 ifneq ($(CONFIG_GCC),)
-  LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f103rbt.ld
+  ifneq ($(CONFIG_STM32F103RBT),)
+    LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f103rbt.ld
+  endif
 
   CFLAGS+=-mthumb -mcpu=cortex-m3 -O3 -mfix-cortex-m3-ldrd  -mthumb-interwork \
     -mfloat-abi=soft -ffunction-sections -fdata-sections \

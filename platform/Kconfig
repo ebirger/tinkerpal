@@ -76,6 +76,10 @@ config STM32F103XX
 	bool
 	select STM32F1XX
 
+config STM32F103RBT
+	bool
+	select STM32F103XX
+
 config STM32F3XX
 	bool
 	select STM32
