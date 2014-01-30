@@ -28,6 +28,12 @@
 #include "platform/arm/stm32/stm32_common.h"
 #include "platform/platform.h"
 
+#ifdef CONFIG_STM32_GPIO_API_LEGACY
+typedef int32_t stm32_gpio_af_t;
+#else
+typedef int8_t stm32_gpio_af_t;
+#endif
+
 typedef struct {
     unsigned long periph;
     GPIO_TypeDef *port;
@@ -36,7 +42,7 @@ typedef struct {
 extern const stm32_gpio_port_t stm32_gpio_ports[];
 
 void stm32_gpio_digital_write(int pin, int value);
-void stm32_gpio_set_pin_function(int pin, uint8_t af);
+void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af);
 int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode);
 void stm32_gpio_set_port_val(int port, unsigned short value);
 

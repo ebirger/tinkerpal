@@ -28,6 +28,67 @@
 #define GPIO_PERIPH(p) (stm32_gpio_ports[((p) >> 4)].periph)
 #define GPIO_PORT(p) (stm32_gpio_ports[((p) >> 4)].port)
 
+#ifdef CONFIG_STM32_GPIO_API_LEGACY
+
+#define STM32_GPIO_PIN_TYPE_AF(init_struct) do { \
+    init_struct.GPIO_Mode = GPIO_Mode_AF_PP; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_IN(init_struct) do { \
+    init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_IN_PU(init_struct) do { \
+    init_struct.GPIO_Mode = GPIO_Mode_IPU; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_IN_PD(init_struct) do { \
+    init_struct.GPIO_Mode = GPIO_Mode_IPD; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_OUT(init_struct) do { \
+    init_struct.GPIO_Mode = GPIO_Mode_Out_PP; \
+} while (0)
+
+#define STM32_GPIO_AF_CONFIG(pin, a) GPIO_PinRemapConfig(af, ENABLE)
+
+#else
+
+#define STM32_GPIO_PIN_TYPE_AF(init_struct) do { \
+    init_struct.GPIO_OType = GPIO_OType_PP; \
+    init_struct.GPIO_Mode = GPIO_Mode_AF; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_NOPULL; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_IN(init_struct) do { \
+    init_struct.GPIO_OType = GPIO_OType_PP; \
+    init_struct.GPIO_Mode = GPIO_Mode_IN; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_NOPULL; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_IN_PU(init_struct) do { \
+    init_struct.GPIO_OType = GPIO_OType_PP; \
+    init_struct.GPIO_Mode = GPIO_Mode_IN; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_DOWN; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_IN_PD(init_struct) do { \
+    init_struct.GPIO_OType = GPIO_OType_PP; \
+    init_struct.GPIO_Mode = GPIO_Mode_IN; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_UP; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_OUT(init_struct) do { \
+    init_struct.GPIO_OType = GPIO_OType_PP; \
+    init_struct.GPIO_Mode = GPIO_Mode_Out; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_NOPULL; \
+} while (0)
+
+#define STM32_GPIO_AF_CONFIG(pin, af) \
+    GPIO_PinAFConfig(GPIO_PORT(pin), pin & (GPIO_NUM_PORT_PINS - 1), af)
+
+#endif
+
 void stm32_gpio_digital_write(int pin, int value)
 {
     if (value)
@@ -42,17 +103,16 @@ void stm32_gpio_set_port_val(int port, unsigned short value)
     GPIO_SetBits(stm32_gpio_ports[port].port, value);
 }
 
-void stm32_gpio_set_pin_function(int pin, uint8_t af)
+void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    GPIO_PinAFConfig(GPIO_PORT(pin), pin & (GPIO_NUM_PORT_PINS - 1), af);
+    if (af)
+	STM32_GPIO_AF_CONFIG(pin, af);
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin);
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    STM32_GPIO_PIN_TYPE_AF(GPIO_InitStructure);
     GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 }
 
@@ -63,30 +123,25 @@ int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     STM32_GPIO_PERIPH_ENABLE(GPIO_PERIPH(pin));
 
     GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin); 
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 
     /* XXX: not all pins are actually available */
     switch (mode)
     {
     case GPIO_PM_INPUT:
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	STM32_GPIO_PIN_TYPE_IN(GPIO_InitStructure);
 	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 	break;
     case GPIO_PM_OUTPUT:
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	STM32_GPIO_PIN_TYPE_OUT(GPIO_InitStructure);
 	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 	break;
     case GPIO_PM_INPUT_PULLUP:
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	STM32_GPIO_PIN_TYPE_IN_PU(GPIO_InitStructure);
 	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 	break;
     case GPIO_PM_INPUT_PULLDOWN:
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	STM32_GPIO_PIN_TYPE_IN_PD(GPIO_InitStructure);
 	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 	break;
     default:

@@ -26,6 +26,7 @@
 #define __STM32_USART_H__
 
 #include "platform/arm/stm32/stm32_common.h"
+#include "platform/arm/stm32/stm32_gpio.h"
 
 typedef struct {
     USART_TypeDef *usartx;

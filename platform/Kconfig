@@ -64,6 +64,9 @@ config STM32
 	select BUFFERED_SERIAL
 	select GPIO
 
+config STM32_GPIO_API_LEGACY
+	bool
+
 config STM32F3XX
 	bool
 	select STM32
