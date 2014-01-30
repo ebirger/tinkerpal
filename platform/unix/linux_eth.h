@@ -27,6 +27,6 @@
 
 #include "net/etherif.h"
 
-etherif_t *linux_packet_eth_new(char *dev_name);
+etherif_t *linux_eth_new(char *dev_name);
 
 #endif

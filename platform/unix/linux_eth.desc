@@ -1,4 +1,4 @@
-CONSTRUCTOR("LinuxPacketEth", etherif, do_linux_packet_eth_constructor, {
+CONSTRUCTOR("LinuxPacketEth", etherif, do_linux_eth_constructor, {
     .params = {
        { .name = "Net Device", .description = "Linux Network Interface Name" },
     },

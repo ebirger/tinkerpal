@@ -28,7 +28,7 @@
 #include "net/js_etherif.h"
 #include "platform/unix/linux_eth.h"
 
-int do_linux_packet_eth_constructor(obj_t **ret, obj_t *this, int argc,
+int do_linux_eth_constructor(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
     tstr_t dev_name_tstr;
@@ -40,7 +40,7 @@ int do_linux_packet_eth_constructor(obj_t **ret, obj_t *this, int argc,
 
     dev_name_tstr = obj_get_str(argv[1]);
     dev_name = tstr_to_strz(&dev_name_tstr);
-    ethif = linux_packet_eth_new(dev_name);
+    ethif = linux_eth_new(dev_name);
     tstr_free(&dev_name_tstr);
     tfree(dev_name);
 

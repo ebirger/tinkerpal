@@ -50,163 +50,163 @@ typedef struct {
     int packet_socket;
     u8 last_packet[1518];
     int last_packet_length;
-} linux_packet_eth_t;
+} linux_eth_t;
 
 /* Singleton for now */
-static linux_packet_eth_t g_lpe = { .packet_socket = -1 };
+static linux_eth_t g_eth = { .packet_socket = -1 };
 
-#define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_packet_eth_t, ethif)
+#define ETHIF_TO_PACKET_ETH(x) container_of(x, linux_eth_t, ethif)
 #define NET_RES (RES(UART_RESOURCE_ID_BASE, NET_ID, 0))
 
-static void cur_packet_dump(linux_packet_eth_t *lpe) __attribute__((unused));
-static void cur_packet_dump(linux_packet_eth_t *lpe)
+static void cur_packet_dump(linux_eth_t *eth) __attribute__((unused));
+static void cur_packet_dump(linux_eth_t *eth)
 {
     int i;
 
     printf("\n-------------------------------------\n");
-    for (i = 0; i < lpe->last_packet_length; i++)
-	printf("%02x%s", lpe->last_packet[i], (i + 1) % 16 ? " " : "\n");
+    for (i = 0; i < eth->last_packet_length; i++)
+	printf("%02x%s", eth->last_packet[i], (i + 1) % 16 ? " " : "\n");
     printf("-------------------------------------\n");
 }
 
-static struct ifreq packet_eth_ioctl(linux_packet_eth_t *lpe, unsigned long num)
+static struct ifreq linux_eth_ioctl(linux_eth_t *eth, unsigned long num)
 {
     struct ifreq ifr;
     
     memset(&ifr, 0, sizeof(ifr));
-    strcpy(ifr.ifr_name, lpe->dev_name);
-    ioctl(lpe->packet_socket, num, &ifr);
+    strcpy(ifr.ifr_name, eth->dev_name);
+    ioctl(eth->packet_socket, num, &ifr);
     return ifr;
 }
 
-static int packet_eth_link_status(etherif_t *ethif)
+static int linux_eth_link_status(etherif_t *ethif)
 {
     return 1;
 }
 
-static void packet_eth_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
+static void linux_eth_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
 {
-    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+    linux_eth_t *eth = ETHIF_TO_PACKET_ETH(ethif);
     struct ifreq ifr;
 
-    ifr = packet_eth_ioctl(lpe, SIOCGIFHWADDR);
+    ifr = linux_eth_ioctl(eth, SIOCGIFHWADDR);
     memcpy(mac->mac, ifr.ifr_hwaddr.sa_data, 6);
 }
 
-static int packet_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
+static int linux_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
 {
-    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+    linux_eth_t *eth = ETHIF_TO_PACKET_ETH(ethif);
 
-    lpe->last_packet_length = serial_read(NET_RES, (char *)lpe->last_packet,
-	sizeof(lpe->last_packet));
-    if (lpe->last_packet_length <= 0)
+    eth->last_packet_length = serial_read(NET_RES, (char *)eth->last_packet,
+	sizeof(eth->last_packet));
+    if (eth->last_packet_length <= 0)
     {
 	perror("read");
 	return -1;
     }
 
-    if (size > lpe->last_packet_length)
-	size = lpe->last_packet_length;
+    if (size > eth->last_packet_length)
+	size = eth->last_packet_length;
 
-    memcpy(buf, lpe->last_packet, size);
+    memcpy(buf, eth->last_packet, size);
     return size;
 }
 
-static void packet_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
+static void linux_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 {
-    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+    linux_eth_t *eth = ETHIF_TO_PACKET_ETH(ethif);
 
     serial_write(NET_RES, (char *)buf, size);
-    etherif_packet_xmitted(&lpe->ethif);
+    etherif_packet_xmitted(&eth->ethif);
 }
 
-static void packet_eth_packet_event(event_t *ev, u32 resource_id)
+static void linux_eth_packet_event(event_t *ev, u32 resource_id)
 {
-    linux_packet_eth_t *lpe = container_of(ev, linux_packet_eth_t,
+    linux_eth_t *eth = container_of(ev, linux_eth_t,
 	packet_event);
 
     tp_debug(("Packet received\n"));
-    etherif_packet_received(&lpe->ethif);
+    etherif_packet_received(&eth->ethif);
 }
 
-static void packet_eth_free(etherif_t *ethif)
+static void linux_eth_free(etherif_t *ethif)
 {
-    linux_packet_eth_t *lpe = ETHIF_TO_PACKET_ETH(ethif);
+    linux_eth_t *eth = ETHIF_TO_PACKET_ETH(ethif);
 
-    event_watch_del(lpe->packet_event_id);
+    event_watch_del(eth->packet_event_id);
     unix_sim_remove_fd_event_from_map(NET_ID);
     etherif_destruct(ethif);
-    close(lpe->packet_socket);
-    lpe->packet_socket = -1;
+    close(eth->packet_socket);
+    eth->packet_socket = -1;
 }
 
-static const etherif_ops_t linux_packet_eth_ops = {
-    .link_status = packet_eth_link_status,
-    .mac_addr_get = packet_eth_mac_addr_get,
-    .packet_recv = packet_eth_packet_recv,
-    .packet_xmit = packet_eth_packet_xmit,
-    .free = packet_eth_free,
+static const etherif_ops_t linux_eth_ops = {
+    .link_status = linux_eth_link_status,
+    .mac_addr_get = linux_eth_mac_addr_get,
+    .packet_recv = linux_eth_packet_recv,
+    .packet_xmit = linux_eth_packet_xmit,
+    .free = linux_eth_free,
 };
 
-static int packet_eth_sock_init(linux_packet_eth_t *lpe)
+static int linux_eth_sock_init(linux_eth_t *eth)
 {
     struct ifreq ifr;
     struct packet_mreq mreq;
     struct sockaddr_ll sll;
 
-    lpe->packet_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-    if (lpe->packet_socket < 0) 
+    eth->packet_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    if (eth->packet_socket < 0) 
     {
 	perror("Failed to create packet socket\n");
 	return -1;
     }
 
-    ifr = packet_eth_ioctl(lpe, SIOCGIFHWADDR);
+    ifr = linux_eth_ioctl(eth, SIOCGIFHWADDR);
     if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER) 
     {
-	tp_err(("%s is not an Ethernet device (%d)\n", lpe->dev_name,
+	tp_err(("%s is not an Ethernet device (%d)\n", eth->dev_name,
 	    (int)ifr.ifr_hwaddr.sa_family));
 	return -1;
     }
 
-    ifr = packet_eth_ioctl(lpe, SIOCGIFINDEX);
+    ifr = linux_eth_ioctl(eth, SIOCGIFINDEX);
 
     memset(&sll, 0, sizeof(sll));
     sll.sll_family = AF_PACKET;
     sll.sll_protocol = htons(ETH_P_ALL);
     sll.sll_ifindex = ifr.ifr_ifindex;
-    bind(lpe->packet_socket, (struct sockaddr *)&sll, sizeof(sll));
+    bind(eth->packet_socket, (struct sockaddr *)&sll, sizeof(sll));
 
     memset(&mreq, 0, sizeof(mreq));
     mreq.mr_ifindex = ifr.ifr_ifindex;
     mreq.mr_type = PACKET_MR_PROMISC;
-    setsockopt(lpe->packet_socket, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq,
+    setsockopt(eth->packet_socket, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq,
 	sizeof(mreq));
     return 0;
 }
 
-etherif_t *linux_packet_eth_new(char *dev_name)
+etherif_t *linux_eth_new(char *dev_name)
 {
-    linux_packet_eth_t *lpe = &g_lpe;
+    linux_eth_t *eth = &g_eth;
 
-    if (lpe->packet_socket != -1)
+    if (eth->packet_socket != -1)
     {
 	tp_warn(("Only one device at a time. Removing old one\n"));
-	etherif_free(&lpe->ethif);
+	etherif_free(&eth->ethif);
     }
 
-    strcpy(lpe->dev_name, dev_name);
+    strcpy(eth->dev_name, dev_name);
 
-    if (packet_eth_sock_init(lpe))
+    if (linux_eth_sock_init(eth))
 	return NULL;
 
-    lpe->packet_event.trigger = packet_eth_packet_event;
-    etherif_construct(&lpe->ethif, &linux_packet_eth_ops);
-    unix_sim_add_fd_event_to_map(NET_ID, lpe->packet_socket,
-        lpe->packet_socket);
-    lpe->packet_event_id = event_watch_set(NET_RES, &lpe->packet_event);
+    eth->packet_event.trigger = linux_eth_packet_event;
+    etherif_construct(&eth->ethif, &linux_eth_ops);
+    unix_sim_add_fd_event_to_map(NET_ID, eth->packet_socket,
+        eth->packet_socket);
+    eth->packet_event_id = event_watch_set(NET_RES, &eth->packet_event);
 
     printf("Created Linux Packet Ethernet Interface. fd %d\n",
-	lpe->packet_socket);
-    return &lpe->ethif;
+	eth->packet_socket);
+    return &eth->ethif;
 }
