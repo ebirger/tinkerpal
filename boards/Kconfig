@@ -34,6 +34,10 @@ config STM32F429IDISCOVERY
 	bool "ST Micro STM32F429I Discovery board"
 	select STM32F429XX
 
+config STM32_ARMJISHU_28
+	bool "ARMJishu 28'' STM32F103RBT based board"
+	select STM32F103RBT
+
 config FRDM_KL25Z
 	bool "Freescale FRDM-KL25Z"
 	select FRDM
