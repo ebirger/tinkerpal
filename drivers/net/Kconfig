@@ -14,14 +14,4 @@ config ENC28J60_PHY_ACCESS
 		On some platforms, PHY access does not seem to work 
 		(probably SPI timing issues). This allows disabling it
 
-config LINUX_PACKET_ETH
-	bool "Linux User Mode Ethernet using Packet Socket"
-	depends on PLATFORM_EMULATION
-	select ETHERIF
-	default n
-	help
-		Packet sockets allow raw Ethernet packet send/receive
-		Selecting this option requires running the process on Linux with
-		root permissions
-
 endmenu

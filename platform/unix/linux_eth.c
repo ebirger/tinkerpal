@@ -30,7 +30,7 @@
 #include "mem/tmalloc.h"
 #include "drivers/resources.h"
 #include "drivers/serial/serial.h"
-#include "drivers/net/linux_packet_eth.h"
+#include "platform/unix/linux_eth.h"
 #include "platform/unix/sim.h"
 #include <unistd.h>
 #include <sys/socket.h>
