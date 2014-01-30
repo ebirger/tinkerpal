@@ -80,7 +80,7 @@
 
 #define STM32_GPIO_PIN_TYPE_OUT(init_struct) do { \
     init_struct.GPIO_OType = GPIO_OType_PP; \
-    init_struct.GPIO_Mode = GPIO_Mode_Out; \
+    init_struct.GPIO_Mode = GPIO_Mode_OUT; \
     init_struct.GPIO_PuPd = GPIO_PuPd_NOPULL; \
 } while (0)
 
