@@ -33,6 +33,8 @@
 #include "platform/arm/stellaris/lm3s6965/lm3s6965.h"
 #elif defined(CONFIG_LM3S6918)
 #include "platform/arm/stellaris/lm3s6918/lm3s6918.h"
+#elif defined(CONFIG_STM32F103XX)
+#include "platform/arm/stm32/stm32f1xx/stm32f103xx.h"
 #elif defined(CONFIG_STM32F303XX)
 #include "platform/arm/stm32/stm32f3xx/stm32f303xx.h"
 #elif defined(CONFIG_STM32F407XX)

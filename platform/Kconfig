@@ -67,6 +67,15 @@ config STM32
 config STM32_GPIO_API_LEGACY
 	bool
 
+config STM32F1XX
+	bool
+	select STM32
+	select STM32_GPIO_API_LEGACY
+
+config STM32F103XX
+	bool
+	select STM32F1XX
+
 config STM32F3XX
 	bool
 	select STM32

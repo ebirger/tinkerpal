@@ -22,15 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __STM32_COMMON_H__
-#define __STM32_COMMON_H__
+#ifndef __STM32F1XX_COMMON_H__
+#define __STM32F1XX_COMMON_H__
 
-#if defined(CONFIG_STM32F1XX)
-#include "platform/arm/stm32/stm32f1xx/stm32f1xx_common.h"
-#elif defined(CONFIG_STM32F3XX)
-#include "platform/arm/stm32/stm32f3xx/stm32f3xx_common.h"
-#elif defined(CONFIG_STM32F4XX)
-#include "platform/arm/stm32/stm32f4xx/stm32f4xx_common.h"
-#endif
+#include "stm32f10x_rcc.h"
+#include "stm32f10x_usart.h"
+#include "stm32f10x_gpio.h"
+#include "misc.h"
+#include "stm32f10x_spi.h"
+
+#define STM32_SPI_SEND_DATA SPI_I2S_SendData
+#define STM32_SPI_RECIEVE_DATA SPI_I2S_ReceiveData
+
+#define STM32_GPIO_PERIPH_ENABLE(p) RCC_APB2PeriphClockCmd(p, ENABLE)
 
 #endif
