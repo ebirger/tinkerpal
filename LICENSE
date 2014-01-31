@@ -13,8 +13,8 @@ TinkerPal includes the following external Libraries and projects:
    personal, non-profit or commercial product UNDER YOUR RESPONSIBILITY.
  * Redistributions of source code must retain the above copyright notice.
 
-2. Kconfig-frontends - used for CONFIG management, not linked into TinkerPal
-  binaries, licensed under GPLv2. See config/COPYING
+2. scripts/kconfig - used for CONFIG management, taken from the Linux kernel.
+  Not linked into TinkerPal binaries, licensed under GPLv2.
 
 3. TinkerPal License:
 
