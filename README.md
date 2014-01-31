@@ -21,6 +21,7 @@ Installation
 - gcc
 - make
 - gperf
+- flex
 - bison
 - libncurses5-dev
 
