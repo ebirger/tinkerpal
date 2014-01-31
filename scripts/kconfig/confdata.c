@@ -75,6 +75,13 @@ const char *conf_get_autoconfig_name(void)
 	return name ? name : "include/config/auto.conf";
 }
 
+const char *conf_get_autoconfig_dep_name(void)
+{
+	char *name = getenv("KCONFIG_AUTOCONFIG_DEP");
+
+	return name ? name : "include/config/auto.conf.cmd";
+}
+
 static char *conf_expand_value(const char *in)
 {
 	struct symbol *sym;
@@ -832,6 +839,7 @@ next:
 	return 0;
 }
 
+#if 0
 static int conf_split_config(void)
 {
 	const char *name;
@@ -943,6 +951,7 @@ out:
 
 	return res;
 }
+#endif
 
 int conf_write_autoconf(void)
 {
@@ -953,10 +962,12 @@ int conf_write_autoconf(void)
 
 	sym_clear_all_valid();
 
-	file_write_dep("include/config/auto.conf.cmd");
+	file_write_dep(conf_get_autoconfig_dep_name());
 
+#if 0
 	if (conf_split_config())
 		return 1;
+#endif
 
 	out = fopen(".tmpconfig", "w");
 	if (!out)
