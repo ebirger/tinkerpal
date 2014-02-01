@@ -33,14 +33,6 @@ static resource_t console_id;
 static int console_event_id = -1;
 static event_t *user_e;
 
-/* Stupid wrapper for user_e so their "free" cb is never called */
-static void console_watch_event(event_t *e, u32 resource_id)
-{
-    user_e->trigger(user_e, resource_id);
-}
-
-static event_t console_e = { .trigger = console_watch_event };
-
 int console_read(char *buf, int size)
 {
     tp_assert(console_id);
@@ -73,7 +65,7 @@ void console_event_watch_set(event_t *e)
     if (console_event_id != -1)
 	event_watch_del(console_event_id);
     user_e = e;
-    console_event_id = event_watch_set(console_id, &console_e);
+    console_event_id = event_watch_set(console_id, e);
 }
 
 /* XXX: this doesn't really belong here */
