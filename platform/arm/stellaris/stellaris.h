@@ -149,8 +149,9 @@ void stellaris_gpio_input(int pin);
 void stellaris_gpio_digital_write(int pin, int value);
 int stellaris_gpio_digital_read(int pin);
 double stellaris_gpio_analog_read(int pin);
-void stellaris_gpio_set_port_val(int port, unsigned short value);
-unsigned short stellaris_gpio_get_port_val(int port);
+void stellaris_gpio_set_port_val(int port, unsigned short mask,
+    unsigned short value);
+unsigned short stellaris_gpio_get_port_val(int port, unsigned short mask);
 #endif
 #ifdef CONFIG_SPI
 int stellaris_spi_init(int port);

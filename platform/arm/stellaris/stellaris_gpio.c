@@ -94,13 +94,14 @@ double stellaris_gpio_analog_read(int pin)
     return (double)value / 4096;
 }
 
-void stellaris_gpio_set_port_val(int port, unsigned short value)
+void stellaris_gpio_set_port_val(int port, unsigned short mask,
+    unsigned short value)
 {
-    MAP_GPIOPinWrite(stellaris_gpio_port_base(port), 0xff,
+    MAP_GPIOPinWrite(stellaris_gpio_port_base(port), mask,
 	(unsigned char)value);
 }
 
-unsigned short stellaris_gpio_get_port_val(int port)
+unsigned short stellaris_gpio_get_port_val(int port, unsigned short mask)
 {
-    return MAP_GPIOPinRead(stellaris_gpio_port_base(port), 0xff);
+    return MAP_GPIOPinRead(stellaris_gpio_port_base(port), mask);
 }

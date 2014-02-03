@@ -102,10 +102,16 @@ void stm32_gpio_digital_write(int pin, int value)
 	GPIO_ResetBits(GPIO_PORT(pin), GPIO_BIT(pin));
 }
 
-void stm32_gpio_set_port_val(int port, unsigned short value)
+void stm32_gpio_set_port_val(int port, unsigned short mask,
+    unsigned short value)
 {
-    GPIO_ResetBits(stm32_gpio_ports[port].port, ~value);
-    GPIO_SetBits(stm32_gpio_ports[port].port, value);
+    GPIO_ResetBits(stm32_gpio_ports[port].port, ~value & mask);
+    GPIO_SetBits(stm32_gpio_ports[port].port, value & mask);
+}
+
+unsigned short stm32_gpio_get_port_val(int port, unsigned short mask)
+{
+    return GPIO_ReadInputData(stm32_gpio_ports[port].port) & mask;
 }
 
 void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af)

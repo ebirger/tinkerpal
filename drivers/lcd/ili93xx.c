@@ -50,15 +50,17 @@ static ili93xx_t g_ili93xx;
 
 static u16 ili93xx_read_data(ili93xx_t *i)
 {
-    u16 ret;
+    u16 ret, dh, dl;
 
     gpio_set_port_mode(DL(i), DL_MASK(i), GPIO_PM_INPUT);
     gpio_set_port_mode(DH(i), DH_MASK(i), GPIO_PM_INPUT);
 
     gpio_digital_write(RD(i), 0);
 
-    ret = gpio_get_port_val(DH(i)) << 8;
-    ret |= gpio_get_port_val(DL(i));
+    dl = (gpio_get_port_val(DL(i), DL_MASK(i)) >> DL_SHIFT(i)) & 0xff;
+    dh = (gpio_get_port_val(DH(i), DH_MASK(i)) >> DH_SHIFT(i)) & 0xff;
+
+    ret = (dh << 8) | dl;
 
     gpio_digital_write(RD(i), 1);
 
@@ -70,8 +72,8 @@ static u16 ili93xx_read_data(ili93xx_t *i)
 
 static void ili93xx_write_data(ili93xx_t *i, u16 data)
 {
-    gpio_set_port_val(DH(i), (data >> 8) & 0xff);
-    gpio_set_port_val(DL(i), data & 0xff);
+    gpio_set_port_val(DH(i), DH_MASK(i), ((data >> 8) & 0xff) << DH_SHIFT(i));
+    gpio_set_port_val(DL(i), DL_MASK(i), (data & 0xff) << DL_SHIFT(i));
 
     gpio_digital_write(WR(i), 0);
     gpio_digital_write(WR(i), 1);
@@ -79,8 +81,8 @@ static void ili93xx_write_data(ili93xx_t *i, u16 data)
 
 static void ili93xx_write_cmd(ili93xx_t *i, u8 cmd)
 {
-    gpio_set_port_val(DH(i), 0);
-    gpio_set_port_val(DL(i), cmd);
+    gpio_set_port_val(DH(i), DH_MASK(i), 0);
+    gpio_set_port_val(DL(i), DL_MASK(i), cmd << DL_SHIFT(i));
 
     gpio_digital_write(RS(i), 0);
     gpio_digital_write(WR(i), 0);
@@ -124,8 +126,8 @@ static int chip_init(ili93xx_t *i)
     }
 
     /* Set GPIO Values */
-    gpio_set_port_val(DL(i), 0);
-    gpio_set_port_val(DH(i), 0);
+    gpio_set_port_val(DL(i), DL_MASK(i), 0);
+    gpio_set_port_val(DH(i), DH_MASK(i), 0);
     gpio_digital_write(BL(i), 0);
     gpio_digital_write(WR(i), 1);
     gpio_digital_write(RD(i), 1);
