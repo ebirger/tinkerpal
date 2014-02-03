@@ -790,7 +790,7 @@ static int name(obj_t **po, scan_t *scan, reference_t *ref) \
         return rc; \
     do \
     { \
-	obj_t *o; \
+	obj_t *o = UNDEF; \
 	ref_invalidate(ref); \
 	js_scan_next_token(scan); \
 	if (skip_condition) \
