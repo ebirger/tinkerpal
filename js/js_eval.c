@@ -735,7 +735,7 @@ Exit:
 static int eval_pre_fix(obj_t **po, scan_t *scan, reference_t *ref)
 {
     token_type_t tok = CUR_TOK(scan);
-    obj_t *old_object, *o;
+    obj_t *old_object, *o = UNDEF;
     int rc = 0, is_valid_lval;
 
     if (tok != TOK_PLUS_PLUS && tok != TOK_MINUS_MINUS)
