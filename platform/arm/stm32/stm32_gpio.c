@@ -89,6 +89,11 @@
 
 #endif
 
+int stm32_gpio_digital_read(int pin)
+{
+    return GPIO_ReadInputDataBit(GPIO_PORT(pin), GPIO_BIT(pin));
+}
+
 void stm32_gpio_digital_write(int pin, int value)
 {
     if (value)

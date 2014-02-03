@@ -41,6 +41,7 @@ typedef struct {
 
 extern const stm32_gpio_port_t stm32_gpio_ports[];
 
+int stm32_gpio_digital_read(int pin);
 void stm32_gpio_digital_write(int pin, int value);
 void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af);
 int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode);

@@ -104,6 +104,7 @@ const platform_t platform = {
 #ifdef CONFIG_GPIO
     .gpio = {
 	.digital_write = stm32_gpio_digital_write,
+	.digital_read = stm32_gpio_digital_read,
 	.set_pin_mode = stm32_gpio_set_pin_mode,
 	.set_port_val = stm32_gpio_set_port_val,
     },
