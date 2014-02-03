@@ -1,3 +1,4 @@
+BSP_DIR=$(STM32_DIR)/stm32_f1
 BSP_DRIVERS_DIR:=$(BSP_DIR)/Libraries/STM32F10x_StdPeriph_Driver
 
 INCS:=-I$(BSP_DRIVERS_DIR)/inc \

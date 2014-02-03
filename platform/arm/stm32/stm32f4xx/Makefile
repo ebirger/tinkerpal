@@ -1,3 +1,4 @@
+BSP_DIR=$(STM32_DIR)/$(if $(CONFIG_STM32F429XX),stm32_f429,stm32_f4)
 BSP_DRIVERS_DIR:=$(BSP_DIR)/Libraries/STM32F4xx_StdPeriph_Driver
 
 INCS:=-I$(BSP_DRIVERS_DIR)/inc \
