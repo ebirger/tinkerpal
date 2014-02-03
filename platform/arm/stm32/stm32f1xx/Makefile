@@ -22,5 +22,5 @@ ifneq ($(CONFIG_GCC),)
     -mfloat-abi=soft -ffunction-sections -fdata-sections \
     -fsingle-precision-constant -DSTM32F1 -DSTM32F10X_MD $(INCS) -mlittle-endian
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
-  LIBS+=-L$(LIBC_DIR) -lm -lc -L$(call get_libgcc_dir) -lgcc
+  LIBS+=-L$(call get_libc_dir) -lm -lc -L$(call get_libgcc_dir) -lgcc
 endif

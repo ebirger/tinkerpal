@@ -12,6 +12,7 @@ LINK_DEPS=$(LINKER_SCRIPT)
 CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h -Wall -Werror -g -ansi \
   -std=gnu99
 get_libgcc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-libgcc-file-name))
+get_libc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-file-name=libc.a))
 
 # Build commands
 compile=$(CC) $(CFLAGS) $(MK_CFLAGS_$@) -c -o $@ $<

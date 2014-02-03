@@ -35,6 +35,5 @@ ifneq ($(CONFIG_GCC),)
     -DSTM32F4XX $(INCS) -mlittle-endian
 
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
-  LIBC_DIR:=$(LIBC_DIR)/float-abi-hard/fpuv4-sp-d16/
-  LIBS+=-L$(LIBC_DIR) -lm -lc -L$(call get_libgcc_dir) -lgcc
+  LIBS+=-L$(call get_libc_dir) -lm -lc -L$(call get_libgcc_dir) -lgcc
 endif

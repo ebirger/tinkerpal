@@ -21,5 +21,5 @@ ifneq ($(CONFIG_GCC),)
     -ffunction-sections -fdata-sections -DPART_LM3S6918 \
     -I$(STELLARISWARE_DIR) -Dgcc -fsingle-precision-constant
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
-  LIBS+=-L$(LIBC_DIR) -lm -lc -L$(call get_libgcc_dir) -lgcc
+  LIBS+=-L$(call get_libc_dir) -lm -lc -L$(call get_libgcc_dir) -lgcc
 endif

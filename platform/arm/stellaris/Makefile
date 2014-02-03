@@ -30,7 +30,4 @@ ifneq ($(CONFIG_GCC),)
   ifeq ($(CROSS_COMPILE),)
     $(error Please set CROSS_COMPILE environment variable)
   endif
-  ifeq ($(LIBC_DIR),)
-    $(error Please set LIBC environment variable)
-  endif
 endif
