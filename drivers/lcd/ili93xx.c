@@ -33,7 +33,11 @@
 #define WR(i) ((i)->params.wr)
 #define BL(i) ((i)->params.backlight)
 #define DH(i) ((i)->params.data_port_high)
+#define DH_SHIFT(i) ((i)->params.data_port_high_shift)
+#define DH_MASK(i) (0xff << DH_SHIFT(i))
 #define DL(i) ((i)->params.data_port_low)
+#define DL_SHIFT(i) ((i)->params.data_port_low_shift)
+#define DL_MASK(i) (0xff << DL_SHIFT(i))
 
 typedef struct {
     canvas_t canvas;
@@ -48,8 +52,8 @@ static u16 ili93xx_read_data(ili93xx_t *i)
 {
     u16 ret;
 
-    gpio_set_port_mode(DL(i), GPIO_PM_INPUT);
-    gpio_set_port_mode(DH(i), GPIO_PM_INPUT);
+    gpio_set_port_mode(DL(i), DL_MASK(i), GPIO_PM_INPUT);
+    gpio_set_port_mode(DH(i), DH_MASK(i), GPIO_PM_INPUT);
 
     gpio_digital_write(RD(i), 0);
 
@@ -58,8 +62,8 @@ static u16 ili93xx_read_data(ili93xx_t *i)
 
     gpio_digital_write(RD(i), 1);
 
-    gpio_set_port_mode(DL(i), GPIO_PM_OUTPUT);
-    gpio_set_port_mode(DH(i), GPIO_PM_OUTPUT);
+    gpio_set_port_mode(DL(i), DL_MASK(i), GPIO_PM_OUTPUT);
+    gpio_set_port_mode(DH(i), DH_MASK(i), GPIO_PM_OUTPUT);
 
     return ret;
 }
@@ -112,8 +116,8 @@ static int chip_init(ili93xx_t *i)
 	return -1;
     }
 
-    if (gpio_set_port_mode(DL(i), GPIO_PM_OUTPUT) ||
-	gpio_set_port_mode(DH(i), GPIO_PM_OUTPUT))
+    if (gpio_set_port_mode(DL(i), DL_MASK(i), GPIO_PM_OUTPUT) ||
+	gpio_set_port_mode(DH(i), DH_MASK(i), GPIO_PM_OUTPUT))
     {
 	tp_err(("Unable to set pin mode for data ports\n"));
 	return -1;

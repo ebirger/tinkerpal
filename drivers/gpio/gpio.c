@@ -63,7 +63,7 @@ int gpio_events_process(void)
     return event;
 }
 
-int gpio_set_port_mode(resource_t port, gpio_pin_mode_t mode)
+int gpio_set_port_mode(resource_t port, u16 mask, gpio_pin_mode_t mode)
 {
     u16 pin;
 
@@ -72,6 +72,9 @@ int gpio_set_port_mode(resource_t port, gpio_pin_mode_t mode)
 
     for (pin = 0; pin < GPIO_NUM_PORT_PINS; pin++)
     {
+	if (!(mask & (1 << pin)))
+	    continue;
+
 	if (gpio_set_pin_mode(GPIO_RES(GPIO(RES_MAJ(port), pin)), mode))
 	    return -1;
     }

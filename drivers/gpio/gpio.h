@@ -81,22 +81,22 @@ static inline int gpio_set_pin_mode(resource_t pin, gpio_pin_mode_t mode)
     return platform.gpio.set_pin_mode(RES_MAJ(pin), mode);
 }
 
-int gpio_set_port_mode(resource_t port, gpio_pin_mode_t mode);
+int gpio_set_port_mode(resource_t port, u16 mask, gpio_pin_mode_t mode);
 
-static inline void gpio_set_port_val(resource_t port, u16 value)
+static inline void gpio_set_port_val(resource_t port, u16 mask, u16 value)
 {
     if (RES_BASE(port) != GPIO_RESOURCE_ID_BASE)
 	return;
 
-    platform.gpio.set_port_val(RES_MAJ(port), value);
+    platform.gpio.set_port_val(RES_MAJ(port), mask, value);
 }
 
-static inline u16 gpio_get_port_val(resource_t port)
+static inline u16 gpio_get_port_val(resource_t port, u16 mask)
 {
     if (RES_BASE(port) != GPIO_RESOURCE_ID_BASE)
 	return 0;
 
-    return platform.gpio.get_port_val(RES_MAJ(port));
+    return platform.gpio.get_port_val(RES_MAJ(port), mask);
 }
 
 /* XXX: should receive tstr */
