@@ -5,8 +5,10 @@ before_install:
  - sudo apt-get install gperf
  - sudo apt-get install valgrind
  - sudo apt-get install gcc-arm-none-eabi
+ - cd ~ && git clone https://github.com/ebirger/tinkerpal_bsps.git && cd -
 before_script:
  - arm-none-eabi-gcc --version
+ - cd ~/tinkerpal_bsps && ls && cd -
 compiler:
   - gcc
 env:
