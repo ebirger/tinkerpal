@@ -1,4 +1,4 @@
-STELLARISWARE_DIR?=$(CONFIG_TI_STELLARISWARE_DIR:"%"=%)
+STELLARISWARE_DIR?=$(BSPS_DIR)/stellarisware
 
 MK_OBJS=stellaris.o 
 MK_OBJS+=$(if $(CONFIG_TI_CCS5),stellaris_entry_ccs5.o)

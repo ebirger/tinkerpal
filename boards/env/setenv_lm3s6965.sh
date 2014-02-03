@@ -13,7 +13,7 @@ elif [[ $CONFIG_GCC == "y" ]] ; then
 
     TOOLCHAIN_DIR=/usr/local/tinkerpal/sat
 
-    export STELLARISWARE_DIR=/usr/local/tinkerpal/stellarisware
+    export BSPS_DIR=/usr/local/tinkerpal
     export LIBC_DIR=$TOOLCHAIN_DIR/arm-none-eabi/lib/thumb/cortex-m3
     export CROSS_COMPILE=$TOOLCHAIN_DIR/bin/arm-none-eabi-
 
