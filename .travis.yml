@@ -12,11 +12,11 @@ compiler:
   - gcc
 env:
   - DEFCONFIG=unix_sim_tests_defconfig
-  - DEFCONFIG=frdm_kl25z_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb CROSS_COMPILE=arm-none-eabi-
-  - DEFCONFIG=lm4f120xl_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
-  - DEFCONFIG=lm3s6918_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
-  - DEFCONFIG=lm3s6965_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
-  - DEFCONFIG=stm32f3discovery_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
-  - DEFCONFIG=stm32f4discovery_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
-  - DEFCONFIG=stm32f429idiscovery_gcc_defconfig SKIP_TESTS=1 LIBC_DIR=/usr/arm-none-eabi/lib/thumb CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
+  - DEFCONFIG=frdm_kl25z_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=lm4f120xl_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
+  - DEFCONFIG=lm3s6918_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
+  - DEFCONFIG=lm3s6965_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
+  - DEFCONFIG=stm32f3discovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
+  - DEFCONFIG=stm32f4discovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
+  - DEFCONFIG=stm32f429idiscovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi- BSPS_DIR=~/tinkerpal_bsps
 script: make $DEFCONFIG && make && cd tests && ./run_tests.sh && ./leak_check.sh
