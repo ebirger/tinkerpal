@@ -13,13 +13,11 @@ elif [[ $CONFIG_GCC == "y" ]] ; then
 
     TOOLCHAIN_DIR=/usr/local/tinkerpal/sat
 
-    export BSPS_DIR=/usr/local/tinkerpal
     export CROSS_COMPILE=$TOOLCHAIN_DIR/bin/arm-none-eabi-
 
 elif [[ $CONFIG_TI_CCS5 == "y" ]] ; then
 
     # Change this to the approproate toolchain location
     export TI_CCS5=C:/TI/ccsv5
-    export STELLARISWARE_DIR=E:/Programs/StellarisWare
 
 fi

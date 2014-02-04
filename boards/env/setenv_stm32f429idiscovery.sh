@@ -13,7 +13,6 @@ elif [[ $CONFIG_GCC == "y" ]] ; then
 
     TOOLCHAIN_DIR=/usr/local/tinkerpal/sat
     
-    export BSPS_DIR=/usr/local/tinkerpal
     export CROSS_COMPILE=$TOOLCHAIN_DIR/bin/arm-none-eabi-
 
 else
