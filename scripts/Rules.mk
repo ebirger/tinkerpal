@@ -16,6 +16,6 @@ AUTO_GEN_FILES+=$1
 
 $1 :: $2
 	@echo "LN $1"
-	$(Q)ln -sf $(realpath $2) $1
+	$(Q)ln -sf $(shell pwd)/$2 $1
 
 endef
