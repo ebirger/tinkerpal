@@ -26,10 +26,17 @@ all : _all
 build_dir:
 	@mkdir -p $(BUILD)
 
+$(BSPS_DIR)/.fetched:
+	@echo "Fetching BSPs"
+	@git clone https://github.com/ebirger/tinkerpal_bsps.git $(BSPS_DIR)
+	@touch $(BSPS_DIR)/.fetched
+
+FETCH_BSPS:=$(BSPS_DIR)/.fetched
+
 ifeq ($(wildcard $(BUILD)/auto.conf),)
 # auto.conf is not ready. Create it and recursively call make once auto.conf is created
 
-_all: build_dir $(BUILD)/auto.conf
+_all: build_dir $(BUILD)/auto.conf $(BSPS_DIR)/.fetched
 	@make BUILD=$(BUILD)
 
 else
@@ -100,24 +107,17 @@ $(BUILD)/version_data.h :
 	@echo "#define TINKERPAL_PATCH_VERSION $(PATCH_VERSION)" >> $@
 	@echo "#endif" >> $@
 
-$(BSPS_DIR)/.fetched:
-	@echo "Fetching BSPs"
-	@git clone https://github.com/ebirger/tinkerpal_bsps.git $(BSPS_DIR)
-	@touch $(BSPS_DIR)/.fetched
-
-FETCH_BSPS:=$(BSPS_DIR)/.fetched
-
 $(BUILD)/descs.h: $(DESCS) $(BUILD)/autoconf.h
 	@echo "GEN $@"
 	@echo "/* Automatically generated file, DO NOT MANUALLY EDIT */" > $@
 	@cat $^ >> $@
 
-$(BUILD)/%.o : %.c $(FETCH_BSPS) $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+$(BUILD)/%.o : %.c $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
 	@echo $($(quiet_)compile)
 	@$(call compile)
 	@$(call calc_deps)
 
-$(BUILD)/%.o : $(BUILD)/%.c $(FETCH_BSPS) $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+$(BUILD)/%.o : $(BUILD)/%.c $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
 	@echo $($(quiet_)compile)
 	@$(call compile)
 	@$(call calc_deps)
