@@ -126,33 +126,43 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
 {
     function_args_t args, saved_args;
     int i, rc;
-    obj_t *saved_this = this, *o_func = *po;
+    obj_t *saved_this = this, *o_func;
 
     if ((rc = eval_assert_is_function(po, scan)))
 	return rc;
 
     saved_args = cur_function_args;
 
+    o_func = *po;
+    *po = UNDEF;
     function_args_init(&args, o_func);
 
     /* Arguments are optional in constructors calls */
     if (!construct || CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
+	obj_t *o;
+
 	js_scan_match(scan, TOK_OPEN_PAREN);
 	if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
 	{
-	    if ((rc = eval_expression(po, scan)))
+	    if ((rc = eval_expression(&o, scan)))
+	    {
+		*po = o;
 		goto Exit;
+	    }
 
-	    function_args_add(&args, *po);
+	    function_args_add(&args, o);
 
 	    while (CUR_TOK(scan) == TOK_COMMA)
 	    {
 		js_scan_next_token(scan);
-		if ((rc = eval_expression(po, scan)))
+		if ((rc = eval_expression(&o, scan)))
+		{
+		    *po = o;
 		    goto Exit;
+		}
 
-		function_args_add(&args, *po);
+		function_args_add(&args, o);
 	    }
 	}
 	if (_js_scan_match(scan, TOK_CLOSE_PAREN))
@@ -162,7 +172,6 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
 	}
     }
 
-    *po = UNDEF;
     cur_function_args = args;
     if (construct)
 	rc = function_call_construct(po, args.argc, args.argv);
