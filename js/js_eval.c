@@ -55,7 +55,7 @@ static int eval_if(obj_t **ret, scan_t *scan);
 static int eval_while(obj_t **ret, scan_t *scan);
 static int eval_do_while(obj_t **ret, scan_t *scan);
 static int eval_for(obj_t **ret, scan_t *scan);
-static void skip_block(scan_t *scan);
+static int skip_block(obj_t **ret, scan_t *scan);
 static void skip_expression(scan_t *scan);
 static int eval_function(obj_t **ret, scan_t *scan, int stmnt);
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref);
@@ -315,7 +315,12 @@ static int eval_function_definition(tstr_t *fname, obj_t **po, scan_t *scan)
 	goto ParseError;
 
     start = js_scan_save(scan);
-    skip_block(scan);
+    if (skip_block(po, scan))
+    {
+	js_scan_free(start);
+	goto ParseError;
+    }
+	
     end = js_scan_save(scan);
     o = function_new(params, js_scan_slice(start, end), cur_env, 
 	call_evaluated_function);
@@ -1001,7 +1006,11 @@ static int do_block(obj_t **ret, scan_t *scan)
     scan_t *start, *end;
 
     start = js_scan_save(scan);
-    skip_block(scan);
+    if ((rc = skip_block(ret, scan)))
+    {
+	js_scan_free(start);
+	return rc;
+    }
     end = js_scan_save(scan);
 
     js_scan_restore(scan, start);
@@ -1050,7 +1059,12 @@ static int eval_try(obj_t **ret, scan_t *scan)
 	    cur_env = saved_env;
 	}
 	else
-	    skip_block(scan);
+	{
+	    obj_t *o = UNDEF;
+
+	    skip_block(&o, scan);
+	    obj_put(o); /* Don't mind the error for now */
+	}
 
 	tstr_free(&id);
     }
@@ -1118,20 +1132,28 @@ static int eval_statement(obj_t **ret, scan_t *scan)
     return rc;
 }
 
-/* XXX: should return exception on parse error */
-static void skip_block(scan_t *scan)
+static int skip_block(obj_t **ret, scan_t *scan)
 {
-    js_scan_match(scan, TOK_OPEN_SCOPE);
+    if (_js_scan_match(scan, TOK_OPEN_SCOPE))
+	return parse_error(ret);
+
     while (CUR_TOK(scan) != TOK_CLOSE_SCOPE && CUR_TOK(scan) != TOK_EOF)
     {
 	if (CUR_TOK(scan) == TOK_OPEN_SCOPE)
 	{
-	    skip_block(scan);
+	    int rc;
+	  
+	    if ((rc = skip_block(ret, scan)))
+		return rc;
+
 	    continue;
 	}
 	js_scan_next_token(scan);
     }
-    js_scan_match(scan, TOK_CLOSE_SCOPE);
+    if (_js_scan_match(scan, TOK_CLOSE_SCOPE))
+	return parse_error(ret);
+
+    return 0;
 }
 
 static void skip_for(scan_t *scan)
@@ -1154,11 +1176,14 @@ Exit:
     js_scan_next_token(scan); /* ) */
 }
 
+/* XXX: support exception on statement skipping errors */
 static void skip_statement(scan_t *scan)
 {
     if (CUR_TOK(scan) == TOK_OPEN_SCOPE)
     {
-	skip_block(scan);
+	obj_t *o = UNDEF;
+
+	skip_block(&o, scan);
 	return;
     }
 
@@ -1457,8 +1482,12 @@ static int eval_switch(obj_t **ret, scan_t *scan)
 
 	if ((rc = eval_statement_list(ret, scan)))
 	{
+	    obj_t *o = UNDEF;
+
 	    js_scan_restore(scan, start);
-	    skip_block(scan);
+	    /* We are already in error, don't mind the skip_block result */
+	    skip_block(&o, scan);
+	    obj_put(o);
 	    goto Exit;
 	}
 	obj_put(*ret);
