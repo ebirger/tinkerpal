@@ -105,19 +105,19 @@ $(BSPS_DIR)/.fetched:
 	@git clone https://github.com/ebirger/tinkerpal_bsps.git $(BSPS_DIR)
 	@touch $(BSPS_DIR)/.fetched
 
-fetch_bsps: $(BSPS_DIR)/.fetched
+FETCH_BSPS:=$(BSPS_DIR)/.fetched
 
 $(BUILD)/descs.h: $(DESCS) $(BUILD)/autoconf.h
 	@echo "GEN $@"
 	@echo "/* Automatically generated file, DO NOT MANUALLY EDIT */" > $@
 	@cat $^ >> $@
 
-$(BUILD)/%.o : %.c fetch_bsps $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+$(BUILD)/%.o : %.c $(FETCH_BSPS) $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
 	@echo $($(quiet_)compile)
 	@$(call compile)
 	@$(call calc_deps)
 
-$(BUILD)/%.o : $(BUILD)/%.c fetch_bsps $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+$(BUILD)/%.o : $(BUILD)/%.c $(FETCH_BSPS) $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
 	@echo $($(quiet_)compile)
 	@$(call compile)
 	@$(call calc_deps)
@@ -130,4 +130,4 @@ $(IMAGE) : $(TARGET)
 	@echo $($(quiet_)obj_to_bin)
 	@$(call obj_to_bin)
 
-.PHONY: build_dir _all docs fetch_bsps
+.PHONY: build_dir _all docs
