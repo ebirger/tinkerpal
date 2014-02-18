@@ -12,10 +12,10 @@ Platform
 - Peripherals (I2C, USB, SPI, 1Wire)
 - Permanent storage support
 - USB Mass storage support so modules could be edited on the fly (!)
-- Multiple UARTS on STM32
-- DigitalRead, AnalogRead, AnalogWrite on STM32
+- AnalogRead, AnalogWrite on STM32
 - Allow using Arduino like libraries (libmaple, energia, ...)
 - Porting assistive apps (blinky, peripheral tests) that don't use JS
+- Port based GPIO access only (remove digital_read/write)
 
 OS
 ==
