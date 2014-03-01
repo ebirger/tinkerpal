@@ -38,6 +38,10 @@ config STM32_ARMJISHU_28
 	bool "ARMJishu 28'' STM32F103RBT based board"
 	select STM32F103RBT
 
+config STM32_HY_24
+	bool "HY 24'' STM32F103VET6 based board"
+	select STM32F103VET6
+
 config FRDM_KL25Z
 	bool "Freescale FRDM-KL25Z"
 	select FRDM
