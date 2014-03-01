@@ -25,7 +25,35 @@
 #include "boards/board.h"
 #include "platform/platform.h"
 
+/* LCD daughter board connections:
+ *
+ * LEDK:GND  | MISO:PA6
+ * LEDA:5V   | SCK:PA5
+ * NC:PB11   | MOSI:PA7
+ * RST:PE1   | CS:PD6
+ * NC:PB10   | NC:PC4
+ * CS:PD7    | NC:PC5
+ * DB17:PD10 | DB7:PE10
+ * DB16:PD9  | DB6:PE9
+ * DB15:PD6  | DB5:PE8
+ * DB14:PE15 | DB4:PE7
+ * DB13:PE14 | DB3:PD1
+ * DB12:PE13 | DB2:PD0
+ * DB11:PE12 | DB1:PD15
+ * DB10:PE11 | DB0:PD14
+ * RD:PD4    | IRQ:PB6
+ * RW:PD5    | DOUT:PA6
+ * RS:PD11   | BUSY:PC13
+ * NC:PC6    | DIN:PA7
+ * VCC:3V    | CS:PB7
+ * GND:GND   | DCLK:PA5
+ */
+
 static const resource_t leds[] = {
+    GPIO_RES(PC6),
+    GPIO_RES(PC7),
+    GPIO_RES(PD13),
+    GPIO_RES(PD6),
     0
 };
 
