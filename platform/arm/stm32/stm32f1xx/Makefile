@@ -16,11 +16,16 @@ MK_OBJS=stm32f103xx.o system_stm32f10x.o interrupts.o $(BSP_SRCS:%.c=%.o)
 ifneq ($(CONFIG_GCC),)
   ifneq ($(CONFIG_STM32F103RBT),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f103rbt.ld
+    ST_DEF=STM32F10X_MD
+  endif
+  ifneq ($(CONFIG_STM32F103VET6),)
+    LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f103vet6.ld
+    ST_DEF=STM32F10X_HD
   endif
 
   CFLAGS+=-mthumb -mcpu=cortex-m3 -O3 -mfix-cortex-m3-ldrd  -mthumb-interwork \
     -mfloat-abi=soft -ffunction-sections -fdata-sections \
-    -fsingle-precision-constant -DSTM32F1 -DSTM32F10X_MD $(INCS) -mlittle-endian
+    -fsingle-precision-constant -DSTM32F1 -D$(ST_DEF) $(INCS) -mlittle-endian
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
   LIBS+=-L$(call get_libc_dir) -lm -lc -L$(call get_libgcc_dir) -lgcc
 endif
