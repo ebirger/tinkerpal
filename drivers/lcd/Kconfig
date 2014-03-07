@@ -8,6 +8,14 @@ config TEXT_LCD
 config ILI93XX
 	bool
 
+config ILI9325
+	bool "Support for the ILI9325 LCD controller"
+	depends on GPIO && GRAPHICS
+	default y if STM32_HY_24
+	select ILI93XX
+	help
+		Access is via a 16 bit GPIO interface for data
+
 config ILI9328
 	bool "Support for the ILI9328 LCD controller"
 	depends on GPIO && GRAPHICS
