@@ -76,6 +76,8 @@ int stm32_usart_enable(int u, int enabled)
     USART_Init(usart->usartx, &USART_InitStructure);
 
     stm32_usart_irq_enable(u, 1);
+    
+    USART_ClearITPendingBit(usart->usartx, USART_IT_RXNE);
 
     /* Enable the USART */
     USART_Cmd(usart->usartx, ENABLE);
@@ -96,9 +98,7 @@ void stm32_usart_irq_enable(int u, int enabled)
     /* Enable the USART Receive interrupt: this interrupt is generated when the
      * USART receive data register is not empty.
      */
-    USART_ClearITPendingBit(usart->usartx, USART_IT_RXNE);
     USART_ITConfig(usart->usartx, USART_IT_RXNE, enabled ? ENABLE : DISABLE);
-
 }
 
 int stm32_usart_write(int u, char *buf, int size)
