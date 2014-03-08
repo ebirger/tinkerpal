@@ -61,3 +61,12 @@ FUNCTION("meminfo", global_env, do_meminfo, {
     .return_value = "None",
     .example = "meminfo()",
 })
+
+FUNCTION("describe", global_env, do_describe, {
+    .params = { 
+       { .name = "object", .description = "Object to describe" },
+     },
+    .description = "Print object description to the console",
+    .return_value = "None",
+    .example = "describe(describe);",
+})

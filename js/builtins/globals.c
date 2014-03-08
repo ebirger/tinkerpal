@@ -141,3 +141,13 @@ int do_meminfo(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     platform_meminfo();
     return 0;
 }
+
+int do_describe(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    if (argc != 2)
+	return js_invalid_args(ret);
+
+    tp_out(("%D\n", argv[1]));
+    *ret = UNDEF;
+    return 0;
+}

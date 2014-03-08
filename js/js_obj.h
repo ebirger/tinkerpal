@@ -205,6 +205,7 @@ static inline void obj_put(obj_t *o)
 
 void obj_dump(printer_t *printer, obj_t *obj);
 int obj_true(obj_t *o);
+void obj_describe(printer_t *printer, obj_t *obj);
 
 /* "num" objects methods */
 obj_t *num_new_fp(double v);

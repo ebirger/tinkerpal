@@ -39,6 +39,9 @@ struct var_t {
 
 typedef struct {
     void (*dump)(printer_t *printer, obj_t *o);
+#ifdef CONFIG_OBJ_DOC
+    int (*describe)(printer_t *printer, obj_t *o);
+#endif
     void (*free)(obj_t *o);
     obj_t *(*do_op)(token_type_t op, obj_t *oa, obj_t *ob);
     int (*is_true)(obj_t *o);
@@ -203,6 +206,20 @@ int obj_true(obj_t *o)
     tp_assert(CLASS(o)->is_true);
 
     return CLASS(o)->is_true(o);
+}
+
+void obj_describe(printer_t *printer, obj_t *o)
+{
+#ifndef CONFIG_OBJ_DOC
+    tprintf(printer, "Object descriptions are available only when "
+	"CONFIG_OBJ_DOC is enabled\n");
+#else
+    if (!o)
+	return;
+
+    if (!CLASS(o)->describe || CLASS(o)->describe(printer, o))
+	tprintf(printer, "No description available\n");
+#endif
 }
 
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)

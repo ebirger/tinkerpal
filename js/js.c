@@ -72,6 +72,11 @@ static void obj_tprintf_handler(printer_t *printer, void *o)
     obj_dump(printer, (obj_t *)o);
 }
 
+static void obj_desc_tprintf_handler(printer_t *printer, void *o)
+{
+    obj_describe(printer, (obj_t *)o);
+}
+
 void js_uninit(void)
 {
     obj_put(meta_env);
@@ -89,6 +94,7 @@ void js_init(void)
 {
     js_obj_init();
     tprintf_register_handler('o', obj_tprintf_handler);
+    tprintf_register_handler('D', obj_desc_tprintf_handler);
     js_scan_set_constants_cb(js_get_constants_cb);
     meta_env = env_new(NULL);
     global_env = env_new(NULL);

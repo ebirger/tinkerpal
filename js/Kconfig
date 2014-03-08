@@ -9,6 +9,10 @@ config MAX_FUNCTION_CALL_ARGS
 		Change it in case you need to send a large amount of 
 		arguments to a function.
 
+config OBJ_DOC
+	bool "Provide object documentation at run time"
+	default y if UNIX
+
 source "js/builtins/Kconfig"
 
 config MODULES
