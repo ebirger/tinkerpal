@@ -44,7 +44,7 @@ FUNCTION("dump", debug, do_dump, {
      },
     .description = "Dump object to the console",
     .return_value = "None",
-    .example = "console.log('Hello World');",
+    .example = "debug.dump('Hello World');",
 })
 
 FUNCTION("dump_env", debug, do_dump_env, {
