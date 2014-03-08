@@ -727,6 +727,29 @@ static void function_dump(printer_t *printer, obj_t *o)
     tprintf(printer, ")");
 }
 
+#ifdef CONFIG_OBJ_DOC
+static int function_describe(printer_t *printer, obj_t *o)
+{
+    function_t *f = to_function(o);
+
+    if (!f->doc.name)
+	return -1;
+
+    tprintf(printer, "Name: %s\n", f->doc.display_name ? : f->doc.name);
+    tprintf(printer, "Description: %s\n", f->doc.description);
+    if (f->doc.params[0].name)
+    {
+	const doc_function_param_t *p;
+	
+	tprintf(printer, "Parameters:\n");
+	for (p = f->doc.params; p->name; p++)
+	    tprintf(printer, "\t%s: %s\n", p->name, p->description);
+    }
+    tprintf(printer, "Example:\n%s\n", f->doc.example);
+    return 0;
+}
+#endif
+
 static void function_free(obj_t *o)
 {
     function_t *func = to_function(o);
@@ -1550,6 +1573,9 @@ const obj_class_t classes[] = {
     },
     [ FUNCTION_CLASS ] = {
 	.dump = function_dump,
+#ifdef CONFIG_OBJ_DOC
+	.describe = function_describe,
+#endif
 	.free = function_free,
 	.do_op = function_do_op,
 	.cast = function_cast,

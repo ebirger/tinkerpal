@@ -31,6 +31,10 @@
 #include "util/tp_types.h"
 #include "mem/tmalloc.h"
 
+#ifdef CONFIG_OBJ_DOC
+#include "doc/tdocs.h"
+#endif
+
 typedef struct var_t var_t;
 
 #define Sprototype INTERNAL_S("prototype")
@@ -59,6 +63,9 @@ typedef struct {
     scan_t *code;
     obj_t *scope;
     tstr_list_t *formal_params;
+#ifdef CONFIG_OBJ_DOC
+    doc_function_t doc;
+#endif
 } function_t;
 
 typedef struct {

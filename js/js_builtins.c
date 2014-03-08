@@ -86,11 +86,22 @@ void js_builtins_init(void)
 {
     extern obj_t *global_env;
 
-#define FUNCTION(n, o, f, ...) do { \
+#ifdef CONFIG_OBJ_DOC
+#define OBJ_DOC_FUNCTION_INIT(n, o, f, d...) do { \
+    doc_function_t doc = d; \
+    memcpy(&f##_func.doc, &doc, sizeof(doc_function_t)); \
+    f##_func.doc.name = n; \
+} while(0)
+#else
+#define OBJ_DOC_FUNCTION_INIT(n, o, f, d...)
+#endif
+
+#define FUNCTION(n, o, f, d...) do { \
     _obj_set_property(o, S(n), (obj_t *)&f##_func); \
+    OBJ_DOC_FUNCTION_INIT(n, o, f, d); \
 } while(0);
-#define CONSTRUCTOR(n, o, f, ...) do { \
-    FUNCTION(n, global_env, f) \
+#define CONSTRUCTOR(n, o, f, d...) do { \
+    FUNCTION(n, global_env, f, d) \
     _obj_set_property(&f##_func.obj, Sprototype, o); \
 } while(0);
 #define OBJECT(n, o, ...) do { \
