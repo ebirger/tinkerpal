@@ -11,9 +11,7 @@ ifneq ($(CONFIG_GCC),)
   MK_OBJS+=entry_gcc.o 
 
   LINKER_SCRIPT:=$(BUILD)/$(d)/lm4f120xl.ld
-  FPU=softfp
-  #FPU=hard
-  CFLAGS+=-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=$(FPU) -O3 \
+  CFLAGS+=-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -O3 \
     -ffunction-sections -fdata-sections -DPART_LM4F120H5QR \
     -I$(STELLARISWARE_DIR) -DTARGET_IS_BLIZZARD_RA1 -Dgcc -fsingle-precision-constant
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
