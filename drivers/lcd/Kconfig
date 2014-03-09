@@ -10,6 +10,8 @@ config ILI93XX
 
 config ILI93XX_BITBANG
 	bool
+	depends on ILI93XX
+	default y
 
 config ILI9325
 	bool "Support for the ILI9325 LCD controller"
