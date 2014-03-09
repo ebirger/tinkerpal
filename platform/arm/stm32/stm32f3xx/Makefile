@@ -16,7 +16,7 @@ MK_OBJS=stm32f303xx.o system_stm32f30x.o interrupts.o $(BSP_SRCS:%.c=%.o)
 ifneq ($(CONFIG_GCC),)
   LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f303xx.ld
 
-  CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -O3 \
+  CFLAGS+=-mthumb -march=armv7e-m -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -O3 \
     -ffunction-sections -fdata-sections -fsingle-precision-constant \
     -DSTM32F3 $(INCS) -mlittle-endian
   LDFLAGS+=--entry reset_isr --gc-sections --nostdlib
