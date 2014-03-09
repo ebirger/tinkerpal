@@ -70,11 +70,15 @@ config STM32_USART_NO_IN_AF
 config STM32_GPIO_API_LEGACY
 	bool
 
+config STM32_HAS_FSMC_LCD
+	bool
+
 config STM32F1XX
 	bool
 	select STM32
 	select STM32_GPIO_API_LEGACY
 	select STM32_USART_NO_IN_AF
+	select STM32_HAS_FSMC_LCD
 
 config STM32F103XX
 	bool
@@ -107,6 +111,11 @@ config STM32F407XX
 config STM32F429XX
 	bool
 	select STM32F4XX
+
+config STM32_FSMC_LCD
+	bool "Support for FSMC connected ILI93XX LCD controller"
+	depends on STM32_HAS_FSMC_LCD
+	default y
 
 config MSP430
 	bool

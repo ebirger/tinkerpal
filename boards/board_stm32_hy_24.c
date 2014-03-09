@@ -48,6 +48,7 @@
  * VCC:3V    | CS:PB7
  * GND:GND   | DCLK:PA5
  */
+extern ili93xx_db_transport_t stm32_fsmc_ili93xx_trns;
 
 static const resource_t leds[] = {
     GPIO_RES(PC6),
@@ -61,4 +62,11 @@ const board_t board = {
     .desc = "HY 24'' STM32F103VET6 based board",
     .default_console_id = UART_RES(USART_PORT2),
     .leds = leds,
+#ifdef CONFIG_ILI93XX
+    .ili93xx_params = {
+	.trns = &stm32_fsmc_ili93xx_trns,
+	.rst = GPIO_RES(PE1),
+	.backlight = GPIO_RES(PB10),
+    },
+#endif
 };

@@ -28,8 +28,9 @@
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_usart.h"
 #include "stm32f10x_gpio.h"
-#include "misc.h"
+#include "stm32f10x_fsmc.h"
 #include "stm32f10x_spi.h"
+#include "misc.h"
 
 #define STM32_SPI_SEND_DATA SPI_I2S_SendData
 #define STM32_SPI_RECIEVE_DATA SPI_I2S_ReceiveData
