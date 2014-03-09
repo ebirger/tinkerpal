@@ -27,18 +27,12 @@
 
 #include "graphics/canvas.h"
 #include "drivers/resources.h"
-#include "drivers/gpio/gpio.h"
+#include "drivers/lcd/ili93xx_transport.h"
 
 typedef struct {
     resource_t rst;
     resource_t backlight;
-    resource_t rs;
-    resource_t wr;
-    resource_t rd;
-    resource_t data_port_low;
-    u16 data_port_low_shift;
-    resource_t data_port_high;
-    u16 data_port_high_shift;
+    const ili93xx_db_transport_t *trns;
 } ili93xx_params_t;
 
 canvas_t *ili93xx_new(const ili93xx_params_t *params);

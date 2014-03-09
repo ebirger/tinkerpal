@@ -8,6 +8,9 @@ config TEXT_LCD
 config ILI93XX
 	bool
 
+config ILI93XX_BITBANG
+	bool
+
 config ILI9325
 	bool "Support for the ILI9325 LCD controller"
 	depends on GPIO && GRAPHICS

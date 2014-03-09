@@ -21,6 +21,7 @@ config EK_LM3S6965
 config RDK_IDM
 	bool "TI RDK-IDM (LM3S6918)"
 	select LM3S6918
+	select ILI93XX_BITBANG
 
 config STM32F3DISCOVERY
 	bool "ST Micro STM32F3 Discovery board"

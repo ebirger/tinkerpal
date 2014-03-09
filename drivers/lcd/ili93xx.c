@@ -24,20 +24,13 @@
  */
 #include "util/tp_misc.h"
 #include "drivers/resources.h"
+#include "drivers/gpio/gpio.h"
 #include "drivers/lcd/ili93xx.h"
 #include "drivers/lcd/ili93xx_controllers.h"
 
 #define RST(i) ((i)->params.rst)
-#define RS(i) ((i)->params.rs)
-#define RD(i) ((i)->params.rd)
-#define WR(i) ((i)->params.wr)
 #define BL(i) ((i)->params.backlight)
-#define DH(i) ((i)->params.data_port_high)
-#define DH_SHIFT(i) ((i)->params.data_port_high_shift)
-#define DH_MASK(i) (0xff << DH_SHIFT(i))
-#define DL(i) ((i)->params.data_port_low)
-#define DL_SHIFT(i) ((i)->params.data_port_low_shift)
-#define DL_MASK(i) (0xff << DL_SHIFT(i))
+#define TRNS(i) ((i)->params.trns)
 
 typedef struct {
     canvas_t canvas;
@@ -48,52 +41,20 @@ typedef struct {
 
 static ili93xx_t g_ili93xx;
 
-static u16 ili93xx_read_data(ili93xx_t *i)
-{
-    u16 ret, dh, dl;
-
-    gpio_set_port_mode(DL(i), DL_MASK(i), GPIO_PM_INPUT);
-    gpio_set_port_mode(DH(i), DH_MASK(i), GPIO_PM_INPUT);
-
-    gpio_digital_write(RD(i), 0);
-
-    dl = (gpio_get_port_val(DL(i), DL_MASK(i)) >> DL_SHIFT(i)) & 0xff;
-    dh = (gpio_get_port_val(DH(i), DH_MASK(i)) >> DH_SHIFT(i)) & 0xff;
-
-    ret = (dh << 8) | dl;
-
-    gpio_digital_write(RD(i), 1);
-
-    gpio_set_port_mode(DL(i), DL_MASK(i), GPIO_PM_OUTPUT);
-    gpio_set_port_mode(DH(i), DH_MASK(i), GPIO_PM_OUTPUT);
-
-    return ret;
-}
-
 static void ili93xx_write_data(ili93xx_t *i, u16 data)
 {
-    gpio_set_port_val(DH(i), DH_MASK(i), ((data >> 8) & 0xff) << DH_SHIFT(i));
-    gpio_set_port_val(DL(i), DL_MASK(i), (data & 0xff) << DL_SHIFT(i));
-
-    gpio_digital_write(WR(i), 0);
-    gpio_digital_write(WR(i), 1);
+    TRNS(i)->ops->db_data_wr(TRNS(i), data);
 }
 
 static void ili93xx_write_cmd(ili93xx_t *i, u8 cmd)
 {
-    gpio_set_port_val(DH(i), DH_MASK(i), 0);
-    gpio_set_port_val(DL(i), DL_MASK(i), cmd << DL_SHIFT(i));
-
-    gpio_digital_write(RS(i), 0);
-    gpio_digital_write(WR(i), 0);
-    gpio_digital_write(WR(i), 1);
-    gpio_digital_write(RS(i), 1);
+    TRNS(i)->ops->db_cmd_wr(TRNS(i), cmd);
 }
 
 static u16 ili93xx_reg_read(ili93xx_t *i, u8 reg)
 {
     ili93xx_write_cmd(i, reg);
-    return ili93xx_read_data(i);
+    return TRNS(i)->ops->db_data_rd(TRNS(i));
 }
 
 static void ili93xx_reg_write(ili93xx_t *i, u8 reg, u16 data)
@@ -109,29 +70,20 @@ static int chip_init(ili93xx_t *i)
 
     /* Set GPIO Modes */
     if (gpio_set_pin_mode(RST(i), GPIO_PM_OUTPUT) ||
-        gpio_set_pin_mode(BL(i), GPIO_PM_OUTPUT) ||
-        gpio_set_pin_mode(RS(i), GPIO_PM_OUTPUT) ||
-        gpio_set_pin_mode(WR(i), GPIO_PM_OUTPUT) ||
-        gpio_set_pin_mode(RD(i), GPIO_PM_OUTPUT))
+        gpio_set_pin_mode(BL(i), GPIO_PM_OUTPUT))
     {
 	tp_err(("Unable to set pin mode for control pins\n"));
 	return -1;
     }
 
-    if (gpio_set_port_mode(DL(i), DL_MASK(i), GPIO_PM_OUTPUT) ||
-	gpio_set_port_mode(DH(i), DH_MASK(i), GPIO_PM_OUTPUT))
+    if (TRNS(i)->ops->db_init(TRNS(i)))
     {
-	tp_err(("Unable to set pin mode for data ports\n"));
+	tp_err(("Unable to init DB transport\n"));
 	return -1;
     }
 
     /* Set GPIO Values */
-    gpio_set_port_val(DL(i), DL_MASK(i), 0);
-    gpio_set_port_val(DH(i), DH_MASK(i), 0);
     gpio_digital_write(BL(i), 0);
-    gpio_digital_write(WR(i), 1);
-    gpio_digital_write(RD(i), 1);
-    gpio_digital_write(RS(i), 1);
 
     /* Reset */
     gpio_digital_write(RST(i), 0);

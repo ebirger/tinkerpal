@@ -37,6 +37,9 @@
 #ifdef CONFIG_ILI93XX
 #include "drivers/lcd/ili93xx.h"
 #endif
+#ifdef CONFIG_ILI93XX_BITBANG
+#include "drivers/lcd/ili93xx_bitbang.h"
+#endif
 #ifdef CONFIG_SDL_SCREEN
 #include "drivers/lcd/sdl_screen.h"
 #endif

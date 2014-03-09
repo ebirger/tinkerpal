@@ -22,30 +22,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
+#ifndef __ILI93XX_BITBANG_H__
+#define __ILI93XX_BITBANG_H__
 
-const board_t board = {
-    .desc = "RDK-IDM (LM3S6918)",
-    .default_console_id = UART_RES(UART1),
-#ifdef CONFIG_ILI93XX
-    .ili93xx_params = {
-	.trns = ILI93XX_BITBANG_TRNS({
-	    .rs = GPIO_RES(PF2),
-	    .wr = GPIO_RES(PF1),
-	    .rd = GPIO_RES(PF0),
-	    .data_port_low = GPIO_RES(GPIO_PORT_B),
-	    .data_port_high = GPIO_RES(GPIO_PORT_A),
-	}),
-	.rst = GPIO_RES(PG0),
-	.backlight = GPIO_RES(PC6),
-    },
+typedef struct {
+    ili93xx_db_transport_t trns;
+    struct {
+	resource_t rs;
+	resource_t wr;
+	resource_t rd;
+	resource_t data_port_low;
+	u16 data_port_low_shift;
+	resource_t data_port_high;
+	u16 data_port_high_shift;
+    } params;
+} ili93xx_db_bitbang_t;
+
+extern const ili93xx_db_transport_ops_t ili93xx_bitbang_ops;
+
+#define ILI93XX_BITBANG_TRNS(p...) \
+    (ili93xx_db_transport_t *)&((ili93xx_db_bitbang_t){ \
+        .trns = {.ops = &ili93xx_bitbang_ops, }, \
+	.params = p, \
+})
+
 #endif
-#ifdef CONFIG_MMC
-    .mmc_params = {
-	.spi_port = SPI_RES(SSI1),
-	.mosi = GPIO_RES(PE3),
-	.cs = GPIO_RES(PE1),
-    },
-#endif
-};
