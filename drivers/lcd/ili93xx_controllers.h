@@ -44,5 +44,8 @@ extern const ili93xx_cmd_t ili9328_init_cmds[];
 #ifdef CONFIG_ILI9325
 extern const ili93xx_cmd_t ili9325_4532_init_cmds[];
 #endif
+#ifdef CONFIG_ILI9320
+extern const ili93xx_cmd_t ili9320_init_cmds[];
+#endif
 
 #endif

@@ -108,6 +108,10 @@ static int chip_init(ili93xx_t *i)
     if (chip_id == 0x4532)
 	sequence = ili9325_4532_init_cmds;
 #endif
+#ifdef CONFIG_ILI9320
+    if (chip_id == 0x9320)
+	sequence = ili9320_init_cmds;
+#endif
 
     if (!sequence)
     {

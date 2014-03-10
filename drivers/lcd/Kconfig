@@ -13,6 +13,12 @@ config ILI93XX_BITBANG
 	depends on ILI93XX
 	default y
 
+config ILI9320
+	bool "Support for the ILI9320 LCD controller"
+	depends on GPIO && GRAPHICS
+	select ILI93XX
+	help
+		Access is via a 16 bit GPIO interface for data
 config ILI9325
 	bool "Support for the ILI9325 LCD controller"
 	depends on GPIO && GRAPHICS

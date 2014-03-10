@@ -5,6 +5,7 @@ ifneq ($(CONFIG_ILI93XX),)
   MK_OBJS+=$(if $(CONFIG_ILI93XX_BITBANG),ili93xx_bitbang.o)
   MK_OBJS+=$(if $(CONFIG_ILI9328),ili9328.o)
   MK_OBJS+=$(if $(CONFIG_ILI9325),ili9325.o)
+  MK_OBJS+=$(if $(CONFIG_ILI9320),ili9320.o)
 endif
 
 ifneq ($(CONFIG_SDL_SCREEN),)
