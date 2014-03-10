@@ -38,13 +38,7 @@
 #define DL_SHIFT(t) ((t)->params.data_port_low_shift)
 #define DL_MASK(t) (0xff << DL_SHIFT(t))
 
-static void ili93xx_bitbang_db_write(ili93xx_db_bitbang_t *t, u16 data)
-{
-    gpio_set_port_val(DH(t), DH_MASK(t), ((data >> 8) & 0xff) << DH_SHIFT(t));
-    gpio_set_port_val(DL(t), DL_MASK(t), (data & 0xff) << DL_SHIFT(t));
-}
-
-int ili93xx_bitbang_db_init(const ili93xx_db_transport_t *trns)
+static int ili93xx_bitbang_db_init(const ili93xx_db_transport_t *trns)
 {
     ili93xx_db_bitbang_t *t = (ili93xx_db_bitbang_t *)trns;
 
@@ -74,7 +68,14 @@ int ili93xx_bitbang_db_init(const ili93xx_db_transport_t *trns)
     return 0;
 }
 
-void ili93xx_bitbang_db_cmd_wr(const ili93xx_db_transport_t *trns, u16 cmd)
+static void ili93xx_bitbang_db_write(ili93xx_db_bitbang_t *t, u16 data)
+{
+    gpio_set_port_val(DH(t), DH_MASK(t), ((data >> 8) & 0xff) << DH_SHIFT(t));
+    gpio_set_port_val(DL(t), DL_MASK(t), (data & 0xff) << DL_SHIFT(t));
+}
+
+static void ili93xx_bitbang_db_cmd_wr(const ili93xx_db_transport_t *trns,
+    u16 cmd)
 {
     ili93xx_db_bitbang_t *t = (ili93xx_db_bitbang_t *)trns;
 
@@ -86,7 +87,8 @@ void ili93xx_bitbang_db_cmd_wr(const ili93xx_db_transport_t *trns, u16 cmd)
     gpio_digital_write(RS(t), 1);
 }
 
-void ili93xx_bitbang_db_data_wr(const ili93xx_db_transport_t *trns, u16 data)
+static void ili93xx_bitbang_db_data_wr(const ili93xx_db_transport_t *trns,
+    u16 data)
 {
     ili93xx_db_bitbang_t *t = (ili93xx_db_bitbang_t *)trns;
 
@@ -96,7 +98,7 @@ void ili93xx_bitbang_db_data_wr(const ili93xx_db_transport_t *trns, u16 data)
     gpio_digital_write(WR(t), 1);
 }
 
-u16 ili93xx_bitbang_db_data_rd(const ili93xx_db_transport_t *trns)
+static u16 ili93xx_bitbang_db_data_rd(const ili93xx_db_transport_t *trns)
 {
     ili93xx_db_bitbang_t *t = (ili93xx_db_bitbang_t *)trns;
     u16 ret, dh, dl;
