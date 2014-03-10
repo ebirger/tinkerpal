@@ -42,8 +42,26 @@ static int fsmc_db_init(const ili93xx_db_transport_t *trns)
 	.FSMC_AccessMode = FSMC_AccessMode_B,
     };
     int *p, pins[] = {
-	PD0, PD1, PD4, PD5, PD8, PD9, PD10, PD14, PD15, PD7, PD11,
-	PE7, PE8, PE9, PE10, PE11, PE12, PE13, PE14, PE15,
+	PD14, /* D0 */
+	PD15, /* D1 */
+	PD0, /* D2 */
+	PD1, /* D3 */
+	PE7, /* D4 */
+	PE8, /* D5 */
+	PE9, /* D6 */
+	PE10, /* D7 */
+	PE11, /* D8 */
+	PE12, /* D9 */
+	PE13, /* D10 */
+	PE14, /* D11 */
+	PE15, /* D12 */
+	PD8, /* D13 */
+	PD9, /* D14 */
+	PD10, /* D15 */
+	PD4, /* NOE - RD */
+	PD5, /* NWE - WR */
+	PD7, /* NE1 - CS */
+	PD11, /* A16 - RS */
 	0
     };
 
