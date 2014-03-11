@@ -24,7 +24,7 @@
  */
 #include "drivers/lcd/ili93xx_transport.h"
 #include "platform/arm/stm32/stm32_gpio.h"
-#include "platform/arm/stm32/stm32f1xx/stm32f1xx_common.h"
+#include "platform/arm/stm32/stm32_common.h"
 
 #define BANK1_C ((uint32_t)0x60020000)
 #define BANK1_D ((uint32_t)0x60000000)
@@ -66,13 +66,13 @@ static int fsmc_db_init(const ili93xx_db_transport_t *trns)
     };
 
     /* Enable the FSMC Clock */
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_FSMC, ENABLE);
+    STM32_FSMC_PERIPH_ENABLE();
 
     /* Set pins function */
     for (p = pins; *p; p++)
     {
 	stm32_gpio_set_pin_mode(*p, GPIO_PM_OUTPUT);
-	stm32_gpio_set_pin_function(*p, 0);
+	stm32_gpio_set_pin_function(*p, STM32_FSMC_GPIO_AF);
     }
 
     nor_sram.FSMC_Bank = FSMC_Bank1_NORSRAM1;

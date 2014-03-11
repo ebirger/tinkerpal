@@ -8,13 +8,9 @@ INCS:=-I$(BSP_DRIVERS_DIR)/inc \
 BSP_SRCS:=stm32f10x_usart.c stm32f10x_rcc.c misc.c
 BSP_SRCS+=$(if $(CONFIG_GPIO),stm32f10x_gpio.c)
 BSP_SRCS+=$(if $(CONFIG_SPI),stm32f10x_spi.c)
+BSP_SRCS+=$(if $(CONFIG_STM32_FSMC_LCD),stm32f10x_fsmc.c)
 
 MK_OBJS=stm32f103xx.o system_stm32f10x.o interrupts.o $(BSP_SRCS:%.c=%.o)
-
-ifneq ($(CONFIG_STM32_FSMC_LCD),)
-  BSP_SRCS+=stm32f10x_fsmc.c
-  MK_OBJS+=stm32_fsmc_lcd.o
-endif
 
 MK_LINKS:=$(addprefix $(BSP_DRIVERS_DIR)/src/,$(BSP_SRCS))
 

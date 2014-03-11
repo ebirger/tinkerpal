@@ -8,6 +8,7 @@ INCS:=-I$(BSP_DRIVERS_DIR)/inc \
 BSP_SRCS:=stm32f4xx_usart.c stm32f4xx_rcc.c misc.c
 BSP_SRCS+=$(if $(CONFIG_GPIO),stm32f4xx_gpio.c)
 BSP_SRCS+=$(if $(CONFIG_SPI),stm32f4xx_spi.c)
+BSP_SRCS+=$(if $(CONFIG_STM32_FSMC_LCD),stm32f4xx_fsmc.c)
 
 MK_LINKS:=$(addprefix $(BSP_DRIVERS_DIR)/src/,$(BSP_SRCS))
 
