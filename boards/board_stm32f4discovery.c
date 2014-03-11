@@ -25,6 +25,8 @@
 #include "boards/board.h"
 #include "platform/platform.h"
 
+extern ili93xx_db_transport_t stm32_fsmc_ili93xx_trns;
+
 const board_t board = {
     .desc = "STM32F4Discovery",
     .default_console_id = UART_RES(USART_PORT2),
@@ -33,6 +35,13 @@ const board_t board = {
 	.spi_port = SPI_RES(SPI_PORT1),
 	.cs = GPIO_RES(PC5),
 	.intr = GPIO_RES(PB1),
+    },
+#endif
+#ifdef CONFIG_ILI93XX
+    .ili93xx_params = {
+	.trns = &stm32_fsmc_ili93xx_trns,
+	.rst = GPIO_RES(PE1),
+	.backlight = GPIO_RES(PB10),
     },
 #endif
 };

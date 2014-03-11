@@ -41,4 +41,18 @@ const board_t board = {
     .desc = "STM32F3Discovery",
     .default_console_id = UART_RES(USART_PORT2),
     .leds = leds,
+#ifdef CONFIG_ILI93XX
+    .ili93xx_params = {
+	.trns = ILI93XX_BITBANG_TRNS({
+	    .rs = GPIO_RES(PB15),
+	    .wr = GPIO_RES(PC7),
+	    .rd = GPIO_RES(PC6),
+	    .data_port_low = GPIO_RES(GPIO_PORT_D),
+	    .data_port_high = GPIO_RES(GPIO_PORT_D),
+	    .data_port_high_shift = 8,
+	}),
+	.rst = GPIO_RES(PB1),
+	.backlight = GPIO_RES(PC0),
+    },
+#endif
 };
