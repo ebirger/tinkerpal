@@ -25,7 +25,9 @@
 #include "boards/board.h"
 #include "platform/platform.h"
 
+#ifdef CONFIG_ILI93XX
 extern ili93xx_db_transport_t stm32_fsmc_ili93xx_trns;
+#endif
 
 const board_t board = {
     .desc = "STM32F4Discovery",
