@@ -9,7 +9,7 @@ config ILI93XX
 	bool
 
 config ILI93XX_BITBANG
-	bool
+	bool "Bitbang transport support for ILI93xx controllers"
 	depends on ILI93XX
 	default y
 
