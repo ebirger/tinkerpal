@@ -63,10 +63,83 @@ static void ili93xx_reg_write(ili93xx_t *i, u8 reg, u16 data)
     ili93xx_write_data(i, data);
 }
 
+typedef struct {
+    u16 chip_id;
+    const ili93xx_cmd_t *sequence;
+} ili93xx_controller_t;
+
+static const ili93xx_controller_t controllers[] = {
+#ifdef CONFIG_ILI9328
+    { .chip_id = 0x9328, .sequence = ili9328_init_cmds },
+#endif
+#ifdef CONFIG_ILI9325
+    { .chip_id = 0x4532, .sequence = ili9325_4532_init_cmds },
+#endif
+#ifdef CONFIG_ILI9320
+    { .chip_id = 0x9320, .sequence = ili9320_init_cmds },
+#endif
+    {}
+};
+
+#define MORE_THAN_ONE_SET_BIT(x) ((x) & ((x) - 1))
+
+static int find_bit(u16 x)
+{
+    int i;
+
+    for (i = -1; x; x >>= 1, i++);
+    return i;
+}
+
+static void probe_helper(u16 chip_id)
+{
+    const ili93xx_controller_t *c;
+
+    /* Try to provide info on a close match */
+    for (c = controllers; c->chip_id; c++)
+    {
+	u16 delta = chip_id ^ c->chip_id;
+
+	if (!delta || MORE_THAN_ONE_SET_BIT(delta))
+	    continue;
+
+	tp_out(("Note: %x is supported, and is one bit away.\n"
+	    "You may have missed a connection - check D%d\n",
+	    c->chip_id, find_bit(delta)));
+    }
+}
+
+static const ili93xx_cmd_t *ili93xx_probe(ili93xx_t *i)
+{
+    const ili93xx_controller_t *c;
+    u16 chip_id;
+
+    chip_id = ili93xx_reg_read(i, 0x00);
+
+    if (!chip_id)
+    {
+	tp_err(("No ILI93xx controllers found\n"));
+	return NULL;
+    }
+
+    tp_info(("Probing chip ID: %x\n", chip_id));
+
+    /* Process init sequence */
+    for (c = controllers; c->chip_id && c->chip_id != chip_id; c++);
+    if (!c->chip_id)
+    {
+	tp_out(("Chip ID %x is not supported\n", chip_id));
+	probe_helper(chip_id);
+	return NULL;
+    }
+
+    tp_out(("Found ILI93xx controller %x\n", chip_id));
+    return c->sequence;
+}
+
 static int chip_init(ili93xx_t *i)
 {
-    const ili93xx_cmd_t *sequence = NULL;
-    u16 chip_id;
+    const ili93xx_cmd_t *sequence;
 
     /* Set GPIO Modes */
     if (gpio_set_pin_mode(RST(i), GPIO_PM_OUTPUT) ||
@@ -95,29 +168,8 @@ static int chip_init(ili93xx_t *i)
     /* Wait for reset to complete */
     platform_msleep(60);
 
-    chip_id = ili93xx_reg_read(i, 0x00);
-
-    tp_out(("Found ILI93xx controller. Chip ID: %x\n", chip_id));
-
-    /* Process init sequence */
-#ifdef CONFIG_ILI9328
-    if (chip_id == 0x9328)
-	sequence = ili9328_init_cmds;
-#endif
-#ifdef CONFIG_ILI9325
-    if (chip_id == 0x4532)
-	sequence = ili9325_4532_init_cmds;
-#endif
-#ifdef CONFIG_ILI9320
-    if (chip_id == 0x9320)
-	sequence = ili9320_init_cmds;
-#endif
-
-    if (!sequence)
-    {
-	tp_err(("Unsupported ILI93xx controller\n"));
+    if (!(sequence = ili93xx_probe(i)))
 	return -1;
-    }
 
     for (; sequence->cmd != CMD_END; sequence++)
     {
