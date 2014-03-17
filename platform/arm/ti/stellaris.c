@@ -34,9 +34,9 @@
 #include "drivers/gpio/gpio_platform.h"
 #endif
 #include "platform/arm/cortex-m.h"
-#include "platform/arm/stellaris/stellaris.h"
+#include "platform/arm/ti/stellaris.h"
 #ifdef CONFIG_STELLARIS_ETH
-#include "platform/arm/stellaris/stellaris_eth.h"
+#include "platform/arm/ti/stellaris_eth.h"
 #endif
 
 void stellaris_systick_init(void)

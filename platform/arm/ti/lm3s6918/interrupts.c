@@ -24,7 +24,7 @@
  */
 #include "inc/hw_nvic.h"
 #include "inc/hw_types.h"
-#include "platform/arm/stellaris/lm3s6918/lm3s6918.h"
+#include "platform/arm/ti/lm3s6918/lm3s6918.h"
 
 extern void reset_isr(void);
 extern void stellaris_uart_isr(int u);

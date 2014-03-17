@@ -29,7 +29,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
 #include "drivers/gpio/gpio_platform.h"
-#include "platform/arm/stellaris/stellaris.h"
+#include "platform/arm/ti/stellaris.h"
 
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS
 void stellaris_gpio_isr(int port)

@@ -26,7 +26,7 @@
 #include "js/js_utils.h"
 #include "js/js_event.h"
 #include "net/js_etherif.h"
-#include "platform/arm/stellaris/stellaris_eth.h"
+#include "platform/arm/ti/stellaris_eth.h"
 
 int do_stellaris_eth_constructor(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])

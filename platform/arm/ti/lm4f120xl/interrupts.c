@@ -24,7 +24,7 @@
  */
 #include "inc/hw_nvic.h"
 #include "inc/hw_types.h"
-#include "platform/arm/stellaris/lm4f120xl/lm4f120xl.h"
+#include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
 
 extern void reset_isr(void);
 extern void stellaris_uart_isr(int u);

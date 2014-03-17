@@ -30,7 +30,7 @@
 #if defined(CONFIG_LINUX_PACKET_ETH)
 #include "drivers/net/linux_packet_eth.h"
 #elif defined(CONFIG_STELLARIS_ETH)
-#include "platform/arm/stellaris/stellaris_eth.h"
+#include "platform/arm/ti/stellaris_eth.h"
 #elif defined(CONFIG_ENC28J60)
 #include "drivers/net/enc28j60.h"
 #else

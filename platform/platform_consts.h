@@ -28,11 +28,11 @@
 #ifdef CONFIG_PLATFORM_EMULATION
 #include "platform/unix/sim.h"
 #elif defined(CONFIG_LM4F120XL)
-#include "platform/arm/stellaris/lm4f120xl/lm4f120xl.h"
+#include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
 #elif defined(CONFIG_LM3S6965)
-#include "platform/arm/stellaris/lm3s6965/lm3s6965.h"
+#include "platform/arm/ti/lm3s6965/lm3s6965.h"
 #elif defined(CONFIG_LM3S6918)
-#include "platform/arm/stellaris/lm3s6918/lm3s6918.h"
+#include "platform/arm/ti/lm3s6918/lm3s6918.h"
 #elif defined(CONFIG_STM32F103XX)
 #include "platform/arm/stm32/stm32f1xx/stm32f103xx.h"
 #elif defined(CONFIG_STM32F303XX)
