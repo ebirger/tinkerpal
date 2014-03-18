@@ -28,9 +28,13 @@ config PLAT_HAS_BLK
 config 16_BIT
 	bool
 
+config TI
+        bool
+
 config STELLARIS
 	bool
 	select ARM
+	select TI
 	select PLAT_HAS_GCC
 	select PLAT_HAS_TI_CCS5
 	select PLAT_HAS_GPIO
