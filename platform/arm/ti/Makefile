@@ -1,4 +1,6 @@
-STELLARISWARE_DIR?=$(BSPS_DIR)/stellarisware
+ifneq ($(CONFIG_STELLARIS),)
+  TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/stellarisware
+endif
 
 MK_OBJS=stellaris.o 
 MK_OBJS+=$(if $(CONFIG_TI_CCS5),stellaris_entry_ccs5.o)
@@ -21,7 +23,7 @@ ifneq ($(CONFIG_TI_CCS5),)
 
   obj_to_bin=$(OBJ2BIN) $< $@ "$(TI_COMPILER)/bin/ofd470" \
     "$(TI_COMPILER)/bin/hex470" "$(TI_OBJ2BIN_PATH)/mkhex4bin"
-  CFLAGS+=--abi=eabi -me --ual --include_path=$(STELLARISWARE_DIR)
+  CFLAGS+=--abi=eabi -me --ual --include_path=$(TI_ARM_MCU_BSP_DIR)
   LDFLAGS+=--abi=eabi -me --ual
   LIBS+=-l"libc.a"
 endif
