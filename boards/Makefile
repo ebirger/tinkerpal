@@ -1,6 +1,6 @@
 MK_OBJS+=$(if $(CONFIG_RDK_IDM),board_rdk_idm.o)
-MK_OBJS+=$(if $(CONFIG_LM3S6965),board_lm3s6965.o)
-MK_OBJS+=$(if $(CONFIG_LM4F120XL),board_lm4f120xl.o)
+MK_OBJS+=$(if $(CONFIG_EK_LM3S6965),board_ek_lm3s6965.o)
+MK_OBJS+=$(if $(CONFIG_EK_LM4F120XL),board_ek_lm4f120xl.o)
 MK_OBJS+=$(if $(CONFIG_STM32F3DISCOVERY),board_stm32f3discovery.o)
 MK_OBJS+=$(if $(CONFIG_STM32F4DISCOVERY),board_stm32f4discovery.o)
 MK_OBJS+=$(if $(CONFIG_STM32F429IDISCOVERY),board_stm32f429idiscovery.o)
