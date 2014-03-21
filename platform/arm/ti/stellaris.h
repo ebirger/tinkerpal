@@ -28,6 +28,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
+#include "driverlib/sysctl.h"
 
 typedef struct {
     unsigned long periph;
