@@ -4,7 +4,7 @@ endif
 
 MK_OBJS=ti_arm_mcu.o 
 MK_OBJS+=$(if $(CONFIG_TI_CCS5),stellaris_entry_ccs5.o)
-MK_OBJS+=$(if $(CONFIG_GPIO),stellaris_gpio.o)
+MK_OBJS+=$(if $(CONFIG_GPIO),ti_arm_mcu_gpio.o)
 MK_OBJS+=$(if $(CONFIG_SPI),stellaris_spi.o)
 ifneq ($(CONFIG_STELLARIS_ETH),)
   MK_OBJS+=stellaris_eth.o $(if $(CONFIG_JS),js_stellaris_eth.o)
