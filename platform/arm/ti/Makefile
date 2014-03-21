@@ -2,7 +2,7 @@ ifneq ($(CONFIG_STELLARIS),)
   TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/stellarisware
 endif
 
-MK_OBJS=stellaris.o 
+MK_OBJS=ti_arm_mcu.o 
 MK_OBJS+=$(if $(CONFIG_TI_CCS5),stellaris_entry_ccs5.o)
 MK_OBJS+=$(if $(CONFIG_GPIO),stellaris_gpio.o)
 MK_OBJS+=$(if $(CONFIG_SPI),stellaris_spi.o)

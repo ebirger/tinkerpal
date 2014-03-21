@@ -34,7 +34,7 @@
 #include "drivers/gpio/gpio_platform.h"
 #endif
 #include "platform/arm/cortex-m.h"
-#include "platform/arm/ti/stellaris.h"
+#include "platform/arm/ti/ti_arm_mcu.h"
 #ifdef CONFIG_STELLARIS_ETH
 #include "platform/arm/ti/stellaris_eth.h"
 #endif

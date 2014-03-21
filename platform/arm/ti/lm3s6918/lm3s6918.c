@@ -45,7 +45,7 @@
 #include "drivers/serial/serial_platform.h"
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
-#include "platform/arm/ti/stellaris.h"
+#include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/lm3s6918/lm3s6918.h"
 
 const stellaris_gpio_port_t stellaris_gpio_ports[] = {

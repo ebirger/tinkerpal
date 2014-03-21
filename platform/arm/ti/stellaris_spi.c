@@ -28,7 +28,7 @@
 #include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
 #include "platform/platform.h"
-#include "platform/arm/ti/stellaris.h"
+#include "platform/arm/ti/ti_arm_mcu.h"
 
 static inline unsigned long stellaris_ssi_base(int port)
 {
