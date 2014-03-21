@@ -22,8 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __STERLLARIS_H__
-#define __STERLLARIS_H__
+#ifndef __TI_ARM_MCU_H__
+#define __TI_ARM_MCU_H__
 
 #include "driverlib/gpio.h"
 #include "driverlib/rom.h"
