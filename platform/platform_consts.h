@@ -33,6 +33,8 @@
 #include "platform/arm/ti/lm3s6965/lm3s6965.h"
 #elif defined(CONFIG_LM3S6918)
 #include "platform/arm/ti/lm3s6918/lm3s6918.h"
+#elif defined(CONFIG_TM4C123G)
+#include "platform/arm/ti/tm4c123g/tm4c123g.h"
 #elif defined(CONFIG_STM32F103XX)
 #include "platform/arm/stm32/stm32f1xx/stm32f103xx.h"
 #elif defined(CONFIG_STM32F303XX)
