@@ -39,9 +39,11 @@
 #include "platform/arm/ti/stellaris_eth.h"
 #endif
 
+#define SYSTEM_CLOCK() platform.get_system_clock()
+
 void ti_arm_mcu_systick_init(void)
 {
-    MAP_SysTickPeriodSet(MAP_SysCtlClockGet() / 1000);
+    MAP_SysTickPeriodSet(SYSTEM_CLOCK() / 1000);
     MAP_SysTickIntEnable();
     MAP_SysTickEnable();
     MAP_IntMasterEnable();
@@ -54,7 +56,7 @@ unsigned long ti_arm_mcu_get_system_clock(void)
 
 void ti_arm_mcu_msleep(double ms)
 {
-    MAP_SysCtlDelay(MAP_SysCtlClockGet() * ms / 4000);
+    MAP_SysCtlDelay(SYSTEM_CLOCK() * ms / 4000);
 }
 
 void ti_arm_mcu_uart_isr(int u)
@@ -129,8 +131,8 @@ void ti_arm_mcu_uart_enable(int u, int enabled)
     ti_arm_mcu_pin_mode_uart(txpin);
 
     ti_arm_mcu_periph_enable(ti_arm_mcu_uarts[u].periph);
-    MAP_UARTConfigSetExpClk(ti_arm_mcu_uarts[u].base, MAP_SysCtlClockGet(), 
-	115200, (UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE | 
+    MAP_UARTConfigSetExpClk(ti_arm_mcu_uarts[u].base,
+	SYSTEM_CLOCK(), 115200, (UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE |
 	UART_CONFIG_WLEN_8));
 
     /* Set the UART to interrupt whenever the TX FIFO is almost empty or

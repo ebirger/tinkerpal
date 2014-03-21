@@ -172,7 +172,7 @@ static void hw_init(void)
     MAP_EthernetIntClear(ETH_BASE, MAP_EthernetIntStatus(ETH_BASE, false));
 
     /* Initialize the Ethernet Controller. */
-    MAP_EthernetInitExpClk(ETH_BASE, MAP_SysCtlClockGet());
+    MAP_EthernetInitExpClk(ETH_BASE, platform.get_system_clock());
 
     /* Configure the Ethernet Controller */
     MAP_EthernetConfigSet(ETH_BASE, ETH_CFG_TX_DPLXEN | ETH_CFG_TX_CRCEN |

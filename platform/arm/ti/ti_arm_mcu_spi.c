@@ -50,8 +50,9 @@ void ti_arm_mcu_spi_set_max_speed(int port, unsigned long speed)
 
     /* Configure the SSI port */
     /* XXX: transfer length should be configured by init */
-    MAP_SSIConfigSetExpClk(ti_arm_mcu_ssi_base(port), MAP_SysCtlClockGet(),
-	SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, speed, 8);
+    MAP_SSIConfigSetExpClk(ti_arm_mcu_ssi_base(port),
+	platform.get_system_clock(), SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER,
+	speed, 8);
 
     MAP_SSIEnable(ti_arm_mcu_ssi_base(port));
 }
