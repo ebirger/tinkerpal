@@ -1,6 +1,11 @@
 ifneq ($(CONFIG_STELLARIS),)
   TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/stellarisware
 endif
+ifneq ($(CONFIG_TIVA_C),)
+  TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/tivaware
+  INC:=-include $(d)/tivaware.h
+  CFLAGS+=$(INC)
+endif
 
 MK_OBJS=ti_arm_mcu.o 
 MK_OBJS+=$(if $(CONFIG_TI_CCS5),stellaris_entry_ccs5.o)
@@ -14,6 +19,7 @@ endif
 MK_SUBDIRS+=$(if $(CONFIG_LM4F120XL),lm4f120xl)
 MK_SUBDIRS+=$(if $(CONFIG_LM3S6965),lm3s6965)
 MK_SUBDIRS+=$(if $(CONFIG_LM3S6918),lm3s6918)
+MK_SUBDIRS+=$(if $(CONFIG_TM4C123G),tm4c123g)
 
 ifneq ($(CONFIG_TI_CCS5),)
   TI_COMPILER:=$(TI_CCS5)/tools/compiler/tms470_4.9.5

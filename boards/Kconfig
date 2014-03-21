@@ -23,6 +23,10 @@ config RDK_IDM
 	select LM3S6918
 	select ILI93XX_BITBANG
 
+config EK_TM4C123GXL
+	bool "TI TM4C123G (Tiva C Launchpad)"
+	select TM4C123G
+
 config STM32F3DISCOVERY
 	bool "ST Micro STM32F3 Discovery board"
 	select STM32F303XX

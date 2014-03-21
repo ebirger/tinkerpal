@@ -43,6 +43,15 @@ config STELLARIS
 	select PLAT_HAS_SPI
 	select PLAT_HAS_MALLOC
 
+config TIVA_C
+	bool
+	select ARM
+	select TI
+	select PLAT_HAS_GCC
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+
 config STELLARIS_ETH
 	bool
 	depends on STELLARIS && PLAT_HAS_EMBEDDED_ETH && NET
@@ -156,6 +165,10 @@ config LM4F120XL
 	bool
 	select STELLARIS
 	select PLAT_HAS_GPIO_INTERRUPTS
+
+config TM4C123G
+	bool
+	select TIVA_C
 
 if UNIX
 source "platform/unix/Kconfig"

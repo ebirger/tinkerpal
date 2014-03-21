@@ -13,6 +13,7 @@ env:
   - DEFCONFIG=unix_sim_tests_defconfig
   - DEFCONFIG=frdm_kl25z_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=lm4f120xl_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=tm4c123g_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=lm3s6918_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=lm3s6965_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=stm32f3discovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
