@@ -27,7 +27,7 @@
 #include "platform/arm/ti/lm3s6918/lm3s6918.h"
 
 extern void reset_isr(void);
-extern void stellaris_uart_isr(int u);
+extern void ti_arm_mcu_uart_isr(int u);
 extern void gpio_isr(int port);
 extern void cortex_m_systick_isr(void);
 #ifdef CONFIG_STELLARIS_ETH
@@ -36,8 +36,8 @@ extern void stellaris_ethernet_isr(void);
 #define stellaris_ethernet_isr default_isr
 #endif
 
-static void uart0_isr(void) { stellaris_uart_isr(UART0); }
-static void uart1_isr(void) { stellaris_uart_isr(UART1); }
+static void uart0_isr(void) { ti_arm_mcu_uart_isr(UART0); }
+static void uart1_isr(void) { ti_arm_mcu_uart_isr(UART1); }
 
 static void nmi_isr(void)
 {

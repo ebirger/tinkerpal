@@ -30,19 +30,19 @@
 #include "platform/platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 
-static inline unsigned long stellaris_ssi_base(int port)
+static inline unsigned long ti_arm_mcu_ssi_base(int port)
 {
-    return stellaris_ssis[port].base;
+    return ti_arm_mcu_ssis[port].base;
 }
 
-static inline unsigned long stellaris_ssi_periph(int port)
+static inline unsigned long ti_arm_mcu_ssi_periph(int port)
 {
-    return stellaris_ssis[port].periph;
+    return ti_arm_mcu_ssis[port].periph;
 }
 
-void stellaris_spi_set_max_speed(int port, unsigned long speed)
+void ti_arm_mcu_spi_set_max_speed(int port, unsigned long speed)
 {
-    MAP_SSIDisable(stellaris_ssi_base(port));
+    MAP_SSIDisable(ti_arm_mcu_ssi_base(port));
 
     /* Set the maximum speed as half the system clock, with a max of 12.5 MHz. */
     if (speed > 12500000)
@@ -50,44 +50,44 @@ void stellaris_spi_set_max_speed(int port, unsigned long speed)
 
     /* Configure the SSI port */
     /* XXX: transfer length should be configured by init */
-    MAP_SSIConfigSetExpClk(stellaris_ssi_base(port), MAP_SysCtlClockGet(),
+    MAP_SSIConfigSetExpClk(ti_arm_mcu_ssi_base(port), MAP_SysCtlClockGet(),
 	SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, speed, 8);
 
-    MAP_SSIEnable(stellaris_ssi_base(port));
+    MAP_SSIEnable(ti_arm_mcu_ssi_base(port));
 }
 
-void stellaris_spi_send(int port, unsigned long data)
+void ti_arm_mcu_spi_send(int port, unsigned long data)
 {
     unsigned long dummy;
 
-    MAP_SSIDataPut(stellaris_ssi_base(port), data); /* Write the data to the tx fifo */
-    MAP_SSIDataGet(stellaris_ssi_base(port), &dummy); /* flush data read during write */
+    MAP_SSIDataPut(ti_arm_mcu_ssi_base(port), data); /* Write the data to the tx fifo */
+    MAP_SSIDataGet(ti_arm_mcu_ssi_base(port), &dummy); /* flush data read during write */
 }
 
-unsigned long stellaris_spi_receive(int port)
+unsigned long ti_arm_mcu_spi_receive(int port)
 {
     unsigned long data;
 
-    MAP_SSIDataPut(stellaris_ssi_base(port), 0xFF); /* write dummy data */
-    MAP_SSIDataGet(stellaris_ssi_base(port), &data); /* read data frm rx fifo */
+    MAP_SSIDataPut(ti_arm_mcu_ssi_base(port), 0xFF); /* write dummy data */
+    MAP_SSIDataGet(ti_arm_mcu_ssi_base(port), &data); /* read data frm rx fifo */
     return data;
 }
 
-void stellaris_spi_reconf(int port)
+void ti_arm_mcu_spi_reconf(int port)
 {
-    stellaris_periph_enable(stellaris_ssi_periph(port));
+    ti_arm_mcu_periph_enable(ti_arm_mcu_ssi_periph(port));
 
     /* Configure the appropriate pins to be SSI instead of GPIO */
-    stellaris_pin_mode_ssi(stellaris_ssis[port].clk);
-    stellaris_pin_mode_ssi(stellaris_ssis[port].rx);
-    stellaris_pin_mode_ssi(stellaris_ssis[port].tx);
+    ti_arm_mcu_pin_mode_ssi(ti_arm_mcu_ssis[port].clk);
+    ti_arm_mcu_pin_mode_ssi(ti_arm_mcu_ssis[port].rx);
+    ti_arm_mcu_pin_mode_ssi(ti_arm_mcu_ssis[port].tx);
 }
 
-int stellaris_spi_init(int port)
+int ti_arm_mcu_spi_init(int port)
 {
-    stellaris_spi_reconf(port);
+    ti_arm_mcu_spi_reconf(port);
 
     /* Configure the SSI port and enable the port */
-    stellaris_spi_set_max_speed(port, 400000); 
+    ti_arm_mcu_spi_set_max_speed(port, 400000); 
     return 0;
 }

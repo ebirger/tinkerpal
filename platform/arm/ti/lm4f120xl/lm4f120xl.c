@@ -45,7 +45,7 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
 
-const stellaris_gpio_port_t stellaris_gpio_ports[] = {
+const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
     [GPIO_PORT_A] = { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, INT_GPIOA },
     [GPIO_PORT_B] = { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, INT_GPIOB },
     [GPIO_PORT_C] = { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, INT_GPIOC },
@@ -54,7 +54,7 @@ const stellaris_gpio_port_t stellaris_gpio_ports[] = {
     [GPIO_PORT_F] = { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, INT_GPIOF }
 };
 
-const stellaris_uart_t stellaris_uarts[] = {
+const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
     [UART0] = { SYSCTL_PERIPH_UART0, UART0_BASE, INT_UART0, PA0, PA1 },
     [UART1] = { SYSCTL_PERIPH_UART1, UART1_BASE, INT_UART1, PB0, PB1 },
     [UART2] = { SYSCTL_PERIPH_UART2, UART2_BASE, INT_UART2, PD6, PD7 },
@@ -65,12 +65,12 @@ const stellaris_uart_t stellaris_uarts[] = {
     [UART7] = { SYSCTL_PERIPH_UART7, UART7_BASE, INT_UART7, PE0, PE1 },
 };
 
-const stellaris_ssi_t stellaris_ssis[] = {
+const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
     [SSI0] = { .periph = SYSCTL_PERIPH_SSI0, .base = SSI0_BASE, .clk = PA2, .fss = PA3, .rx = PA4, .tx = PA5, },
     [SSI1] = { .periph = SYSCTL_PERIPH_SSI1, .base = SSI1_BASE, .clk = PD0, .fss = PD1, .rx = PD2, .tx = PD3, },
 };
 
-const stellaris_timer_t stellaris_timers[] = {
+const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
     [ TIMER0 ] = { SYSCTL_PERIPH_TIMER0, TIMER0_BASE },
     [ TIMER1 ] = { SYSCTL_PERIPH_TIMER1, TIMER1_BASE },
     [ TIMER2 ] = { SYSCTL_PERIPH_TIMER2, TIMER2_BASE },
@@ -90,7 +90,7 @@ const stellaris_timer_t stellaris_timers[] = {
  * since PB0/1 can be used for UART1
  * - PF timers are shared with PB
  */
-const stellaris_gpio_pin_t stellaris_gpio_pins[] = {
+const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
     [ PA0 ] = {-1, 0, -1, GPIO_PA0_U0RX, -1},
     [ PA1 ] = {-1, 0, -1, GPIO_PA1_U0TX, -1},
     [ PA2 ] = {-1, 0, -1, -1, GPIO_PA2_SSI0CLK},
@@ -142,7 +142,7 @@ const stellaris_gpio_pin_t stellaris_gpio_pins[] = {
 };
 
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */
-#define TIMER_SET(p, t) ROM_TimerMatchSet(stellaris_timers[stellaris_gpio_pins[p].timer].base, HALF_TIMER(p), t)
+#define TIMER_SET(p, t) ROM_TimerMatchSet(ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[p].timer].base, HALF_TIMER(p), t)
 
 #ifdef CONFIG_GPIO
 
@@ -150,13 +150,13 @@ static void pinmode_pwm(int pin)
 {
     unsigned long timer, half_timer;
 
-    timer = stellaris_timers[stellaris_gpio_pins[pin].timer].base;
+    timer = ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[pin].timer].base;
     half_timer = HALF_TIMER(pin);
 
-    stellaris_periph_enable(stellaris_timers[stellaris_gpio_pins[pin].timer].periph);
+    ti_arm_mcu_periph_enable(ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[pin].timer].periph);
 
     /* Configure GPIO */
-    stellaris_pin_mode_timer(pin);
+    ti_arm_mcu_pin_mode_timer(pin);
 
     /* Configure Timer */
     ROM_TimerConfigure(timer, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM | 
@@ -178,31 +178,31 @@ static int lm4120xl_set_pin_mode(int pin, gpio_pin_mode_t mode)
     if (pin >= PC0 && pin <= PC3) 
 	return -1;
 
-    if (mode == GPIO_PM_OUTPUT_ANALOG && stellaris_gpio_pins[pin].timer == -1)
+    if (mode == GPIO_PM_OUTPUT_ANALOG && ti_arm_mcu_gpio_pins[pin].timer == -1)
 	return -1;
 
-    stellaris_periph_enable(stellaris_gpio_periph(pin));
+    ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
 
     switch (mode)
     {
     case GPIO_PM_INPUT:
-	stellaris_gpio_input(pin);
-	stellaris_pin_config(pin, GPIO_PIN_TYPE_STD);
+	ti_arm_mcu_gpio_input(pin);
+	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
 	break;
     case GPIO_PM_OUTPUT:
-	stellaris_pin_mode_output(pin);
-	stellaris_pin_config(pin, GPIO_PIN_TYPE_STD);
+	ti_arm_mcu_pin_mode_output(pin);
+	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
 	break;
     case GPIO_PM_INPUT_PULLUP:
-	stellaris_gpio_input(pin);
-	stellaris_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+	ti_arm_mcu_gpio_input(pin);
+	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
 	break;
     case GPIO_PM_INPUT_PULLDOWN:
-	stellaris_gpio_input(pin);
-	stellaris_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
+	ti_arm_mcu_gpio_input(pin);
+	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
 	break;
     case GPIO_PM_INPUT_ANALOG:
-	if (stellaris_pin_mode_adc(pin))
+	if (ti_arm_mcu_pin_mode_adc(pin))
 	    return -1;
 	break;
     case GPIO_PM_OUTPUT_ANALOG:
@@ -212,7 +212,7 @@ static int lm4120xl_set_pin_mode(int pin, gpio_pin_mode_t mode)
     return 0;
 }
 
-static void stellaris_gpio_analog_write(int pin, double value) 
+static void ti_arm_mcu_gpio_analog_write(int pin, double value) 
 {
     int int_val;
 
@@ -231,9 +231,9 @@ static void stellaris_gpio_analog_write(int pin, double value)
 
 #endif
 
-static int stellaris_serial_enable(int u, int enabled)
+static int ti_arm_mcu_serial_enable(int u, int enabled)
 {
-    stellaris_uart_enable(u, enabled);
+    ti_arm_mcu_uart_enable(u, enabled);
     return 0;
 }
 
@@ -241,7 +241,7 @@ static void buttons_init(void)
 {
 #ifdef CONFIG_GPIO
     /* Enable the GPIO port that is used for the on-board Buttons*/
-    stellaris_periph_enable(SYSCTL_PERIPH_GPIOF);
+    ti_arm_mcu_periph_enable(SYSCTL_PERIPH_GPIOF);
 
     /* Unlock PF0 so we can change it to a GPIO input
      * Once we have enabled (unlocked) the commit register then re-lock it
@@ -267,42 +267,42 @@ static void lm4f120xl_init(void)
     ROM_SysCtlClockSet(SYSCTL_RCC2_DIV400 | SYSCTL_SYSDIV_2_5 |
 	SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
                        
-    stellaris_systick_init();
+    ti_arm_mcu_systick_init();
     buttons_init(); 
 }
 
 const platform_t platform = {
     .serial = {
-	.enable = stellaris_serial_enable,
+	.enable = ti_arm_mcu_serial_enable,
 	.read = buffered_serial_read,
-	.write = stellaris_serial_write,
-	.irq_enable = stellaris_serial_irq_enable,
+	.write = ti_arm_mcu_serial_write,
+	.irq_enable = ti_arm_mcu_serial_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {
-	.digital_write = stellaris_gpio_digital_write,
-	.digital_read = stellaris_gpio_digital_read,
-	.analog_write = stellaris_gpio_analog_write,
-	.analog_read = stellaris_gpio_analog_read,
+	.digital_write = ti_arm_mcu_gpio_digital_write,
+	.digital_read = ti_arm_mcu_gpio_digital_read,
+	.analog_write = ti_arm_mcu_gpio_analog_write,
+	.analog_read = ti_arm_mcu_gpio_analog_read,
 	.set_pin_mode = lm4120xl_set_pin_mode,
-	.set_port_val = stellaris_gpio_set_port_val,
-	.get_port_val = stellaris_gpio_get_port_val,
+	.set_port_val = ti_arm_mcu_gpio_set_port_val,
+	.get_port_val = ti_arm_mcu_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI
     .spi = {
-	.init = stellaris_spi_init,
-	.reconf = stellaris_spi_reconf,
-	.set_max_speed = stellaris_spi_set_max_speed,
-	.send = stellaris_spi_send,
-	.receive = stellaris_spi_receive,
+	.init = ti_arm_mcu_spi_init,
+	.reconf = ti_arm_mcu_spi_reconf,
+	.set_max_speed = ti_arm_mcu_spi_set_max_speed,
+	.send = ti_arm_mcu_spi_send,
+	.receive = ti_arm_mcu_spi_receive,
     },
 #endif
     .init = lm4f120xl_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
-    .select = stellaris_select,
+    .select = ti_arm_mcu_select,
     .get_ticks_from_boot = cortex_m_get_ticks_from_boot,
-    .get_system_clock = stellaris_get_system_clock,
-    .msleep = stellaris_msleep,
+    .get_system_clock = ti_arm_mcu_get_system_clock,
+    .msleep = ti_arm_mcu_msleep,
 };

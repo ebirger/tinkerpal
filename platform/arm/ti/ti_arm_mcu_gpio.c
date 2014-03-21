@@ -32,10 +32,10 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS
-void stellaris_gpio_isr(int port)
+void ti_arm_mcu_gpio_isr(int port)
 {
     long istat;
-    unsigned long base = stellaris_gpio_ports[port].base;
+    unsigned long base = ti_arm_mcu_gpio_ports[port].base;
 
     istat = MAP_GPIOPinIntStatus(base, 1);
     MAP_GPIOPinIntClear(base, istat);
@@ -43,9 +43,9 @@ void stellaris_gpio_isr(int port)
 }
 #endif
 
-void stellaris_gpio_input(int pin)
+void ti_arm_mcu_gpio_input(int pin)
 {
-    unsigned long base = stellaris_gpio_base(pin);
+    unsigned long base = ti_arm_mcu_gpio_base(pin);
     int bit = GPIO_BIT(pin);
 
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS
@@ -58,26 +58,26 @@ void stellaris_gpio_input(int pin)
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS
     MAP_GPIOIntTypeSet(base, bit, GPIO_BOTH_EDGES);
     MAP_GPIOPinIntEnable(base, bit);
-    MAP_IntEnable(stellaris_gpio_ports[GPIO_PORT(pin)].irq);
+    MAP_IntEnable(ti_arm_mcu_gpio_ports[GPIO_PORT(pin)].irq);
 #endif
 }
 
-void stellaris_gpio_digital_write(int pin, int value)
+void ti_arm_mcu_gpio_digital_write(int pin, int value)
 {
-    MAP_GPIOPinWrite(stellaris_gpio_base(pin), GPIO_BIT(pin), 
+    MAP_GPIOPinWrite(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
 	value ? GPIO_BIT(pin) : 0);
 }
 
-int stellaris_gpio_digital_read(int pin)
+int ti_arm_mcu_gpio_digital_read(int pin)
 {
-    return MAP_GPIOPinRead(stellaris_gpio_base(pin), GPIO_BIT(pin)) ? 1 : 0;
+    return MAP_GPIOPinRead(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin)) ? 1 : 0;
 }
 
-double stellaris_gpio_analog_read(int pin) 
+double ti_arm_mcu_gpio_analog_read(int pin) 
 {
     int channel, value;
 
-    channel = stellaris_gpio_pins[pin].adc_channel;
+    channel = ti_arm_mcu_gpio_pins[pin].adc_channel;
     if (channel == -1) 
 	return 0;
 
@@ -94,14 +94,14 @@ double stellaris_gpio_analog_read(int pin)
     return (double)value / 4096;
 }
 
-void stellaris_gpio_set_port_val(int port, unsigned short mask,
+void ti_arm_mcu_gpio_set_port_val(int port, unsigned short mask,
     unsigned short value)
 {
-    MAP_GPIOPinWrite(stellaris_gpio_port_base(port), mask,
+    MAP_GPIOPinWrite(ti_arm_mcu_gpio_port_base(port), mask,
 	(unsigned char)value);
 }
 
-unsigned short stellaris_gpio_get_port_val(int port, unsigned short mask)
+unsigned short ti_arm_mcu_gpio_get_port_val(int port, unsigned short mask)
 {
-    return MAP_GPIOPinRead(stellaris_gpio_port_base(port), mask);
+    return MAP_GPIOPinRead(ti_arm_mcu_gpio_port_base(port), mask);
 }

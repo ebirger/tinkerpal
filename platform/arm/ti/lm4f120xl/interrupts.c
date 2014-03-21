@@ -27,29 +27,29 @@
 #include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
 
 extern void reset_isr(void);
-extern void stellaris_uart_isr(int u);
+extern void ti_arm_mcu_uart_isr(int u);
 #ifdef CONFIG_GPIO
-extern void stellaris_gpio_isr(int port);
+extern void ti_arm_mcu_gpio_isr(int port);
 #else
-void stellaris_gpio_isr(int port) { }
+void ti_arm_mcu_gpio_isr(int port) { }
 #endif
 extern void cortex_m_systick_isr(void);
 
-static void uart0_isr(void) { stellaris_uart_isr(UART0); }
-static void uart1_isr(void) { stellaris_uart_isr(UART1); }
-static void uart2_isr(void) { stellaris_uart_isr(UART2); }
-static void uart3_isr(void) { stellaris_uart_isr(UART3); }
-static void uart4_isr(void) { stellaris_uart_isr(UART4); }
-static void uart5_isr(void) { stellaris_uart_isr(UART5); }
-static void uart6_isr(void) { stellaris_uart_isr(UART6); }
-static void uart7_isr(void) { stellaris_uart_isr(UART7); }
+static void uart0_isr(void) { ti_arm_mcu_uart_isr(UART0); }
+static void uart1_isr(void) { ti_arm_mcu_uart_isr(UART1); }
+static void uart2_isr(void) { ti_arm_mcu_uart_isr(UART2); }
+static void uart3_isr(void) { ti_arm_mcu_uart_isr(UART3); }
+static void uart4_isr(void) { ti_arm_mcu_uart_isr(UART4); }
+static void uart5_isr(void) { ti_arm_mcu_uart_isr(UART5); }
+static void uart6_isr(void) { ti_arm_mcu_uart_isr(UART6); }
+static void uart7_isr(void) { ti_arm_mcu_uart_isr(UART7); }
 
-static void gpio_port_a_isr(void) { stellaris_gpio_isr(GPIO_PORT_A); }
-static void gpio_port_b_isr(void) { stellaris_gpio_isr(GPIO_PORT_B); }
-static void gpio_port_c_isr(void) { stellaris_gpio_isr(GPIO_PORT_C); }
-static void gpio_port_d_isr(void) { stellaris_gpio_isr(GPIO_PORT_D); }
-static void gpio_port_e_isr(void) { stellaris_gpio_isr(GPIO_PORT_E); }
-static void gpio_port_f_isr(void) { stellaris_gpio_isr(GPIO_PORT_F); }
+static void gpio_port_a_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_A); }
+static void gpio_port_b_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_B); }
+static void gpio_port_c_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_C); }
+static void gpio_port_d_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_D); }
+static void gpio_port_e_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_E); }
+static void gpio_port_f_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_F); }
 
 static void nmi_isr(void)
 {
