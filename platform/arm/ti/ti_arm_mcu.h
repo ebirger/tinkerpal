@@ -36,6 +36,8 @@ typedef struct {
     unsigned long irq;
     int rxpin;
     int txpin;
+    int rx_af;
+    int tx_af;
 } ti_arm_mcu_uart_t;
 
 typedef struct {
@@ -62,7 +64,6 @@ typedef struct {
     int timer;
     int timer_function;
     int adc_channel;
-    int uart_function;
     int ssi_function;
 } ti_arm_mcu_gpio_pin_t;
 

@@ -106,48 +106,46 @@ int ti_arm_mcu_serial_write(int u, char *buf, int size)
     return 0;
 }
 
-static inline void ti_arm_mcu_pin_mode_uart(int pin)
+static inline void ti_arm_mcu_pin_mode_uart(int pin, int uart_af)
 {
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
-    if (ti_arm_mcu_gpio_pins[pin].uart_function != -1)
-	MAP_GPIOPinConfigure(ti_arm_mcu_gpio_pins[pin].uart_function);
+    if (uart_af)
+	MAP_GPIOPinConfigure(uart_af);
     MAP_GPIOPinTypeUART(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
 }
 
 void ti_arm_mcu_uart_enable(int u, int enabled)
 {
-    int rxpin = ti_arm_mcu_uarts[u].rxpin, txpin = ti_arm_mcu_uarts[u].txpin;
+    const ti_arm_mcu_uart_t *uart = &ti_arm_mcu_uarts[u];
 
     if (!enabled)
     {
-	MAP_UARTDisable(ti_arm_mcu_uarts[u].base);
-	MAP_IntDisable(ti_arm_mcu_uarts[u].irq);
-	MAP_UARTIntDisable(ti_arm_mcu_uarts[u].base, 0xFFFFFFFF);
-	MAP_SysCtlPeripheralDisable(ti_arm_mcu_uarts[u].periph);
+	MAP_UARTDisable(uart->base);
+	MAP_IntDisable(uart->irq);
+	MAP_UARTIntDisable(uart->base, 0xFFFFFFFF);
+	MAP_SysCtlPeripheralDisable(uart->periph);
 	return;
     }
 
-    ti_arm_mcu_pin_mode_uart(rxpin);
-    ti_arm_mcu_pin_mode_uart(txpin);
+    ti_arm_mcu_pin_mode_uart(uart->rxpin, uart->rx_af);
+    ti_arm_mcu_pin_mode_uart(uart->txpin, uart->tx_af);
 
-    ti_arm_mcu_periph_enable(ti_arm_mcu_uarts[u].periph);
-    MAP_UARTConfigSetExpClk(ti_arm_mcu_uarts[u].base,
-	SYSTEM_CLOCK(), 115200, (UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE |
-	UART_CONFIG_WLEN_8));
+    ti_arm_mcu_periph_enable(uart->periph);
+    MAP_UARTConfigSetExpClk(uart->base, SYSTEM_CLOCK(), 115200, 
+	UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE | UART_CONFIG_WLEN_8);
 
     /* Set the UART to interrupt whenever the TX FIFO is almost empty or
      * when any character is received
      */
-    MAP_UARTFIFOLevelSet(ti_arm_mcu_uarts[u].base, UART_FIFO_TX1_8, 
-	UART_FIFO_RX1_8);
+    MAP_UARTFIFOLevelSet(uart->base, UART_FIFO_TX1_8, UART_FIFO_RX1_8);
 
     /* We are configured for buffered output so enable the master interrupt
      * for this UART and the receive interrupts.
      */
-    MAP_UARTIntDisable(ti_arm_mcu_uarts[u].base, 0xFFFFFFFF);
-    MAP_UARTIntEnable(ti_arm_mcu_uarts[u].base, UART_INT_RX | UART_INT_RT);
-    MAP_IntEnable(ti_arm_mcu_uarts[u].irq);
-    MAP_UARTEnable(ti_arm_mcu_uarts[u].base);
+    MAP_UARTIntDisable(uart->base, 0xFFFFFFFF);
+    MAP_UARTIntEnable(uart->base, UART_INT_RX | UART_INT_RT);
+    MAP_IntEnable(uart->irq);
+    MAP_UARTEnable(uart->base);
 }
 
 int ti_arm_mcu_select(int ms)
