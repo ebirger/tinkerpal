@@ -165,34 +165,36 @@ const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
 };
 
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */
-#define TIMER_SET(p, t) ROM_TimerMatchSet(ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[p].timer].base, HALF_TIMER(p), t)
+#define TIMER(p) (&ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[(p)].timer])
+#define TIMER_SET(p, t) ROM_TimerMatchSet(TIMER(p)->base, HALF_TIMER(p), t)
 
 #ifdef CONFIG_GPIO
 
 static void pinmode_pwm(int pin)
 {
-    unsigned long timer, half_timer;
+    const ti_arm_mcu_timer_t *timer;
+    unsigned long half_timer;
 
-    timer = ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[pin].timer].base;
+    timer = TIMER(pin);
     half_timer = HALF_TIMER(pin);
 
-    ti_arm_mcu_periph_enable(ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[pin].timer].periph);
+    ti_arm_mcu_periph_enable(timer->periph);
 
     /* Configure GPIO */
     ti_arm_mcu_pin_mode_timer(pin);
 
     /* Configure Timer */
-    ROM_TimerConfigure(timer, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM | 
+    ROM_TimerConfigure(timer->base, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM | 
 	TIMER_CFG_B_PWM));
-    ROM_TimerPrescaleSet(timer, half_timer, 0); // ~1230 Hz PWM
+    ROM_TimerPrescaleSet(timer->base, half_timer, 0); // ~1230 Hz PWM
     /* Timer will load this value on timeout */
-    ROM_TimerLoadSet(timer, half_timer, 65279);
+    ROM_TimerLoadSet(timer->base, half_timer, 65279);
     /* Initial duty cycle of 0 */
     TIMER_SET(pin, 65278);
     /* PWM should not be inverted */
-    ROM_TimerControlLevel(timer, half_timer, 0);
+    ROM_TimerControlLevel(timer->base, half_timer, 0);
     
-    ROM_TimerEnable(timer, half_timer);
+    ROM_TimerEnable(timer->base, half_timer);
 }
 
 static int lm4120xl_set_pin_mode(int pin, gpio_pin_mode_t mode)
