@@ -22,6 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "platform/platform.h"
 #include "platform/arm/ti/stellaris_eth.h"
 #include "util/tp_types.h"
 #include "util/tp_misc.h"
