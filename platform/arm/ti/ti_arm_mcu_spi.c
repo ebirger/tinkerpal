@@ -35,11 +35,6 @@ static inline unsigned long ti_arm_mcu_ssi_base(int port)
     return ti_arm_mcu_ssis[port].base;
 }
 
-static inline unsigned long ti_arm_mcu_ssi_periph(int port)
-{
-    return ti_arm_mcu_ssis[port].periph;
-}
-
 void ti_arm_mcu_spi_set_max_speed(int port, unsigned long speed)
 {
     MAP_SSIDisable(ti_arm_mcu_ssi_base(port));
@@ -74,14 +69,25 @@ unsigned long ti_arm_mcu_spi_receive(int port)
     return data;
 }
 
+static inline void ti_arm_mcu_pin_mode_ssi(int pin, int ssi_af)
+{
+    ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
+    if (ssi_af)
+	MAP_GPIOPinConfigure(ssi_af);
+    MAP_GPIOPinTypeSSI(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
+    ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+}
+
 void ti_arm_mcu_spi_reconf(int port)
 {
-    ti_arm_mcu_periph_enable(ti_arm_mcu_ssi_periph(port));
+    const ti_arm_mcu_ssi_t *ssi = &ti_arm_mcu_ssis[port];
+
+    ti_arm_mcu_periph_enable(ssi->periph);
 
     /* Configure the appropriate pins to be SSI instead of GPIO */
-    ti_arm_mcu_pin_mode_ssi(ti_arm_mcu_ssis[port].clk);
-    ti_arm_mcu_pin_mode_ssi(ti_arm_mcu_ssis[port].rx);
-    ti_arm_mcu_pin_mode_ssi(ti_arm_mcu_ssis[port].tx);
+    ti_arm_mcu_pin_mode_ssi(ssi->clk, ssi->clk_af);
+    ti_arm_mcu_pin_mode_ssi(ssi->rx, ssi->rx_af);
+    ti_arm_mcu_pin_mode_ssi(ssi->tx, ssi->tx_af);
 }
 
 int ti_arm_mcu_spi_init(int port)

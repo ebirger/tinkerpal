@@ -53,6 +53,10 @@ typedef struct {
     int fss;
     int rx;
     int tx;
+    int clk_af;
+    int fss_af;
+    int rx_af;
+    int tx_af;
 } ti_arm_mcu_ssi_t;
 
 typedef struct {
@@ -64,7 +68,6 @@ typedef struct {
     int timer;
     int timer_function;
     int adc_channel;
-    int ssi_function;
 } ti_arm_mcu_gpio_pin_t;
 
 /* Defined in each specific target board */
@@ -113,15 +116,6 @@ static inline void ti_arm_mcu_pin_config(int pin, int mode)
 {
     MAP_GPIOPadConfigSet(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
 	GPIO_STRENGTH_8MA, mode);
-}
-
-static inline void ti_arm_mcu_pin_mode_ssi(int pin)
-{
-    ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
-    if (ti_arm_mcu_gpio_pins[pin].ssi_function != -1)
-	MAP_GPIOPinConfigure(ti_arm_mcu_gpio_pins[pin].ssi_function);
-    MAP_GPIOPinTypeSSI(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
-    ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
 }
 
 static inline int ti_arm_mcu_pin_mode_adc(int pin)

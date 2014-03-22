@@ -76,8 +76,21 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 };
 
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
-    [SSI0] = { .periph = SYSCTL_PERIPH_SSI0, .base = SSI0_BASE, .clk = PA2, .fss = PA3, .rx = PA4, .tx = PA5, },
-    [SSI1] = { .periph = SYSCTL_PERIPH_SSI1, .base = SSI1_BASE, .clk = PD0, .fss = PD1, .rx = PD2, .tx = PD3, },
+#define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
+    [SSI##num] = { \
+	.periph = SYSCTL_PERIPH_SSI##num, \
+	.base = SSI##num##_BASE, \
+	.clk = clkpin, \
+	.fss = fsspin, \
+	.rx = rxpin, \
+	.tx = txpin, \
+	.clk_af = GPIO_##clkpin##_SSI##num##CLK, \
+	.fss_af = GPIO_##fsspin##_SSI##num##FSS, \
+	.rx_af = GPIO_##rxpin##_SSI##num##RX, \
+	.tx_af = GPIO_##txpin##_SSI##num##TX, \
+    }
+    SSI_DEF(0, PA2, PA3, PA4, PA5),
+    SSI_DEF(1, PD0, PD1, PD2, PD3),
 };
 
 const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
@@ -101,54 +114,54 @@ const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
  * - PF timers are shared with PB
  */
 const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
-    [ PA0 ] = {-1, 0, -1, -1},
-    [ PA1 ] = {-1, 0, -1, -1},
-    [ PA2 ] = {-1, 0, -1, GPIO_PA2_SSI0CLK},
-    [ PA3 ] = {-1, 0, -1, GPIO_PA3_SSI0FSS},
-    [ PA4 ] = {-1, 0, -1, GPIO_PA4_SSI0RX},
-    [ PA5 ] = {-1, 0, -1, GPIO_PA5_SSI0TX},
-    [ PA6 ] = {-1, 0, -1, -1},
-    [ PA7 ] = {-1, 0, -1, -1},
-    [ PB0 ] = {TIMER2, GPIO_PB0_T2CCP0, -1, -1},
-    [ PB1 ] = {TIMER2, GPIO_PB1_T2CCP1, -1, -1},
-    [ PB2 ] = {TIMER3, GPIO_PB2_T3CCP0, -1, -1},
-    [ PB3 ] = {TIMER3, GPIO_PB3_T3CCP1, -1, -1},
-    [ PB4 ] = {TIMER1, GPIO_PB4_T1CCP0, ADC_CTL_CH10, -1},
-    [ PB5 ] = {TIMER1, GPIO_PB5_T1CCP1, ADC_CTL_CH11, -1},
-    [ PB6 ] = {TIMER0, GPIO_PB6_T0CCP0, -1, -1},
-    [ PB7 ] = {TIMER0, GPIO_PB7_T0CCP1, -1, -1},
-    [ PC0 ] = {TIMER4, GPIO_PC0_T4CCP0, -1, -1},
-    [ PC1 ] = {TIMER4, GPIO_PC1_T4CCP1, -1, -1},
-    [ PC2 ] = {TIMER5, GPIO_PC2_T5CCP0, -1, -1},
-    [ PC3 ] = {TIMER5, GPIO_PC3_T5CCP1, -1, -1},
-    [ PC4 ] = {WTIMER0, GPIO_PC4_WT0CCP0, -1, -1},
-    [ PC5 ] = {WTIMER0, GPIO_PC5_WT0CCP1, -1, -1},
-    [ PC6 ] = {WTIMER1, GPIO_PC6_WT1CCP0, -1, -1},
-    [ PC7 ] = {WTIMER1, GPIO_PC7_WT1CCP1, -1, -1},
-    [ PD0 ] = {WTIMER2, GPIO_PD0_WT2CCP0, ADC_CTL_CH7, GPIO_PD0_SSI1CLK},
-    [ PD1 ] = {WTIMER2, GPIO_PD1_WT2CCP1, ADC_CTL_CH6, GPIO_PD1_SSI1FSS},
-    [ PD2 ] = {WTIMER3, GPIO_PD2_WT3CCP0, ADC_CTL_CH5, GPIO_PD2_SSI1RX},
-    [ PD3 ] = {WTIMER3, GPIO_PD3_WT3CCP1, ADC_CTL_CH4, GPIO_PD3_SSI1TX},
-    [ PD4 ] = {WTIMER4, GPIO_PD4_WT4CCP0, -1, -1},
-    [ PD5 ] = {WTIMER4, GPIO_PD5_WT4CCP1, -1, -1},
-    [ PD6 ] = {WTIMER5, GPIO_PD6_WT5CCP0, -1, -1},
-    [ PD7 ] = {WTIMER5, GPIO_PD7_WT5CCP1, -1, -1},
-    [ PE0 ] = {-1, 0, ADC_CTL_CH3, -1},
-    [ PE1 ] = {-1, 0, ADC_CTL_CH2, -1},
-    [ PE2 ] = {-1, 0, ADC_CTL_CH1, -1},
-    [ PE3 ] = {-1, 0, ADC_CTL_CH0, -1},
-    [ PE4 ] = {-1, 0, ADC_CTL_CH9, -1},
-    [ PE5 ] = {-1, 0, ADC_CTL_CH8, -1},
-    [ PE6 ] = {-1, 0, -1, -1},
-    [ PE7 ] = {-1, 0, -1, -1},
-    [ PF0 ] = {TIMER0, GPIO_PF0_T0CCP0, -1, -1},
-    [ PF1 ] = {TIMER0, GPIO_PF1_T0CCP1, -1, -1},
-    [ PF2 ] = {TIMER1, GPIO_PF2_T1CCP0, -1, -1},
-    [ PF3 ] = {TIMER1, GPIO_PF3_T1CCP1, -1, -1},
-    [ PF4 ] = {TIMER2, GPIO_PF4_T2CCP0, -1, -1},
-    [ PF5 ] = {-1, 0, -1, -1},
-    [ PF6 ] = {-1, 0, -1, -1},
-    [ PF7 ] = {-1, 0, -1, -1}
+    [ PA0 ] = {-1, 0, -1},
+    [ PA1 ] = {-1, 0, -1},
+    [ PA2 ] = {-1, 0, -1},
+    [ PA3 ] = {-1, 0, -1},
+    [ PA4 ] = {-1, 0, -1},
+    [ PA5 ] = {-1, 0, -1},
+    [ PA6 ] = {-1, 0, -1},
+    [ PA7 ] = {-1, 0, -1},
+    [ PB0 ] = {TIMER2, GPIO_PB0_T2CCP0, -1},
+    [ PB1 ] = {TIMER2, GPIO_PB1_T2CCP1, -1},
+    [ PB2 ] = {TIMER3, GPIO_PB2_T3CCP0, -1},
+    [ PB3 ] = {TIMER3, GPIO_PB3_T3CCP1, -1},
+    [ PB4 ] = {TIMER1, GPIO_PB4_T1CCP0, ADC_CTL_CH10},
+    [ PB5 ] = {TIMER1, GPIO_PB5_T1CCP1, ADC_CTL_CH11},
+    [ PB6 ] = {TIMER0, GPIO_PB6_T0CCP0, -1},
+    [ PB7 ] = {TIMER0, GPIO_PB7_T0CCP1, -1},
+    [ PC0 ] = {TIMER4, GPIO_PC0_T4CCP0, -1},
+    [ PC1 ] = {TIMER4, GPIO_PC1_T4CCP1, -1},
+    [ PC2 ] = {TIMER5, GPIO_PC2_T5CCP0, -1},
+    [ PC3 ] = {TIMER5, GPIO_PC3_T5CCP1, -1},
+    [ PC4 ] = {WTIMER0, GPIO_PC4_WT0CCP0, -1},
+    [ PC5 ] = {WTIMER0, GPIO_PC5_WT0CCP1, -1},
+    [ PC6 ] = {WTIMER1, GPIO_PC6_WT1CCP0, -1},
+    [ PC7 ] = {WTIMER1, GPIO_PC7_WT1CCP1, -1},
+    [ PD0 ] = {WTIMER2, GPIO_PD0_WT2CCP0, ADC_CTL_CH7},
+    [ PD1 ] = {WTIMER2, GPIO_PD1_WT2CCP1, ADC_CTL_CH6},
+    [ PD2 ] = {WTIMER3, GPIO_PD2_WT3CCP0, ADC_CTL_CH5},
+    [ PD3 ] = {WTIMER3, GPIO_PD3_WT3CCP1, ADC_CTL_CH4},
+    [ PD4 ] = {WTIMER4, GPIO_PD4_WT4CCP0, -1},
+    [ PD5 ] = {WTIMER4, GPIO_PD5_WT4CCP1, -1},
+    [ PD6 ] = {WTIMER5, GPIO_PD6_WT5CCP0, -1},
+    [ PD7 ] = {WTIMER5, GPIO_PD7_WT5CCP1, -1},
+    [ PE0 ] = {-1, 0, ADC_CTL_CH3},
+    [ PE1 ] = {-1, 0, ADC_CTL_CH2},
+    [ PE2 ] = {-1, 0, ADC_CTL_CH1},
+    [ PE3 ] = {-1, 0, ADC_CTL_CH0},
+    [ PE4 ] = {-1, 0, ADC_CTL_CH9},
+    [ PE5 ] = {-1, 0, ADC_CTL_CH8},
+    [ PE6 ] = {-1, 0, -1},
+    [ PE7 ] = {-1, 0, -1},
+    [ PF0 ] = {TIMER0, GPIO_PF0_T0CCP0, -1},
+    [ PF1 ] = {TIMER0, GPIO_PF1_T0CCP1, -1},
+    [ PF2 ] = {TIMER1, GPIO_PF2_T1CCP0, -1},
+    [ PF3 ] = {TIMER1, GPIO_PF3_T1CCP1, -1},
+    [ PF4 ] = {TIMER2, GPIO_PF4_T2CCP0, -1},
+    [ PF5 ] = {-1, 0, -1},
+    [ PF6 ] = {-1, 0, -1},
+    [ PF7 ] = {-1, 0, -1}
 };
 
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */
