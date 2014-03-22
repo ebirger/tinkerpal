@@ -170,6 +170,10 @@ config TM4C123G
 	bool
 	select TIVA_C
 
+config TM4C1294
+	bool
+	select TIVA_C
+
 if UNIX
 source "platform/unix/Kconfig"
 endif

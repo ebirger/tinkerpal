@@ -27,6 +27,10 @@ config EK_TM4C123GXL
 	bool "TI EK-TM4C123GXL (Tiva C Launchpad)"
 	select TM4C123G
 
+config EK_TM4C1294XL
+	bool "TI EK-TM4C1294XL (Tiva C Connected Launchpad)"
+	select TM4C1294
+
 config STM32F3DISCOVERY
 	bool "ST Micro STM32F3 Discovery board"
 	select STM32F303XX
