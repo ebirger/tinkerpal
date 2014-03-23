@@ -18,6 +18,14 @@ config PLAT_HAS_SPI
 config PLAT_HAS_EMBEDDED_ETH
 	bool
 
+config PLAT_HAS_PWM
+	bool
+
+config PWM
+	bool "PWM Support"
+	depends on PLAT_HAS_PWM
+	default y
+
 config BUFFERED_SERIAL
 	bool
 	depends on PLAT_HAS_SERIAL
@@ -161,6 +169,7 @@ config LM3S6918
 config LM3S6965
 	bool
 	select STELLARIS
+	select PLAT_HAS_PWM
 	select PLAT_HAS_EMBEDDED_ETH
 
 config LM4F120XL

@@ -28,7 +28,7 @@
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
-#ifdef CONFIG_PLAT_HAS_PWM
+#ifdef CONFIG_PWM
 #include "driverlib/pwm.h"
 #endif
 #include "drivers/gpio/gpio_platform.h"
@@ -65,7 +65,7 @@ void ti_arm_mcu_gpio_input(int pin)
 #endif
 }
 
-#ifdef CONFIG_PLAT_HAS_PWM
+#ifdef CONFIG_PWM
 static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
     unsigned long freq, double duty_cycle) 
 {

@@ -75,7 +75,9 @@ typedef struct {
     int timer;
     int timer_function;
     int adc_channel;
+#ifdef CONFIG_PWM
     ti_arm_mcu_pwm_t pwm;
+#endif
 } ti_arm_mcu_gpio_pin_t;
 
 /* Defined in each specific target board */
