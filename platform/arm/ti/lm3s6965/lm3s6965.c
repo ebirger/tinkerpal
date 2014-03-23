@@ -76,90 +76,63 @@ const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
 };
 
 const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
-    [ PA0 ] = {-1, -1, -1},
-    [ PA1 ] = {-1, -1, -1},
-    [ PA2 ] = {-1, -1, -1},
-    [ PA3 ] = {-1, -1, -1},
-    [ PA4 ] = {-1, -1, -1},
-    [ PA5 ] = {-1, -1, -1},
-    [ PA6 ] = {-1, -1, -1},
-    [ PA7 ] = {-1, -1, -1},
-    [ PB0 ] = {-1, -1, -1},
-    [ PB1 ] = {-1, -1, -1},
-    [ PB2 ] = {-1, -1, -1},
-    [ PB3 ] = {-1, -1, -1},
-    [ PB4 ] = {-1, -1, -1},
-    [ PB5 ] = {-1, -1, -1},
-    [ PB6 ] = {-1, -1, -1},
-    [ PB7 ] = {-1, -1, -1},
-    [ PC0 ] = {-1, -1, -1},
-    [ PC1 ] = {-1, -1, -1},
-    [ PC2 ] = {-1, -1, -1},
-    [ PC3 ] = {-1, -1, -1},
-    [ PC4 ] = {-1, -1, -1},
-    [ PC5 ] = {-1, -1, -1},
-    [ PC6 ] = {-1, -1, -1},
-    [ PC7 ] = {-1, -1, -1},
-    [ PD0 ] = {-1, -1, -1},
-    [ PD1 ] = {-1, -1, -1},
-    [ PD2 ] = {-1, -1, -1},
-    [ PD3 ] = {-1, -1, -1},
-    [ PD4 ] = {-1, -1, -1},
-    [ PD5 ] = {-1, -1, -1},
-    [ PD6 ] = {-1, -1, -1},
-    [ PD7 ] = {-1, -1, -1},
-    [ PE0 ] = {-1, -1, -1},
-    [ PE1 ] = {-1, -1, -1},
-    [ PE2 ] = {-1, -1, -1},
-    [ PE3 ] = {-1, -1, -1},
-    [ PE4 ] = {-1, -1, -1},
-    [ PE5 ] = {-1, -1, -1},
-    [ PE6 ] = {-1, -1, -1},
-    [ PE7 ] = {-1, -1, -1},
-    [ PF0 ] = {-1, -1, -1},
-    [ PF1 ] = {-1, -1, -1},
-    [ PF2 ] = {-1, -1, -1},
-    [ PF3 ] = {-1, -1, -1},
-    [ PF4 ] = {-1, -1, -1},
-    [ PF5 ] = {-1, -1, -1},
-    [ PF6 ] = {-1, -1, -1},
-    [ PF7 ] = {-1, -1, -1},
+#define PWM(b, g, o) { \
+    .base = PWM##b##_BASE, \
+    .gen = PWM_GEN_##g, \
+    .out = PWM_OUT_##o, \
+    .out_bit = PWM_OUT_##o##_BIT \
+}
+    [ PA0 ] = { .pwm = PWM(0, 0, 0) },
+    [ PA1 ] = { .pwm = PWM(0, 0, 0) },
+    [ PA2 ] = { .pwm = PWM(0, 0, 0) },
+    [ PA3 ] = { .pwm = PWM(0, 0, 0) },
+    [ PA4 ] = { .pwm = PWM(0, 0, 0) },
+    [ PA5 ] = { .pwm = PWM(0, 0, 0) },
+    [ PA6 ] = { .pwm = PWM(0, 0, 0) },
+    [ PA7 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB0 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB1 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB2 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB3 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB4 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB5 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB6 ] = { .pwm = PWM(0, 0, 0) },
+    [ PB7 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC0 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC1 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC2 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC3 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC4 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC5 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC6 ] = { .pwm = PWM(0, 0, 0) },
+    [ PC7 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD0 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD1 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD2 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD3 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD4 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD5 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD6 ] = { .pwm = PWM(0, 0, 0) },
+    [ PD7 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE0 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE1 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE2 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE3 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE4 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE5 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE6 ] = { .pwm = PWM(0, 0, 0) },
+    [ PE7 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF0 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF1 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF2 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF3 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF4 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF5 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF6 ] = { .pwm = PWM(0, 0, 0) },
+    [ PF7 ] = { .pwm = PWM(0, 0, 0) },
 };
 
 #ifdef CONFIG_GPIO
-
-static void ti_arm_mcu_gpio_analog_write(int pin, double value) 
-{
-    unsigned long period, width;
-
-    /* Compute the PWM period based on the system clock */
-    period = SysCtlClockGet() / 440;
-
-    /* Set the PWM period  */
-    PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_UP_DOWN | 
-        PWM_GEN_MODE_NO_SYNC);
-    PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, period);
-
-    width = (unsigned long)(value * period);
-    /* Taking up too much of the period will result in having nothing */
-    if (width > period - 5)
-	width = period - 5;
-
-    /* Set PWM0 duty cycle */
-    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, width);
-
-    /* Enable the PWM0 output signals */
-    PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT, true);
-
-    /* Enable the PWM generator */
-    PWMGenEnable(PWM0_BASE, PWM_GEN_0);
-}
-
-static void pinmode_pwm(int pin)
-{
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
-    GPIOPinTypePWM(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
-}
 
 static int lm3s6965_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
@@ -184,7 +157,7 @@ static int lm3s6965_set_pin_mode(int pin, gpio_pin_mode_t mode)
 	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
 	break;
     case GPIO_PM_OUTPUT_ANALOG:
-	pinmode_pwm(pin);
+	ti_arm_mcu_pin_mode_pwm(pin);
 	break;
     default:
 	return -1;
@@ -223,7 +196,7 @@ const platform_t platform = {
     .gpio = {
 	.digital_write = ti_arm_mcu_gpio_digital_write,
 	.digital_read = ti_arm_mcu_gpio_digital_read,
-	.analog_write = ti_arm_mcu_gpio_analog_write,
+	.analog_write = ti_arm_mcu_gpio_pwm_analog_write,
 	.set_pin_mode = lm3s6965_set_pin_mode,
 	.set_port_val = ti_arm_mcu_gpio_set_port_val,
 	.get_port_val = ti_arm_mcu_gpio_get_port_val,

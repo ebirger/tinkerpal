@@ -65,9 +65,17 @@ typedef struct {
 } ti_arm_mcu_timer_t;
 
 typedef struct {
+    unsigned long base;
+    unsigned long gen;
+    unsigned long out;
+    unsigned long out_bit;
+} ti_arm_mcu_pwm_t;
+
+typedef struct {
     int timer;
     int timer_function;
     int adc_channel;
+    ti_arm_mcu_pwm_t pwm;
 } ti_arm_mcu_gpio_pin_t;
 
 /* Defined in each specific target board */
@@ -139,6 +147,9 @@ static inline void ti_arm_mcu_pin_mode_timer(int pin)
     if ((timer_function = ti_arm_mcu_gpio_pins[pin].timer_function) != -1)
 	MAP_GPIOPinConfigure(timer_function);
 }
+
+void ti_arm_mcu_pin_mode_pwm(int pin);
+void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value);
 
 #ifdef CONFIG_GPIO
 void ti_arm_mcu_gpio_input(int pin);

@@ -28,6 +28,9 @@
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/adc.h"
+#ifdef CONFIG_PLAT_HAS_PWM
+#include "driverlib/pwm.h"
+#endif
 #include "drivers/gpio/gpio_platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 
@@ -61,6 +64,47 @@ void ti_arm_mcu_gpio_input(int pin)
     MAP_IntEnable(ti_arm_mcu_gpio_ports[GPIO_PORT(pin)].irq);
 #endif
 }
+
+#ifdef CONFIG_PLAT_HAS_PWM
+static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
+    unsigned long freq, double duty_cycle) 
+{
+    unsigned long period, width;
+    
+    /* Compute the PWM period based on the system clock */
+    period = platform.get_system_clock() / freq;
+
+    /* Set the PWM period  */
+    MAP_PWMGenConfigure(pwm->base, pwm->gen, PWM_GEN_MODE_UP_DOWN |
+	PWM_GEN_MODE_NO_SYNC);
+    MAP_PWMGenPeriodSet(pwm->base, pwm->gen, period);
+
+    width = (unsigned long)(duty_cycle * period);
+    /* Taking up too much of the period will result in having nothing */
+    if (width > period - 5)
+	width = period - 5;
+
+    /* Set PWM0 duty cycle */
+    MAP_PWMPulseWidthSet(pwm->base, pwm->out, width);
+
+    /* Enable the PWM0 output signals */
+    MAP_PWMOutputState(pwm->base, pwm->out_bit, true);
+
+    /* Enable the PWM generator */
+    MAP_PWMGenEnable(pwm->base, pwm->gen);
+}
+
+void ti_arm_mcu_pin_mode_pwm(int pin)
+{
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
+    MAP_GPIOPinTypePWM(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
+}
+
+void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value)
+{
+    ti_arm_mcu_gpio_pwm_do(&ti_arm_mcu_gpio_pins[pin].pwm, 440, value);
+}
+#endif
 
 void ti_arm_mcu_gpio_digital_write(int pin, int value)
 {
