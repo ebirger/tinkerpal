@@ -65,7 +65,7 @@ void ti_arm_mcu_gpio_input(int pin)
 #endif
 }
 
-#ifdef CONFIG_PWM
+#ifdef CONFIG_PLAT_HAS_PWM
 static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
     unsigned long freq, double duty_cycle) 
 {
@@ -94,15 +94,35 @@ static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
     MAP_PWMGenEnable(pwm->base, pwm->gen);
 }
 
+static const ti_arm_mcu_pwm_t *pin_pwm(int pin)
+{
+    const ti_arm_mcu_pwm_t *pwm;
+
+    for (pwm = ti_arm_mcu_pwms; pwm->base && pwm->pin != pin; pwm++);
+    return pwm;
+}
+
 void ti_arm_mcu_pin_mode_pwm(int pin)
 {
-    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
+    const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
+
+    if (!pwm->base)
+	return;
+
+    MAP_SysCtlPeripheralEnable(pwm->periph);
+    if (pwm->af)
+	MAP_GPIOPinConfigure(pwm->af);
     MAP_GPIOPinTypePWM(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
 }
 
 void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value)
 {
-    ti_arm_mcu_gpio_pwm_do(&ti_arm_mcu_gpio_pins[pin].pwm, 440, value);
+    const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
+
+    if (!pwm->base)
+	return;
+
+    ti_arm_mcu_gpio_pwm_do(pwm, 1846, value);
 }
 #endif
 

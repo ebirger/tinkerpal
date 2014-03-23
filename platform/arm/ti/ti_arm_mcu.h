@@ -65,19 +65,19 @@ typedef struct {
 } ti_arm_mcu_timer_t;
 
 typedef struct {
+    unsigned long periph;
     unsigned long base;
     unsigned long gen;
     unsigned long out;
     unsigned long out_bit;
+    int pin;
+    unsigned long af;
 } ti_arm_mcu_pwm_t;
 
 typedef struct {
     int timer;
     int timer_function;
     int adc_channel;
-#ifdef CONFIG_PWM
-    ti_arm_mcu_pwm_t pwm;
-#endif
 } ti_arm_mcu_gpio_pin_t;
 
 /* Defined in each specific target board */
@@ -86,6 +86,7 @@ extern const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[];
 extern const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[];
 extern const ti_arm_mcu_timer_t ti_arm_mcu_timers[];
 extern const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[];
+extern const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[];
 
 void ti_arm_mcu_systick_init(void);
 unsigned long ti_arm_mcu_get_system_clock(void);

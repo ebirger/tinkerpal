@@ -35,6 +35,7 @@
 #include "driverlib/rom.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
+#include "driverlib/pwm.h"
 #include "driverlib/adc.h"
 #include "driverlib/rom_map.h"
 #include "util/debug.h"
@@ -107,126 +108,28 @@ const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
 };
 
 const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
-    [ PA0 ] = {-1, -1, -1},
-    [ PA1 ] = {-1, -1, -1},
-    [ PA2 ] = {-1, -1, -1},
-    [ PA3 ] = {-1, -1, -1},
-    [ PA4 ] = {-1, -1, -1},
-    [ PA5 ] = {-1, -1, -1},
-    [ PA6 ] = {-1, -1, -1},
-    [ PA7 ] = {-1, -1, -1},
-    [ PB0 ] = {-1, -1, -1},
-    [ PB1 ] = {-1, -1, -1},
-    [ PB2 ] = {-1, -1, -1},
-    [ PB3 ] = {-1, -1, -1},
-    [ PB4 ] = {-1, -1, -1},
-    [ PB5 ] = {-1, -1, -1},
-    [ PB6 ] = {-1, -1, -1},
-    [ PB7 ] = {-1, -1, -1},
-    [ PC0 ] = {-1, -1, -1},
-    [ PC1 ] = {-1, -1, -1},
-    [ PC2 ] = {-1, -1, -1},
-    [ PC3 ] = {-1, -1, -1},
-    [ PC4 ] = {-1, -1, -1},
-    [ PC5 ] = {-1, -1, -1},
-    [ PC6 ] = {-1, -1, -1},
-    [ PC7 ] = {-1, -1, -1},
-    [ PD0 ] = {-1, -1, -1},
-    [ PD1 ] = {-1, -1, -1},
-    [ PD2 ] = {-1, -1, -1},
-    [ PD3 ] = {-1, -1, -1},
-    [ PD4 ] = {-1, -1, -1},
-    [ PD5 ] = {-1, -1, -1},
-    [ PD6 ] = {-1, -1, -1},
-    [ PD7 ] = {-1, -1, -1},
-    [ PE0 ] = {-1, -1, -1},
-    [ PE1 ] = {-1, -1, -1},
-    [ PE2 ] = {-1, -1, -1},
-    [ PE3 ] = {-1, -1, -1},
-    [ PE4 ] = {-1, -1, -1},
-    [ PE5 ] = {-1, -1, -1},
-    [ PE6 ] = {-1, -1, -1},
-    [ PE7 ] = {-1, -1, -1},
-    [ PF0 ] = {-1, -1, -1},
-    [ PF1 ] = {-1, -1, -1},
-    [ PF2 ] = {-1, -1, -1},
-    [ PF3 ] = {-1, -1, -1},
-    [ PF4 ] = {-1, -1, -1},
-    [ PF5 ] = {-1, -1, -1},
-    [ PF6 ] = {-1, -1, -1},
-    [ PF7 ] = {-1, -1, -1},
-    [ PG0 ] = {-1, -1, -1},
-    [ PG1 ] = {-1, -1, -1},
-    [ PG2 ] = {-1, -1, -1},
-    [ PG3 ] = {-1, -1, -1},
-    [ PG4 ] = {-1, -1, -1},
-    [ PG5 ] = {-1, -1, -1},
-    [ PG6 ] = {-1, -1, -1},
-    [ PG7 ] = {-1, -1, -1},
-    [ PH0 ] = {-1, -1, -1},
-    [ PH1 ] = {-1, -1, -1},
-    [ PH2 ] = {-1, -1, -1},
-    [ PH3 ] = {-1, -1, -1},
-    [ PH4 ] = {-1, -1, -1},
-    [ PH5 ] = {-1, -1, -1},
-    [ PH6 ] = {-1, -1, -1},
-    [ PH7 ] = {-1, -1, -1},
-    [ PJ0 ] = {-1, -1, -1},
-    [ PJ1 ] = {-1, -1, -1},
-    [ PJ2 ] = {-1, -1, -1},
-    [ PJ3 ] = {-1, -1, -1},
-    [ PJ4 ] = {-1, -1, -1},
-    [ PJ5 ] = {-1, -1, -1},
-    [ PJ6 ] = {-1, -1, -1},
-    [ PJ7 ] = {-1, -1, -1},
-    [ PK0 ] = {-1, -1, -1},
-    [ PK1 ] = {-1, -1, -1},
-    [ PK2 ] = {-1, -1, -1},
-    [ PK3 ] = {-1, -1, -1},
-    [ PK4 ] = {-1, -1, -1},
-    [ PK5 ] = {-1, -1, -1},
-    [ PK6 ] = {-1, -1, -1},
-    [ PK7 ] = {-1, -1, -1},
-    [ PL0 ] = {-1, -1, -1},
-    [ PL1 ] = {-1, -1, -1},
-    [ PL2 ] = {-1, -1, -1},
-    [ PL3 ] = {-1, -1, -1},
-    [ PL4 ] = {-1, -1, -1},
-    [ PL5 ] = {-1, -1, -1},
-    [ PL6 ] = {-1, -1, -1},
-    [ PL7 ] = {-1, -1, -1},
-    [ PM0 ] = {-1, -1, -1},
-    [ PM1 ] = {-1, -1, -1},
-    [ PM2 ] = {-1, -1, -1},
-    [ PM3 ] = {-1, -1, -1},
-    [ PM4 ] = {-1, -1, -1},
-    [ PM5 ] = {-1, -1, -1},
-    [ PM6 ] = {-1, -1, -1},
-    [ PM7 ] = {-1, -1, -1},
-    [ PN0 ] = {-1, -1, -1},
-    [ PN1 ] = {-1, -1, -1},
-    [ PN2 ] = {-1, -1, -1},
-    [ PN3 ] = {-1, -1, -1},
-    [ PN4 ] = {-1, -1, -1},
-    [ PN5 ] = {-1, -1, -1},
-    [ PN6 ] = {-1, -1, -1},
-    [ PN7 ] = {-1, -1, -1},
-    [ PP0 ] = {-1, -1, -1},
-    [ PP1 ] = {-1, -1, -1},
-    [ PP2 ] = {-1, -1, -1},
-    [ PP3 ] = {-1, -1, -1},
-    [ PP4 ] = {-1, -1, -1},
-    [ PP5 ] = {-1, -1, -1},
-    [ PP6 ] = {-1, -1, -1},
-    [ PP7 ] = {-1, -1, -1},
-    [ PQ0 ] = {-1, -1, -1},
-    [ PQ1 ] = {-1, -1, -1},
-    [ PQ2 ] = {-1, -1, -1},
-    [ PQ3 ] = {-1, -1, -1},
-    [ PQ4 ] = {-1, -1, -1},
-    [ PQ5 ] = {-1, -1, -1},
-    [ PQ6 ] = {-1, -1, -1},
-    [ PQ7 ] = {-1, -1, -1},
+};
+
+const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
+#define PWM_DEF(p, g, b) \
+    { \
+	.periph = SYSCTL_PERIPH_PWM0, \
+	.base = PWM0_BASE, \
+	.gen = PWM_GEN_##g, \
+	.out = PWM_OUT_##b, \
+	.out_bit = PWM_OUT_##b##_BIT, \
+	.pin = p, \
+	.af = GPIO_##p##_M0PWM##b \
+    }
+    PWM_DEF(PF0, 0, 0),
+    PWM_DEF(PF1, 0, 1),
+    PWM_DEF(PF2, 1, 2),
+    PWM_DEF(PF3, 1, 3),
+    PWM_DEF(PG0, 2, 4),
+    PWM_DEF(PG1, 2, 5),
+    PWM_DEF(PK4, 3, 6),
+    PWM_DEF(PK5, 3, 7),
+    {}
 };
 
 static unsigned long system_clock;
@@ -267,7 +170,8 @@ static int tm4c1294_set_pin_mode(int pin, gpio_pin_mode_t mode)
 	    return -1;
 	break;
     case GPIO_PM_OUTPUT_ANALOG:
-	return -1;
+	ti_arm_mcu_pin_mode_pwm(pin);
+	break;
     }
     return 0;
 }
@@ -306,6 +210,7 @@ const platform_t platform = {
 	.digital_write = ti_arm_mcu_gpio_digital_write,
 	.digital_read = ti_arm_mcu_gpio_digital_read,
 	.analog_read = ti_arm_mcu_gpio_analog_read,
+	.analog_write = ti_arm_mcu_gpio_pwm_analog_write,
 	.set_pin_mode = tm4c1294_set_pin_mode,
 	.set_port_val = ti_arm_mcu_gpio_set_port_val,
 	.get_port_val = ti_arm_mcu_gpio_get_port_val,

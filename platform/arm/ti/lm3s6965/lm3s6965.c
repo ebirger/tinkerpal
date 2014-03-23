@@ -75,61 +75,18 @@ const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
 const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
 };
 
-const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
-#define PWM(b, g, o) { \
+const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
+#define PWM(b, g, o, p) { \
     .base = PWM##b##_BASE, \
     .gen = PWM_GEN_##g, \
     .out = PWM_OUT_##o, \
-    .out_bit = PWM_OUT_##o##_BIT \
+    .out_bit = PWM_OUT_##o##_BIT, \
+    .pin = p, \
 }
-    [ PA0 ] = { .pwm = PWM(0, 0, 0) },
-    [ PA1 ] = { .pwm = PWM(0, 0, 0) },
-    [ PA2 ] = { .pwm = PWM(0, 0, 0) },
-    [ PA3 ] = { .pwm = PWM(0, 0, 0) },
-    [ PA4 ] = { .pwm = PWM(0, 0, 0) },
-    [ PA5 ] = { .pwm = PWM(0, 0, 0) },
-    [ PA6 ] = { .pwm = PWM(0, 0, 0) },
-    [ PA7 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB0 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB1 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB2 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB3 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB4 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB5 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB6 ] = { .pwm = PWM(0, 0, 0) },
-    [ PB7 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC0 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC1 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC2 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC3 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC4 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC5 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC6 ] = { .pwm = PWM(0, 0, 0) },
-    [ PC7 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD0 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD1 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD2 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD3 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD4 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD5 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD6 ] = { .pwm = PWM(0, 0, 0) },
-    [ PD7 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE0 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE1 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE2 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE3 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE4 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE5 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE6 ] = { .pwm = PWM(0, 0, 0) },
-    [ PE7 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF0 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF1 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF2 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF3 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF4 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF5 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF6 ] = { .pwm = PWM(0, 0, 0) },
-    [ PF7 ] = { .pwm = PWM(0, 0, 0) },
+    PWM(0, 0, 0, 0),
+};
+
+const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
 };
 
 #ifdef CONFIG_GPIO

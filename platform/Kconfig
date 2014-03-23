@@ -21,11 +21,6 @@ config PLAT_HAS_EMBEDDED_ETH
 config PLAT_HAS_PWM
 	bool
 
-config PWM
-	bool "PWM Support"
-	depends on PLAT_HAS_PWM
-	default y
-
 config BUFFERED_SERIAL
 	bool
 	depends on PLAT_HAS_SERIAL
@@ -184,6 +179,7 @@ config TM4C123G
 config TM4C1294
 	bool
 	select TIVA_C
+	select PLAT_HAS_PWM
 
 if UNIX
 source "platform/unix/Kconfig"
