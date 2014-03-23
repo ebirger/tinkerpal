@@ -114,8 +114,7 @@ static int lm3s6965_set_pin_mode(int pin, gpio_pin_mode_t mode)
 	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
 	break;
     case GPIO_PM_OUTPUT_ANALOG:
-	ti_arm_mcu_pin_mode_pwm(pin);
-	break;
+	return ti_arm_mcu_pin_mode_pwm(pin);
     default:
 	return -1;
     }

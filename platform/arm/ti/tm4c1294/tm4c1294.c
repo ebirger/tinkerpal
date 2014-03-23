@@ -142,9 +142,6 @@ static int tm4c1294_set_pin_mode(int pin, gpio_pin_mode_t mode)
     if (pin >= PC0 && pin <= PC3) 
 	return -1;
 
-    if (mode == GPIO_PM_OUTPUT_ANALOG && ti_arm_mcu_gpio_pins[pin].timer == -1)
-	return -1;
-
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
 
     switch (mode)
@@ -170,8 +167,7 @@ static int tm4c1294_set_pin_mode(int pin, gpio_pin_mode_t mode)
 	    return -1;
 	break;
     case GPIO_PM_OUTPUT_ANALOG:
-	ti_arm_mcu_pin_mode_pwm(pin);
-	break;
+	return ti_arm_mcu_pin_mode_pwm(pin);
     }
     return 0;
 }

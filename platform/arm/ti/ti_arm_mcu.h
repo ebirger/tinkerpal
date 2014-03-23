@@ -151,7 +151,7 @@ static inline void ti_arm_mcu_pin_mode_timer(int pin)
 	MAP_GPIOPinConfigure(timer_function);
 }
 
-void ti_arm_mcu_pin_mode_pwm(int pin);
+int ti_arm_mcu_pin_mode_pwm(int pin);
 void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value);
 
 #ifdef CONFIG_GPIO

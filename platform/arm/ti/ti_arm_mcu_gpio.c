@@ -102,17 +102,18 @@ static const ti_arm_mcu_pwm_t *pin_pwm(int pin)
     return pwm;
 }
 
-void ti_arm_mcu_pin_mode_pwm(int pin)
+int ti_arm_mcu_pin_mode_pwm(int pin)
 {
     const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
 
     if (!pwm->base)
-	return;
+	return -1;
 
     MAP_SysCtlPeripheralEnable(pwm->periph);
     if (pwm->af)
 	MAP_GPIOPinConfigure(pwm->af);
     MAP_GPIOPinTypePWM(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
+    return 0;
 }
 
 void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value)
