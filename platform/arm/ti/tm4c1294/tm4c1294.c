@@ -174,12 +174,6 @@ static int tm4c1294_set_pin_mode(int pin, gpio_pin_mode_t mode)
 
 #endif
 
-static int ti_arm_mcu_serial_enable(int u, int enabled)
-{
-    ti_arm_mcu_uart_enable(u, enabled);
-    return 0;
-}
-
 static void tm4c1294_init(void)
 {
     /* Set the clocking to run directly from the crystal at 120 MHz */
@@ -196,7 +190,7 @@ static unsigned long tm4c1294_get_system_clock(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_serial_enable,
+	.enable = ti_arm_mcu_uart_enable,
 	.read = buffered_serial_read,
 	.write = ti_arm_mcu_serial_write,
 	.irq_enable = ti_arm_mcu_serial_irq_enable,

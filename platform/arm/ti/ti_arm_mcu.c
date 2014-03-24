@@ -114,7 +114,7 @@ static inline void ti_arm_mcu_pin_mode_uart(int pin, int uart_af)
     MAP_GPIOPinTypeUART(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
 }
 
-void ti_arm_mcu_uart_enable(int u, int enabled)
+int ti_arm_mcu_uart_enable(int u, int enabled)
 {
     const ti_arm_mcu_uart_t *uart = &ti_arm_mcu_uarts[u];
 
@@ -124,7 +124,7 @@ void ti_arm_mcu_uart_enable(int u, int enabled)
 	MAP_IntDisable(uart->irq);
 	MAP_UARTIntDisable(uart->base, 0xFFFFFFFF);
 	MAP_SysCtlPeripheralDisable(uart->periph);
-	return;
+	return 0;
     }
 
     ti_arm_mcu_pin_mode_uart(uart->rxpin, uart->rx_af);
@@ -146,6 +146,7 @@ void ti_arm_mcu_uart_enable(int u, int enabled)
     MAP_UARTIntEnable(uart->base, UART_INT_RX | UART_INT_RT);
     MAP_IntEnable(uart->irq);
     MAP_UARTEnable(uart->base);
+    return 0;
 }
 
 int ti_arm_mcu_select(int ms)

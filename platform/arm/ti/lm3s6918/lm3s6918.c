@@ -131,12 +131,6 @@ static int lm3s6918_set_pin_mode(int pin, gpio_pin_mode_t mode)
 }
 #endif
 
-static int ti_arm_mcu_serial_enable(int u, int enabled)
-{
-    ti_arm_mcu_uart_enable(u, enabled);
-    return 0;
-}
-
 static void lm3s6918_init(void)
 {
     /* If running on Rev A2 silicon, turn the LDO voltage up to 2.75V.  This is
@@ -158,7 +152,7 @@ static void lm3s6918_init(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_serial_enable,
+	.enable = ti_arm_mcu_uart_enable,
 	.read = buffered_serial_read,
 	.write = ti_arm_mcu_serial_write,
 	.irq_enable = ti_arm_mcu_serial_irq_enable,

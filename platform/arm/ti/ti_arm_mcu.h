@@ -92,7 +92,7 @@ void ti_arm_mcu_systick_init(void);
 unsigned long ti_arm_mcu_get_system_clock(void);
 void ti_arm_mcu_msleep(double ms);
 
-void ti_arm_mcu_uart_enable(int u, int enabled);
+int ti_arm_mcu_uart_enable(int u, int enabled);
 int ti_arm_mcu_select(int ms);
 void ti_arm_mcu_serial_irq_enable(int u, int enable);
 int ti_arm_mcu_serial_write(int u, char *buf, int size);

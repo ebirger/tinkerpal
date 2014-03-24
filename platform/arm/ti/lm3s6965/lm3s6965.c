@@ -122,12 +122,6 @@ static int lm3s6965_set_pin_mode(int pin, gpio_pin_mode_t mode)
 }
 #endif
 
-static int ti_arm_mcu_serial_enable(int u, int enabled)
-{
-    ti_arm_mcu_uart_enable(u, enabled);
-    return 0;
-}
-
 static void lm3s6965_init(void)
 {
     /* Set the clocking to run directly from the crystal */
@@ -143,7 +137,7 @@ static void lm3s6965_init(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_serial_enable,
+	.enable = ti_arm_mcu_uart_enable,
 	.read = buffered_serial_read,
 	.write = ti_arm_mcu_serial_write,
 	.irq_enable = ti_arm_mcu_serial_irq_enable,

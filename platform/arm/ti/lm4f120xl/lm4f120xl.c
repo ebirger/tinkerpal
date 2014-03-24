@@ -256,12 +256,6 @@ static void ti_arm_mcu_gpio_analog_write(int pin, double value)
 
 #endif
 
-static int ti_arm_mcu_serial_enable(int u, int enabled)
-{
-    ti_arm_mcu_uart_enable(u, enabled);
-    return 0;
-}
-
 static void buttons_init(void)
 {
 #ifdef CONFIG_GPIO
@@ -298,7 +292,7 @@ static void lm4f120xl_init(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_serial_enable,
+	.enable = ti_arm_mcu_uart_enable,
 	.read = buffered_serial_read,
 	.write = ti_arm_mcu_serial_write,
 	.irq_enable = ti_arm_mcu_serial_irq_enable,
