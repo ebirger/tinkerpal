@@ -49,6 +49,12 @@ static void gpio_port_f_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_F); }
 static void gpio_port_g_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_G); }
 static void gpio_port_h_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_H); }
 
+#ifdef CONFIG_TIVA_C_EMAC
+extern void tiva_c_emac_isr(void);
+#else
+#define tiva_c_emac_isr default_isr
+#endif
+
 static void nmi_isr(void)
 {
     /* Hang in there doing nothing */
@@ -138,7 +144,7 @@ void (*const g_pfnVectors[])(void) =
     default_isr,                      // I2C1 Master and Slave
     default_isr,                      // CAN0
     default_isr,                      // CAN1
-    default_isr,                      // Ethernet
+    tiva_c_emac_isr,	              // Ethernet
     default_isr,                      // Hibernate
     default_isr,                      // USB0
     default_isr,                      // PWM Generator 3

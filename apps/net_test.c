@@ -31,6 +31,8 @@
 #include "drivers/net/linux_packet_eth.h"
 #elif defined(CONFIG_STELLARIS_ETH)
 #include "platform/arm/ti/stellaris_eth.h"
+#elif defined(CONFIG_TIVA_C_EMAC)
+#include "platform/arm/ti/tiva_c_emac.h"
 #elif defined(CONFIG_ENC28J60)
 #include "drivers/net/enc28j60.h"
 #else
@@ -73,6 +75,8 @@ void app_start(int argc, char *argv[])
     ethif = linux_packet_eth_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)
     ethif = stellaris_eth_new();
+#elif defined(CONFIG_TIVA_C_EMAC)
+    ethif = tiva_c_emac_new();
 #elif defined(CONFIG_ENC28J60)
     ethif = enc28j60_new(&board.enc28j60_params);
 #endif

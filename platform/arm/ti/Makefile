@@ -15,6 +15,7 @@ ifneq ($(CONFIG_STELLARIS_ETH),)
   MK_OBJS+=stellaris_eth.o $(if $(CONFIG_JS),js_stellaris_eth.o)
   MK_DESCS+=stellaris_eth.desc
 endif
+MK_OBJS+=$(if $(CONFIG_TIVA_C_EMAC),tiva_c_emac.o)
 
 MK_SUBDIRS+=$(if $(CONFIG_LM4F120XL),lm4f120xl)
 MK_SUBDIRS+=$(if $(CONFIG_LM3S6965),lm3s6965)

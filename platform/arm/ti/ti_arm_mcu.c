@@ -38,6 +38,9 @@
 #ifdef CONFIG_STELLARIS_ETH
 #include "platform/arm/ti/stellaris_eth.h"
 #endif
+#ifdef CONFIG_TIVA_C_ETH
+#include "platform/arm/ti/tiva_c_emac.h"
+#endif
 
 #define SYSTEM_CLOCK() platform.get_system_clock()
 
@@ -160,6 +163,9 @@ int ti_arm_mcu_select(int ms)
 #endif
 #ifdef CONFIG_STELLARIS_ETH
 	event |= stellaris_eth_event_process();
+#endif
+#ifdef CONFIG_TIVA_C_ETH
+	event |= tiva_c_emac_event_process();
 #endif
 	event |= buffered_serial_events_process();
 

@@ -63,6 +63,12 @@ config STELLARIS_ETH
 	select ETHERIF
 	default y
 
+config TIVA_C_EMAC
+	bool
+	depends on TIVA_C && PLAT_HAS_EMBEDDED_ETH && NET
+	select ETHERIF
+	default y
+
 config FRDM
 	bool
 	select ARM
@@ -180,6 +186,7 @@ config TM4C1294
 	bool
 	select TIVA_C
 	select PLAT_HAS_PWM
+	select PLAT_HAS_EMBEDDED_ETH
 
 if UNIX
 source "platform/unix/Kconfig"
