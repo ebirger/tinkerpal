@@ -45,26 +45,26 @@ static void render_timer_trigger(event_t *e, u32 resource_id)
 
     /* Update screen */
     SDL_UpdateRect(screen->surface, 0, 0, screen->params.width,
-	screen->params.height);
+        screen->params.height);
 }
 
 static void sdl_screen_init(sdl_screen_t *screen)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
-	tp_err(("Unable to init SDL: %s\n", SDL_GetError()));
-	return;
+        tp_err(("Unable to init SDL: %s\n", SDL_GetError()));
+        return;
     }
 
     atexit(SDL_Quit);
 
     screen->surface = SDL_SetVideoMode(screen->params.width,
-	screen->params.height, 16, SDL_SWSURFACE);
+        screen->params.height, 16, SDL_SWSURFACE);
 
     if (!screen->surface)
     {
-	tp_err(("Unable to set resolution:  %s\n", SDL_GetError()));
-	return;
+        tp_err(("Unable to set resolution:  %s\n", SDL_GetError()));
+        return;
     }
 
     /* 30 fps */

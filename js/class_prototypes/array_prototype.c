@@ -32,10 +32,10 @@ int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *obj = NULL;
 
     if (argc <= 1)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     for (i = 1; i < argc; i++)
-	obj = array_push(this, obj_get(argv[i]));
+        obj = array_push(this, obj_get(argv[i]));
     *ret = obj_get(obj);
     return 0;
 }
@@ -43,7 +43,7 @@ int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_array_prototype_pop(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc != 1)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     *ret = array_pop(this);
     return 0;
@@ -72,7 +72,7 @@ int do_array_prototype_foreach(obj_t **ret, obj_t *this, int argc,
     array_iter_t iter;
 
     if (argc != 2 && argc != 3)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     cb = to_function(argv[1]);
     cb_this = argc == 3 ? argv[2] : UNDEF;
@@ -80,10 +80,10 @@ int do_array_prototype_foreach(obj_t **ret, obj_t *this, int argc,
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))
     {
-	obj_t *dummy = NULL;
+        obj_t *dummy = NULL;
 
-	array_cb_call(&dummy, cb, cb_this, iter.obj, iter.k, this);
-	obj_put(dummy);
+        array_cb_call(&dummy, cb, cb_this, iter.obj, iter.k, this);
+        obj_put(dummy);
     }
     array_iter_uninit(&iter);
     *ret = UNDEF;
@@ -99,7 +99,7 @@ int do_array_prototype_indexof(obj_t **ret, obj_t *this, int argc,
     array_iter_t iter;
 
     if (argc != 2 && argc != 3)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     item = argv[1];
     start = argc == 3 ? NUM_INT(to_num(argv[2])) : 0;
@@ -107,11 +107,11 @@ int do_array_prototype_indexof(obj_t **ret, obj_t *this, int argc,
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))
     {
-	if (iter.k < start)
-	    continue;
-	
-	if ((is_eq = obj_eq(iter.obj, item)))
-	    break;
+        if (iter.k < start)
+            continue;
+        
+        if ((is_eq = obj_eq(iter.obj, item)))
+            break;
     }
     *ret = num_new_int(is_eq ? iter.k : -1);
     array_iter_uninit(&iter);
@@ -126,31 +126,31 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     array_iter_t iter;
 
     if (argc != 2 && argc != 1)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     array_iter_init(&iter, this, 0);
     if (iter.len == 0)
     {
-	tstr_t empty = S("");
-	*ret = string_new(empty);
-	goto Exit;
+        tstr_t empty = S("");
+        *ret = string_new(empty);
+        goto Exit;
     }
 
     sep = argc == 2 ? obj_get(argv[1]) : string_new(comma);
 
     while (array_iter_next(&iter))
     {
-	obj_t *s;
+        obj_t *s;
 
-	s = obj_cast(iter.obj, STRING_CLASS);
+        s = obj_cast(iter.obj, STRING_CLASS);
 
-	if (o)
-	{
-	    o = obj_do_op(TOK_PLUS, o, obj_get(sep));
-	    o = obj_do_op(TOK_PLUS, o, s);
-	}
-	else
-	    o = s;
+        if (o)
+        {
+            o = obj_do_op(TOK_PLUS, o, obj_get(sep));
+            o = obj_do_op(TOK_PLUS, o, s);
+        }
+        else
+            o = s;
     }
     obj_put(sep);
     *ret = o;
@@ -167,7 +167,7 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     array_iter_t iter;
 
     if (argc != 2 && argc != 3)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     cb = to_function(argv[1]);
     cb_this = argc == 3 ? argv[2] : UNDEF;
@@ -176,17 +176,17 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     array_iter_init(&iter, this, 0);
     if (iter.len == 0)
-	goto Exit;
+        goto Exit;
 
     while (array_iter_next(&iter))
     {
-	obj_t *new_item;
-	tstr_t kstr;
+        obj_t *new_item;
+        tstr_t kstr;
 
-	kstr = int_to_tstr(iter.k);
-	array_cb_call(&new_item, cb, cb_this, iter.obj, iter.k, this);
-	_obj_set_property(new_arr, kstr, new_item);
-	tstr_free(&kstr);
+        kstr = int_to_tstr(iter.k);
+        array_cb_call(&new_item, cb, cb_this, iter.obj, iter.k, this);
+        _obj_set_property(new_arr, kstr, new_item);
+        tstr_free(&kstr);
     }
 
 Exit:
@@ -202,27 +202,27 @@ int do_array_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     if (argc == 2)
     {
-	int len;
+        int len;
 
-	if (!is_num(argv[1]))
-	{
-	    array_push(a, obj_get(argv[1]));
-	    goto Exit;
-	}
+        if (!is_num(argv[1]))
+        {
+            array_push(a, obj_get(argv[1]));
+            goto Exit;
+        }
 
-	len = obj_get_int(argv[1]);
-	if (len < 0)
-	{
-	    obj_put(a);
-	    return throw_exception(ret, &S("Exception: Invalid range"));
-	}
+        len = obj_get_int(argv[1]);
+        if (len < 0)
+        {
+            obj_put(a);
+            return throw_exception(ret, &S("Exception: Invalid range"));
+        }
 
-	array_length_set(a, len);
+        array_length_set(a, len);
     }
     else if (argc > 2)
     {
-	do_array_prototype_push(ret, a, argc, argv);
-	obj_put(*ret);
+        do_array_prototype_push(ret, a, argc, argv);
+        obj_put(*ret);
     }
 
 Exit:

@@ -149,7 +149,7 @@ static inline void js_scan_match(scan_t *scan, token_type_t tok)
 {
     if (_js_scan_match(scan, tok))
     {
-	tp_crit(("expected %x:%c, got %x:%c\n", tok, tok, CUR_TOK(scan), 
+        tp_crit(("expected %x:%c, got %x:%c\n", tok, tok, CUR_TOK(scan), 
             CUR_TOK(scan)));
     }
 }

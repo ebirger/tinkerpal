@@ -43,10 +43,10 @@ int exp_power(int exp)
     int pow = 1;
 
     if (!exp)
-	return 1;
+        return 1;
 
     while (exp--)
-	pow *= 10;
+        pow *= 10;
     return pow;
 }
 
@@ -56,8 +56,8 @@ static int is_fp(const tstr_t *s)
 
     for (i = 0; i < s->len; i++)
     {
-	if (TPTR(s)[i] == '.')
-	    return 1;
+        if (TPTR(s)[i] == '.')
+            return 1;
     }
     return 0;
 }
@@ -69,79 +69,79 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
 
     if (TPTR(s)[i] == '-')
     {
-	sign = -1;
-	i++;
+        sign = -1;
+        i++;
     }
 
     if (s->len > 2 && TPTR(s)[i] == '0' && !is_fp(s))
     {
-	radix = 8;
-	i++;
-	if (s->len > 2 && TPTR(s)[1] == 'x')
-	{
-	    radix = 16;
-	    i++;
-	}
-	if (s->len > 2 && TPTR(s)[1] == 'b')
-	{
-	    radix = 2;
-	    i++;
-	}
+        radix = 8;
+        i++;
+        if (s->len > 2 && TPTR(s)[1] == 'x')
+        {
+            radix = 16;
+            i++;
+        }
+        if (s->len > 2 && TPTR(s)[1] == 'b')
+        {
+            radix = 2;
+            i++;
+        }
     }
 
     for (; i < s->len; i++)
     {
-	char c = TPTR(s)[i];
+        char c = TPTR(s)[i];
 
-	if ((radix == 16 && !isxdigit((int)c)) ||
-	    (radix == 10 && (!isdigit((int)c) && c != '.' && c != 'e')) ||
-	    (radix == 8 && !is_oct_digit(c)) ||
-	    (radix == 2 && !is_bin_digit(c)))
-	{
-	    return -1;
-	}
+        if ((radix == 16 && !isxdigit((int)c)) ||
+            (radix == 10 && (!isdigit((int)c) && c != '.' && c != 'e')) ||
+            (radix == 8 && !is_oct_digit(c)) ||
+            (radix == 2 && !is_bin_digit(c)))
+        {
+            return -1;
+        }
 
-	if (c == '.')
-	{
-	    if (fp || e)
-		return -1;
+        if (c == '.')
+        {
+            if (fp || e)
+                return -1;
 
-	    fp = i+1;
-	    v.value.fp = v.value.i;
-	    v.flags = NUMERIC_FLAG_FP;
-	    continue;
-	}
+            fp = i+1;
+            v.value.fp = v.value.i;
+            v.flags = NUMERIC_FLAG_FP;
+            continue;
+        }
 
-	if (c == 'e' && radix != 16)
-	{
-	    if (e)
-		return -1;
+        if (c == 'e' && radix != 16)
+        {
+            if (e)
+                return -1;
 
-	    e = i+1;
-	    continue;
-	}
+            e = i+1;
+            continue;
+        }
 
-	if (e)
-	{
-	    exp = exp * 10 + (c - '0');
-	    continue;
-	}
+        if (e)
+        {
+            exp = exp * 10 + (c - '0');
+            continue;
+        }
 
-	if (fp)
-	{
-	    double addition = (double)digit_value(c)/exp_power(i + 1 - fp);
-	    v.value.fp = v.value.fp + addition;
-	    continue;
-	}
-	v.value.i = v.value.i * radix + digit_value(c);
+        if (fp)
+        {
+            double addition = (double)digit_value(c)/exp_power(i + 1 - fp);
+            v.value.fp = v.value.fp + addition;
+            continue;
+        }
+        v.value.i = v.value.i * radix + digit_value(c);
     }
     if (e == s->len || fp == s->len)
-	return -1;
+        return -1;
 
     if (fp)
-	v.value.fp *= (exp_power(exp) * sign);
+        v.value.fp *= (exp_power(exp) * sign);
     else
-	v.value.i *= (exp_power(exp) * sign);
+        v.value.i *= (exp_power(exp) * sign);
 
     *ret = v;
     return 0;

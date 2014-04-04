@@ -97,9 +97,9 @@ int stm32_gpio_digital_read(int pin)
 void stm32_gpio_digital_write(int pin, int value)
 {
     if (value)
-	GPIO_SetBits(GPIO_PORT(pin), GPIO_BIT(pin));
+        GPIO_SetBits(GPIO_PORT(pin), GPIO_BIT(pin));
     else
-	GPIO_ResetBits(GPIO_PORT(pin), GPIO_BIT(pin));
+        GPIO_ResetBits(GPIO_PORT(pin), GPIO_BIT(pin));
 }
 
 void stm32_gpio_set_port_val(int port, unsigned short mask,
@@ -119,7 +119,7 @@ void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af)
     GPIO_InitTypeDef GPIO_InitStructure;
 
     if (af)
-	STM32_GPIO_AF_CONFIG(pin, af);
+        STM32_GPIO_AF_CONFIG(pin, af);
 
     GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin);
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -140,24 +140,24 @@ int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     switch (mode)
     {
     case GPIO_PM_INPUT:
-	STM32_GPIO_PIN_TYPE_IN(GPIO_InitStructure);
-	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
-	break;
+        STM32_GPIO_PIN_TYPE_IN(GPIO_InitStructure);
+        GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
+        break;
     case GPIO_PM_OUTPUT:
-	STM32_GPIO_PIN_TYPE_OUT(GPIO_InitStructure);
-	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
-	break;
+        STM32_GPIO_PIN_TYPE_OUT(GPIO_InitStructure);
+        GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
+        break;
     case GPIO_PM_INPUT_PULLUP:
-	STM32_GPIO_PIN_TYPE_IN_PU(GPIO_InitStructure);
-	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
-	break;
+        STM32_GPIO_PIN_TYPE_IN_PU(GPIO_InitStructure);
+        GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
+        break;
     case GPIO_PM_INPUT_PULLDOWN:
-	STM32_GPIO_PIN_TYPE_IN_PD(GPIO_InitStructure);
-	GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
-	break;
+        STM32_GPIO_PIN_TYPE_IN_PD(GPIO_InitStructure);
+        GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
+        break;
     default:
-	tp_err(("Pinmode %d is not supported yet\n", mode));
-	return -1;
+        tp_err(("Pinmode %d is not supported yet\n", mode));
+        return -1;
     }
     return 0;
 }

@@ -35,32 +35,32 @@ static void graphics_test_process_line(tstr_t *line)
 {
     if (!tstr_cmp(line, &S("fill")))
     {
-	int i, j;
+        int i, j;
 
-	for (i = 0; i < canvas->width; i++)
-	{
-	    for (j = 0; j < canvas->height; j++)
-		canvas_pixel_set(canvas, i, j, (i * j) & 0xffff);
-	}
+        for (i = 0; i < canvas->width; i++)
+        {
+            for (j = 0; j < canvas->height; j++)
+                canvas_pixel_set(canvas, i, j, (i * j) & 0xffff);
+        }
     }
     if (!tstr_cmp(line, &S("clear")))
     {
-	/* XXX: When rect API is available, use it */
-	int i, j;
+        /* XXX: When rect API is available, use it */
+        int i, j;
 
-	for (i = 0; i < canvas->width; i++)
-	{
-	    for (j = 0; j < canvas->height; j++)
-		canvas_pixel_set(canvas, i, j, 0);
-	}
+        for (i = 0; i < canvas->width; i++)
+        {
+            for (j = 0; j < canvas->height; j++)
+                canvas_pixel_set(canvas, i, j, 0);
+        }
     }
     if (!tstr_cmp(line, &S("circle")))
     {
-	circle_draw(canvas, canvas->width / 2, canvas->height / 2,
-	    canvas->width / 4, 0xffff);
+        circle_draw(canvas, canvas->width / 2, canvas->height / 2,
+            canvas->width / 4, 0xffff);
     }
     if (!tstr_cmp(line, &S("text")))
-	string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 0xffff);
+        string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 0xffff);
 
     console_printf("Ok\n");
 }

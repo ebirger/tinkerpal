@@ -53,9 +53,9 @@ int unix_select(int ms, unix_fd_event_map_t *map)
 
     for (iter = map; iter->event != -1; iter++)
     {
-	FD_SET(iter->in_fd, &rfds);
-	if (iter->in_fd > max_fd - 1)
-	    max_fd = iter->in_fd + 1;
+        FD_SET(iter->in_fd, &rfds);
+        if (iter->in_fd > max_fd - 1)
+            max_fd = iter->in_fd + 1;
     }
 
     sec = ms / 1000;
@@ -64,16 +64,16 @@ int unix_select(int ms, unix_fd_event_map_t *map)
 
     rc = select(max_fd, &rfds, NULL, NULL, ms ? &tv : NULL);
     if (rc == -1)
-	perror("select");
+        perror("select");
     if (rc > 0)
     {
-	for (iter = map; iter->event != -1; iter++)
-	{
-	    if (!FD_ISSET(iter->in_fd, &rfds))
-		continue;
-		
-	    serial_event_trigger(iter->event);
-	}
+        for (iter = map; iter->event != -1; iter++)
+        {
+            if (!FD_ISSET(iter->in_fd, &rfds))
+                continue;
+                
+            serial_event_trigger(iter->event);
+        }
     }
     return rc;
 }
@@ -85,8 +85,8 @@ static int get_event_fd(int event, unix_fd_event_map_t *map, int in)
     for (iter = map; iter->event != -1 && iter->event != event; iter++);
     if (iter->event == -1)
     {
-	printf("invalid event id %d\n", event);
-	exit(1);
+        printf("invalid event id %d\n", event);
+        exit(1);
     }
 
     return in ? iter->in_fd : iter->out_fd;
@@ -99,13 +99,13 @@ int unix_read(int event, char *buf, int size, unix_fd_event_map_t *map)
     rsize = read(fd, buf, size);
     if (!rsize)
     {
-	printf("fd %d closed\n", fd);
-	exit(1);
+        printf("fd %d closed\n", fd);
+        exit(1);
     }
     if (rsize < 0)
     {
-	perror("read");
-	exit(1);
+        perror("read");
+        exit(1);
     }
     return rsize;
 }
@@ -116,8 +116,8 @@ int unix_write(int event, char *buf, int size, unix_fd_event_map_t *map)
 
     if (write(fd, buf, size) != size)
     {
-	perror("write");
-	exit(1);
+        perror("write");
+        exit(1);
     }
     return size;
 }
@@ -143,9 +143,9 @@ void unix_set_term_raw(int fd, int raw)
 
     tcgetattr(fd, &term);
     if (raw)
-	term.c_lflag &= ~(ECHO|ICANON);
+        term.c_lflag &= ~(ECHO|ICANON);
     else
-	term.c_lflag |= (ECHO|ICANON);
+        term.c_lflag |= (ECHO|ICANON);
     tcsetattr(fd, TCSANOW, &term);
 }
 

@@ -34,7 +34,7 @@
 static inline void gpio_digital_write(resource_t pin, int value)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
-	return;
+        return;
 
     platform.gpio.digital_write(RES_MAJ(pin), value);
 }
@@ -42,7 +42,7 @@ static inline void gpio_digital_write(resource_t pin, int value)
 static inline void gpio_digital_pulse(resource_t pin, int value, double ms)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
-	return;
+        return;
 
     platform.gpio.digital_write(RES_MAJ(pin), value);
     platform_msleep(ms);
@@ -52,7 +52,7 @@ static inline void gpio_digital_pulse(resource_t pin, int value, double ms)
 static inline int gpio_digital_read(resource_t pin)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
-	return 0;
+        return 0;
 
     return platform.gpio.digital_read(RES_MAJ(pin));
 }
@@ -60,7 +60,7 @@ static inline int gpio_digital_read(resource_t pin)
 static inline void gpio_analog_write(resource_t pin, double value)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
-	return;
+        return;
 
     platform.gpio.analog_write(RES_MAJ(pin), value);
 }
@@ -68,7 +68,7 @@ static inline void gpio_analog_write(resource_t pin, double value)
 static inline double gpio_analog_read(resource_t pin)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
-	return 0;
+        return 0;
 
     return platform.gpio.analog_read(RES_MAJ(pin));
 }
@@ -76,7 +76,7 @@ static inline double gpio_analog_read(resource_t pin)
 static inline int gpio_set_pin_mode(resource_t pin, gpio_pin_mode_t mode)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
-	return -1;
+        return -1;
 
     return platform.gpio.set_pin_mode(RES_MAJ(pin), mode);
 }
@@ -86,7 +86,7 @@ int gpio_set_port_mode(resource_t port, u16 mask, gpio_pin_mode_t mode);
 static inline void gpio_set_port_val(resource_t port, u16 mask, u16 value)
 {
     if (RES_BASE(port) != GPIO_RESOURCE_ID_BASE)
-	return;
+        return;
 
     platform.gpio.set_port_val(RES_MAJ(port), mask, value);
 }
@@ -94,7 +94,7 @@ static inline void gpio_set_port_val(resource_t port, u16 mask, u16 value)
 static inline u16 gpio_get_port_val(resource_t port, u16 mask)
 {
     if (RES_BASE(port) != GPIO_RESOURCE_ID_BASE)
-	return 0;
+        return 0;
 
     return platform.gpio.get_port_val(RES_MAJ(port), mask);
 }
@@ -107,20 +107,20 @@ static inline int gpio_get_constant(int *constant, char *buf, int len)
 #define GPIO_PREFIX "GPIO_P"
 
     if (len < sizeof(GPIO_PREFIX) -1 || 
-	prefix_comp(sizeof(GPIO_PREFIX) - 1, GPIO_PREFIX, buf))
+        prefix_comp(sizeof(GPIO_PREFIX) - 1, GPIO_PREFIX, buf))
     {
-	return -1;
+        return -1;
     }
 
     buf += sizeof(GPIO_PREFIX) - 1;
     len -= sizeof(GPIO_PREFIX) - 1;
 
     if (len == 2)
-	pin = GPIO(buf[0] - 'A', buf[1] - '0');
+        pin = GPIO(buf[0] - 'A', buf[1] - '0');
     else if (len == 3)
-	pin = GPIO(buf[0] - 'A', ((buf[1] - '0') * 10) + buf[2] - '0');
+        pin = GPIO(buf[0] - 'A', ((buf[1] - '0') * 10) + buf[2] - '0');
     else 
-	return -1;
+        return -1;
 
     *constant = (int)RES(GPIO_RESOURCE_ID_BASE, pin, 0);
     return 0;

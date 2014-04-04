@@ -33,11 +33,11 @@ static int builtin_fs_file_read(tstr_t *content, tstr_t *file_name)
     const builtin_fs_file_t *f;
 
     for (f = builtin_fs_files; f->name && tstr_cmp_str(file_name, f->name);
-	f++);
+        f++);
     if (!f->name)
     {
-	tp_err(("Builtin FS: File %S not found\n", file_name));
-	return -1;
+        tp_err(("Builtin FS: File %S not found\n", file_name));
+        return -1;
     }
 
     /* No need to dup the tstr as it is builtin */
@@ -55,14 +55,14 @@ int builtin_fs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
     const builtin_fs_file_t *f;
 
     if (!vfs_is_root_path(path))
-	return -1;
+        return -1;
 
     for (f = builtin_fs_files; f->name; f++)
     {
-	tstr_t t;
+        tstr_t t;
 
-	tstr_init(&t, (char *)f->name, strlen(f->name), 0);
-	cb(&t, ctx);
+        tstr_init(&t, (char *)f->name, strlen(f->name), 0);
+        cb(&t, ctx);
     }
 
     return 0;

@@ -69,7 +69,7 @@ static u8 dogs102x6_init_seq[] = {
     SET_INVERSE_DISPLAY,
     SET_LCD_BIAS_RATIO,
     SET_POWER_CONTROL | POWER_CTRL_BOOSTER_ON | POWER_CTRL_REGULATOR_ON |
-	POWER_CTRL_FOLLOWER_ON,
+        POWER_CTRL_FOLLOWER_ON,
     SET_VLCD_RESISTOR_RATIO | 0x07,
     SET_ELECTRONIC_VOLUME_CMD,
     11, /* Initial contrast */
@@ -127,7 +127,7 @@ static void chip_init(dogs102x6_t *screen)
 
     /* Send init sequence */
     dogs102x6_write(screen, 1, dogs102x6_init_seq,
-	sizeof(dogs102x6_init_seq));
+        sizeof(dogs102x6_init_seq));
 
     gpio_digital_write(screen->params.cs, 1);
 }

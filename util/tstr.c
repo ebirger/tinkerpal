@@ -32,11 +32,11 @@
 char digit_value(char c)
 {
     if (isdigit((int)c))
-	return c - '0';
+        return c - '0';
     if (c >= 'a' && c <= 'f')
-	return 10 + c - 'a';
+        return 10 + c - 'a';
     if (c >= 'A' && c <= 'F')
-	return 10 + c - 'A';
+        return 10 + c - 'A';
     return 0;
 }
 
@@ -85,9 +85,9 @@ void tstr_list_free(tstr_list_t **l)
 
     while ((temp = *l))
     {
-	*l = (*l)->next;
-	tstr_free(&temp->str);
-	tfree(temp);
+        *l = (*l)->next;
+        tstr_free(&temp->str);
+        tfree(temp);
     }
 }
 
@@ -96,24 +96,24 @@ int tstr_find(tstr_t *haystack, tstr_t *needle)
     int i, j;
 
     if (haystack->len == 0)
-	return -1;
+        return -1;
 
     /* Trick for string.prototype.split() */
     if (needle->len == 0 && haystack->len > 0)
-	return 1;
+        return 1;
 
     /* Stupid brute force algorithm here... */
     for (i = 0; i <= haystack->len - needle->len; i++)
     {
-	int diff = 0;
+        int diff = 0;
 
-	for (j = 0; j < needle->len && !diff; j++)
-	{
-	    if (TPTR(haystack)[i + j] != TPTR(needle)[j])
-		diff = 1;
-	}
-	if (!diff)
-	    return i;
+        for (j = 0; j < needle->len && !diff; j++)
+        {
+            if (TPTR(haystack)[i + j] != TPTR(needle)[j])
+                diff = 1;
+        }
+        if (!diff)
+            return i;
     }
     return -1;
 }
@@ -125,8 +125,8 @@ tstr_t tstr_dup(tstr_t s)
     ret = s;
     if (TSTR_IS_ALLOCATED(&s))
     {
-	TPTR(&ret) = tmalloc(ret.len, "dupped str");
-	memcpy(TPTR(&ret), TPTR(&s), ret.len);
+        TPTR(&ret) = tmalloc(ret.len, "dupped str");
+        memcpy(TPTR(&ret), TPTR(&s), ret.len);
     }
     return ret;
 }
@@ -144,7 +144,7 @@ tstr_t tstr_piece(tstr_t s, int index, int count)
 void tstr_free(tstr_t *s)
 {
     if (TSTR_IS_ALLOCATED(s))
-	tfree(TPTR(s));
+        tfree(TPTR(s));
 }
 
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b)
@@ -165,44 +165,44 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
 
     for (in = TPTR(src); (left = src->len - (in - TPTR(src))) > 0; in++)
     {
-	if (*in != '\\')
-	{
-	    *out++ = *in;
-	    continue;
-	}
-	in++;
-	switch (*in)
-	{
-	case 'n': *out++ = '\n'; break;
-	case 't': *out++ = '\t'; break;
-	case 'r': *out++ = '\r'; break;
-	case '\\': *out++ = '\\'; break;
-	case '0': *out++ = '\0'; break;
-	case 'u':
-	    {
-		char c;
+        if (*in != '\\')
+        {
+            *out++ = *in;
+            continue;
+        }
+        in++;
+        switch (*in)
+        {
+        case 'n': *out++ = '\n'; break;
+        case 't': *out++ = '\t'; break;
+        case 'r': *out++ = '\r'; break;
+        case '\\': *out++ = '\\'; break;
+        case '0': *out++ = '\0'; break;
+        case 'u':
+            {
+                char c;
 
-		if (left < 5)
-		{
-		    /* Malformed, copy as is */
-		    *out++ = *in;
-		    break;
+                if (left < 5)
+                {
+                    /* Malformed, copy as is */
+                    *out++ = *in;
+                    break;
 
-		}
-	        /* We don't really support unicode. Only \u00xx patterns where
-	         * xx is a hex number.
-	         */
-	        in++; /* Skip 'u'*/
-	        in++; /* Skip 0 */
-	        in++; /* Skip 0 */
-		c = digit_value(*in++) * 16;
-		c += digit_value(*in);
-		*out++ = c;
-	        break;
-	    }
-	default:
-	    break;
-	}
+                }
+                /* We don't really support unicode. Only \u00xx patterns where
+                 * xx is a hex number.
+                 */
+                in++; /* Skip 'u'*/
+                in++; /* Skip 0 */
+                in++; /* Skip 0 */
+                c = digit_value(*in++) * 16;
+                c += digit_value(*in);
+                *out++ = c;
+                break;
+            }
+        default:
+            break;
+        }
     }
     dst->len = out - TPTR(dst);
     TSTR_SET_ALLOCATED(dst);
@@ -215,8 +215,8 @@ int prefix_comp(int len, char *a, char *b)
 
     for (i = 0; i < len; i++)
     {
-	if (a[i] != b[i])
-	    return -1;
+        if (a[i] != b[i])
+            return -1;
     }
     return 0;
 }
@@ -230,9 +230,9 @@ tstr_t tstr_cut(tstr_t *t, char delim)
     for (i = 0; i < t->len && TPTR(t)[i] != delim; i++);
     if (i == t->len)
     {
-	TPTR(t) = NULL;
-	t->len = 0;
-	return ret;
+        TPTR(t) = NULL;
+        t->len = 0;
+        return ret;
     }
 
     ret.len = i; 

@@ -40,10 +40,10 @@ static void interval_cb(event_t *e, u32 resource_id)
 
     if (function_call(&o, this, 1, &func))
     {
-	int tid = 0;
+        int tid = 0;
 
-	obj_get_property_int(&tid, js_event_obj(e), &Stimer_id);
-	event_timer_del(tid);
+        obj_get_property_int(&tid, js_event_obj(e), &Stimer_id);
+        event_timer_del(tid);
     }
 
     obj_put(this);
@@ -57,7 +57,7 @@ int do_set_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int ms, tid;
 
     if (argc != 3)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     e = js_event_new(argv[1], this, js_event_gen_trigger);
 
@@ -75,7 +75,7 @@ int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int ms, tid;
 
     if (argc != 3)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     e = js_event_new(argv[1], this, interval_cb);
 
@@ -90,15 +90,15 @@ int do_set_interval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 static int do_clear_timer(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc != 1 && argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     if (argc == 1)
-	event_timer_del_all();
+        event_timer_del_all();
     else
     {
-	int id = NUM_INT(to_num(argv[1]));
+        int id = NUM_INT(to_num(argv[1]));
 
-	event_timer_del(id);
+        event_timer_del(id);
     }
     return 0;
 }

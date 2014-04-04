@@ -53,8 +53,8 @@ static void mem_cache_block_destroy(mem_cache_block_t *block)
 
     while ((tmp = block))
     {
-	block = block->next;
-	tfree(tmp);
+        block = block->next;
+        tfree(tmp);
     }
 }
 
@@ -69,12 +69,12 @@ static mem_cache_block_t *mem_cache_block_create(int item_size)
     block->free_list = item = (char *)(block + 1);
     for (i = 0; i < NUM_ITEMS; i++)
     {
-	char *next;
+        char *next;
 
-	next = i < NUM_ITEMS - 1 ? item + item_size : NULL;
-	*((uint_ptr_t *)item) = (uint_ptr_t)next;
-	tp_debug(("current item %p, next %p\n", item, next));
-	item = next;
+        next = i < NUM_ITEMS - 1 ? item + item_size : NULL;
+        *((uint_ptr_t *)item) = (uint_ptr_t)next;
+        tp_debug(("current item %p, next %p\n", item, next));
+        item = next;
     }
     return block;
 }
@@ -97,16 +97,16 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
     tp_info(("mem_cache_squeeze: requested to free %d bytes\n", size));
     while ((next = block->next))
     {
-	if (mem_cache_block_num_free(next) != NUM_ITEMS)
-	{
-	    block = next;
-	    continue;
-	}
+        if (mem_cache_block_num_free(next) != NUM_ITEMS)
+        {
+            block = next;
+            continue;
+        }
 
-	block->next = next->next;
-	next->next = NULL;
-	mem_cache_block_destroy(next);
-	freed += BLOCK_SZ(cache->item_size);
+        block->next = next->next;
+        next->next = NULL;
+        mem_cache_block_destroy(next);
+        freed += BLOCK_SZ(cache->item_size);
     }
 
     tp_info(("mem_cache_squeeze: freed %d bytes\n", freed));
@@ -145,15 +145,15 @@ void *mem_cache_alloc(mem_cache_t *cache)
 
     if (!(item = block->free_list))
     {
-	mem_cache_block_t **iter;
+        mem_cache_block_t **iter;
 
-	for (iter = &block->next; *iter && !(*iter)->free_list; 
-	    iter = &(*iter)->next);
-	if (*iter && (*iter)->free_list)
-	    block = *iter;
-	else
-	    block = *iter = mem_cache_block_create(cache->item_size);
-	item = block->free_list;
+        for (iter = &block->next; *iter && !(*iter)->free_list; 
+            iter = &(*iter)->next);
+        if (*iter && (*iter)->free_list)
+            block = *iter;
+        else
+            block = *iter = mem_cache_block_create(cache->item_size);
+        item = block->free_list;
     }
 
     next = (char *)*((uint_ptr_t *)item);
@@ -174,7 +174,7 @@ static inline mem_cache_block_t *mem_cache_block_find(mem_cache_block_t *block,
     void *ptr, int item_size)
 {
     for (; block && !is_in_cache_block(block, ptr, item_size); 
-	block = block->next);
+        block = block->next);
     return block;
 }
 
@@ -195,13 +195,13 @@ void mem_cache_stats(void)
     
     for (cache = mem_cache_head; cache; cache = cache->next)
     {
-	mem_cache_block_t *block;
+        mem_cache_block_t *block;
 
-	tp_out(("%s (%p):\n", cache->name, cache));
-	for (block = cache->head; block; block = block->next)
-	{
-	    tp_out(("\tblock %p free %d\n", block, 
-		mem_cache_block_num_free(block)));
-	}
+        tp_out(("%s (%p):\n", cache->name, cache));
+        for (block = cache->head; block; block = block->next)
+        {
+            tp_out(("\tblock %p free %d\n", block, 
+                mem_cache_block_num_free(block)));
+        }
     }
 }

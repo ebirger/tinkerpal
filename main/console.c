@@ -45,12 +45,12 @@ int console_write(char *buf, int size)
     for (; size--; buf++)
     {
         if (*buf == '\n')
-	{
-	    char b = '\r';
-	    serial_write(console_id, &b, 1);
-	}
+        {
+            char b = '\r';
+            serial_write(console_id, &b, 1);
+        }
 
-	serial_write(console_id, buf, 1);
+        serial_write(console_id, buf, 1);
     }
     return 0;
 }
@@ -63,7 +63,7 @@ static int console_printer_write(printer_t *printer, char *buf, int size)
 void console_event_watch_set(event_t *e)
 {
     if (console_event_id != -1)
-	event_watch_del(console_event_id);
+        event_watch_del(console_event_id);
     user_e = e;
     console_event_id = event_watch_set(console_id, e);
 }
@@ -76,24 +76,24 @@ static void str_dump(printer_t *printer, void *o)
 
     for (i = 0; i < s->len; i++)
     {
-	char c = TPTR(s)[i];
+        char c = TPTR(s)[i];
 
-	if (c == '\n')
-	    tprintf(printer, "\\n");
-	else if (c == '\t')
-	    tprintf(printer, "\\t");
-	else if (c == '\r')
-	    tprintf(printer, "\\r");
-	else if (c == '"')
-	    tprintf(printer, "\\\"");
-	else if (c == '\0')
-	    tprintf(printer, "\\0");
-	else if (c == '\\')
-	    tprintf(printer, "\\");
-	else if (c >= 0x20 && c <= 0x7E)
-	    tprintf(printer, "%c", c);
-	else
-	    tprintf(printer, "\\u00%s%x", c <= 0xf ? "0" : "", c);
+        if (c == '\n')
+            tprintf(printer, "\\n");
+        else if (c == '\t')
+            tprintf(printer, "\\t");
+        else if (c == '\r')
+            tprintf(printer, "\\r");
+        else if (c == '"')
+            tprintf(printer, "\\\"");
+        else if (c == '\0')
+            tprintf(printer, "\\0");
+        else if (c == '\\')
+            tprintf(printer, "\\");
+        else if (c >= 0x20 && c <= 0x7E)
+            tprintf(printer, "%c", c);
+        else
+            tprintf(printer, "\\u00%s%x", c <= 0xf ? "0" : "", c);
     }
 }
 
@@ -102,7 +102,7 @@ void console_set_id(resource_t id)
     console_id = id;
     /* refresh event listener */
     if (user_e)
-	console_event_watch_set(user_e);
+        console_event_watch_set(user_e);
 }
 
 static printer_t console_printer = {

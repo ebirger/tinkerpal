@@ -34,7 +34,7 @@
 static inline int serial_read(resource_t id, char *buf, int size)
 {
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
-	return -1;
+        return -1;
 
     return platform.serial.read(RES_MAJ(id), buf, size);
 }
@@ -42,7 +42,7 @@ static inline int serial_read(resource_t id, char *buf, int size)
 static inline int serial_write(resource_t id, char *buf, int size)
 {
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
-	return -1;
+        return -1;
     
     return platform.serial.write(RES_MAJ(id), buf, size);
 }
@@ -55,16 +55,16 @@ static inline int serial_get_constant(int *constant, char *buf, int len)
 #define SERIAL_PREFIX "UART"
 
     if (len < sizeof(SERIAL_PREFIX) - 1 ||
-	prefix_comp(sizeof(SERIAL_PREFIX) - 1, SERIAL_PREFIX, buf))
+        prefix_comp(sizeof(SERIAL_PREFIX) - 1, SERIAL_PREFIX, buf))
     {
-	return -1;
+        return -1;
     }
 
     buf += sizeof(SERIAL_PREFIX) - 1;
     len -= sizeof(SERIAL_PREFIX) - 1;
 
     if (len != 1)
-	return -1;
+        return -1;
 
     *constant = (int)RES(UART_RESOURCE_ID_BASE, buf[0] - '0', 0);
     return 0;

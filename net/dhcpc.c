@@ -61,7 +61,7 @@ static int opt_put(u8 opt_num, const u8 opt[], u8 opt_len)
     u8 *p;
 
     if (!(p = packet_push(&g_packet, 2 + opt_len)))
-	return -1;
+        return -1;
 
     *p++ = opt_num;
     *p++ = opt_len;
@@ -85,7 +85,7 @@ static int dhcpc_msg_xmit(dhcpc_t *dhcpc)
     eth_mac_t mac;
 
     if (!(msg = packet_push(&g_packet, sizeof(dhcp_msg_t))))
-	return -1;
+        return -1;
 
     etherif_mac_addr_get(dhcpc->ethif, &mac);
 
@@ -104,7 +104,7 @@ static int dhcpc_msg_xmit(dhcpc_t *dhcpc)
     memset(msg->chaddr + 6, 0, 192 + 10);
     msg->magic_cookie = htonl(DHCP_MAGIC_COOKIE);
     return udp_sock_xmit(dhcpc->ethif, &dhcpc->udp_sock, &bcast_mac,
-	IP_ADDR_ANY, IP_ADDR_BCAST, g_packet.length);
+        IP_ADDR_ANY, IP_ADDR_BCAST, g_packet.length);
 }
 
 static int dhcpc_pad(void)
@@ -114,7 +114,7 @@ static int dhcpc_pad(void)
     pad_len = DHCP_MIN_PACKET_LEN - (g_packet.length + sizeof(dhcp_msg_t));
 
     if (!packet_push(&g_packet, pad_len))
-	return -1;
+        return -1;
 
     memset(g_packet.ptr, 0, pad_len);
     return 0;
@@ -126,15 +126,15 @@ static int dhcp_discover(dhcpc_t *dhcpc)
 
     /* Add options in reverse */
     if (opt_put_u8(0xff, 0) ||
-	opt_put(55, requested_options, sizeof(requested_options)) ||
-	opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
-	opt_put_u8(53, DHCP_MSG_DISCOVER))
+        opt_put(55, requested_options, sizeof(requested_options)) ||
+        opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
+        opt_put_u8(53, DHCP_MSG_DISCOVER))
     {
-	return -1;
+        return -1;
     }
 
     if (dhcpc_pad())
-	return -1;
+        return -1;
 
     dhcpc->xid = xid_seed++;
     return dhcpc_msg_xmit(dhcpc);
@@ -146,16 +146,16 @@ static int dhcp_request(dhcpc_t *dhcpc)
 
     /* Add options in reverse */
     if (opt_put_u8(0xff, 0) ||
-	opt_put(55, requested_options, sizeof(requested_options)) ||
-	opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
-	opt_put_u32(50, htonl(dhcpc->ip_info.ip)) ||
-	opt_put_u8(53, DHCP_MSG_REQUEST))
+        opt_put(55, requested_options, sizeof(requested_options)) ||
+        opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
+        opt_put_u32(50, htonl(dhcpc->ip_info.ip)) ||
+        opt_put_u8(53, DHCP_MSG_REQUEST))
     {
-	return -1;
+        return -1;
     }
 
     if (dhcpc_pad())
-	return -1;
+        return -1;
 
     return dhcpc_msg_xmit(dhcpc);
 }
@@ -165,24 +165,24 @@ static int dhcpc_options_iter(int (*cb)(dhcpc_t *dhcpc, u8 opt, u8 len),
 {
     while (g_packet.length >= 2)
     {
-	u8 opt, len;
+        u8 opt, len;
 
-	opt = *(u8 *)g_packet.ptr;
-	packet_pull(&g_packet, 1);
-	len = *(u8 *)g_packet.ptr;
-	packet_pull(&g_packet, 1);
+        opt = *(u8 *)g_packet.ptr;
+        packet_pull(&g_packet, 1);
+        len = *(u8 *)g_packet.ptr;
+        packet_pull(&g_packet, 1);
 
-	if  (opt == 0xFF)
-	    break;
+        if  (opt == 0xFF)
+            break;
 
-	if (cb(dhcpc, opt, len))
-	    return -1;
+        if (cb(dhcpc, opt, len))
+            return -1;
 
-	if (!packet_pull(&g_packet, len))
-	{
-	    tp_err(("Invalid DHCP option %d\n", opt));
-	    return -1;
-	}
+        if (!packet_pull(&g_packet, len))
+        {
+            tp_err(("Invalid DHCP option %d\n", opt));
+            return -1;
+        }
     }
 
     return 0;
@@ -197,19 +197,19 @@ static int dhcpc_options_cb(dhcpc_t *dhcpc, u8 opt, u8 len)
     switch (opt)
     {
     case 53:
-	if (VAL_U8(g_packet.ptr) != dhcpc->waited_message)
-	{
-	    tp_err(("Expected %d, got %d\n",dhcpc->waited_message,
-		VAL_U8(g_packet.ptr)));
-	    return -1;
-	}
-	break;
+        if (VAL_U8(g_packet.ptr) != dhcpc->waited_message)
+        {
+            tp_err(("Expected %d, got %d\n",dhcpc->waited_message,
+                VAL_U8(g_packet.ptr)));
+            return -1;
+        }
+        break;
     case 1:
-	dhcpc->ip_info.netmask = ntohl(VAL_U32(g_packet.ptr));
-	break;
+        dhcpc->ip_info.netmask = ntohl(VAL_U32(g_packet.ptr));
+        break;
     case 3:
-	dhcpc->ip_info.router = ntohl(VAL_U32(g_packet.ptr));
-	break;
+        dhcpc->ip_info.router = ntohl(VAL_U32(g_packet.ptr));
+        break;
     }
     return 0;
 }
@@ -218,14 +218,14 @@ static int dhcpc_options_process(dhcpc_t *dhcpc)
 {
     if (!packet_pull(&g_packet, sizeof(dhcp_msg_t)))
     {
-	tp_err(("Not enough packet room for DHCP options"));
-	return -1;
+        tp_err(("Not enough packet room for DHCP options"));
+        return -1;
     }
 
     if (dhcpc_options_iter(dhcpc_options_cb, dhcpc))
     {
-	tp_err(("DHCP options processing failed\n"));
-	return -1;
+        tp_err(("DHCP options processing failed\n"));
+        return -1;
     }
 
     return 0;
@@ -240,19 +240,19 @@ static void dhcpc_recv(udp_socket_t *sock)
     tp_debug(("DHCP Received\n"));
 
     if (msg->op != DHCP_OP_REPLY || msg->htype != DHCP_HW_TYPE_ETH ||
-	msg->hlen != 6 || msg->hops || msg->xid != dhcpc->xid)
+        msg->hlen != 6 || msg->hops || msg->xid != dhcpc->xid)
     {
-	return;
+        return;
     }
 
     etherif_mac_addr_get(dhcpc->ethif, &mac);
     if (memcmp(msg->chaddr, mac.mac, 6))
-	return;
+        return;
 
     dhcpc->ip_info.ip = ntohl(msg->yiaddr);
     
     if (dhcpc_options_process(dhcpc))
-	return;
+        return;
 
     tp_out(("Address: %s\n", ip_addr_serialize(htonl(dhcpc->ip_info.ip))));
     tp_out(("Netmask: %s\n", ip_addr_serialize(htonl(dhcpc->ip_info.netmask))));
@@ -261,14 +261,14 @@ static void dhcpc_recv(udp_socket_t *sock)
     switch (dhcpc->waited_message)
     {
     case DHCP_MSG_OFFER:
-	tp_debug(("DHCP OFFER\n"));
-	dhcpc->waited_message = DHCP_MSG_ACK;
-	dhcp_request(dhcpc);
-	break;
+        tp_debug(("DHCP OFFER\n"));
+        dhcpc->waited_message = DHCP_MSG_ACK;
+        dhcp_request(dhcpc);
+        break;
     case DHCP_MSG_ACK:
-	tp_debug(("DHCP ACK\n"));
-	etherif_ipv4_info_set(dhcpc->ethif, &dhcpc->ip_info); 
-	break;
+        tp_debug(("DHCP ACK\n"));
+        etherif_ipv4_info_set(dhcpc->ethif, &dhcpc->ip_info); 
+        break;
     }
 }
 
@@ -277,7 +277,7 @@ void dhcpc_stop(etherif_t *ethif)
     dhcpc_t *dhcpc = ethif->dhcpc;
     
     if (!dhcpc)
-	return;
+        return;
 
     udp_unregister_socket(ethif, &dhcpc->udp_sock);
     tfree(dhcpc);
@@ -300,8 +300,8 @@ int dhcpc_start(etherif_t *ethif)
 
     if (dhcp_discover(dhcpc))
     {
-	dhcpc_stop(ethif);
-	return -1;
+        dhcpc_stop(ethif);
+        return -1;
     }
 
     return 0;

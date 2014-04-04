@@ -39,35 +39,35 @@ typedef enum {
 
 typedef struct {
     struct {
-	int (*enable)(int u, int enabled);
-	int (*read)(int u, char *buf, int size);
-	int (*write)(int u, char *buf, int size);
-	void (*irq_enable)(int u, int enable);
+        int (*enable)(int u, int enabled);
+        int (*read)(int u, char *buf, int size);
+        int (*write)(int u, char *buf, int size);
+        void (*irq_enable)(int u, int enable);
     } serial;
     struct {
-	int (*init)(void);
-	int (*status)(void);
-	int (*ioctl)(int cmd, void *buf);
-	int (*read)(unsigned char *buf, int sector, int count);
-	int (*write)(const unsigned char *buf, int sector, int count);
+        int (*init)(void);
+        int (*status)(void);
+        int (*ioctl)(int cmd, void *buf);
+        int (*read)(unsigned char *buf, int sector, int count);
+        int (*write)(const unsigned char *buf, int sector, int count);
     } block;
     struct {
-	void (*digital_write)(int pin, int value);
-	int (*digital_read)(int pin);
-	void (*analog_write)(int pin, double value);
-	double (*analog_read)(int pin);
-	int (*set_pin_mode)(int pin, gpio_pin_mode_t mode);
-	void (*set_port_val)(int port, unsigned short mask,
+        void (*digital_write)(int pin, int value);
+        int (*digital_read)(int pin);
+        void (*analog_write)(int pin, double value);
+        double (*analog_read)(int pin);
+        int (*set_pin_mode)(int pin, gpio_pin_mode_t mode);
+        void (*set_port_val)(int port, unsigned short mask,
             unsigned short value);
-	unsigned short (*get_port_val)(int port, unsigned short mask);
+        unsigned short (*get_port_val)(int port, unsigned short mask);
     } gpio;
     struct {
-	int (*init)(int port);
-	/* reconf - set all pins to SPI mode */
-	void (*reconf)(int port);
-	void (*set_max_speed)(int port, unsigned long speed);
-	void (*send)(int port, unsigned long data);
-	unsigned long (*receive)(int port);
+        int (*init)(int port);
+        /* reconf - set all pins to SPI mode */
+        void (*reconf)(int port);
+        void (*set_max_speed)(int port, unsigned long speed);
+        void (*send)(int port, unsigned long data);
+        unsigned long (*receive)(int port);
     } spi;
     void (*init)(void);
     void (*meminfo)(void);
@@ -91,8 +91,8 @@ static inline void platform_meminfo(void)
 {
     if (!platform.meminfo)
     {
-	tp_warn(("No platform meminfo available\n"));
-	return;
+        tp_warn(("No platform meminfo available\n"));
+        return;
     }
     platform.meminfo();
 }

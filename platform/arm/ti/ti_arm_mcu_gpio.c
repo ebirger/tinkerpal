@@ -76,13 +76,13 @@ static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
 
     /* Set the PWM period  */
     MAP_PWMGenConfigure(pwm->base, pwm->gen, PWM_GEN_MODE_UP_DOWN |
-	PWM_GEN_MODE_NO_SYNC);
+        PWM_GEN_MODE_NO_SYNC);
     MAP_PWMGenPeriodSet(pwm->base, pwm->gen, period);
 
     width = (unsigned long)(duty_cycle * period);
     /* Taking up too much of the period will result in having nothing */
     if (width > period - 5)
-	width = period - 5;
+        width = period - 5;
 
     /* Set PWM0 duty cycle */
     MAP_PWMPulseWidthSet(pwm->base, pwm->out, width);
@@ -107,11 +107,11 @@ int ti_arm_mcu_pin_mode_pwm(int pin)
     const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
 
     if (!pwm->base)
-	return -1;
+        return -1;
 
     MAP_SysCtlPeripheralEnable(pwm->periph);
     if (pwm->af)
-	MAP_GPIOPinConfigure(pwm->af);
+        MAP_GPIOPinConfigure(pwm->af);
     MAP_GPIOPinTypePWM(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     return 0;
 }
@@ -121,7 +121,7 @@ void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value)
     const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
 
     if (!pwm->base)
-	return;
+        return;
 
     ti_arm_mcu_gpio_pwm_do(pwm, 1846, value);
 }
@@ -130,7 +130,7 @@ void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value)
 void ti_arm_mcu_gpio_digital_write(int pin, int value)
 {
     MAP_GPIOPinWrite(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
-	value ? GPIO_BIT(pin) : 0);
+        value ? GPIO_BIT(pin) : 0);
 }
 
 int ti_arm_mcu_gpio_digital_read(int pin)
@@ -144,11 +144,11 @@ double ti_arm_mcu_gpio_analog_read(int pin)
 
     channel = ti_arm_mcu_gpio_pins[pin].adc_channel;
     if (channel == -1) 
-	return 0;
+        return 0;
 
     MAP_ADCSequenceConfigure(ADC0_BASE, 0, ADC_TRIGGER_PROCESSOR, 0);
     MAP_ADCSequenceStepConfigure(ADC0_BASE, 0, 0, ADC_CTL_IE | ADC_CTL_END | 
-	channel);
+        channel);
     MAP_ADCSequenceEnable(ADC0_BASE, 0);
 
     MAP_ADCProcessorTrigger(ADC0_BASE, 0);
@@ -163,7 +163,7 @@ void ti_arm_mcu_gpio_set_port_val(int port, unsigned short mask,
     unsigned short value)
 {
     MAP_GPIOPinWrite(ti_arm_mcu_gpio_port_base(port), mask,
-	(unsigned char)value);
+        (unsigned char)value);
 }
 
 unsigned short ti_arm_mcu_gpio_get_port_val(int port, unsigned short mask)

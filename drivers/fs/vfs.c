@@ -55,8 +55,8 @@ int vfs_file_read_anyfs(tstr_t *content, tstr_t *file_name)
     const fs_t **fs;
     foreach_fs(fs)
     {
-	if ((*fs)->file_read && !(*fs)->file_read(content, file_name))
-	    return 0;
+        if ((*fs)->file_read && !(*fs)->file_read(content, file_name))
+            return 0;
     }
     return -1;
 }
@@ -69,8 +69,8 @@ static const fs_t *get_fs(tstr_t *file_name)
     fs_name = tstr_cut(file_name, '/');
     foreach_fs(fs)
     {
-	if (!tstr_cmp_str(&fs_name, (*fs)->name))
-	    return *fs;
+        if (!tstr_cmp_str(&fs_name, (*fs)->name))
+            return *fs;
     }
 
     tp_err(("VFS: wrong FS type or no FS path given\n"));
@@ -83,12 +83,12 @@ int vfs_file_read(tstr_t *content, tstr_t *file_name, int flags)
     tstr_t file_name_copy;
 
     if (flags & VFS_FLAGS_ANY_FS)
-	return vfs_file_read_anyfs(content, file_name);
+        return vfs_file_read_anyfs(content, file_name);
 
     /* get_fs cuts the fs name from the file_name, so we copy it */
     file_name_copy = *file_name;
     if (!(fs = get_fs(&file_name_copy)))
-	return -1;
+        return -1;
 
     return fs->file_read(content, &file_name_copy);
 }
@@ -101,7 +101,7 @@ int vfs_file_write(tstr_t *content, tstr_t *file_name)
     /* get_fs cuts the fs name from the file_name, so we copy it */
     file_name_copy = *file_name;
     if (!(fs = get_fs(&file_name_copy)))
-	return -1;
+        return -1;
 
     return fs->file_write(content, &file_name_copy);
 }
@@ -112,11 +112,11 @@ static void readdir_root(readdir_cb_t cb, void *ctx)
 
     foreach_fs(fs)
     {
-	tstr_t t;
+        tstr_t t;
 
-	tstr_init(&t, (char *)(*fs)->name, strlen((*fs)->name), 0);
-	if (cb(&t, ctx))
-	    break;
+        tstr_init(&t, (char *)(*fs)->name, strlen((*fs)->name), 0);
+        if (cb(&t, ctx))
+            break;
     }
 }
 
@@ -127,14 +127,14 @@ int vfs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 
     if (vfs_is_root_path(path))
     {
-	readdir_root(cb, ctx);
-	return 0;
+        readdir_root(cb, ctx);
+        return 0;
     }
 
     /* get_fs cuts the fs name from the path, so we copy it */
     path_copy = *path;
     if (!(fs = get_fs(&path_copy)))
-	return -1;
+        return -1;
 
     return fs->readdir(&path_copy, cb, ctx);
 }
@@ -146,8 +146,8 @@ void vfs_init(void)
     tp_out(("VFS Init\n"));
     foreach_fs(fs)
     {
-	(*fs)->init();
-	tp_out(("Initialized %s FS\n", (*fs)->name));
+        (*fs)->init();
+        tp_out(("Initialized %s FS\n", (*fs)->name));
     }
 }
 
@@ -157,7 +157,7 @@ void vfs_uninit(void)
     tp_out(("VFS Uninit\n"));
     foreach_fs(fs)
     {
-	(*fs)->uninit();
-	tp_out(("Uninitialized %s FS\n", (*fs)->name));
+        (*fs)->uninit();
+        tp_out(("Uninitialized %s FS\n", (*fs)->name));
     }
 }

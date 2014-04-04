@@ -40,8 +40,8 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
 
     if (!(fp = fopen(file_n, "r")))
     {
-	/* Silently fail */
-	goto Exit;
+        /* Silently fail */
+        goto Exit;
     }
 
     fseek(fp, 0L, SEEK_END);
@@ -52,16 +52,16 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
     nread = fread(TPTR(content), 1, fsize, fp);
     if (nread != fsize)
     {
-	tp_err(("Read %d/%d from file %S\n", nread, content->len, file_name));
-	tstr_free(content);
-	goto Exit;
+        tp_err(("Read %d/%d from file %S\n", nread, content->len, file_name));
+        tstr_free(content);
+        goto Exit;
     }
 
     rc = 0;
 
 Exit:
     if (fp)
-	fclose(fp);
+        fclose(fp);
     tfree(file_n);
     return rc;
 }
@@ -77,22 +77,22 @@ static int local_file_write(tstr_t *content, tstr_t *file_name)
 
     if (!(fp = fopen(file_n, "w")))
     {
-	/* Silently fail */
-	goto Exit;
+        /* Silently fail */
+        goto Exit;
     }
 
     nwrote = fwrite(TPTR(content), 1, content->len, fp);
     if (nwrote != content->len)
     {
-	tp_err(("Wrote %d/%d to file %S\n", nwrote, content->len, file_name));
-	goto Exit;
+        tp_err(("Wrote %d/%d to file %S\n", nwrote, content->len, file_name));
+        goto Exit;
     }
 
     rc = 0;
 
 Exit:
     if (fp)
-	fclose(fp);
+        fclose(fp);
     tfree(file_n);
     return rc;
 }

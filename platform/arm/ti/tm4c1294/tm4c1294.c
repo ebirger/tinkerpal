@@ -67,13 +67,13 @@ const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
 const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 #define UART_DEF(num, rx, tx) \
     [UART##num] = { \
-	.periph = SYSCTL_PERIPH_UART##num, \
-	.base = UART##num##_BASE, \
-	.irq = INT_UART##num, \
-	.rxpin = rx, \
-	.txpin = tx, \
-	.rx_af = GPIO_##rx##_U##num##RX, \
-	.tx_af = GPIO_##tx##_U##num##TX, \
+        .periph = SYSCTL_PERIPH_UART##num, \
+        .base = UART##num##_BASE, \
+        .irq = INT_UART##num, \
+        .rxpin = rx, \
+        .txpin = tx, \
+        .rx_af = GPIO_##rx##_U##num##RX, \
+        .tx_af = GPIO_##tx##_U##num##TX, \
     }
     UART_DEF(0, PA0, PA1),
     UART_DEF(1, PB0, PB1),
@@ -88,16 +88,16 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
 #define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
     [SSI##num] = { \
-	.periph = SYSCTL_PERIPH_SSI##num, \
-	.base = SSI##num##_BASE, \
-	.clk = clkpin, \
-	.fss = fsspin, \
-	.rx = rxpin, \
-	.tx = txpin, \
-	.clk_af = GPIO_##clkpin##_SSI##num##CLK, \
-	.fss_af = GPIO_##fsspin##_SSI##num##FSS, \
-	.rx_af = GPIO_##rxpin##_SSI##num##XDAT0, \
-	.tx_af = GPIO_##txpin##_SSI##num##XDAT1, \
+        .periph = SYSCTL_PERIPH_SSI##num, \
+        .base = SSI##num##_BASE, \
+        .clk = clkpin, \
+        .fss = fsspin, \
+        .rx = rxpin, \
+        .tx = txpin, \
+        .clk_af = GPIO_##clkpin##_SSI##num##CLK, \
+        .fss_af = GPIO_##fsspin##_SSI##num##FSS, \
+        .rx_af = GPIO_##rxpin##_SSI##num##XDAT0, \
+        .tx_af = GPIO_##txpin##_SSI##num##XDAT1, \
     }
     SSI_DEF(0, PA2, PA3, PA4, PA5),
     SSI_DEF(1, PB5, PB4, PE4, PE5),
@@ -113,13 +113,13 @@ const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
 const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
 #define PWM_DEF(p, g, b) \
     { \
-	.periph = SYSCTL_PERIPH_PWM0, \
-	.base = PWM0_BASE, \
-	.gen = PWM_GEN_##g, \
-	.out = PWM_OUT_##b, \
-	.out_bit = PWM_OUT_##b##_BIT, \
-	.pin = p, \
-	.af = GPIO_##p##_M0PWM##b \
+        .periph = SYSCTL_PERIPH_PWM0, \
+        .base = PWM0_BASE, \
+        .gen = PWM_GEN_##g, \
+        .out = PWM_OUT_##b, \
+        .out_bit = PWM_OUT_##b##_BIT, \
+        .pin = p, \
+        .af = GPIO_##p##_M0PWM##b \
     }
     PWM_DEF(PF0, 0, 0),
     PWM_DEF(PF1, 0, 1),
@@ -140,34 +140,34 @@ static int tm4c1294_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
     /* Anti-brick JTAG Protection */
     if (pin >= PC0 && pin <= PC3) 
-	return -1;
+        return -1;
 
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
 
     switch (mode)
     {
     case GPIO_PM_INPUT:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_OUTPUT:
-	ti_arm_mcu_pin_mode_output(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_pin_mode_output(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_INPUT_PULLUP:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+        break;
     case GPIO_PM_INPUT_PULLDOWN:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
+        break;
     case GPIO_PM_INPUT_ANALOG:
-	if (ti_arm_mcu_pin_mode_adc(pin))
-	    return -1;
-	break;
+        if (ti_arm_mcu_pin_mode_adc(pin))
+            return -1;
+        break;
     case GPIO_PM_OUTPUT_ANALOG:
-	return ti_arm_mcu_pin_mode_pwm(pin);
+        return ti_arm_mcu_pin_mode_pwm(pin);
     }
     return 0;
 }
@@ -178,7 +178,7 @@ static void tm4c1294_init(void)
 {
     /* Set the clocking to run directly from the crystal at 120 MHz */
     system_clock = MAP_SysCtlClockFreqSet(SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN |
-	SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480, 120000000);
+        SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480, 120000000);
     
     ti_arm_mcu_systick_init();
 }
@@ -190,29 +190,29 @@ static unsigned long tm4c1294_get_system_clock(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_uart_enable,
-	.read = buffered_serial_read,
-	.write = ti_arm_mcu_serial_write,
-	.irq_enable = ti_arm_mcu_serial_irq_enable,
+        .enable = ti_arm_mcu_uart_enable,
+        .read = buffered_serial_read,
+        .write = ti_arm_mcu_serial_write,
+        .irq_enable = ti_arm_mcu_serial_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {
-	.digital_write = ti_arm_mcu_gpio_digital_write,
-	.digital_read = ti_arm_mcu_gpio_digital_read,
-	.analog_read = ti_arm_mcu_gpio_analog_read,
-	.analog_write = ti_arm_mcu_gpio_pwm_analog_write,
-	.set_pin_mode = tm4c1294_set_pin_mode,
-	.set_port_val = ti_arm_mcu_gpio_set_port_val,
-	.get_port_val = ti_arm_mcu_gpio_get_port_val,
+        .digital_write = ti_arm_mcu_gpio_digital_write,
+        .digital_read = ti_arm_mcu_gpio_digital_read,
+        .analog_read = ti_arm_mcu_gpio_analog_read,
+        .analog_write = ti_arm_mcu_gpio_pwm_analog_write,
+        .set_pin_mode = tm4c1294_set_pin_mode,
+        .set_port_val = ti_arm_mcu_gpio_set_port_val,
+        .get_port_val = ti_arm_mcu_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI
     .spi = {
-	.init = ti_arm_mcu_spi_init,
-	.reconf = ti_arm_mcu_spi_reconf,
-	.set_max_speed = ti_arm_mcu_spi_set_max_speed,
-	.send = ti_arm_mcu_spi_send,
-	.receive = ti_arm_mcu_spi_receive,
+        .init = ti_arm_mcu_spi_init,
+        .reconf = ti_arm_mcu_spi_reconf,
+        .set_max_speed = ti_arm_mcu_spi_set_max_speed,
+        .send = ti_arm_mcu_spi_send,
+        .receive = ti_arm_mcu_spi_receive,
     },
 #endif
     .init = tm4c1294_init,

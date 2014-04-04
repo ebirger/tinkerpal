@@ -76,8 +76,8 @@ typedef struct {
 typedef struct {
     obj_t obj;
     union {
-	int i;
-	double fp;
+        int i;
+        double fp;
     } value;
 } num_t;
 
@@ -188,10 +188,10 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 static inline obj_t *obj_get(obj_t *o)
 {
     if (!o)
-	return NULL;
+        return NULL;
 
     if (OBJ_IS_INT_VAL(o))
-	return o;
+        return o;
 
     o->ref_count++;
     return o;
@@ -202,10 +202,10 @@ void _obj_put(obj_t *o);
 static inline void obj_put(obj_t *o)
 {
     if (!o || o == UNDEF || OBJ_IS_INT_VAL(o))
-	return;
+        return;
 
     if (--o->ref_count > 0)
-	return;
+        return;
 
     _obj_put(o);
 }
@@ -240,7 +240,7 @@ static inline void function_args_init(function_args_t *args, obj_t *func)
 {
     args->argc = 0;
     args->argv = tmalloc(1 + CONFIG_MAX_FUNCTION_CALL_ARGS * sizeof(obj_t *),
-	"Args");
+        "Args");
     args->argv[args->argc++] = func; /* argv[0] is our very own function */
 }
 
@@ -249,9 +249,9 @@ static inline void function_args_add(function_args_t *args, obj_t *obj)
     args->argv[args->argc++] = obj;
     if (args->argc == CONFIG_MAX_FUNCTION_CALL_ARGS)
     {
-	tp_crit(("Exceeded maximal function call arguments.\n"
-	    "You can refine this behavior by increasing "
-	    "CONFIG_MAX_FUNCTION_CALL_ARGS\n"));
+        tp_crit(("Exceeded maximal function call arguments.\n"
+            "You can refine this behavior by increasing "
+            "CONFIG_MAX_FUNCTION_CALL_ARGS\n"));
     }
 }
 

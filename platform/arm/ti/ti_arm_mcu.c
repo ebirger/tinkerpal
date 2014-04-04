@@ -73,32 +73,32 @@ void ti_arm_mcu_uart_isr(int u)
 
     /* Only handle recieved characters */
     if (!(istat & (UART_INT_RX | UART_INT_RT)))
-	return;
+        return;
 
     /* Get all the available characters from the UART */
     while (MAP_UARTCharsAvail(base))
     {
-	char c;
-	long l;
+        char c;
+        long l;
 
-	/* Read a character */
-	l = MAP_UARTCharGetNonBlocking(base);
-	c = (unsigned char)(l & 0xFF);
+        /* Read a character */
+        l = MAP_UARTCharGetNonBlocking(base);
+        c = (unsigned char)(l & 0xFF);
 
-	if (buffered_serial_push(u, c))
-	{
-	    /* No space left */
-	    break;
-	}
+        if (buffered_serial_push(u, c))
+        {
+            /* No space left */
+            break;
+        }
     }
 }
 
 void ti_arm_mcu_serial_irq_enable(int u, int enable)
 {
     if (enable)
-	MAP_IntEnable(ti_arm_mcu_uarts[u].irq);
+        MAP_IntEnable(ti_arm_mcu_uarts[u].irq);
     else
-	MAP_IntDisable(ti_arm_mcu_uarts[u].irq);
+        MAP_IntDisable(ti_arm_mcu_uarts[u].irq);
 }
 
 int ti_arm_mcu_serial_write(int u, char *buf, int size)
@@ -113,7 +113,7 @@ static inline void ti_arm_mcu_pin_mode_uart(int pin, int uart_af)
 {
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
     if (uart_af)
-	MAP_GPIOPinConfigure(uart_af);
+        MAP_GPIOPinConfigure(uart_af);
     MAP_GPIOPinTypeUART(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
 }
 
@@ -123,11 +123,11 @@ int ti_arm_mcu_uart_enable(int u, int enabled)
 
     if (!enabled)
     {
-	MAP_UARTDisable(uart->base);
-	MAP_IntDisable(uart->irq);
-	MAP_UARTIntDisable(uart->base, 0xFFFFFFFF);
-	MAP_SysCtlPeripheralDisable(uart->periph);
-	return 0;
+        MAP_UARTDisable(uart->base);
+        MAP_IntDisable(uart->irq);
+        MAP_UARTIntDisable(uart->base, 0xFFFFFFFF);
+        MAP_SysCtlPeripheralDisable(uart->periph);
+        return 0;
     }
 
     ti_arm_mcu_pin_mode_uart(uart->rxpin, uart->rx_af);
@@ -135,7 +135,7 @@ int ti_arm_mcu_uart_enable(int u, int enabled)
 
     ti_arm_mcu_periph_enable(uart->periph);
     MAP_UARTConfigSetExpClk(uart->base, SYSTEM_CLOCK(), 115200, 
-	UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE | UART_CONFIG_WLEN_8);
+        UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE | UART_CONFIG_WLEN_8);
 
     /* Set the UART to interrupt whenever the TX FIFO is almost empty or
      * when any character is received
@@ -159,17 +159,17 @@ int ti_arm_mcu_select(int ms)
     while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
     {
 #ifdef CONFIG_GPIO
-	event |= gpio_events_process();
+        event |= gpio_events_process();
 #endif
 #ifdef CONFIG_STELLARIS_ETH
-	event |= stellaris_eth_event_process();
+        event |= stellaris_eth_event_process();
 #endif
 #ifdef CONFIG_TIVA_C_ETH
-	event |= tiva_c_emac_event_process();
+        event |= tiva_c_emac_event_process();
 #endif
-	event |= buffered_serial_events_process();
+        event |= buffered_serial_events_process();
 
-	MAP_SysCtlSleep();
+        MAP_SysCtlSleep();
     }
 
     return event;

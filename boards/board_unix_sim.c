@@ -30,8 +30,8 @@ const board_t board = {
     .default_console_id = UART_RES(STDIO_ID),
 #ifdef CONFIG_SDL_SCREEN
     .sdl_screen_params = {
-	.width = 320,
-	.height = 200,
+        .width = 320,
+        .height = 200,
     },
 #endif
 };

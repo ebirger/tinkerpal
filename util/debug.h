@@ -76,7 +76,7 @@ void debug_init(debugfn_t *fn);
 
 #define tp_assert(x) do { \
     if (!(x)) \
-    	tp_crit(("%s: assertion %s failed\n", __FUNCTION__, #x)); \
+        tp_crit(("%s: assertion %s failed\n", __FUNCTION__, #x)); \
 } while (0)
 
 #endif

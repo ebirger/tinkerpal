@@ -32,11 +32,11 @@ int do_array_buffer_constructor(obj_t **ret, obj_t *this, int argc,
     int len;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     len = obj_get_int(argv[1]);
     if (len < 0)
-	return throw_exception(ret, &S("Exception: Invalid range"));
+        return throw_exception(ret, &S("Exception: Invalid range"));
 
     *ret = array_buffer_new(len);
     return 0;
@@ -49,26 +49,26 @@ int do_array_buffer_view_subarray(obj_t **ret, obj_t *this, int argc,
     int begin, end;
 
     if (argc != 2 && argc != 3)
-	return throw_exception(ret, &S("Wrong number of arguments"));
+        return throw_exception(ret, &S("Wrong number of arguments"));
 
     if ((begin = obj_get_int(argv[1])) < 0)
-	begin += v->length;
+        begin += v->length;
     begin += v->offset;
 
     if (argc == 3)
     {
-	if ((end = obj_get_int(argv[2])) < 0)
-	    end += v->length;
-	end += v->offset;
+        if ((end = obj_get_int(argv[2])) < 0)
+            end += v->length;
+        end += v->offset;
     }
     else
-	end = v->offset + v->length;
+        end = v->offset + v->length;
 
     if (begin < 0 || end < 0 || end < begin)
-	end = begin = 0;
+        end = begin = 0;
 
     *ret = array_buffer_view_new((obj_t *)v->array_buffer, v->flags, begin, 
-	end - begin);
+        end - begin);
     return 0;
 }
 
@@ -79,27 +79,27 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
     int length, offset = 0;
 
     if (argc < 2)
-	return throw_exception(ret, &S("Wrong number of arguments"));
+        return throw_exception(ret, &S("Wrong number of arguments"));
 
     if (is_array_buffer(argv[1]))
     {
-	array_buffer = obj_get(argv[1]);
-	length = ((array_buffer_t *)array_buffer)->value.len >> 
-	    (flags & ABV_SHIFT_MASK);
-	if (argc > 2)
-	{
-	    offset = obj_get_int(argv[2]);
-	    if (argc == 4)
-		length = obj_get_int(argv[3]);
-	}
+        array_buffer = obj_get(argv[1]);
+        length = ((array_buffer_t *)array_buffer)->value.len >> 
+            (flags & ABV_SHIFT_MASK);
+        if (argc > 2)
+        {
+            offset = obj_get_int(argv[2]);
+            if (argc == 4)
+                length = obj_get_int(argv[3]);
+        }
     }
     else if (is_num(argv[1]))
     {
-	length = obj_get_int(argv[1]);
-	array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
+        length = obj_get_int(argv[1]);
+        array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
     }
     else
-	return throw_exception(ret, &S("Invalid arguments"));
+        return throw_exception(ret, &S("Invalid arguments"));
 
     *ret = array_buffer_view_new(array_buffer, flags, offset, length);
 

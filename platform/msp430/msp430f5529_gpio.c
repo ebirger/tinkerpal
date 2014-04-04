@@ -99,7 +99,7 @@ static inline int msp430f5529_gpio_in(int port, int bit)
 static inline void msp430f5529_gpio_int_enable(int port, int bit)
 {
     if (port != GPIO_PORT_A && port != GPIO_PORT_B)
-	return;
+        return;
 
     bit_set(*msp430f5529_gpio_ports_int_cfg[port].ie, bit, 1);
     bit_set(*msp430f5529_gpio_ports_int_cfg[port].ies, bit, 1);
@@ -122,25 +122,25 @@ int msp430f5529_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
     switch (mode)
     {
     case GPIO_PM_OUTPUT:
-	msp430f5529_gpio_dir(port, bit, 1);
-	break;
+        msp430f5529_gpio_dir(port, bit, 1);
+        break;
     case GPIO_PM_INPUT:
-	msp430f5529_gpio_dir(port, bit, 0);
-	break;
+        msp430f5529_gpio_dir(port, bit, 0);
+        break;
     case GPIO_PM_INPUT_PULLUP:
-	msp430f5529_gpio_dir(port, bit, 0);
-	msp430f5529_gpio_pullup(port, bit, 1);
-	msp430f5529_gpio_int_enable(port, bit);
-	break;
+        msp430f5529_gpio_dir(port, bit, 0);
+        msp430f5529_gpio_pullup(port, bit, 1);
+        msp430f5529_gpio_int_enable(port, bit);
+        break;
     case GPIO_PM_INPUT_PULLDOWN:
-	msp430f5529_gpio_dir(port, bit, 0);
-	msp430f5529_gpio_pullup(port, bit, 0);
-	msp430f5529_gpio_int_enable(port, bit);
-	break;
+        msp430f5529_gpio_dir(port, bit, 0);
+        msp430f5529_gpio_pullup(port, bit, 0);
+        msp430f5529_gpio_int_enable(port, bit);
+        break;
     case GPIO_PM_INPUT_ANALOG:
     case GPIO_PM_OUTPUT_ANALOG:
     default:
-	return -1;
+        return -1;
     }
 
     return 0;

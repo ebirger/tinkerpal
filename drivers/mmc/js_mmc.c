@@ -37,18 +37,18 @@ int do_mmc_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     /* XXX: would preferebly receive an object with optional hookup info */
     if (argc == 1)
     {
-	tp_info(("Using default hookup info\n"));
+        tp_info(("Using default hookup info\n"));
 
-	p = &board.mmc_params;
+        p = &board.mmc_params;
     }
     else if (argc != 4)
-	return COMPLETION_THROW;
+        return COMPLETION_THROW;
     else
     {
-	params.spi_port = obj_get_int(argv[1]);
-	params.mosi = obj_get_int(argv[2]);
-	params.cs = obj_get_int(argv[3]);
-	p = &params;
+        params.spi_port = obj_get_int(argv[1]);
+        params.mosi = obj_get_int(argv[2]);
+        params.cs = obj_get_int(argv[3]);
+        p = &params;
     }
 
     mmc_init(p);

@@ -59,19 +59,19 @@ DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void *buff)
     switch (cmd)
     {
     case CTRL_SYNC:
-	block_ioctl(BLOCK_IOCTL_SYNC, NULL);
-	break;
+        block_ioctl(BLOCK_IOCTL_SYNC, NULL);
+        break;
     case GET_SECTOR_SIZE:
-	block_ioctl(BLOCK_IOCTL_GET_SECTOR_SIZE, buff);
-	break;
+        block_ioctl(BLOCK_IOCTL_GET_SECTOR_SIZE, buff);
+        break;
     case GET_SECTOR_COUNT:
-	block_ioctl(BLOCK_IOCTL_GET_SECTOR_COUNT, buff);
-	break;
+        block_ioctl(BLOCK_IOCTL_GET_SECTOR_COUNT, buff);
+        break;
     case GET_BLOCK_SIZE:
-	*(DWORD *)buff = 1;
-	break;
+        *(DWORD *)buff = 1;
+        break;
     case CTRL_ERASE_SECTOR:
-	break;
+        break;
     }
     return RES_OK;
 }
@@ -93,24 +93,24 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
 
     if (f_stat(file_n, &info) != FR_OK)
     {
-	/* Silently fail, this may have been a sweep in search of the file */
-	goto Exit;
+        /* Silently fail, this may have been a sweep in search of the file */
+        goto Exit;
     }
 
     if (f_open(&fp, file_n, FA_READ|FA_OPEN_EXISTING) != FR_OK)
     {
-	tp_err(("file_read: could not open %S\n", file_name));
-	goto Exit;
+        tp_err(("file_read: could not open %S\n", file_name));
+        goto Exit;
     }
 
     tstr_alloc(content, info.fsize);
     rc = f_read(&fp, TPTR(content), content->len, &br);
     if (rc != FR_OK || br != content->len)
     {
-	tp_err(("Read %d/%d from file %S rc %d\n", br, content->len, 
-	    file_name, rc));
-	tstr_free(content);
-	goto Exit;
+        tp_err(("Read %d/%d from file %S rc %d\n", br, content->len, 
+            file_name, rc));
+        tstr_free(content);
+        goto Exit;
     }
 
     rc = 0;
@@ -132,16 +132,16 @@ static int fat_file_write(tstr_t *content, tstr_t *file_name)
 
     if (f_open(&fp, file_n, FA_WRITE|FA_CREATE_ALWAYS) != FR_OK)
     {
-	tp_err(("file_write: could not open %S\n", file_name));
-	goto Exit;
+        tp_err(("file_write: could not open %S\n", file_name));
+        goto Exit;
     }
 
     rc = f_write(&fp, TPTR(content), content->len, &bw);
     if (rc != FR_OK || bw != content->len)
     {
-	tp_err(("Wrote %d/%d to file %S rc %d\n", bw, content->len, 
-	    file_name, rc));
-	goto Exit;
+        tp_err(("Wrote %d/%d to file %S rc %d\n", bw, content->len, 
+            file_name, rc));
+        goto Exit;
     }
 
     rc = 0;
@@ -162,36 +162,36 @@ int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 
     if (vfs_is_root_path(path))
     {
-	root = 1;
-	cpath = "/";
+        root = 1;
+        cpath = "/";
     }
     else
-	cpath = tstr_to_strz(path);
+        cpath = tstr_to_strz(path);
     res = f_opendir(&dir, cpath);
     if (!root)
-	tfree(cpath);
+        tfree(cpath);
 
     if (res != FR_OK) 
-	return -1;
+        return -1;
 
     for (;;) 
     {
-	tstr_t fn = {};
-	int rc;
+        tstr_t fn = {};
+        int rc;
 
-	res = f_readdir(&dir, &fno);
-	if (res != FR_OK || fno.fname[0] == '\0') 
-	    break;
+        res = f_readdir(&dir, &fno);
+        if (res != FR_OK || fno.fname[0] == '\0') 
+            break;
 
-	/* Ignore dot entry */
-	if (fno.fname[0] == '.') 
-	    continue;
+        /* Ignore dot entry */
+        if (fno.fname[0] == '.') 
+            continue;
 
-	tstr_cpy_str(&fn, fno.fname);
-	rc = cb(&fn, ctx);
-	tstr_free(&fn);
-	if (rc)
-	    break;
+        tstr_cpy_str(&fn, fno.fname);
+        rc = cb(&fn, ctx);
+        tstr_free(&fn);
+        if (rc)
+            break;
     }
 
     return res == FR_OK ? 0 : -1;

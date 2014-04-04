@@ -44,9 +44,9 @@ struct canvas_t {
 static inline void canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
     if (x > c->width)
-	x = c->width;
+        x = c->width;
     if (y > c->height)
-	y = c->height;
+        y = c->height;
     c->ops->pixel_set(c, x, y, val);
 }
 

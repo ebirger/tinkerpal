@@ -31,7 +31,7 @@ void usart_isr(int u)
     const stm32_usart_t *usart = &stm32_usarts[u];
 
     if (USART_GetITStatus(usart->usartx, USART_IT_RXNE) == RESET)
-	return;
+        return;
 
     USART_ClearITPendingBit(usart->usartx, USART_IT_RXNE);
 
@@ -47,7 +47,7 @@ int stm32_usart_enable(int u, int enabled)
 
     /* XXX: support usart disable */
     if (!enabled)
-	return 0;
+        return 0;
 
     /* GPIO Clock */
     stm32_gpio_set_pin_mode(usart->tx, GPIO_PM_OUTPUT);
@@ -71,7 +71,7 @@ int stm32_usart_enable(int u, int enabled)
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
     USART_InitStructure.USART_Parity = USART_Parity_No;
     USART_InitStructure.USART_HardwareFlowControl = 
-	USART_HardwareFlowControl_None;
+        USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
     USART_Init(usart->usartx, &USART_InitStructure);
 
@@ -107,9 +107,9 @@ int stm32_usart_write(int u, char *buf, int size)
 
     for (; size--; buf++)
     {
-	USART_SendData(usart->usartx, *buf);
-	/* Wait until transmit finishes */
-	while (USART_GetFlagStatus(usart->usartx, USART_FLAG_TXE) == RESET);
+        USART_SendData(usart->usartx, *buf);
+        /* Wait until transmit finishes */
+        while (USART_GetFlagStatus(usart->usartx, USART_FLAG_TXE) == RESET);
     }
     return 0;
 }

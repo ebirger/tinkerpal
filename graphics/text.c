@@ -43,12 +43,12 @@ void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color)
 
     for (i = 0; i < end; i++)
     {
-	for (j = 0; j < 7; j++)
-	{
-	    if (!text_point(i, j, TPTR(str)))
-	       continue;
+        for (j = 0; j < 7; j++)
+        {
+            if (!text_point(i, j, TPTR(str)))
+               continue;
 
-	    canvas_pixel_set(c, i + x, j + y, color);
-	}
+            canvas_pixel_set(c, i + x, j + y, color);
+        }
     }
 }

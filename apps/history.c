@@ -65,20 +65,20 @@ void history_commit(history_t *h, tstr_t *l)
 
     if (!h->items)
     {
-	item->next = item->prev = h->items = h->current = item;
-	return;
+        item->next = item->prev = h->items = h->current = item;
+        return;
     }
 
     for (last = h->items; last->next != last; last = last->next);
     if (last == h->items)
     {
-	h->items = item;
-	item->prev = item;
+        h->items = item;
+        item->prev = item;
     }
     else
     {
-	item->prev = last->prev;
-	last->prev->next = item;
+        item->prev = last->prev;
+        last->prev->next = item;
     }
     last->prev = item;
     item->next = last;
@@ -109,25 +109,25 @@ static int history_squeeze(mem_squeezer_t *squeezer, int size)
     tp_debug(("history squeeze: asked to squeeze %d\n", size));
     while (item->next != item && size > 0)
     {
-	history_item_t *tmp = item;
-	
-	item = item->next;
-	if (!TSTR_IS_ALLOCATED(&tmp->str))
-	    continue;
+        history_item_t *tmp = item;
+        
+        item = item->next;
+        if (!TSTR_IS_ALLOCATED(&tmp->str))
+            continue;
 
-	if (tmp == h->items)
-	{
-	    tmp->next->prev = tmp->next;
-	    h->items = tmp->next;
-	}
-	else
-	{
-	    tmp->next->prev = tmp->prev;
-	    tmp->prev->next = tmp->next;
-	}
+        if (tmp == h->items)
+        {
+            tmp->next->prev = tmp->next;
+            h->items = tmp->next;
+        }
+        else
+        {
+            tmp->next->prev = tmp->prev;
+            tmp->prev->next = tmp->next;
+        }
 
-	size -= tmp->str.len;
-	history_item_free(tmp);
+        size -= tmp->str.len;
+        history_item_free(tmp);
     }
 
     return orig_size - size;
@@ -149,7 +149,7 @@ void history_free(history_t *h)
     tmalloc_unregister_squeezer(&g_history.squeezer);
     while ((tmp = h->items))
     {
-	h->items = tmp->next == tmp ? NULL : tmp->next;
-	history_item_free(tmp);
+        h->items = tmp->next == tmp ? NULL : tmp->next;
+        history_item_free(tmp);
     }
 }

@@ -46,77 +46,77 @@ const stm32_gpio_port_t stm32_gpio_ports[] = {
 
 const stm32_usart_t stm32_usarts[] = {
     [USART_PORT1] = {
-	.usartx = USART1,
-	.periph_enable = RCC_APB2PeriphClockCmd,
-	.usart_clk = RCC_APB2Periph_USART1,
-	.tx = PA9,
-	.rx = PA10,
-	.irqn = USART1_IRQn,
+        .usartx = USART1,
+        .periph_enable = RCC_APB2PeriphClockCmd,
+        .usart_clk = RCC_APB2Periph_USART1,
+        .tx = PA9,
+        .rx = PA10,
+        .irqn = USART1_IRQn,
     },
     [USART_PORT2] = {
-	.usartx = USART2,
-	.periph_enable = RCC_APB1PeriphClockCmd,
-	.usart_clk = RCC_APB1Periph_USART2,
-	.tx = PA2,
-	.rx = PA3,
-	.irqn = USART2_IRQn,
+        .usartx = USART2,
+        .periph_enable = RCC_APB1PeriphClockCmd,
+        .usart_clk = RCC_APB1Periph_USART2,
+        .tx = PA2,
+        .rx = PA3,
+        .irqn = USART2_IRQn,
     },
     [USART_PORT3] = {
-	.usartx = USART3,
-	.periph_enable = RCC_APB1PeriphClockCmd,
-	.usart_clk = RCC_APB1Periph_USART3,
-	.tx = PB10,
-	.rx = PB11,
-	.irqn = USART3_IRQn,
+        .usartx = USART3,
+        .periph_enable = RCC_APB1PeriphClockCmd,
+        .usart_clk = RCC_APB1Periph_USART3,
+        .tx = PB10,
+        .rx = PB11,
+        .irqn = USART3_IRQn,
     },
 };
 
 #ifdef CONFIG_SPI
 const stm32_spi_t stm32_spis[] = {
     [SPI_PORT1] = {
-	.spix = SPI1,
-	.periph_enable = RCC_APB2PeriphClockCmd,
-	.spi_clk = RCC_APB2Periph_SPI1,
-	.clk = PA5,
-	.miso = PA6,
-	.mosi = PA7,
-	.af = GPIO_Remap_SPI1,
+        .spix = SPI1,
+        .periph_enable = RCC_APB2PeriphClockCmd,
+        .spi_clk = RCC_APB2Periph_SPI1,
+        .clk = PA5,
+        .miso = PA6,
+        .mosi = PA7,
+        .af = GPIO_Remap_SPI1,
     },
     [SPI_PORT2] = {
-	.spix = SPI2,
-	.periph_enable = RCC_APB1PeriphClockCmd,
-	.spi_clk = RCC_APB1Periph_SPI2,
-	.clk = PB13,
-	.miso = PB14,
-	.mosi = PB15,
-	.af = 0 
+        .spix = SPI2,
+        .periph_enable = RCC_APB1PeriphClockCmd,
+        .spi_clk = RCC_APB1Periph_SPI2,
+        .clk = PB13,
+        .miso = PB14,
+        .mosi = PB15,
+        .af = 0 
     },
 };
 #endif
 
 const platform_t platform = {
     .serial = {
-	.enable = stm32_usart_enable,
-	.read = buffered_serial_read,
-	.write = stm32_usart_write,
-	.irq_enable = stm32_usart_irq_enable,
+        .enable = stm32_usart_enable,
+        .read = buffered_serial_read,
+        .write = stm32_usart_write,
+        .irq_enable = stm32_usart_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {
-	.digital_write = stm32_gpio_digital_write,
-	.digital_read = stm32_gpio_digital_read,
-	.set_pin_mode = stm32_gpio_set_pin_mode,
-	.set_port_val = stm32_gpio_set_port_val,
-	.get_port_val = stm32_gpio_get_port_val,
+        .digital_write = stm32_gpio_digital_write,
+        .digital_read = stm32_gpio_digital_read,
+        .set_pin_mode = stm32_gpio_set_pin_mode,
+        .set_port_val = stm32_gpio_set_port_val,
+        .get_port_val = stm32_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI
     .spi = {
-	.init = stm32_spi_init,
-	.reconf = stm32_spi_reconf,
-	.set_max_speed = stm32_spi_set_max_speed,
-	.send = stm32_spi_send,
-	.receive = stm32_spi_receive,
+        .init = stm32_spi_init,
+        .reconf = stm32_spi_reconf,
+        .set_max_speed = stm32_spi_set_max_speed,
+        .send = stm32_spi_send,
+        .receive = stm32_spi_receive,
     },
 #endif
     .init = stm32_init,

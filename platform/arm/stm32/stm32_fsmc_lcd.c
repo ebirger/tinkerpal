@@ -33,36 +33,36 @@ static int fsmc_db_init(const ili93xx_db_transport_t *trns)
 {
     FSMC_NORSRAMInitTypeDef nor_sram;
     FSMC_NORSRAMTimingInitTypeDef timing = {
-	.FSMC_AddressSetupTime = 0x02,
-	.FSMC_AddressHoldTime = 0x00,
-	.FSMC_DataSetupTime = 0x05,
-	.FSMC_BusTurnAroundDuration = 0x00,
-	.FSMC_CLKDivision = 0x00,
-	.FSMC_DataLatency = 0x00,
-	.FSMC_AccessMode = FSMC_AccessMode_B,
+        .FSMC_AddressSetupTime = 0x02,
+        .FSMC_AddressHoldTime = 0x00,
+        .FSMC_DataSetupTime = 0x05,
+        .FSMC_BusTurnAroundDuration = 0x00,
+        .FSMC_CLKDivision = 0x00,
+        .FSMC_DataLatency = 0x00,
+        .FSMC_AccessMode = FSMC_AccessMode_B,
     };
     int *p, pins[] = {
-	PD14, /* D0 */
-	PD15, /* D1 */
-	PD0, /* D2 */
-	PD1, /* D3 */
-	PE7, /* D4 */
-	PE8, /* D5 */
-	PE9, /* D6 */
-	PE10, /* D7 */
-	PE11, /* D8 */
-	PE12, /* D9 */
-	PE13, /* D10 */
-	PE14, /* D11 */
-	PE15, /* D12 */
-	PD8, /* D13 */
-	PD9, /* D14 */
-	PD10, /* D15 */
-	PD4, /* NOE - RD */
-	PD5, /* NWE - WR */
-	PD7, /* NE1 - CS */
-	PD11, /* A16 - RS */
-	0
+        PD14, /* D0 */
+        PD15, /* D1 */
+        PD0, /* D2 */
+        PD1, /* D3 */
+        PE7, /* D4 */
+        PE8, /* D5 */
+        PE9, /* D6 */
+        PE10, /* D7 */
+        PE11, /* D8 */
+        PE12, /* D9 */
+        PE13, /* D10 */
+        PE14, /* D11 */
+        PE15, /* D12 */
+        PD8, /* D13 */
+        PD9, /* D14 */
+        PD10, /* D15 */
+        PD4, /* NOE - RD */
+        PD5, /* NWE - WR */
+        PD7, /* NE1 - CS */
+        PD11, /* A16 - RS */
+        0
     };
 
     /* Enable the FSMC Clock */
@@ -71,8 +71,8 @@ static int fsmc_db_init(const ili93xx_db_transport_t *trns)
     /* Set pins function */
     for (p = pins; *p; p++)
     {
-	stm32_gpio_set_pin_mode(*p, GPIO_PM_OUTPUT);
-	stm32_gpio_set_pin_function(*p, STM32_FSMC_GPIO_AF);
+        stm32_gpio_set_pin_mode(*p, GPIO_PM_OUTPUT);
+        stm32_gpio_set_pin_function(*p, STM32_FSMC_GPIO_AF);
     }
 
     nor_sram.FSMC_Bank = FSMC_Bank1_NORSRAM1;
@@ -88,7 +88,7 @@ static int fsmc_db_init(const ili93xx_db_transport_t *trns)
     nor_sram.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;
     nor_sram.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
     nor_sram.FSMC_ReadWriteTimingStruct = &timing;
-    nor_sram.FSMC_WriteTimingStruct = &timing;	  
+    nor_sram.FSMC_WriteTimingStruct = &timing;    
 
     FSMC_NORSRAMInit(&nor_sram); 
 
@@ -99,7 +99,7 @@ static int fsmc_db_init(const ili93xx_db_transport_t *trns)
 
 static void fsmc_cmd_wr(const ili93xx_db_transport_t *trns, u16 cmd)
 {
-    *(volatile uint16_t *)BANK1_D = cmd;	
+    *(volatile uint16_t *)BANK1_D = cmd;        
 }
 
 static void fsmc_data_wr(const ili93xx_db_transport_t *trns, u16 data)

@@ -35,14 +35,14 @@ int do_read_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int rc;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     path = obj_get_str(argv[1]);
 
     if (vfs_file_read(&content, &path, 0))
     {
-	rc = throw_exception(ret, &Sexception_path_not_found);
-	goto Exit;
+        rc = throw_exception(ret, &Sexception_path_not_found);
+        goto Exit;
     }
 
     *ret = string_new(tstr_dup(content));
@@ -60,15 +60,15 @@ int do_write_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int rc;
 
     if (argc != 3)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     path = obj_get_str(argv[1]);
     data = obj_get_str(argv[2]);
 
     if (vfs_file_write(&data, &path))
     {
-	rc = throw_exception(ret, &Sexception_path_not_found);
-	goto Exit;
+        rc = throw_exception(ret, &Sexception_path_not_found);
+        goto Exit;
     }
 
     *ret = UNDEF;
@@ -95,16 +95,16 @@ int do_readdir_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int rc;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     path = obj_get_str(argv[1]);
     arr = array_new();
 
     if (vfs_readdir(&path, readdir_cb, arr))
     {
-	obj_put(arr);
-	rc = throw_exception(ret, &Sexception_path_not_found);
-	goto Exit;
+        obj_put(arr);
+        rc = throw_exception(ret, &Sexception_path_not_found);
+        goto Exit;
     }
 
     *ret = arr;

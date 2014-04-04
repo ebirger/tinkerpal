@@ -33,7 +33,7 @@ static void blinky_trigger(event_t *e, u32 resource_id)
 {
     gpio_digital_write(board.leds[cur_led], 0);
     if (!board.leds[++cur_led])
-	cur_led = 0;
+        cur_led = 0;
     gpio_digital_write(board.leds[cur_led], 1);
 }
 
@@ -50,7 +50,7 @@ void app_start(int argc, char *argv[])
     tp_assert(board.leds);
 
     for (led = board.leds; *led; led++)
-	gpio_set_pin_mode(*led, GPIO_PM_OUTPUT);
+        gpio_set_pin_mode(*led, GPIO_PM_OUTPUT);
 
     event_timer_set_period(500, &blinky_event);
 }

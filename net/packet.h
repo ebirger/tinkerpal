@@ -45,7 +45,7 @@ extern packet_t g_packet;
 static inline void *packet_push(packet_t *pkt, int len)
 {
     if (pkt->ptr - pkt->head < len)
-	return NULL;
+        return NULL;
 
     pkt->ptr -= len;
     pkt->length += len;
@@ -55,7 +55,7 @@ static inline void *packet_push(packet_t *pkt, int len)
 static inline void *packet_pull(packet_t *pkt, int len)
 {
     if (pkt->length < len)
-	return NULL;
+        return NULL;
 
     pkt->ptr += len;
     pkt->length -= len;
@@ -71,13 +71,13 @@ static inline void packet_reset(packet_t *pkt, packet_reset_t type)
 {
     if (type == PACKET_RESET_HEAD)
     {
-	pkt->ptr = pkt->head;
-	pkt->length = pkt->tail - pkt->head;
+        pkt->ptr = pkt->head;
+        pkt->length = pkt->tail - pkt->head;
     }
     else
     {
-	pkt->ptr = pkt->tail;
-	pkt->length = 0;
+        pkt->ptr = pkt->tail;
+        pkt->length = 0;
     }
 }
 

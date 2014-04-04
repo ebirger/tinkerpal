@@ -38,30 +38,30 @@ void line_draw(canvas_t *c, int x0, int y0, int x1, int y1, u16 color)
  
     while (1)
     {
-	int e2;
+        int e2;
 
-	canvas_pixel_set(c, x0, y0, color);
+        canvas_pixel_set(c, x0, y0, color);
 
-	if (x0 == x1 && y0 == y1)
-	    break;
+        if (x0 == x1 && y0 == y1)
+            break;
 
-	e2 = 2 * err;
-	if (e2 > -dy)
-	{
-	    err = err - dy;
-	    x0 = x0 + sx;
-	}
+        e2 = 2 * err;
+        if (e2 > -dy)
+        {
+            err = err - dy;
+            x0 = x0 + sx;
+        }
 
-	if (x0 == x1 && y0 == y1)
-	{ 
-	    canvas_pixel_set(c, x0, y0, color);
-	    break;
-	}
+        if (x0 == x1 && y0 == y1)
+        { 
+            canvas_pixel_set(c, x0, y0, color);
+            break;
+        }
 
-	if (e2 < dx)
-	{
-	    err = err + dx;
-	    y0 = y0 + sy;
-	}
+        if (e2 < dx)
+        {
+            err = err + dx;
+            y0 = y0 + sy;
+        }
     }
 }

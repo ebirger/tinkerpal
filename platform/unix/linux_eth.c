@@ -65,7 +65,7 @@ static void cur_packet_dump(linux_eth_t *eth)
 
     printf("\n-------------------------------------\n");
     for (i = 0; i < eth->last_packet_length; i++)
-	printf("%02x%s", eth->last_packet[i], (i + 1) % 16 ? " " : "\n");
+        printf("%02x%s", eth->last_packet[i], (i + 1) % 16 ? " " : "\n");
     printf("-------------------------------------\n");
 }
 
@@ -98,15 +98,15 @@ static int linux_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
     linux_eth_t *eth = ETHIF_TO_PACKET_ETH(ethif);
 
     eth->last_packet_length = serial_read(NET_RES, (char *)eth->last_packet,
-	sizeof(eth->last_packet));
+        sizeof(eth->last_packet));
     if (eth->last_packet_length <= 0)
     {
-	perror("read");
-	return -1;
+        perror("read");
+        return -1;
     }
 
     if (size > eth->last_packet_length)
-	size = eth->last_packet_length;
+        size = eth->last_packet_length;
 
     memcpy(buf, eth->last_packet, size);
     return size;
@@ -123,7 +123,7 @@ static void linux_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 static void linux_eth_packet_event(event_t *ev, u32 resource_id)
 {
     linux_eth_t *eth = container_of(ev, linux_eth_t,
-	packet_event);
+        packet_event);
 
     tp_debug(("Packet received\n"));
     etherif_packet_received(&eth->ethif);
@@ -157,16 +157,16 @@ static int linux_eth_sock_init(linux_eth_t *eth)
     eth->packet_socket = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     if (eth->packet_socket < 0) 
     {
-	perror("Failed to create packet socket\n");
-	return -1;
+        perror("Failed to create packet socket\n");
+        return -1;
     }
 
     ifr = linux_eth_ioctl(eth, SIOCGIFHWADDR);
     if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER) 
     {
-	tp_err(("%s is not an Ethernet device (%d)\n", eth->dev_name,
-	    (int)ifr.ifr_hwaddr.sa_family));
-	return -1;
+        tp_err(("%s is not an Ethernet device (%d)\n", eth->dev_name,
+            (int)ifr.ifr_hwaddr.sa_family));
+        return -1;
     }
 
     ifr = linux_eth_ioctl(eth, SIOCGIFINDEX);
@@ -181,7 +181,7 @@ static int linux_eth_sock_init(linux_eth_t *eth)
     mreq.mr_ifindex = ifr.ifr_ifindex;
     mreq.mr_type = PACKET_MR_PROMISC;
     setsockopt(eth->packet_socket, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq,
-	sizeof(mreq));
+        sizeof(mreq));
     return 0;
 }
 
@@ -191,14 +191,14 @@ etherif_t *linux_eth_new(char *dev_name)
 
     if (eth->packet_socket != -1)
     {
-	tp_warn(("Only one device at a time. Removing old one\n"));
-	etherif_free(&eth->ethif);
+        tp_warn(("Only one device at a time. Removing old one\n"));
+        etherif_free(&eth->ethif);
     }
 
     strcpy(eth->dev_name, dev_name);
 
     if (linux_eth_sock_init(eth))
-	return NULL;
+        return NULL;
 
     eth->packet_event.trigger = linux_eth_packet_event;
     etherif_construct(&eth->ethif, &linux_eth_ops);
@@ -207,6 +207,6 @@ etherif_t *linux_eth_new(char *dev_name)
     eth->packet_event_id = event_watch_set(NET_RES, &eth->packet_event);
 
     printf("Created Linux Packet Ethernet Interface. fd %d\n",
-	eth->packet_socket);
+        eth->packet_socket);
     return &eth->ethif;
 }

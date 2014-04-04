@@ -34,12 +34,12 @@ int do_stellaris_eth_constructor(obj_t **ret, obj_t *this, int argc,
     etherif_t *ethif;
 
     if (argc != 1)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     ethif = stellaris_eth_new();
 
     if (!ethif)
-	return throw_exception(ret, &S("Exception: can't create device"));
+        return throw_exception(ret, &S("Exception: can't create device"));
 
     return etherif_obj_constructor(ethif, ret, this, argc, argv);
 }

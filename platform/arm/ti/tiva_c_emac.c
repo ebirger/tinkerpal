@@ -48,7 +48,7 @@ static tiva_c_emac_t g_eth; /* Singleton */
 static int tiva_c_emac_link_status(etherif_t *ethif)
 {
     return MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_BMSR) & EPHY_BMSR_LINKSTAT ? 1 :
-	0;
+        0;
 }
 
 static void tiva_c_emac_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
@@ -85,11 +85,11 @@ static void phy_info(void)
     id1 = MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_ID1);
     id2 = MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_ID2);
     tp_out(("PHY OUI %x:%x\n", (id1 & EPHY_ID1_OUIMSB_M) >> EPHY_ID1_OUIMSB_S,
-	(id2 & EPHY_ID2_OUILSB_M) >> EPHY_ID2_OUILSB_S));
+        (id2 & EPHY_ID2_OUILSB_M) >> EPHY_ID2_OUILSB_S));
     tp_out(("Model Number %x\n",
-	(id2 & EPHY_ID2_VNDRMDL_M) >> EPHY_ID2_VNDRMDL_S));
+        (id2 & EPHY_ID2_VNDRMDL_M) >> EPHY_ID2_VNDRMDL_S));
     tp_out(("Revision Number %x\n", 
-	(id2 & EPHY_ID2_MDLREV_M) >> EPHY_ID2_MDLREV_S));
+        (id2 & EPHY_ID2_MDLREV_M) >> EPHY_ID2_MDLREV_S));
 }
 
 static void phy_cfg(void)
@@ -106,7 +106,7 @@ static void phy_cfg(void)
 
     /* Start an auto-negotiation cycle. */
     MAP_EMACPHYWrite(EMAC0_BASE, 0, EPHY_BMCR, EPHY_BMCR_ANEN | 
-	EPHY_BMCR_RESTARTAN);
+        EPHY_BMCR_RESTARTAN);
 }
 
 int tiva_c_emac_event_process(void)
@@ -114,16 +114,16 @@ int tiva_c_emac_event_process(void)
     MAP_IntDisable(INT_EMAC0);
     if (!g_eth.istat)
     {
-	MAP_IntEnable(INT_EMAC0);
-	return 0;
+        MAP_IntEnable(INT_EMAC0);
+        return 0;
     }
 
     if (g_eth.istat & EMAC_INT_PHY)
     {
-	/* Ack PHY interrupt */
-	MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_MISR1);
-	etherif_port_changed(&g_eth.ethif);
-	MAP_EMACIntEnable(EMAC0_BASE, EMAC_INT_PHY);
+        /* Ack PHY interrupt */
+        MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_MISR1);
+        etherif_port_changed(&g_eth.ethif);
+        MAP_EMACIntEnable(EMAC0_BASE, EMAC_INT_PHY);
     }
 
     g_eth.istat = 0;

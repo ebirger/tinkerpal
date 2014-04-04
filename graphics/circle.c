@@ -42,25 +42,25 @@ void circle_draw(canvas_t *c, int x0, int y0, int radius, u16 color)
 
     while (y < x)
     {
-	if (error > 0)
-	{ 
-	    /* >= 0 produces a slimmer circle. 
-	     * =0 produces the circle at radius 11
-	     */
-	    x--;
-	    errorX += 2;
-	    error += errorX;
-	}
-	y++;
-	errorY += 2;
-	error += errorY;    
-	canvas_pixel_set(c, x0 + x, y0 + y, color);
-	canvas_pixel_set(c, x0 - x, y0 + y, color);
-	canvas_pixel_set(c, x0 + x, y0 - y, color);
-	canvas_pixel_set(c, x0 - x, y0 - y, color);
-	canvas_pixel_set(c, x0 + y, y0 + x, color);
-	canvas_pixel_set(c, x0 - y, y0 + x, color);
-	canvas_pixel_set(c, x0 + y, y0 - x, color);
-	canvas_pixel_set(c, x0 - y, y0 - x, color);
+        if (error > 0)
+        { 
+            /* >= 0 produces a slimmer circle. 
+             * =0 produces the circle at radius 11
+             */
+            x--;
+            errorX += 2;
+            error += errorX;
+        }
+        y++;
+        errorY += 2;
+        error += errorY;    
+        canvas_pixel_set(c, x0 + x, y0 + y, color);
+        canvas_pixel_set(c, x0 - x, y0 + y, color);
+        canvas_pixel_set(c, x0 + x, y0 - y, color);
+        canvas_pixel_set(c, x0 - x, y0 - y, color);
+        canvas_pixel_set(c, x0 + y, y0 + x, color);
+        canvas_pixel_set(c, x0 - y, y0 + x, color);
+        canvas_pixel_set(c, x0 + y, y0 - x, color);
+        canvas_pixel_set(c, x0 - y, y0 - x, color);
     }
 }

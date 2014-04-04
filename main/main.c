@@ -39,7 +39,7 @@ static inline void tp_banner(void)
 {
     console_printf("TinkerPal version %s\n", TINKERPAL_VERSION);
     if (board.desc)
-	console_printf("Running on %s\n", board.desc);
+        console_printf("Running on %s\n", board.desc);
 }
 
 int tp_main(int argc, char *argv[])

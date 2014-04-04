@@ -31,8 +31,8 @@ typedef struct {
 #define NUMERIC_FLAG_FP 0x01
     int flags;
     union {
-	int i;
-	double fp;
+        int i;
+        double fp;
     } value;
 } tnum_t;
 
@@ -52,7 +52,7 @@ tstr_t double_to_tstr(double d);
 static inline tstr_t tnum_to_tstr(const tnum_t *n)
 {
     return NUMERIC_IS_FP(*n) ?  double_to_tstr(NUMERIC_FP(*n)) :
-	int_to_tstr(NUMERIC_INT(*n));
+        int_to_tstr(NUMERIC_INT(*n));
 }
 
 #endif

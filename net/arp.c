@@ -86,20 +86,20 @@ static void arp_resolve_pending(void)
     etherif_t *ethif = pending_resolve->ethif;
 
     arp_pkt_xmit(ethif, htons(ARP_OPER_REQUEST), &zero_mac,
-	htonl(ipv4_addr(ethif)), htonl(pending_resolve->ip));
+        htonl(ipv4_addr(ethif)), htonl(pending_resolve->ip));
 }
 
 static void arp_timeout(event_t *e, u32 resource_id)
 {
     if (!pending_resolve)
-	return;
+        return;
 
     if (arp_retries)
     {
-	arp_retries--;
-	arp_timeout_event_id = event_timer_set(ARP_TIMEOUT, &arp_timeout_event);
-	arp_resolve_pending();
-	return;
+        arp_retries--;
+        arp_timeout_event_id = event_timer_set(ARP_TIMEOUT, &arp_timeout_event);
+        arp_resolve_pending();
+        return;
     }
 
     tp_err(("ARP request timed out\n"));
@@ -109,10 +109,10 @@ static void arp_timeout(event_t *e, u32 resource_id)
 static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
 {
     if (!pending_resolve || pending_resolve->ethif != ethif)
-	return;
+        return;
 
     if (arp->spa != htonl(pending_resolve->ip))
-	return;
+        return;
 
     arp_resolve_complete(0, arp->sha);
 }
@@ -120,7 +120,7 @@ static void arp_reply_recv(etherif_t *ethif, arp_packet_t *arp)
 static void arp_request_recv(etherif_t *ethif, arp_packet_t *arp)
 {
     if (ipv4_addr(ethif) != ntohl(arp->tpa))
-	return;
+        return;
 
     arp_pkt_xmit(ethif, htons(ARP_OPER_REPLY), &arp->sha, arp->tpa, arp->spa);
 }
@@ -132,27 +132,27 @@ static void arp_recv(etherif_t *ethif)
     tp_debug(("ARP packet received\n"));
 
     if (arp->htype != htons(ARP_HTYPE_ETHERNET) ||
-	arp->ptype != htons(ETHER_PROTOCOL_IP) ||
-	arp->hlen != 6 || arp->plen != 4)
+        arp->ptype != htons(ETHER_PROTOCOL_IP) ||
+        arp->hlen != 6 || arp->plen != 4)
     {
-	tp_info(("Only IP Ethernet ARP packets are supported\n"));
-	return;
+        tp_info(("Only IP Ethernet ARP packets are supported\n"));
+        return;
     }
 
     if (arp->oper == htons(ARP_OPER_REPLY))
-	arp_reply_recv(ethif, arp);
+        arp_reply_recv(ethif, arp);
     else if (arp->oper == htons(ARP_OPER_REQUEST))
-	arp_request_recv(ethif, arp);
+        arp_request_recv(ethif, arp);
     else
-	tp_info(("Unsupported ARP oper %d\n", ntohs(arp->oper)));
+        tp_info(("Unsupported ARP oper %d\n", ntohs(arp->oper)));
 }
 
 int arp_resolve(arp_resolve_t *resolve)
 {
     if (pending_resolve)
     {
-	tp_err(("An ARP resolve request is already pending\n"));
-	return -1;
+        tp_err(("An ARP resolve request is already pending\n"));
+        return -1;
     }
 
     pending_resolve = resolve;

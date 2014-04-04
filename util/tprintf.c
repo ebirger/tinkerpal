@@ -51,16 +51,16 @@ static void tprint_integer(printer_t *printer, int num, int base,
     *p = '\0';
     do 
     {
-	*++p = hex2ascii[num % base];
-	min_digits--;
+        *++p = hex2ascii[num % base];
+        min_digits--;
     } while (num /= base);
 
     while (min_digits-- > 0)
-	*++p = '0';
+        *++p = '0';
 
     /* Output our number */
     while (*p)
-	PRINT_SINGLE(*p--);
+        PRINT_SINGLE(*p--);
 }
 
 static void print_fp(printer_t *printer, double num, unsigned dec_digits)
@@ -69,15 +69,15 @@ static void print_fp(printer_t *printer, double num, unsigned dec_digits)
 
     if (num < 0.0) 
     {
-	num = -num;
-	PRINT_SINGLE('-');
+        num = -num;
+        PRINT_SINGLE('-');
     }
 
     mult = exp_power(dec_digits);
 
     /* round by adding .5 LSB */
     if (dec_digits < 8)
-	num += 0.5 / mult;
+        num += 0.5 / mult;
 
     integer = (unsigned int)num;
     frac = (unsigned int)((num - integer) * mult);
@@ -96,8 +96,8 @@ static void print_integer(printer_t *printer, int num, int base, int sign,
 {
     if (sign && num < 0) 
     {
-	num = -num;
-	PRINT_SINGLE('-');
+        num = -num;
+        PRINT_SINGLE('-');
     }
 
     tprint_integer(printer, num, base, min_digits);
@@ -112,72 +112,72 @@ void vtprintf(printer_t *printer, char *fmt, va_list ap)
 
     while(1)
     {
-	while ((c = *fmt++) != '%' || ignore_modifiers)
-	{
-	    if (c == '\0')
-		return;
-	    PRINT_SINGLE(c);
-	}
+        while ((c = *fmt++) != '%' || ignore_modifiers)
+        {
+            if (c == '\0')
+                return;
+            PRINT_SINGLE(c);
+        }
 
-	percent = fmt - 1;
-	is_long = 0;
-	min_digits = 0;
+        percent = fmt - 1;
+        is_long = 0;
+        min_digits = 0;
 
-again:	
-	switch (c = *fmt++) 
-	{
-	case '0': case '1': case '2': case '3': case '4': 
-	case '5': case '6': case '7': case '8': case '9':
-	    min_digits = min_digits * 10 + c - '0';
-	    goto again;
-	case 'l': is_long = 1; goto again;
-	case '%': PRINT_SINGLE(c); break;
-	case 'c': PRINT_SINGLE(va_arg(ap, int)); break;
-	case 'f': print_fp(printer, va_arg(ap, double), 6); break;
-	case 's':
-	    p = va_arg(ap, char *);
-	    if (p == NULL)
-		p = "(null)";
-	    printer->print(printer, p, strlen(p));
-	    break;
-	case 'd':
-	    base = 10;
-	    num = is_long ? va_arg(ap, long) : va_arg(ap, int);
-	    print_integer(printer, num, base, 1, min_digits);
-	    break;
-	case 'p':
-	    base = 16;
-	    num = (uint_ptr_t)va_arg(ap, void *);
-	    print_integer(printer, num, base, 0, 0);
-	    break;
-	case 'u':
-	    base = 10;
-	    num = is_long ? va_arg(ap, unsigned long) : 
-		va_arg(ap, unsigned int);
-	    print_integer(printer, num, base, 0, min_digits);
-	    break;
-	case 'x':
-	    base = 16;
-	    num = is_long ? va_arg(ap, unsigned long) : 
-		va_arg(ap, unsigned int);
-	    print_integer(printer, num, base, 0, min_digits);
-	    break;
-	default:
-	    for (i = 0; i < num_tprintf_handlers && 
-		    fmt[-1] != tprintf_handlers[i].c; i++);
+again:  
+        switch (c = *fmt++) 
+        {
+        case '0': case '1': case '2': case '3': case '4': 
+        case '5': case '6': case '7': case '8': case '9':
+            min_digits = min_digits * 10 + c - '0';
+            goto again;
+        case 'l': is_long = 1; goto again;
+        case '%': PRINT_SINGLE(c); break;
+        case 'c': PRINT_SINGLE(va_arg(ap, int)); break;
+        case 'f': print_fp(printer, va_arg(ap, double), 6); break;
+        case 's':
+            p = va_arg(ap, char *);
+            if (p == NULL)
+                p = "(null)";
+            printer->print(printer, p, strlen(p));
+            break;
+        case 'd':
+            base = 10;
+            num = is_long ? va_arg(ap, long) : va_arg(ap, int);
+            print_integer(printer, num, base, 1, min_digits);
+            break;
+        case 'p':
+            base = 16;
+            num = (uint_ptr_t)va_arg(ap, void *);
+            print_integer(printer, num, base, 0, 0);
+            break;
+        case 'u':
+            base = 10;
+            num = is_long ? va_arg(ap, unsigned long) : 
+                va_arg(ap, unsigned int);
+            print_integer(printer, num, base, 0, min_digits);
+            break;
+        case 'x':
+            base = 16;
+            num = is_long ? va_arg(ap, unsigned long) : 
+                va_arg(ap, unsigned int);
+            print_integer(printer, num, base, 0, min_digits);
+            break;
+        default:
+            for (i = 0; i < num_tprintf_handlers && 
+                    fmt[-1] != tprintf_handlers[i].c; i++);
 
-	    if (i == num_tprintf_handlers)
-	    {
-		/* No format handler was found. Ignore modifiers for
-		 * the reset of the fmt string.
-		 */
-		printer->print(printer, percent, fmt - percent);
-		ignore_modifiers = 1;
-		break;
-	    }
-	    tprintf_handlers[i].h(printer, va_arg(ap, void *));
-	    break;
-	}
+            if (i == num_tprintf_handlers)
+            {
+                /* No format handler was found. Ignore modifiers for
+                 * the reset of the fmt string.
+                 */
+                printer->print(printer, percent, fmt - percent);
+                ignore_modifiers = 1;
+                break;
+            }
+            tprintf_handlers[i].h(printer, va_arg(ap, void *));
+            break;
+        }
     }
 }
 
@@ -194,12 +194,12 @@ static int tsnprintf_print(printer_t *printer, char *buf, int size)
 
     while (size--)
     {
-	if (ctx->max > 0)
-	{
-	    ctx->buf[ctx->count] = *buf++;
-	    ctx->max--;
-	}
-	ctx->count++;
+        if (ctx->max > 0)
+        {
+            ctx->buf[ctx->count] = *buf++;
+            ctx->max--;
+        }
+        ctx->count++;
     }
     return 0;
 }
@@ -217,7 +217,7 @@ int vtsnprintf(char *buf, int n, char *fmt, va_list ap)
 
     /* NULL terminate */
     if (ctx.max)
-	ctx.buf[ctx.count] = '\0';
+        ctx.buf[ctx.count] = '\0';
 
     return ctx.count;
 }
@@ -245,9 +245,9 @@ void tprintf(printer_t *printer, char *fmt, ...)
 void tprintf_register_handler(char c, tprintf_handler_t h)
 {
     if (num_tprintf_handlers == sizeof(tprintf_handlers) / 
-	sizeof(tprintf_handlers[0]))
+        sizeof(tprintf_handlers[0]))
     {
-	tp_crit(("Number of tprintf handlers exceeded\n"));
+        tp_crit(("Number of tprintf handlers exceeded\n"));
     }
 
     tprintf_handlers[num_tprintf_handlers].c = c;

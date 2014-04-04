@@ -74,9 +74,9 @@ void stm32_spi_reconf(int port)
 
     if (spi->af)
     {
-	stm32_gpio_set_pin_function(spi->clk, spi->af);
-	stm32_gpio_set_pin_function(spi->mosi, spi->af);
-	stm32_gpio_set_pin_function(spi->miso, spi->af);
+        stm32_gpio_set_pin_function(spi->clk, spi->af);
+        stm32_gpio_set_pin_function(spi->mosi, spi->af);
+        stm32_gpio_set_pin_function(spi->miso, spi->af);
     }
 
     /* Configure SPI */

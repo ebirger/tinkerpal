@@ -45,7 +45,7 @@ static js_module_t *module_load_vfs(tstr_t *mod_name)
     tstr_t code;
 
     if (vfs_file_read(&code, mod_name, VFS_FLAGS_ANY_FS))
-	return NULL;
+        return NULL;
 
     mod = tmalloc_type(js_module_t);
     mod->code = code;
@@ -60,9 +60,9 @@ static js_module_t *module_lookup(tstr_t *mod_name)
     js_module_t **mod;
 
     for (mod = &js_modules; *mod && tstr_cmp(&(*mod)->name, mod_name); 
-	mod = &(*mod)->next);
+        mod = &(*mod)->next);
     if (!*mod)
-	*mod = module_load_vfs(mod_name);
+        *mod = module_load_vfs(mod_name);
 
     return *mod;
 }
@@ -74,7 +74,7 @@ int module_require(obj_t **ret, tstr_t *mod_name)
 
     mod = module_lookup(mod_name);
     if (!mod)
-	return -1;
+        return -1;
 
     if (mod->exports)
     {
@@ -84,7 +84,7 @@ int module_require(obj_t **ret, tstr_t *mod_name)
 
     rc = js_eval_module(ret, &mod->code);
     if (rc == COMPLETION_THROW)
-	return rc;
+        return rc;
 
     mod->exports = obj_get(*ret);
     return rc;
@@ -96,10 +96,10 @@ void modules_uninit(void)
 
     while ((mod = js_modules))
     {
-	js_modules = js_modules->next;
-	obj_put(mod->exports);
-	tstr_free(&mod->code);
-	tfree(mod);
+        js_modules = js_modules->next;
+        obj_put(mod->exports);
+        tstr_free(&mod->code);
+        tfree(mod);
     }
 }
 

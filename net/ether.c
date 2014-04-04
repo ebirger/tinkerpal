@@ -43,7 +43,7 @@ int ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type)
 
     /* Prepare Ethernet Header */
     if (!(hdr = packet_push(&g_packet, sizeof(eth_hdr_t))))
-	return -1;
+        return -1;
 
     hdr->eth_type = eth_type;
     hdr->dst = *dst_mac;
@@ -69,19 +69,19 @@ static void ethernet_packet_received(event_t *e, u32 resource_id)
     len = etherif_packet_recv(ethif, g_packet.ptr, g_packet.length);
     if (len < 0)
     {
-	tp_err(("Error receiving packet %d\n", len));
-	return;
+        tp_err(("Error receiving packet %d\n", len));
+        return;
     }
 
     g_packet.length = len;
     eth_hdr = (eth_hdr_t *)g_packet.ptr;
     eth_type = eth_hdr->eth_type;
     for (proto = protocols; proto && proto->eth_type != eth_type;
-	proto = proto->next);
+        proto = proto->next);
     if (!proto)
     {
-	tp_debug(("Unsupported Ethernet Protocol %04x\n", ntohs(eth_type)));
-	return;
+        tp_debug(("Unsupported Ethernet Protocol %04x\n", ntohs(eth_type)));
+        return;
     }
 
     packet_pull(&g_packet, sizeof(eth_hdr_t));
@@ -116,5 +116,5 @@ void ethernet_detach_etherif(etherif_t *ethif)
 void ethernet_attach_etherif(etherif_t *ethif)
 {
     etherif_on_packet_received_event_set(ethif,
-	&ethernet_packet_received_event);
+        &ethernet_packet_received_event);
 }

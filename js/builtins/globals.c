@@ -34,8 +34,8 @@ int do_eval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc == 1)
     {
-	*ret = UNDEF;
-	return 0;
+        *ret = UNDEF;
+        return 0;
     }
 
     return js_eval_obj(ret, argv[1]);
@@ -47,14 +47,14 @@ int do_to_integer(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int value = 0, sign;
 
     if (argc == 1)
-	goto Exit;
+        goto Exit;
 
     n = to_num(obj_cast(argv[1], NUM_CLASS));
     if (!NUM_IS_FP(n))
     {
-	/* It is already an integer, just return our cast */
-	*ret = &n->obj;
-	return 0;
+        /* It is already an integer, just return our cast */
+        *ret = &n->obj;
+        return 0;
     }
 
     sign = NUM_FP(n) > 0 ? 1 : -1;
@@ -72,7 +72,7 @@ int do_assert(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int failed;
 
     if (argc != 3)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     lv = argv[1];
     rv = argv[2];
@@ -81,7 +81,7 @@ int do_assert(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     failed = !obj_true(cond);
     obj_put(cond);
     if (failed)
-	tp_crit(("assertion failed %o != %o\n", lv, rv));
+        tp_crit(("assertion failed %o != %o\n", lv, rv));
 
     *ret = UNDEF;
     return 0;
@@ -93,12 +93,12 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int failed;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     cond = argv[1];
     failed = !obj_true(cond);
     if (failed)
-	tp_crit(("assertion failed: cond: %o\n", cond));
+        tp_crit(("assertion failed: cond: %o\n", cond));
 
     *ret = UNDEF;
     return 0;
@@ -107,7 +107,7 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_dump(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     tp_out(("%o\n", argv[1]));
     *ret = UNDEF;
@@ -119,7 +119,7 @@ int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     extern obj_t *global_env;
 
     if (argc != 1)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     tp_out(("%o\n", global_env));
     *ret = UNDEF;
@@ -129,7 +129,7 @@ int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_apply(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc <= 1)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     return function_call(ret, this, argc - 1, argv + 1);
 }
@@ -145,7 +145,7 @@ int do_meminfo(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_describe(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     tp_out(("%D\n", argv[1]));
     *ret = UNDEF;

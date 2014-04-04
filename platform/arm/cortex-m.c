@@ -36,7 +36,7 @@ void *_sbrk(unsigned int incr)
     static char *prev_heap_end;
 
     if (heap_end == 0)
-	heap_end = (void *)&_heap_bottom;
+        heap_end = (void *)&_heap_bottom;
 
     prev_heap_end = heap_end;
 
@@ -53,9 +53,9 @@ void cortex_m_meminfo(void)
 {
 #ifdef CONFIG_GCC
     tp_out(("Heap: Total %d Allocated %d Remaining %d\n", 
-	(&_heap_top - &_heap_bottom) * 4,
-	((unsigned long *)heap_end - &_heap_bottom) * 4,
-	(&_heap_top - (unsigned long *)heap_end) * 4));
+        (&_heap_top - &_heap_bottom) * 4,
+        ((unsigned long *)heap_end - &_heap_bottom) * 4,
+        (&_heap_top - (unsigned long *)heap_end) * 4));
 #endif
 }
 
@@ -78,7 +78,7 @@ void cortex_m_reset_isr(void)
     /* Zero out the bss segment */
     src = &_bss;
     while (src < &_ebss)
-	*src++ = 0;
+        *src++ = 0;
 
 #elif defined(CONFIG_TI_CCS5)
     /* Jump to the CCS C initialization routine.  This will enable the

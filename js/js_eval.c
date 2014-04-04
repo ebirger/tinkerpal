@@ -71,7 +71,7 @@ static int parse_error(obj_t **po)
 static inline int is_statement_list_terminator(token_type_t tok)
 {
     return tok == TOK_CLOSE_SCOPE || tok == TOK_CASE || tok == TOK_DEFAULT || 
-	tok == TOK_EOF;
+        tok == TOK_EOF;
 }
 
 static void function_args_bind(obj_t *env, tstr_list_t *params, 
@@ -81,8 +81,8 @@ static void function_args_bind(obj_t *env, tstr_list_t *params,
 
     while (params && argc--)
     {
-	obj_set_property(env, params->str, argv[i++]);
-	params = params->next;
+        obj_set_property(env, params->str, argv[i++]);
+        params = params->next;
     }
 }
 
@@ -103,17 +103,17 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
      */
     s = js_scan_save(func->code);
     if (this_obj)
-	this = this_obj;
+        this = this_obj;
 
     if (CUR_TOK(s) == TOK_OPEN_SCOPE)
-	rc = eval_block(ret, s);
+        rc = eval_block(ret, s);
     else
-	rc = eval_statement_list(ret, s);
+        rc = eval_statement_list(ret, s);
 
     if (rc == COMPLETION_NORNAL)
     {
-	obj_put(*ret);
-	*ret = UNDEF;
+        obj_put(*ret);
+        *ret = UNDEF;
     }
     obj_put(cur_env);
     cur_env = saved_env;
@@ -129,7 +129,7 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
     obj_t *saved_this = this, *o_func;
 
     if ((rc = eval_assert_is_function(po, scan)))
-	return rc;
+        return rc;
 
     saved_args = cur_function_args;
 
@@ -140,56 +140,56 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
     /* Arguments are optional in constructors calls */
     if (!construct || CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
-	obj_t *o;
+        obj_t *o;
 
-	js_scan_match(scan, TOK_OPEN_PAREN);
-	if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
-	{
-	    if ((rc = eval_expression(&o, scan)))
-	    {
-		*po = o;
-		goto Exit;
-	    }
+        js_scan_match(scan, TOK_OPEN_PAREN);
+        if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
+        {
+            if ((rc = eval_expression(&o, scan)))
+            {
+                *po = o;
+                goto Exit;
+            }
 
-	    function_args_add(&args, o);
+            function_args_add(&args, o);
 
-	    while (CUR_TOK(scan) == TOK_COMMA)
-	    {
-		js_scan_next_token(scan);
-		if ((rc = eval_expression(&o, scan)))
-		{
-		    *po = o;
-		    goto Exit;
-		}
+            while (CUR_TOK(scan) == TOK_COMMA)
+            {
+                js_scan_next_token(scan);
+                if ((rc = eval_expression(&o, scan)))
+                {
+                    *po = o;
+                    goto Exit;
+                }
 
-		function_args_add(&args, o);
-	    }
-	}
-	if (_js_scan_match(scan, TOK_CLOSE_PAREN))
-	{
-	    rc = parse_error(po);
-	    goto Exit;
-	}
+                function_args_add(&args, o);
+            }
+        }
+        if (_js_scan_match(scan, TOK_CLOSE_PAREN))
+        {
+            rc = parse_error(po);
+            goto Exit;
+        }
     }
 
     cur_function_args = args;
     if (construct)
-	rc = function_call_construct(po, args.argc, args.argv);
+        rc = function_call_construct(po, args.argc, args.argv);
     else
     {
-	obj_t *this_obj;
+        obj_t *this_obj;
 
-	this_obj = ref->parent ? : UNDEF;
-	rc = function_call(po, this_obj, args.argc, args.argv);
+        this_obj = ref->parent ? : UNDEF;
+        rc = function_call(po, this_obj, args.argc, args.argv);
     }
     if (rc == COMPLETION_RETURN)
-	rc = 0;
+        rc = 0;
 
 Exit:
     this = saved_this;
     cur_function_args = saved_args;
     for (i = 1; i < args.argc; i++)
-	obj_put(args.argv[i]);
+        obj_put(args.argv[i]);
     function_args_uninit(&args);
     obj_put(o_func);
     return rc;
@@ -204,20 +204,20 @@ static int eval_var_single(obj_t **ret, scan_t *scan)
     *ret = UNDEF;
 
     if (js_scan_get_identifier(scan, &name))
-	return parse_error(ret);
+        return parse_error(ret);
 
     if (CUR_TOK(scan) == TOK_EQ)
     {
-	js_scan_next_token(scan);
-	if ((rc = eval_expression(&o, scan)))
-	{
-	    *ret = o;
-	    tstr_free(&name);
-	    return rc;
-	}
+        js_scan_next_token(scan);
+        if ((rc = eval_expression(&o, scan)))
+        {
+            *ret = o;
+            tstr_free(&name);
+            return rc;
+        }
     }
     else
-	o = UNDEF;
+        o = UNDEF;
 
     obj_set_property(cur_env, name, o);
     obj_put(o);
@@ -232,13 +232,13 @@ static int eval_var(obj_t **ret, scan_t *scan)
     js_scan_match(scan, TOK_VAR);
 
     if ((rc = eval_var_single(ret, scan)))
-	return rc;
+        return rc;
 
     while (CUR_TOK(scan) == TOK_COMMA)
     {
-	js_scan_next_token(scan);
-	if ((rc = eval_var_single(ret, scan)))
-	    return rc;
+        js_scan_next_token(scan);
+        if ((rc = eval_var_single(ret, scan)))
+            return rc;
     }
     return rc;
 }
@@ -246,9 +246,9 @@ static int eval_var(obj_t **ret, scan_t *scan)
 static inline int is_assignment_tok(token_type_t tok)
 {
     return tok == TOK_PLUS_EQ || tok == TOK_MINUS_EQ || tok == TOK_MULT_EQ || 
-	tok == TOK_DIV_EQ || tok == TOK_AND_EQ || tok == TOK_OR_EQ ||
-	tok == TOK_XOR_EQ || tok == TOK_MOD_EQ || tok == TOK_EQ ||
-	tok == TOK_SHR_EQ || tok == TOK_SHL_EQ || tok == TOK_SHRZ_EQ;
+        tok == TOK_DIV_EQ || tok == TOK_AND_EQ || tok == TOK_OR_EQ ||
+        tok == TOK_XOR_EQ || tok == TOK_MOD_EQ || tok == TOK_EQ ||
+        tok == TOK_SHR_EQ || tok == TOK_SHL_EQ || tok == TOK_SHRZ_EQ;
 }
 
 static inline int is_member_tok(token_type_t tok)
@@ -261,20 +261,20 @@ int parse_function_param_list(tstr_list_t **params, scan_t *scan)
     tstr_t param;
 
     if (js_scan_get_identifier(scan, &param))
-	return -1;
+        return -1;
 
     tstr_list_add(params, &param);
 
     while (CUR_TOK(scan) == TOK_COMMA)
     {
-	js_scan_next_token(scan);
-	if (js_scan_get_identifier(scan, &param))
-	{
-	    tstr_list_free(params);
-	    return -1;
-	}
+        js_scan_next_token(scan);
+        if (js_scan_get_identifier(scan, &param))
+        {
+            tstr_list_free(params);
+            return -1;
+        }
 
-	tstr_list_add(params, &param);
+        tstr_list_add(params, &param);
     }
     return 0;
 }
@@ -301,29 +301,29 @@ static int eval_function_definition(tstr_t *fname, obj_t **po, scan_t *scan)
     scan_t *start, *end;
 
     if (_js_scan_match(scan, TOK_OPEN_PAREN))
-	return parse_error(po);
+        return parse_error(po);
 
     tstr_list_add(&params, fname);
 
     if (CUR_TOK(scan) == TOK_ID)
     {
-	if (parse_function_param_list(&params, scan))
-	    goto ParseError;
+        if (parse_function_param_list(&params, scan))
+            goto ParseError;
     }
 
     if (_js_scan_match(scan, TOK_CLOSE_PAREN))
-	goto ParseError;
+        goto ParseError;
 
     start = js_scan_save(scan);
     if (skip_block(po, scan))
     {
-	js_scan_free(start);
-	goto ParseError;
+        js_scan_free(start);
+        goto ParseError;
     }
-	
+        
     end = js_scan_save(scan);
     o = function_new(params, js_scan_slice(start, end), cur_env, 
-	call_evaluated_function);
+        call_evaluated_function);
     js_scan_free(start);
     js_scan_free(end);
     *po = o;
@@ -343,41 +343,41 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     switch (tok)
     {
     case TOK_PROTOTYPE:
-	js_scan_next_token(scan);
-	break;
+        js_scan_next_token(scan);
+        break;
     case TOK_ID:
-	js_scan_get_identifier(scan, &property);
-	break;
+        js_scan_get_identifier(scan, &property);
+        break;
     case TOK_STRING:
-	js_scan_get_string(scan, &property);
-	break;
+        js_scan_get_string(scan, &property);
+        break;
     case TOK_NUM:
-	{
-	    tnum_t num;
-	    js_scan_get_num(scan, &num);
+        {
+            tnum_t num;
+            js_scan_get_num(scan, &num);
 
-	    property = tnum_to_tstr(&num);
-	}
-	break;
+            property = tnum_to_tstr(&num);
+        }
+        break;
     default:
-	return parse_error(po);
+        return parse_error(po);
     }
 
     if (_js_scan_match(scan, TOK_COLON))
-	return parse_error(po);
+        return parse_error(po);
 
     if ((rc = eval_expression(po, scan)))
-	return rc;
+        return rc;
 
     switch (tok)
     {
     case TOK_PROTOTYPE:
-	property = Sprototype;
+        property = Sprototype;
     case TOK_ID:
     case TOK_STRING:
     case TOK_NUM:
-	_obj_set_property(o, property, *po);
-	break;
+        _obj_set_property(o, property, *po);
+        break;
     }
     tstr_free(&property);
     return 0;
@@ -392,22 +392,22 @@ static int eval_object(obj_t **po, scan_t *scan)
 
     while (CUR_TOK(scan) != TOK_CLOSE_SCOPE)
     {
-	if ((rc = eval_property(po, scan, o)))
-	{
-	    obj_put(o);
-	    return rc;
-	}
+        if ((rc = eval_property(po, scan, o)))
+        {
+            obj_put(o);
+            return rc;
+        }
 
-	if (CUR_TOK(scan) != TOK_COMMA)
-	    break;
+        if (CUR_TOK(scan) != TOK_COMMA)
+            break;
 
-	js_scan_next_token(scan);
+        js_scan_next_token(scan);
     }
 
     if ((_js_scan_match(scan, TOK_CLOSE_SCOPE)))
     {
-	obj_put(o);
-	return parse_error(po);
+        obj_put(o);
+        return parse_error(po);
     }
     *po = o;
     return 0;
@@ -419,15 +419,15 @@ static int eval_array(obj_t **po, scan_t *scan)
     
     js_scan_match(scan, TOK_OPEN_MEMBER);
     if (CUR_TOK(scan) == TOK_CLOSE_MEMBER)
-	goto Exit; /* Empty array */
+        goto Exit; /* Empty array */
 
     eval_expression(&val, scan);
     array_push(o, val);
     while (CUR_TOK(scan) == TOK_COMMA)
     {
-	js_scan_next_token(scan);
-	eval_expression(&val, scan);
-	array_push(o, val);
+        js_scan_next_token(scan);
+        eval_expression(&val, scan);
+        array_push(o, val);
     }
 
 Exit:
@@ -444,104 +444,104 @@ static int eval_atom(obj_t **po, scan_t *scan, obj_t *obj, reference_t *ref)
     switch (tok)
     {
     case TOK_OPEN_PAREN:
-	js_scan_next_token(scan);
-	if ((rc = eval_expression(po, scan)))
-	    return rc;
-	if (_js_scan_match(scan, TOK_CLOSE_PAREN))
-	    return parse_error(po);
-	break;
+        js_scan_next_token(scan);
+        if ((rc = eval_expression(po, scan)))
+            return rc;
+        if (_js_scan_match(scan, TOK_CLOSE_PAREN))
+            return parse_error(po);
+        break;
     case TOK_THIS:
-	js_scan_next_token(scan);
-	tp_assert(this);
-	ref_invalidate(ref);
-	*po = obj_get(this);
-	break;
+        js_scan_next_token(scan);
+        tp_assert(this);
+        ref_invalidate(ref);
+        *po = obj_get(this);
+        break;
     case TOK_ARGUMENTS:
-	js_scan_next_token(scan);
-	if (!cur_function_args.argc)
-	    return throw_exception(po, &S("Exception: Not in function call"));
+        js_scan_next_token(scan);
+        if (!cur_function_args.argc)
+            return throw_exception(po, &S("Exception: Not in function call"));
 
-	ref_invalidate(ref);
-	*po = arguments_new(&cur_function_args);
-	break;
+        ref_invalidate(ref);
+        *po = arguments_new(&cur_function_args);
+        break;
     case TOK_PROTOTYPE:
-	js_scan_next_token(scan);
-	tp_assert(obj);
-	*po = obj_get_own_property(&ref->dst, obj, &Sprototype);
-	if (!*po)
-	{
-	    obj_put(ref->field);
-	    ref->field = string_new(Sprototype);
-	    ref->base = obj;
-	    ref->dst = NULL;
-	    *po = UNDEF;
-	}
-	break;
+        js_scan_next_token(scan);
+        tp_assert(obj);
+        *po = obj_get_own_property(&ref->dst, obj, &Sprototype);
+        if (!*po)
+        {
+            obj_put(ref->field);
+            ref->field = string_new(Sprototype);
+            ref->base = obj;
+            ref->dst = NULL;
+            *po = UNDEF;
+        }
+        break;
     case TOK_OPEN_SCOPE:
-	rc = eval_object(po, scan);
-	break;
+        rc = eval_object(po, scan);
+        break;
     case TOK_OPEN_MEMBER:
-	rc = eval_array(po, scan);
-	break;
+        rc = eval_array(po, scan);
+        break;
     case TOK_FUNCTION:
-	rc = eval_function(po, scan, 0);
-	break;
+        rc = eval_function(po, scan, 0);
+        break;
     case TOK_NOT:
     case TOK_TILDE:
     case TOK_PLUS:
     case TOK_MINUS:
-	js_scan_next_token(scan);
-	rc = eval_functions(po, scan, ref);
-	*po = obj_do_op(tok, ZERO, *po);
-	break;
+        js_scan_next_token(scan);
+        rc = eval_functions(po, scan, ref);
+        *po = obj_do_op(tok, ZERO, *po);
+        break;
     case TOK_NUM:
-	{
-	    tnum_t num;
+        {
+            tnum_t num;
 
-	    if (js_scan_get_num(scan, &num))
-		return parse_error(po);
+            if (js_scan_get_num(scan, &num))
+                return parse_error(po);
 
-	    *po = num_new(num);
-	}
-	break;
+            *po = num_new(num);
+        }
+        break;
     case TOK_TRUE:
     case TOK_FALSE:
-	js_scan_next_token(scan);
-	*po = tok == TOK_TRUE ? TRUE : FALSE;
-	break;
+        js_scan_next_token(scan);
+        *po = tok == TOK_TRUE ? TRUE : FALSE;
+        break;
     case TOK_NULL:
-	js_scan_next_token(scan);
-	*po = NULL_OBJ;
-	break;
+        js_scan_next_token(scan);
+        *po = NULL_OBJ;
+        break;
     case TOK_UNDEFINED:
-	js_scan_next_token(scan);
-	*po = UNDEF;
-	break;
+        js_scan_next_token(scan);
+        *po = UNDEF;
+        break;
     case TOK_STRING:
-	{
-	    tstr_t str;
+        {
+            tstr_t str;
 
-	    if (js_scan_get_string(scan, &str))
-		return parse_error(po);
+            if (js_scan_get_string(scan, &str))
+                return parse_error(po);
 
-	    *po = string_new(str);
-	}
-	break;
+            *po = string_new(str);
+        }
+        break;
     case TOK_ID:
-	{
-	    tstr_t id;
+        {
+            tstr_t id;
 
-	    if (js_scan_get_identifier(scan, &id))
-		return parse_error(po);
+            if (js_scan_get_identifier(scan, &id))
+                return parse_error(po);
 
-	    *po = string_new(id);
-	}
-	break;
+            *po = string_new(id);
+        }
+        break;
     case TOK_CONSTANT:
-	*po = num_new_int(js_scan_get_constant(scan));
-	break;
+        *po = num_new_int(js_scan_get_constant(scan));
+        break;
     default:
-	return parse_error(po);
+        return parse_error(po);
     }
 
     return rc;
@@ -553,15 +553,15 @@ static obj_t *get_property(obj_t *obj, obj_t *property, reference_t *ref)
     tstr_t prop_name = obj_get_str(property);
 
     if (obj)
-	ref->base = obj;
+        ref->base = obj;
     else
     {
-	obj = cur_env;
-	/* If an unknown identifier appears, it is considered a candidate
-	 * for the global environment 
-	 * XXX: on strict mode, an exception is thrown
-	 */
-	ref->base = global_env;
+        obj = cur_env;
+        /* If an unknown identifier appears, it is considered a candidate
+         * for the global environment 
+         * XXX: on strict mode, an exception is thrown
+         */
+        ref->base = global_env;
     }
 
     o = obj_get_property(&ref->dst, obj, &prop_name);
@@ -575,7 +575,7 @@ static obj_t *get_property(obj_t *obj, obj_t *property, reference_t *ref)
 static inline void ref_set_parent(reference_t *ref, obj_t *parent)
 {
     if (!parent)
-	return;
+        return;
 
     obj_put(ref->parent);
     ref->parent = parent;
@@ -589,46 +589,46 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
     /* XXX: rewrite */
     if (!o)
     {
-	token_type_t tok = CUR_TOK(scan);
+        token_type_t tok = CUR_TOK(scan);
 
-	rc = eval_atom(po, scan, NULL, ref);
-	o = *po;
-	if (tok == TOK_ID)
-	    o = *po = get_property(NULL, *po, ref);
+        rc = eval_atom(po, scan, NULL, ref);
+        o = *po;
+        if (tok == TOK_ID)
+            o = *po = get_property(NULL, *po, ref);
     }
 
     while (is_member_tok(CUR_TOK(scan)))
     {
-	/* XXX: only extensible objects can be used here */
-	if (o == UNDEF)
-	{
-	    ref_invalidate(ref);
-	    js_scan_trace(scan);
-	    return throw_exception(po, 
-		&S("Exception: Can't access property of undefined"));
-	}
+        /* XXX: only extensible objects can be used here */
+        if (o == UNDEF)
+        {
+            ref_invalidate(ref);
+            js_scan_trace(scan);
+            return throw_exception(po, 
+                &S("Exception: Can't access property of undefined"));
+        }
 
-	ref_set_parent(ref, parent);
-	parent = o;
-	if (CUR_TOK(scan) == TOK_DOT)
-	{
-	    token_type_t tok;
+        ref_set_parent(ref, parent);
+        parent = o;
+        if (CUR_TOK(scan) == TOK_DOT)
+        {
+            token_type_t tok;
 
-	    js_scan_next_token(scan);
-	    tok = CUR_TOK(scan);
-	    tp_assert(tok == TOK_ID || tok == TOK_PROTOTYPE);
-	    rc = eval_atom(po, scan, o, ref);
-	    o = *po;
-	    if (tok == TOK_ID)
-		o = get_property(parent, o, ref);
-	}
-	else if (CUR_TOK(scan) == TOK_OPEN_MEMBER)
-	{
-	    js_scan_next_token(scan);
-	    eval_expression(&o, scan);
-	    js_scan_match(scan, TOK_CLOSE_MEMBER);
-	    o = get_property(parent, o, ref);
-	}
+            js_scan_next_token(scan);
+            tok = CUR_TOK(scan);
+            tp_assert(tok == TOK_ID || tok == TOK_PROTOTYPE);
+            rc = eval_atom(po, scan, o, ref);
+            o = *po;
+            if (tok == TOK_ID)
+                o = get_property(parent, o, ref);
+        }
+        else if (CUR_TOK(scan) == TOK_OPEN_MEMBER)
+        {
+            js_scan_next_token(scan);
+            eval_expression(&o, scan);
+            js_scan_match(scan, TOK_CLOSE_MEMBER);
+            o = get_property(parent, o, ref);
+        }
     }
     ref_set_parent(ref, parent);
     *po = o;
@@ -641,15 +641,15 @@ static int eval_assert_is_function(obj_t **po, scan_t *scan)
     tstr_t *error = NULL;
 
     if (o_func == UNDEF)
-	error = &S("Exception: Object is undefined, not a function");
+        error = &S("Exception: Object is undefined, not a function");
     else if (!is_function(o_func))
-	error = &S("Exception: Object is not a function");
+        error = &S("Exception: Object is not a function");
 
     if (error)
     {
-	js_scan_trace(scan);
-	/* Not a valid function. Throw exception */
-	return throw_exception(po, error);
+        js_scan_trace(scan);
+        /* Not a valid function. Throw exception */
+        return throw_exception(po, error);
     }
 
     return 0;
@@ -661,18 +661,18 @@ static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
 
     if (CUR_TOK(scan) == TOK_NEW)
     {
-	is_new = 1;
-	js_scan_next_token(scan);
+        is_new = 1;
+        js_scan_next_token(scan);
     }
 
     if ((rc = eval_member(po, scan, NULL, ref)))
-	return rc;
+        return rc;
 
     if (is_new)
     {
-	rc = eval_function_call(po, scan, ref, 1);
-	/* constructed objects are not valid lvalues */
-	ref_invalidate(ref);
+        rc = eval_function_call(po, scan, ref, 1);
+        /* constructed objects are not valid lvalues */
+        ref_invalidate(ref);
     }
 
     return rc;
@@ -686,13 +686,13 @@ static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref)
 
     while (!rc && CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
-	if ((rc = eval_function_call(po, scan, ref, 0)))
-	    return rc;
+        if ((rc = eval_function_call(po, scan, ref, 0)))
+            return rc;
 
-	/* Function calls do not return references */
-	ref_invalidate(ref);
-	if (*po && is_member_tok(CUR_TOK(scan)))
-	    rc = eval_member(po, scan, *po, ref);
+        /* Function calls do not return references */
+        ref_invalidate(ref);
+        if (*po && is_member_tok(CUR_TOK(scan)))
+            rc = eval_member(po, scan, *po, ref);
     }
 
     return rc;
@@ -705,33 +705,33 @@ static int eval_postfix(obj_t **po, scan_t *scan, reference_t *ref)
     int rc = 0;
 
     if ((rc = eval_functions(&o, scan, ref)))
-	goto Exit;
+        goto Exit;
 
     tok = CUR_TOK(scan);
     if (tok != TOK_PLUS_PLUS && tok != TOK_MINUS_MINUS)
-	goto Exit;
+        goto Exit;
 
     if (!valid_lval(ref))
     {
-	tstr_t property;
+        tstr_t property;
 
-	if (!o || o == UNDEF || !ref->base)
-	{
-	    obj_put(o);
-	    return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
-	}
+        if (!o || o == UNDEF || !ref->base)
+        {
+            obj_put(o);
+            return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
+        }
 
-	property = obj_get_str(ref->field);
-	_obj_set_property(ref->base, property, obj_do_op(tok, obj_get(o), 
+        property = obj_get_str(ref->field);
+        _obj_set_property(ref->base, property, obj_do_op(tok, obj_get(o), 
             ZERO));
-	tstr_free(&property);
+        tstr_free(&property);
     }
     else
     {
-	/* its ok to release o in obj_do_op as we are taking the stored
-	 * reference and overriding it with the new_value.
-	 */
-	*ref->dst = obj_do_op(tok, o, ZERO);
+        /* its ok to release o in obj_do_op as we are taking the stored
+         * reference and overriding it with the new_value.
+         */
+        *ref->dst = obj_do_op(tok, o, ZERO);
     }
 
     js_scan_next_token(scan);
@@ -753,17 +753,17 @@ static int eval_pre_fix(obj_t **po, scan_t *scan, reference_t *ref)
     int rc = 0, is_valid_lval;
 
     if (tok != TOK_PLUS_PLUS && tok != TOK_MINUS_MINUS)
-	return eval_postfix(po, scan, ref);
+        return eval_postfix(po, scan, ref);
 
     js_scan_next_token(scan);
     if ((rc = eval_postfix(&o, scan, ref)))
-	goto Exit;
+        goto Exit;
 
     is_valid_lval = valid_lval(ref);
     if (!is_valid_lval && (!o || o == UNDEF || !ref->base))
     {
-	obj_put(o);
-	return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
+        obj_put(o);
+        return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
     }
 
     /* Calculate new value */
@@ -772,15 +772,15 @@ static int eval_pre_fix(obj_t **po, scan_t *scan, reference_t *ref)
 
     if (!is_valid_lval)
     {
-	tstr_t property = obj_get_str(ref->field);
-	obj_set_property(ref->base, property, o);
-	tstr_free(&property);
+        tstr_t property = obj_get_str(ref->field);
+        obj_set_property(ref->base, property, o);
+        tstr_free(&property);
     }
     else
     {
-	*ref->dst = obj_get(o);
-	/* Release stored copy of old value */
-	obj_put(old_object);
+        *ref->dst = obj_get(o);
+        /* Release stored copy of old value */
+        obj_put(old_object);
 
     }
 
@@ -804,22 +804,22 @@ static int name(obj_t **po, scan_t *scan, reference_t *ref) \
         return rc; \
     do \
     { \
-	obj_t *o = UNDEF; \
-	ref_invalidate(ref); \
-	js_scan_next_token(scan); \
-	if (skip_condition) \
-	{ \
-	    skip_expression(scan); \
-	    return rc; \
-	} \
-	if ((rc = lower(&o, scan, ref))) \
-	{ \
-	    obj_put(*po); \
-	    *po = o; \
-	    return rc; \
-	} \
-	*po = obj_do_op(tok, *po, o); \
-	tok = CUR_TOK(scan); \
+        obj_t *o = UNDEF; \
+        ref_invalidate(ref); \
+        js_scan_next_token(scan); \
+        if (skip_condition) \
+        { \
+            skip_expression(scan); \
+            return rc; \
+        } \
+        if ((rc = lower(&o, scan, ref))) \
+        { \
+            obj_put(*po); \
+            *po = o; \
+            return rc; \
+        } \
+        *po = obj_do_op(tok, *po, o); \
+        tok = CUR_TOK(scan); \
     } while (condition); \
     ref_invalidate(ref); \
     return rc; \
@@ -854,7 +854,7 @@ static int eval_ternary_expression(obj_t **po, scan_t *scan, reference_t *ref)
     rc = eval_log_ored_expression(po, scan, ref);
 
     if (rc || CUR_TOK(scan) != TOK_QUESTION)
-	return rc;
+        return rc;
 
     condition = obj_true(*po);
     obj_put(*po);
@@ -862,15 +862,15 @@ static int eval_ternary_expression(obj_t **po, scan_t *scan, reference_t *ref)
     js_scan_match(scan, TOK_QUESTION);
     if (condition)
     {
-	rc = eval_ternary_expression(po, scan, &new_ref);
-	js_scan_match(scan, TOK_COLON);
-	skip_expression(scan);
+        rc = eval_ternary_expression(po, scan, &new_ref);
+        js_scan_match(scan, TOK_COLON);
+        skip_expression(scan);
     }
     else
     {
-	skip_expression(scan);
-	js_scan_match(scan, TOK_COLON);
-	rc = eval_ternary_expression(po, scan, &new_ref);
+        skip_expression(scan);
+        js_scan_match(scan, TOK_COLON);
+        rc = eval_ternary_expression(po, scan, &new_ref);
     }
     obj_put(new_ref.field);
     return rc;
@@ -886,59 +886,59 @@ static int eval_assignment(obj_t **po, scan_t *scan, reference_t *ref)
     
     if (!valid_lval(ref))
     {
-	if ((!old_object || old_object == UNDEF) && tok != TOK_EQ)
-	    return throw_exception(po, &Sexception_undefined);
+        if ((!old_object || old_object == UNDEF) && tok != TOK_EQ)
+            return throw_exception(po, &Sexception_undefined);
 
-	if (!ref->base)
-	    return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
+        if (!ref->base)
+            return throw_exception(po, &Sexception_invalid_lvalue_in_assign);
     }
 
     js_scan_next_token(scan);
 
     /* Get new value */
     if ((rc = eval_expression(po, scan)))
-	return rc;
+        return rc;
     
     if (valid_lval(ref))
     {
-	dst = ref->dst;
-	old_object = *dst;
-	switch (tok)
-	{
-	case TOK_EQ:
-	    /* Release the previously stored reference */
-	    obj_put(old_object);
-	    *dst = obj_get(*po);
-	    /* Release the reference we got for old value as no one needs it */
-	    obj_put(old_object);
-	    break;
-	default:
-	    /* Keep old reference as we are returning it */
-	    o = old_object;
-	    *dst = obj_do_op(tok & ~EQ, old_object, *po);
-	    *po = o;
-	    break;
-	}
+        dst = ref->dst;
+        old_object = *dst;
+        switch (tok)
+        {
+        case TOK_EQ:
+            /* Release the previously stored reference */
+            obj_put(old_object);
+            *dst = obj_get(*po);
+            /* Release the reference we got for old value as no one needs it */
+            obj_put(old_object);
+            break;
+        default:
+            /* Keep old reference as we are returning it */
+            o = old_object;
+            *dst = obj_do_op(tok & ~EQ, old_object, *po);
+            *po = o;
+            break;
+        }
     }
     else
     {
-	tstr_t property = obj_get_str(ref->field);
-	switch (tok)
-	{
-	case TOK_EQ:
-	    obj_set_property(ref->base, property, *po);
-	    /* Release the reference we got for old value as no one needs it */
-	    obj_put(old_object);
-	    break;
-	default:
-	    /* Keep old reference as we are returning it */
-	    o = obj_get(old_object);
-	    _obj_set_property(ref->base, property, 
-		obj_do_op(tok & ~EQ, old_object, *po));
-	    *po = o;
-	    break;
-	}
-	tstr_free(&property);
+        tstr_t property = obj_get_str(ref->field);
+        switch (tok)
+        {
+        case TOK_EQ:
+            obj_set_property(ref->base, property, *po);
+            /* Release the reference we got for old value as no one needs it */
+            obj_put(old_object);
+            break;
+        default:
+            /* Keep old reference as we are returning it */
+            o = obj_get(old_object);
+            _obj_set_property(ref->base, property, 
+                obj_do_op(tok & ~EQ, old_object, *po));
+            *po = o;
+            break;
+        }
+        tstr_free(&property);
     }
 
     return 0;
@@ -956,12 +956,12 @@ static int eval_expression(obj_t **po, scan_t *scan)
     int rc;
 
     if ((rc = eval_expression_ref(po, scan, &ref)))
-	goto Exit;
+        goto Exit;
 
     if (is_assignment_tok(CUR_TOK(scan)))
     {
-	if ((rc = eval_assignment(po, scan, &ref)))
-	    goto Exit;
+        if ((rc = eval_assignment(po, scan, &ref)))
+            goto Exit;
     }
     
 Exit:
@@ -975,7 +975,7 @@ static int eval_return(obj_t **ret, scan_t *scan)
 
     js_scan_match(scan, TOK_RETURN);
     if (CUR_TOK(scan) != TOK_END_STATEMENT)
-	rc = eval_expression(ret, scan);
+        rc = eval_expression(ret, scan);
     return rc ? rc : COMPLETION_RETURN;
 }
 
@@ -1008,8 +1008,8 @@ static int do_block(obj_t **ret, scan_t *scan)
     start = js_scan_save(scan);
     if ((rc = skip_block(ret, scan)))
     {
-	js_scan_free(start);
-	return rc;
+        js_scan_free(start);
+        return rc;
     }
     end = js_scan_save(scan);
 
@@ -1033,40 +1033,40 @@ static int eval_try(obj_t **ret, scan_t *scan)
 
     if (CUR_TOK(scan) == TOK_CATCH)
     {
-	js_scan_next_token(scan);
-	js_scan_match(scan, TOK_OPEN_PAREN);
-	tp_assert(CUR_TOK(scan) == TOK_ID);
-	js_scan_get_identifier(scan, &id);
-	js_scan_match(scan, TOK_CLOSE_PAREN);
-	if (rc == COMPLETION_THROW)
-	{
-	    obj_t *saved_env;
+        js_scan_next_token(scan);
+        js_scan_match(scan, TOK_OPEN_PAREN);
+        tp_assert(CUR_TOK(scan) == TOK_ID);
+        js_scan_get_identifier(scan, &id);
+        js_scan_match(scan, TOK_CLOSE_PAREN);
+        if (rc == COMPLETION_THROW)
+        {
+            obj_t *saved_env;
 
-	    saved_env = cur_env;
-	    cur_env = env_new(cur_env);
+            saved_env = cur_env;
+            cur_env = env_new(cur_env);
 
-	    /* Bind the thrown value to the new env. Our reference will be 
-	     * put when the new env is put.
-	     */
-	    obj_set_property(cur_env, id, *ret);
-	    obj_put(*ret);
-	    *ret = UNDEF;
+            /* Bind the thrown value to the new env. Our reference will be 
+             * put when the new env is put.
+             */
+            obj_set_property(cur_env, id, *ret);
+            obj_put(*ret);
+            *ret = UNDEF;
 
-	    /* XXX: nested exceptions? */
-	    do_block(ret, scan);
+            /* XXX: nested exceptions? */
+            do_block(ret, scan);
 
-	    obj_put(cur_env);
-	    cur_env = saved_env;
-	}
-	else
-	{
-	    obj_t *o = UNDEF;
+            obj_put(cur_env);
+            cur_env = saved_env;
+        }
+        else
+        {
+            obj_t *o = UNDEF;
 
-	    skip_block(&o, scan);
-	    obj_put(o); /* Don't mind the error for now */
-	}
+            skip_block(&o, scan);
+            obj_put(o); /* Don't mind the error for now */
+        }
 
-	tstr_free(&id);
+        tstr_free(&id);
     }
     *ret = UNDEF;
     return 0;
@@ -1083,50 +1083,50 @@ static int eval_statement(obj_t **ret, scan_t *scan)
     switch (CUR_TOK(scan))
     {
     case TOK_END_STATEMENT:
-	js_scan_next_token(scan);
-	break;
+        js_scan_next_token(scan);
+        break;
     case TOK_OPEN_SCOPE:
-	return eval_block(ret, scan);
+        return eval_block(ret, scan);
     case TOK_IF:
-	return eval_if(ret, scan);
+        return eval_if(ret, scan);
     case TOK_WHILE:
-	return eval_while(ret, scan);
+        return eval_while(ret, scan);
     case TOK_DO:
-	return eval_do_while(ret, scan);
+        return eval_do_while(ret, scan);
     case TOK_FOR:
-	return eval_for(ret, scan);
+        return eval_for(ret, scan);
     case TOK_VAR:
-	if ((rc = eval_var(ret, scan)))
-	    return rc;
+        if ((rc = eval_var(ret, scan)))
+            return rc;
 
-	if (_js_scan_match(scan, TOK_END_STATEMENT))
-	    return parse_error(ret);
-	break;
+        if (_js_scan_match(scan, TOK_END_STATEMENT))
+            return parse_error(ret);
+        break;
     case TOK_RETURN:
-	return eval_return(ret, scan);
+        return eval_return(ret, scan);
     case TOK_THROW:
-	return eval_throw(ret, scan);
+        return eval_throw(ret, scan);
     case TOK_CONTINUE:
-	return eval_continue(ret, scan);
+        return eval_continue(ret, scan);
     case TOK_BREAK:
-	return eval_break(ret, scan);
+        return eval_break(ret, scan);
     case TOK_TRY:
-	return eval_try(ret, scan);
+        return eval_try(ret, scan);
     case TOK_FUNCTION:
-	return eval_function(ret, scan, 1);
+        return eval_function(ret, scan, 1);
     case TOK_SWITCH:
-	return eval_switch(ret, scan);
+        return eval_switch(ret, scan);
     case TOK_CASE:
     case TOK_DEFAULT:
-	/* Handled in eval_switch */
-	break;
+        /* Handled in eval_switch */
+        break;
     default:
-	if ((rc = eval_expression(ret, scan)))
-	    return rc;
+        if ((rc = eval_expression(ret, scan)))
+            return rc;
 
-	if (_js_scan_match(scan, TOK_END_STATEMENT))
-	    return parse_error(ret);
-	break;
+        if (_js_scan_match(scan, TOK_END_STATEMENT))
+            return parse_error(ret);
+        break;
     }
 
     return rc;
@@ -1135,23 +1135,23 @@ static int eval_statement(obj_t **ret, scan_t *scan)
 static int skip_block(obj_t **ret, scan_t *scan)
 {
     if (_js_scan_match(scan, TOK_OPEN_SCOPE))
-	return parse_error(ret);
+        return parse_error(ret);
 
     while (CUR_TOK(scan) != TOK_CLOSE_SCOPE && CUR_TOK(scan) != TOK_EOF)
     {
-	if (CUR_TOK(scan) == TOK_OPEN_SCOPE)
-	{
-	    int rc;
-	  
-	    if ((rc = skip_block(ret, scan)))
-		return rc;
+        if (CUR_TOK(scan) == TOK_OPEN_SCOPE)
+        {
+            int rc;
+          
+            if ((rc = skip_block(ret, scan)))
+                return rc;
 
-	    continue;
-	}
-	js_scan_next_token(scan);
+            continue;
+        }
+        js_scan_next_token(scan);
     }
     if (_js_scan_match(scan, TOK_CLOSE_SCOPE))
-	return parse_error(ret);
+        return parse_error(ret);
 
     return 0;
 }
@@ -1163,8 +1163,8 @@ static void skip_for(scan_t *scan)
     skip_expression(scan);
     if (CUR_TOK(scan) == TOK_CLOSE_PAREN)
     {
-	/* Probably for-in loop. finish up */
-	goto Exit;
+        /* Probably for-in loop. finish up */
+        goto Exit;
     }
 
     js_scan_match(scan, TOK_END_STATEMENT);
@@ -1181,50 +1181,50 @@ static void skip_statement(scan_t *scan)
 {
     if (CUR_TOK(scan) == TOK_OPEN_SCOPE)
     {
-	obj_t *o = UNDEF;
+        obj_t *o = UNDEF;
 
-	skip_block(&o, scan);
-	return;
+        skip_block(&o, scan);
+        return;
     }
 
     if (CUR_TOK(scan) == TOK_FOR)
-	skip_for(scan);
+        skip_for(scan);
 
     while (CUR_TOK(scan) != TOK_END_STATEMENT && CUR_TOK(scan) != TOK_EOF)
-	js_scan_next_token(scan);
+        js_scan_next_token(scan);
     js_scan_match(scan, TOK_END_STATEMENT);
 }
 
 static void skip_statement_list(scan_t *scan)
 {
     while (!is_statement_list_terminator(CUR_TOK(scan)))
-	skip_statement(scan);
+        skip_statement(scan);
 }
 
 static void skip_expression(scan_t *scan)
 {
     while (CUR_TOK(scan) != TOK_END_STATEMENT && 
-	CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_COMMA && 
-	CUR_TOK(scan) != TOK_COLON && CUR_TOK(scan) != TOK_EOF)
+        CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_COMMA && 
+        CUR_TOK(scan) != TOK_COLON && CUR_TOK(scan) != TOK_EOF)
     {
-	if (CUR_TOK(scan) == TOK_OPEN_PAREN)
-	{
-	    js_scan_next_token(scan);
-	    skip_expression(scan);
-	    js_scan_match(scan, TOK_CLOSE_PAREN);
-	    continue;
-	}
+        if (CUR_TOK(scan) == TOK_OPEN_PAREN)
+        {
+            js_scan_next_token(scan);
+            skip_expression(scan);
+            js_scan_match(scan, TOK_CLOSE_PAREN);
+            continue;
+        }
 
-	if (CUR_TOK(scan) == TOK_QUESTION)
-	{
-	    js_scan_next_token(scan);
-	    skip_expression(scan);
-	    js_scan_match(scan, TOK_COLON);
-	    skip_expression(scan);
-	    continue;
-	}
+        if (CUR_TOK(scan) == TOK_QUESTION)
+        {
+            js_scan_next_token(scan);
+            skip_expression(scan);
+            js_scan_match(scan, TOK_COLON);
+            skip_expression(scan);
+            continue;
+        }
 
-	js_scan_next_token(scan);
+        js_scan_next_token(scan);
     }
 }
 
@@ -1245,13 +1245,13 @@ static int eval_parenthesized_expression(obj_t **ret, scan_t *scan)
     obj_t *exp = UNDEF;
 
     if (_js_scan_match(scan, TOK_OPEN_PAREN))
-	return parse_error(ret);
+        return parse_error(ret);
 
     rc = eval_expression(&exp, scan);
     if (!rc && _js_scan_match(scan, TOK_CLOSE_PAREN))
     {
-	obj_put(exp);
-	return parse_error(ret);
+        obj_put(exp);
+        return parse_error(ret);
     }
 
     *ret = exp;
@@ -1262,18 +1262,18 @@ static int eval_parenthesized_condition(obj_t **ret, int *condition,
     int skip, scan_t *scan)
 {
     if (_js_scan_match(scan, TOK_OPEN_PAREN))
-	return parse_error(ret);
+        return parse_error(ret);
 
     if (skip)
     {
-	*condition = 0;
-	skip_expression(scan);
+        *condition = 0;
+        skip_expression(scan);
     }
     else
-       	*condition = eval_condition(scan);
+        *condition = eval_condition(scan);
 
     if (_js_scan_match(scan, TOK_CLOSE_PAREN))
-	return parse_error(ret);
+        return parse_error(ret);
 
     return 0;
 }
@@ -1285,12 +1285,12 @@ static int _eval_if(obj_t **ret, scan_t *scan, int skip, int *condition)
     *ret = UNDEF;
 
     if ((rc = eval_parenthesized_condition(ret, condition, skip, scan)))
-	return rc;
+        return rc;
 
     if (*condition && !skip)
-	rc = eval_statement(ret, scan);
+        rc = eval_statement(ret, scan);
     else
-	skip_statement(scan);
+        skip_statement(scan);
 
     return rc;
 }
@@ -1304,27 +1304,27 @@ static int eval_if(obj_t **ret, scan_t *scan)
     js_scan_match(scan, TOK_IF);
 
     if ((rc = _eval_if(ret, scan, 0, &skip)))
-	return rc;
+        return rc;
 
     while (CUR_TOK(scan) == TOK_ELSE)
     {
-	js_scan_next_token(scan);
-	if (CUR_TOK(scan) == TOK_IF)
-	{
-	    int val = 0;
-	    js_scan_next_token(scan);
-	    if ((rc = _eval_if(ret, scan, skip, &val)))
-		return rc;
+        js_scan_next_token(scan);
+        if (CUR_TOK(scan) == TOK_IF)
+        {
+            int val = 0;
+            js_scan_next_token(scan);
+            if ((rc = _eval_if(ret, scan, skip, &val)))
+                return rc;
 
-	    skip |= val;
-	    continue;
-	}
-	/* last else */
-	if (!skip)
-	    rc = eval_statement(ret, scan);
-	else
-	    skip_statement(scan);
-	break;
+            skip |= val;
+            continue;
+        }
+        /* last else */
+        if (!skip)
+            rc = eval_statement(ret, scan);
+        else
+            skip_statement(scan);
+        break;
     }
     return rc;
 }
@@ -1338,28 +1338,28 @@ static int eval_while(obj_t **ret, scan_t *scan)
     start = js_scan_save(scan);
     while (1)
     {
-	int next = 0;
+        int next = 0;
 
-	if ((rc = eval_parenthesized_condition(ret, &next, 
-	    rc == COMPLETION_BREAK, scan)))
-	{
-	    return rc;
-	}
+        if ((rc = eval_parenthesized_condition(ret, &next, 
+            rc == COMPLETION_BREAK, scan)))
+        {
+            return rc;
+        }
 
-	if (!next)
-	{
-	    skip_statement(scan);
-	    break;
-	}
-	rc = eval_statement(ret, scan);
-	if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
-	{
-	    js_scan_free(start);
-	    return rc;
-	}
+        if (!next)
+        {
+            skip_statement(scan);
+            break;
+        }
+        rc = eval_statement(ret, scan);
+        if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
+        {
+            js_scan_free(start);
+            return rc;
+        }
 
-	obj_put(*ret);
-	js_scan_restore(scan, start);
+        obj_put(*ret);
+        js_scan_restore(scan, start);
     }
     *ret = UNDEF;
     js_scan_free(start);
@@ -1382,21 +1382,21 @@ static int eval_do_while(obj_t **ret, scan_t *scan)
 
     do
     {
-	js_scan_restore(scan, start);
-	rc = eval_statement(ret, scan);
-	if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
-	    break;
+        js_scan_restore(scan, start);
+        rc = eval_statement(ret, scan);
+        if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
+            break;
 
-	obj_put(*ret);
-	*ret = UNDEF;
+        obj_put(*ret);
+        *ret = UNDEF;
 
-	if (rc == COMPLETION_BREAK || rc == COMPLETION_CONTINUE)
-	    break;
+        if (rc == COMPLETION_BREAK || rc == COMPLETION_CONTINUE)
+            break;
 
-	js_scan_match(scan, TOK_WHILE);
+        js_scan_match(scan, TOK_WHILE);
 
-	if ((rc = eval_parenthesized_condition(ret, &next, 0, scan)))
-	    next = 0;
+        if ((rc = eval_parenthesized_condition(ret, &next, 0, scan)))
+            next = 0;
 
     } while (next);
 
@@ -1422,30 +1422,30 @@ static int eval_case(obj_t **ret, int *found_match, obj_t *match, scan_t *scan)
     switch (CUR_TOK(scan))
     {
     case TOK_CASE:
-	js_scan_next_token(scan);
-	if (*found_match)
-	    skip_expression(scan);
-	else
-	{
-	    if ((rc = eval_expression(&item, scan)))
-	    {
-		*ret = item;
-		return rc;
-	    }
-	    *found_match = obj_eq(item, match);
-	    obj_put(item);
-	}
-	break;
+        js_scan_next_token(scan);
+        if (*found_match)
+            skip_expression(scan);
+        else
+        {
+            if ((rc = eval_expression(&item, scan)))
+            {
+                *ret = item;
+                return rc;
+            }
+            *found_match = obj_eq(item, match);
+            obj_put(item);
+        }
+        break;
     case TOK_DEFAULT:
-	js_scan_next_token(scan);
-	*found_match = 1;
-	break;
+        js_scan_next_token(scan);
+        *found_match = 1;
+        break;
     default:
-	return parse_error(ret);
+        return parse_error(ret);
     }
 
     if (_js_scan_match(scan, TOK_COLON))
-	return parse_error(ret);
+        return parse_error(ret);
 
     return 0;
 }
@@ -1460,50 +1460,50 @@ static int eval_switch(obj_t **ret, scan_t *scan)
 
     if ((rc = eval_parenthesized_expression(&match, scan)))
     {
-	*ret = match;
-	return rc;
+        *ret = match;
+        return rc;
     }
 
     start = js_scan_save(scan);
 
     if (_js_scan_match(scan, TOK_OPEN_SCOPE))
-	goto ParseError;
+        goto ParseError;
 
     while (CUR_TOK(scan) != TOK_CLOSE_SCOPE)
     {
-	if ((rc = eval_case(ret, &found_match, match, scan)))
-	    goto Exit;
-	
-	if (!found_match)
-	{
-	    skip_statement_list(scan);
-	    continue;
-	}
+        if ((rc = eval_case(ret, &found_match, match, scan)))
+            goto Exit;
+        
+        if (!found_match)
+        {
+            skip_statement_list(scan);
+            continue;
+        }
 
-	if ((rc = eval_statement_list(ret, scan)))
-	{
-	    obj_t *o = UNDEF;
+        if ((rc = eval_statement_list(ret, scan)))
+        {
+            obj_t *o = UNDEF;
 
-	    js_scan_restore(scan, start);
-	    /* We are already in error, don't mind the skip_block result */
-	    skip_block(&o, scan);
-	    obj_put(o);
-	    goto Exit;
-	}
-	obj_put(*ret);
-	*ret = UNDEF;
+            js_scan_restore(scan, start);
+            /* We are already in error, don't mind the skip_block result */
+            skip_block(&o, scan);
+            obj_put(o);
+            goto Exit;
+        }
+        obj_put(*ret);
+        *ret = UNDEF;
     }
 
     if (_js_scan_match(scan, TOK_CLOSE_SCOPE))
-	goto ParseError;
+        goto ParseError;
 
 Exit:
     if (rc == COMPLETION_BREAK)
-	rc = 0;
+        rc = 0;
     if (!rc)
     {
-	obj_put(*ret);
-	*ret = UNDEF;
+        obj_put(*ret);
+        *ret = UNDEF;
     }
     obj_put(match);
     js_scan_free(start);
@@ -1532,50 +1532,50 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
     object_iter_init(&iter, rh_exp);
     while (object_iter_next(&iter))
     {
-	reference_t ref = {};
-	obj_t *lhs = UNDEF, **dst;
+        reference_t ref = {};
+        obj_t *lhs = UNDEF, **dst;
 
-	tp_info(("key %S\n", iter.key));
-	js_scan_restore(scan, in_lhs);
-	if ((rc = eval_expression_ref(&lhs, scan, &ref)))
-	{
-	    *ret = lhs;
-	    goto Exit;
-	}
-	
-	tp_info(("lhs %o\n", lhs));
-	
-	/* Replace lhs with current key */
-	if (valid_lval(&ref))
-	{
-	    dst = ref.dst;
-	    obj_put(*dst);
-	}
-	else
-	{
-	    tstr_t field_tstr = obj_get_str(ref.field);
-	    dst = obj_var_create(ref.base, &field_tstr);
-	    tstr_free(&field_tstr);
-	}
+        tp_info(("key %S\n", iter.key));
+        js_scan_restore(scan, in_lhs);
+        if ((rc = eval_expression_ref(&lhs, scan, &ref)))
+        {
+            *ret = lhs;
+            goto Exit;
+        }
+        
+        tp_info(("lhs %o\n", lhs));
+        
+        /* Replace lhs with current key */
+        if (valid_lval(&ref))
+        {
+            dst = ref.dst;
+            obj_put(*dst);
+        }
+        else
+        {
+            tstr_t field_tstr = obj_get_str(ref.field);
+            dst = obj_var_create(ref.base, &field_tstr);
+            tstr_free(&field_tstr);
+        }
 
-	*dst = string_new(tstr_dup(*iter.key));
-	obj_put(lhs);
-	ref_invalidate(&ref);
+        *dst = string_new(tstr_dup(*iter.key));
+        obj_put(lhs);
+        ref_invalidate(&ref);
 
-	/* Eval loop body */
-	js_scan_restore(scan, loop);
-	rc = eval_statement(ret, scan);
-	if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
-	    goto Exit;
+        /* Eval loop body */
+        js_scan_restore(scan, loop);
+        rc = eval_statement(ret, scan);
+        if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
+            goto Exit;
 
-	obj_put(*ret);
-	*ret = UNDEF;
+        obj_put(*ret);
+        *ret = UNDEF;
 
-	if (rc == COMPLETION_BREAK)
-	{
-	    rc = 0;
-	    goto Exit;
-	}
+        if (rc == COMPLETION_BREAK)
+        {
+            rc = 0;
+            goto Exit;
+        }
     }
 
 Exit:
@@ -1593,41 +1593,41 @@ static int parse_for_in(scan_t *scan, scan_t **lhs, obj_t **rh_exp)
 
     while (CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_EOF)
     {
-	if ((end_stmnt = CUR_TOK(scan) == TOK_END_STATEMENT))
-	    break;
-	
-	if (CUR_TOK(scan) == TOK_OPEN_PAREN)
-	{
-	    js_scan_match(scan, TOK_OPEN_PAREN);
-	    skip_expression(scan);
-	    js_scan_match(scan, TOK_CLOSE_PAREN);
-	    continue;
-	}
-	
-	if (CUR_TOK(scan) == TOK_OPEN_MEMBER)
-	{
-	    js_scan_match(scan, TOK_OPEN_MEMBER);
-	    skip_expression(scan);
-	    js_scan_match(scan, TOK_CLOSE_MEMBER);
-	    continue;
-	}
+        if ((end_stmnt = CUR_TOK(scan) == TOK_END_STATEMENT))
+            break;
+        
+        if (CUR_TOK(scan) == TOK_OPEN_PAREN)
+        {
+            js_scan_match(scan, TOK_OPEN_PAREN);
+            skip_expression(scan);
+            js_scan_match(scan, TOK_CLOSE_PAREN);
+            continue;
+        }
+        
+        if (CUR_TOK(scan) == TOK_OPEN_MEMBER)
+        {
+            js_scan_match(scan, TOK_OPEN_MEMBER);
+            skip_expression(scan);
+            js_scan_match(scan, TOK_CLOSE_MEMBER);
+            continue;
+        }
 
-	if ((in_found = CUR_TOK(scan) == TOK_IN))
-	{
-	    *lhs = js_scan_slice(start, last);
-	    js_scan_match(scan, TOK_IN);
-	    eval_expression(rh_exp, scan);
-	    break;
-	}
+        if ((in_found = CUR_TOK(scan) == TOK_IN))
+        {
+            *lhs = js_scan_slice(start, last);
+            js_scan_match(scan, TOK_IN);
+            eval_expression(rh_exp, scan);
+            break;
+        }
 
-	js_scan_free(last);
-	last = js_scan_save(scan);
-	js_scan_next_token(scan);
+        js_scan_free(last);
+        last = js_scan_save(scan);
+        js_scan_next_token(scan);
     }
     if (!in_found || end_stmnt)
-	js_scan_restore(scan, start);
+        js_scan_restore(scan, start);
     else
-	js_scan_match(scan, TOK_CLOSE_PAREN);
+        js_scan_match(scan, TOK_CLOSE_PAREN);
     js_scan_free(start);
     js_scan_free(last);
     return in_found && !end_stmnt;
@@ -1648,27 +1648,27 @@ static int eval_for(obj_t **ret, scan_t *scan)
 
     if (parse_for_in(scan, &in_lhs, &rh_exp))
     {
-	int rc;
+        int rc;
 
-	tp_info(("For-in loop detected\n"));
-	rc = eval_for_in(ret, scan, in_lhs, rh_exp);
-	js_scan_free(in_lhs);
-	obj_put(rh_exp);
-	return rc;
+        tp_info(("For-in loop detected\n"));
+        rc = eval_for_in(ret, scan, in_lhs, rh_exp);
+        js_scan_free(in_lhs);
+        obj_put(rh_exp);
+        return rc;
     }
 
     /* XXX: This is not the prettiest way to do this... */
     if (CUR_TOK(scan) == TOK_VAR)
     {
-	if ((rc = eval_var(ret, scan)))
-	    return rc;
+        if ((rc = eval_var(ret, scan)))
+            return rc;
     }
     else
     {
-	if ((rc = eval_expression(ret, scan)))
-	    return rc;
+        if ((rc = eval_expression(ret, scan)))
+            return rc;
 
-	obj_put(*ret);
+        obj_put(*ret);
     }
     js_scan_match(scan, TOK_END_STATEMENT);
 
@@ -1690,28 +1690,28 @@ static int eval_for(obj_t **ret, scan_t *scan)
     /* Do the loop */
     while (next)
     {
-	obj_t *o;
+        obj_t *o;
 
-	js_scan_restore(scan, loop);
-	rc = eval_statement(ret, scan);
-	if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
-	    goto Exit;
+        js_scan_restore(scan, loop);
+        rc = eval_statement(ret, scan);
+        if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
+            goto Exit;
 
-	obj_put(*ret);
+        obj_put(*ret);
 
-	if (rc == COMPLETION_BREAK)
-	{
-	    js_scan_restore(scan, end);
-	    rc = 0;
-	    goto Exit;
-	}
+        if (rc == COMPLETION_BREAK)
+        {
+            js_scan_restore(scan, end);
+            rc = 0;
+            goto Exit;
+        }
 
-	js_scan_restore(scan, repeated);
-	eval_expression(&o, scan);
-	obj_put(o);
-	js_scan_restore(scan, cond);
-	if (!(next = eval_condition(scan)))
-	    js_scan_restore(scan, end);
+        js_scan_restore(scan, repeated);
+        eval_expression(&o, scan);
+        obj_put(o);
+        js_scan_restore(scan, cond);
+        if (!(next = eval_condition(scan)))
+            js_scan_restore(scan, end);
     }
 
     *ret = UNDEF;
@@ -1732,20 +1732,20 @@ static int eval_statement_list(obj_t **ret, scan_t *scan)
 
     while (!is_statement_list_terminator(CUR_TOK(scan)))
     {
-	obj_t *o;
+        obj_t *o;
 
-	if ((rc = eval_statement(&o, scan)))
-	{
-	    obj_put(*ret);
-	    *ret = o;
-	    return rc;
-	}
-	/* We return the last VALUED statement's result */
-	if (o != UNDEF)
-	{
-	    obj_put(*ret);
-	    *ret = o;
-	}
+        if ((rc = eval_statement(&o, scan)))
+        {
+            obj_put(*ret);
+            *ret = o;
+            return rc;
+        }
+        /* We return the last VALUED statement's result */
+        if (o != UNDEF)
+        {
+            obj_put(*ret);
+            *ret = o;
+        }
     }
     return 0;
 }
@@ -1756,7 +1756,7 @@ static int eval_block(obj_t **ret, scan_t *scan)
 
     js_scan_match(scan, TOK_OPEN_SCOPE);
     if ((rc = eval_statement_list(ret, scan)))
-	return rc;
+        return rc;
 
     js_scan_match(scan, TOK_CLOSE_SCOPE);
     return 0;
@@ -1773,31 +1773,31 @@ static int eval_function(obj_t **ret, scan_t *scan, int stmnt)
 
     if (have_func_name)
     {
-	/* Have function name */
+        /* Have function name */
 
-	js_scan_get_identifier(scan, &func_name);
-	if (!stmnt)
-	{
-	    /* Function expressions require binding to the function's lexical
-	     * scope.
-	     * fname will be owned by the function object.
-	     */
-	    fname = &func_name;
-	    TSTR_SET_INTERNAL(fname);
-	}
+        js_scan_get_identifier(scan, &func_name);
+        if (!stmnt)
+        {
+            /* Function expressions require binding to the function's lexical
+             * scope.
+             * fname will be owned by the function object.
+             */
+            fname = &func_name;
+            TSTR_SET_INTERNAL(fname);
+        }
     }
     
     if ((rc = eval_function_definition(fname, ret, scan)))
     {
-	tstr_free(fname);
-	return rc;
+        tstr_free(fname);
+        return rc;
     }
 
     if (have_func_name && stmnt)
     {
-	/* Statements require binding to environment */
-	obj_set_property(cur_env, func_name, *ret);
-	tstr_free(&func_name);
+        /* Statements require binding to environment */
+        obj_set_property(cur_env, func_name, *ret);
+        tstr_free(&func_name);
     }
     return 0;
 }
@@ -1828,7 +1828,7 @@ int js_eval_module(obj_t **ret, tstr_t *code)
     obj_put(mod);
 
     if ((rc = js_eval(ret, code)))
-	goto Exit;
+        goto Exit;
 
     obj_put(*ret);
     *ret = exports;
@@ -1846,8 +1846,8 @@ int js_eval_obj(obj_t **ret, obj_t *obj)
 
     if (!is_string(obj))
     {
-	*ret = obj;
-	return 0;
+        *ret = obj;
+        return 0;
     }
 
     saved_env = cur_env;

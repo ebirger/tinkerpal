@@ -43,7 +43,7 @@ static void icmp_echo_req_recv(etherif_t *ethif)
     u32 src_addr, dst_addr;
 
     if (!ipv4_addr(ethif))
-	return;
+        return;
 
     /* Trick - fetch IP & Ethernet addresses from the packet */
     iph = packet_push(&g_packet, sizeof(ip_hdr_t));
@@ -62,7 +62,7 @@ static void icmp_echo_req_recv(etherif_t *ethif)
     icmph->checksum = net_csum((u16 *)icmph, g_packet.length);
 
     ipv4_xmit(ethif, dst_mac, IP_PROTOCOL_ICMP, src_addr, dst_addr,
-	g_packet.length);
+        g_packet.length);
 }
 
 static void icmp_recv(etherif_t *ethif)
@@ -74,11 +74,11 @@ static void icmp_recv(etherif_t *ethif)
     switch (icmph->type)
     {
     case ICMP_ECHO_REQUEST:
-	icmp_echo_req_recv(ethif);
-	break;
+        icmp_echo_req_recv(ethif);
+        break;
     default:
-	tp_warn(("unsupported ICMP message type %d\n", icmph->type));
-	break;
+        tp_warn(("unsupported ICMP message type %d\n", icmph->type));
+        break;
     }
 }
 

@@ -34,13 +34,13 @@ int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     canvas_t *c;
 
     if (argc != 4)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     c = canvas_get_by_id(canvas_obj_get_id(this));
     if (!c)
     {
-	tp_err(("'this' is not a valid canvas object\n"));
-	return js_invalid_args(ret);
+        tp_err(("'this' is not a valid canvas object\n"));
+        return js_invalid_args(ret);
     }
 
     x = (u16)obj_get_int(argv[1]);
@@ -67,7 +67,7 @@ int canvas_obj_get_id(obj_t *o)
     int canvas_id;
    
     if (obj_get_property_int(&canvas_id, o, &Scanvas_id))
-	return -1;
+        return -1;
 
     return canvas_id;
 }

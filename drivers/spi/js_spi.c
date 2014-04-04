@@ -52,7 +52,7 @@ int do_spi_send(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     unsigned long data;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     data = obj_get_int(argv[1]);
 
@@ -66,7 +66,7 @@ int do_spi_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     resource_t id;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     id = obj_get_int(argv[1]);
     *ret = object_new();

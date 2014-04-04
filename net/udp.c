@@ -39,8 +39,8 @@ static int udp_is_port_taken(etherif_t *ethif, u16 port)
 
     for (sock = ethif->udp; sock; sock = sock->next)
     {
-	if (sock->local_port == port)
-	    return 1;
+        if (sock->local_port == port)
+            return 1;
     }
     return 0;
 }
@@ -49,8 +49,8 @@ static int udp_get_free_port(u16 *port, etherif_t *ethif)
 {
     for (*port = UDP_FREE_PORT_START; *port < UDP_FREE_PORT_END; (*port)++)
     {
-	if (!udp_is_port_taken(ethif, *port))
-	    return 0;
+        if (!udp_is_port_taken(ethif, *port))
+            return 0;
     }
     return -1;
 }
@@ -62,7 +62,7 @@ int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
     u16 len;
 
     if (dst_port == UDP_PORT_ANY)
-	return -1;
+        return -1;
 
     if (src_port == UDP_PORT_ANY && udp_get_free_port(&src_port, ethif))
         return -1;
@@ -71,7 +71,7 @@ int udp_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u32 src_addr,
 
     /* UDP Header */
     if (!(udph = packet_push(&g_packet, sizeof(udp_hdr_t))))
-	return -1;
+        return -1;
 
     udph->src_port = htons(src_port);
     udph->dst_port = htons(dst_port);
@@ -85,20 +85,20 @@ int udp_sock_xmit(etherif_t *ethif, udp_socket_t *sock,
     const eth_mac_t *dst_mac, u32 src_addr, u32 dst_addr, u16 payload_len)
 {
     if (sock->remote_port == UDP_PORT_ANY)
-	return -1;
+        return -1;
 
     if (sock->local_port == UDP_PORT_ANY)
     {
-	u16 local_port;
+        u16 local_port;
 
-	if (udp_get_free_port(&local_port, ethif))
-	    return -1;
+        if (udp_get_free_port(&local_port, ethif))
+            return -1;
 
-	sock->local_port = local_port;
+        sock->local_port = local_port;
     }
 
     return udp_xmit(ethif, dst_mac, src_addr, dst_addr, sock->local_port,
-	sock->remote_port, payload_len);
+        sock->remote_port, payload_len);
 }
 
 static void udp_recv(etherif_t *ethif)
@@ -112,24 +112,24 @@ static void udp_recv(etherif_t *ethif)
     src_port = ntohs(udph->src_port);
     dst_port = ntohs(udph->dst_port);
     if (!src_port || !dst_port)
-	return; /* Malformed header */
+        return; /* Malformed header */
 
     for (sock = ethif->udp; sock; sock = sock->next)
     {
-	if (sock->local_port != dst_port)
-	    continue;
+        if (sock->local_port != dst_port)
+            continue;
 
-	if (sock->remote_port != UDP_PORT_ANY && sock->remote_port != src_port)
-	    continue;
+        if (sock->remote_port != UDP_PORT_ANY && sock->remote_port != src_port)
+            continue;
 
-	/* Found match */
-	break;
+        /* Found match */
+        break;
     }
 
     if (!sock)
     {
-	tp_info(("No matching socket found\n"));
-	return;
+        tp_info(("No matching socket found\n"));
+        return;
     }
 
     packet_pull(&g_packet, sizeof(udp_hdr_t));
@@ -141,7 +141,7 @@ void udp_unregister_socket(etherif_t *ethif, udp_socket_t *sock)
     udp_socket_t **iter;
 
     for (iter = (udp_socket_t **)&ethif->udp; *iter && *iter != sock;
-	iter = &(*iter)->next);
+        iter = &(*iter)->next);
     tp_assert(*iter);
     (*iter) = (*iter)->next;
     sock->next = NULL;

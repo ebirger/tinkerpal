@@ -66,12 +66,12 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
 #define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
     [SSI##num] = { \
-	.periph = SYSCTL_PERIPH_SSI##num, \
-	.base = SSI##num##_BASE, \
-	.clk = clkpin, \
-	.fss = fsspin, \
-	.rx = rxpin, \
-	.tx = txpin, \
+        .periph = SYSCTL_PERIPH_SSI##num, \
+        .base = SSI##num##_BASE, \
+        .clk = clkpin, \
+        .fss = fsspin, \
+        .rx = rxpin, \
+        .tx = txpin, \
     }
     SSI_DEF(0, PA2, PA3, PA4, PA5),
     SSI_DEF(1, PE0, PE1, PE2, PE3)
@@ -104,28 +104,28 @@ static int lm3s6918_set_pin_mode(int pin, gpio_pin_mode_t mode)
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
 
     if (pin == PB7 || pin == PC0 || pin == PC1 || pin == PC2 || pin == PC3)
-	lm3s6918_set_locked_pin_as_gpio(pin);
+        lm3s6918_set_locked_pin_as_gpio(pin);
 
     switch (mode)
     {
     case GPIO_PM_INPUT:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_OUTPUT:
-	ti_arm_mcu_pin_mode_output(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_pin_mode_output(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_INPUT_PULLUP:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+        break;
     case GPIO_PM_INPUT_PULLDOWN:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
+        break;
     default:
-	return -1;
+        return -1;
     }
     return 0;
 }
@@ -142,7 +142,7 @@ static void lm3s6918_init(void)
     /* Set the clocking to run from the PLL */
     //
     SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
-	SYSCTL_XTAL_8MHZ);
+        SYSCTL_XTAL_8MHZ);
 
     /* Enable processor interrupts */
     IntMasterEnable();
@@ -152,27 +152,27 @@ static void lm3s6918_init(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_uart_enable,
-	.read = buffered_serial_read,
-	.write = ti_arm_mcu_serial_write,
-	.irq_enable = ti_arm_mcu_serial_irq_enable,
+        .enable = ti_arm_mcu_uart_enable,
+        .read = buffered_serial_read,
+        .write = ti_arm_mcu_serial_write,
+        .irq_enable = ti_arm_mcu_serial_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {
-	.digital_write = ti_arm_mcu_gpio_digital_write,
-	.digital_read = ti_arm_mcu_gpio_digital_read,
-	.set_pin_mode = lm3s6918_set_pin_mode,
-	.set_port_val = ti_arm_mcu_gpio_set_port_val,
-	.get_port_val = ti_arm_mcu_gpio_get_port_val,
+        .digital_write = ti_arm_mcu_gpio_digital_write,
+        .digital_read = ti_arm_mcu_gpio_digital_read,
+        .set_pin_mode = lm3s6918_set_pin_mode,
+        .set_port_val = ti_arm_mcu_gpio_set_port_val,
+        .get_port_val = ti_arm_mcu_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI
     .spi = {
-	.init = ti_arm_mcu_spi_init,
-	.reconf = ti_arm_mcu_spi_reconf,
-	.set_max_speed = ti_arm_mcu_spi_set_max_speed,
-	.send = ti_arm_mcu_spi_send,
-	.receive = ti_arm_mcu_spi_receive,
+        .init = ti_arm_mcu_spi_init,
+        .reconf = ti_arm_mcu_spi_reconf,
+        .set_max_speed = ti_arm_mcu_spi_set_max_speed,
+        .send = ti_arm_mcu_spi_send,
+        .receive = ti_arm_mcu_spi_receive,
     },
 #endif
     .init = lm3s6918_init,

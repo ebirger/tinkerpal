@@ -70,7 +70,7 @@ static void obj_registry_add_record(void *p, char *type)
     or->next = obj_registry;
     obj_registry = or;
     if (allocated_size > obj_registry_max_allocated_size)
-	obj_registry_max_allocated_size = allocated_size;
+        obj_registry_max_allocated_size = allocated_size;
 }
 
 static void obj_registry_del_record(void *p)
@@ -80,8 +80,8 @@ static void obj_registry_del_record(void *p)
     for (iter = &obj_registry; *iter && (*iter)->p != p; iter = &(*iter)->next);
     if (!(tmp = *iter))
     {
-	/* XXX: error */
-	return;
+        /* XXX: error */
+        return;
     }
 
     *iter = (*iter)->next;
@@ -93,15 +93,15 @@ static void obj_registry_stats(void)
     obj_reg_rec_t *rec;
 
     tp_out(("Max allocated size %db = %dKb\n", 
-	obj_registry_max_allocated_size, 
-	obj_registry_max_allocated_size >> 10));
+        obj_registry_max_allocated_size, 
+        obj_registry_max_allocated_size >> 10));
     tp_out(("Current registry objects:\n"));
 
     for (rec = obj_registry; rec; rec = rec->next)
     {
-	int sz = *(((int *)rec->p) - 1);
+        int sz = *(((int *)rec->p) - 1);
 
-	tp_out(("%p size %d type %s\n", rec->p, sz, rec->type));
+        tp_out(("%p size %d type %s\n", rec->p, sz, rec->type));
     }
 }
 
@@ -111,8 +111,8 @@ static void obj_registry_uninit(void)
 
     while ((rec = obj_registry))
     {
-	obj_registry = obj_registry->next;
-	tfree_real(rec);
+        obj_registry = obj_registry->next;
+        tfree_real(rec);
     }
 }
 
@@ -121,7 +121,7 @@ static void obj_registry_uninit(void)
 void tmalloc_stats(void)
 {
     tp_out(("Total allocated size %db = %dKb\n", allocated_size, 
-	allocated_size >> 10));
+        allocated_size >> 10));
 #ifdef CONFIG_DLMALLOC_STATISTICS
     dlmalloc_stats();
 #endif
@@ -149,17 +149,17 @@ static inline void *_tmalloc(int sz, char *type)
 #ifdef CONFIG_MEM_ALLOCATION_LIMIT
     if (allocated_size > CONFIG_MEM_ALLOCATION_LIMIT_BYTES)
     {
-	tp_err(("Reached maximal allowed allocation limit:\n"
+        tp_err(("Reached maximal allowed allocation limit:\n"
             "Currently allocated: %d\n"
-	    "Limit: %d\n", allocated_size,
-	    CONFIG_MEM_ALLOCATION_LIMIT_BYTES));
-	goto Error;
+            "Limit: %d\n", allocated_size,
+            CONFIG_MEM_ALLOCATION_LIMIT_BYTES));
+        goto Error;
     }
 #endif
     
     p = tmalloc_real(sz);
     if (!p)
-	goto Error;
+        goto Error;
 
     *p++ = sz;
 
@@ -178,7 +178,7 @@ void tfree(void *data)
     unsigned long *p = data;
 
     if (!p)
-	return;
+        return;
 
 #ifdef CONFIG_OBJ_REGISTRY
     obj_registry_del_record(p);
@@ -196,7 +196,7 @@ static inline void *_tmalloc(int sz, char *type)
     void *p;
 
     if (!(p = tmalloc_real(sz)))
-	return NULL;
+        return NULL;
 
     tp_debug(("Allocated %p %d %s\n", p, sz, type));
     return p;
@@ -205,7 +205,7 @@ static inline void *_tmalloc(int sz, char *type)
 void tfree(void *data)
 {
     if (!data)
-	return;
+        return;
 
     tp_debug(("freeing %p\n", data));
     tfree_real(data);
@@ -228,18 +228,18 @@ void *tmalloc(int sz, char *type)
     mem_squeezer_t *s;
 
     if ((p = _tmalloc(sz, type)))
-	return p;
+        return p;
 
     need_squeeze = sz;
     tp_debug(("Squeezing, need %d\n", sz));
     for (s = squeezers; s; s = s->next)
     {
-	need_squeeze -= s->squeeze(s, need_squeeze >= 0 ? need_squeeze : 0);
-	tp_debug(("Squeezed %d so far\n", sz - need_squeeze));
+        need_squeeze -= s->squeeze(s, need_squeeze >= 0 ? need_squeeze : 0);
+        tp_debug(("Squeezed %d so far\n", sz - need_squeeze));
     }
 
     if (need_squeeze > 0 || !(p = _tmalloc(sz, type)))
-	tp_crit(("allocation error\n"));
+        tp_crit(("allocation error\n"));
     
     return p;
 }

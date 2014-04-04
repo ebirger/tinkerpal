@@ -36,7 +36,7 @@
 static inline void enable_irq(int n) 
 {
     NVIC_ICPR |= 1 << (n - 16);
-    NVIC_ISER |= 1 << (n - 16);			
+    NVIC_ISER |= 1 << (n - 16);                 
 }
 
 static int kl25z_serial_enable(int u, int enabled)
@@ -85,7 +85,7 @@ static int kl25z_serial_write(int u, char *buf, int size)
 {
     while (size-- > 0)
     {
-	/* Wait until transmit buffer is empty */
+        /* Wait until transmit buffer is empty */
         while (!(UART0_S1 & UART_S1_TDRE_MASK));
         UART0_D = *buf++;
     }
@@ -95,9 +95,9 @@ static int kl25z_serial_write(int u, char *buf, int size)
 static void kl25z_serial_irq_enable(int u, int enabled)
 {
     if (enabled)
-	UART0_C2 |= UART_C2_RIE_MASK;
+        UART0_C2 |= UART_C2_RIE_MASK;
     else
-	UART0_C2 &= ~UART_C2_RIE_MASK;
+        UART0_C2 &= ~UART_C2_RIE_MASK;
 }
 
 static int kl25z_select(int ms)
@@ -106,9 +106,9 @@ static int kl25z_select(int ms)
 
     while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
     {
-	event |= buffered_serial_events_process();
+        event |= buffered_serial_events_process();
 
-	/* XXX: Sleep */
+        /* XXX: Sleep */
     }
 
     return event;
@@ -192,10 +192,10 @@ static void kl25z_init(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = kl25z_serial_enable,
-	.read = buffered_serial_read,
-	.write = kl25z_serial_write,
-	.irq_enable = kl25z_serial_irq_enable,
+        .enable = kl25z_serial_enable,
+        .read = buffered_serial_read,
+        .write = kl25z_serial_write,
+        .irq_enable = kl25z_serial_irq_enable,
     },
     .init = kl25z_init,
     .meminfo = cortex_m_meminfo,

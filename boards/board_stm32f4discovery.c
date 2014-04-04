@@ -34,16 +34,16 @@ const board_t board = {
     .default_console_id = UART_RES(USART_PORT2),
 #ifdef CONFIG_ENC28J60
     .enc28j60_params = {
-	.spi_port = SPI_RES(SPI_PORT1),
-	.cs = GPIO_RES(PC5),
-	.intr = GPIO_RES(PB1),
+        .spi_port = SPI_RES(SPI_PORT1),
+        .cs = GPIO_RES(PC5),
+        .intr = GPIO_RES(PB1),
     },
 #endif
 #ifdef CONFIG_ILI93XX
     .ili93xx_params = {
-	.trns = &stm32_fsmc_ili93xx_trns,
-	.rst = GPIO_RES(PE1),
-	.backlight = GPIO_RES(PB10),
+        .trns = &stm32_fsmc_ili93xx_trns,
+        .rst = GPIO_RES(PE1),
+        .backlight = GPIO_RES(PB10),
     },
 #endif
 };

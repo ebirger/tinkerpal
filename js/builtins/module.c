@@ -32,13 +32,13 @@ int do_require(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     tstr_t mod_name;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     mod_name = obj_get_str(argv[1]);
     rc = module_require(ret, &mod_name);
     tstr_free(&mod_name);
     if (rc == -1)
-	return throw_exception(ret, &S("Exception: Module not found"));
+        return throw_exception(ret, &S("Exception: Module not found"));
 
     return rc;
 }

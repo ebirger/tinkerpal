@@ -38,9 +38,9 @@ const board_t board = {
     .leds = leds,
 #ifdef CONFIG_MMC
     .mmc_params = {
-	.spi_port = SPI_RES(SPI_PORT1),
-	.mosi = GPIO_RES(PA7),
-	.cs = GPIO_RES(PB7),
+        .spi_port = SPI_RES(SPI_PORT1),
+        .mosi = GPIO_RES(PA7),
+        .cs = GPIO_RES(PB7),
     },
 #endif
 };

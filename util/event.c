@@ -67,7 +67,7 @@ void event_timer_insert(event_internal_t *t, int ms)
 
     /* Bug: we do not properly handle wrap-around */
     for (iter = &timers; *iter && (*iter)->expire < t->expire; 
-	iter = &(*iter)->next);
+        iter = &(*iter)->next);
 
     t->next = *iter;
     *iter = t;
@@ -105,8 +105,8 @@ void event_timer_del(int event_id)
 
     timers_foreach(t)
     {
-	if (t->event_id == event_id)
-	    EVENT_SET_DELETED(t);
+        if (t->event_id == event_id)
+            EVENT_SET_DELETED(t);
     }
 }
 
@@ -115,7 +115,7 @@ void event_timer_del_all(void)
     event_internal_t *t;
 
     timers_foreach(t)
-	EVENT_SET_DELETED(t);
+        EVENT_SET_DELETED(t);
 }
 
 static void timeout_process(void)
@@ -124,32 +124,32 @@ static void timeout_process(void)
 
     while ((t = *iter))
     {
-	event_t *e = t->e;
+        event_t *e = t->e;
 
-	if (EVENT_IS_DELETED(t))
-	{
-	    iter = &(*iter)->next;
-	    continue;
-	}
+        if (EVENT_IS_DELETED(t))
+        {
+            iter = &(*iter)->next;
+            continue;
+        }
 
-	if (platform_get_ticks_from_boot() < t->expire)
-	    break;
+        if (platform_get_ticks_from_boot() < t->expire)
+            break;
 
-	if (EVENT_IS_PERIODIC(t))
-	{
-	    /* Remove from list and re-insert at the proper time */
-	    *iter = (*iter)->next;
-	    event_timer_insert(t, t->period);
-	}
-	else
-	    EVENT_SET_DELETED(t);
+        if (EVENT_IS_PERIODIC(t))
+        {
+            /* Remove from list and re-insert at the proper time */
+            *iter = (*iter)->next;
+            event_timer_insert(t, t->period);
+        }
+        else
+            EVENT_SET_DELETED(t);
 
-	e->trigger(e, 0 /* dummy */);
+        e->trigger(e, 0 /* dummy */);
 
-	/* Go back to the start. We don't know what happend to the list
-	 * while we ran the cb.
-	 */
-	iter = &timers;
+        /* Go back to the start. We don't know what happend to the list
+         * while we ran the cb.
+         */
+        iter = &timers;
     }
 }
 
@@ -157,8 +157,8 @@ static void get_next_timeout(int *timeout)
 {
     if (!timers)
     {
-	*timeout = 0;
-	return;
+        *timeout = 0;
+        return;
     }
     *timeout = timers->expire - platform_get_ticks_from_boot();
     tp_debug(("Next timeout: %d ms\n", *timeout));
@@ -170,10 +170,10 @@ void event_watch_trigger(u32 resource_id)
 
     watches_foreach(e)
     {
-	if ((e->resource_id ^ resource_id) & e->resource_mask)
-	    continue;
+        if ((e->resource_id ^ resource_id) & e->resource_mask)
+            continue;
 
-	EVENT_ON(e);
+        EVENT_ON(e);
     }
 }
 
@@ -199,8 +199,8 @@ void event_watch_del(int event_id)
 
     watches_foreach(e)
     {
-	if (e->event_id == event_id)
-	    EVENT_SET_DELETED(e);
+        if (e->event_id == event_id)
+            EVENT_SET_DELETED(e);
     }
 }
 
@@ -210,8 +210,8 @@ void event_watch_del_by_resource(u32 resource_id)
 
     watches_foreach(e)
     {
-	if (e->resource_id == resource_id)
-	    EVENT_SET_DELETED(e);
+        if (e->resource_id == resource_id)
+            EVENT_SET_DELETED(e);
     }
 }
 
@@ -220,7 +220,7 @@ void event_watch_del_all(void)
     event_internal_t *e;
 
     watches_foreach(e)
-	EVENT_SET_DELETED(e);
+        EVENT_SET_DELETED(e);
 }
 
 void event_purge_deleted(event_internal_t **events)
@@ -229,16 +229,16 @@ void event_purge_deleted(event_internal_t **events)
 
     while ((e = *events))
     {
-	if (EVENT_IS_DELETED(e))
-	{
-	    *events = (*events)->next;
+        if (EVENT_IS_DELETED(e))
+        {
+            *events = (*events)->next;
 
-	    if (e->e->free)
-		e->e->free(e->e);
-	    tfree(e);
-	}
-	else
-	    events = &(*events)->next;
+            if (e->e->free)
+                e->e->free(e->e);
+            tfree(e);
+        }
+        else
+            events = &(*events)->next;
     }
 }
 
@@ -249,13 +249,13 @@ static int watches_process(void)
 
     watches_foreach(e)
     {
-	if (EVENT_IS_DELETED(e) || !(EVENT_IS_ON(e)))
-	    continue;
+        if (EVENT_IS_DELETED(e) || !(EVENT_IS_ON(e)))
+            continue;
 
-	EVENT_OFF(e);
-	e->e->trigger(e->e, e->resource_id);
-	/* trigger may have triggered new watches */
-	more = 1;
+        EVENT_OFF(e);
+        e->e->trigger(e->e, e->resource_id);
+        /* trigger may have triggered new watches */
+        more = 1;
     }
 
     return more;
@@ -265,19 +265,19 @@ void event_loop(void)
 {
     while (watches || timers) 
     {
-	int timeout, more_watches;
+        int timeout, more_watches;
 
-	more_watches = watches_process();
+        more_watches = watches_process();
 
-	get_next_timeout(&timeout);
+        get_next_timeout(&timeout);
 
-	if (timeout >= 0 && !more_watches)
-	    platform.select(timeout);
+        if (timeout >= 0 && !more_watches)
+            platform.select(timeout);
 
-	timeout_process();
+        timeout_process();
 
-	event_purge_deleted(&timers);
-	event_purge_deleted(&watches);
+        event_purge_deleted(&timers);
+        event_purge_deleted(&watches);
     }
 
     event_timer_del_all();

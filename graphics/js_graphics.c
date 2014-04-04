@@ -37,13 +37,13 @@ int do_graphics_line_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     canvas_t *c;
 
     if (argc != 6)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     if (!(c = canvas_get_by_id(canvas_id)))
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     x0 = obj_get_int(argv[1]);
     y0 = obj_get_int(argv[2]);
@@ -61,13 +61,13 @@ int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     canvas_t *c;
 
     if (argc != 5)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     if (!(c = canvas_get_by_id(canvas_id)))
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
@@ -85,13 +85,13 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     canvas_t *c;
 
     if (argc != 5)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
     
     if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     if (!(c = canvas_get_by_id(canvas_id)))
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
     y = obj_get_int(argv[2]);
@@ -108,19 +108,19 @@ int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *o;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     o = argv[1];
 
     if ((canvas_id = canvas_obj_get_id(o)) < 0)
     {
-	canvas_t *canvas;
+        canvas_t *canvas;
        
-	/* No canvas ID found. Try to create an evaluated canvas */
-	if (!(canvas = js_evaluated_canvas_new(o)))
-	    return js_invalid_args(ret);
+        /* No canvas ID found. Try to create an evaluated canvas */
+        if (!(canvas = js_evaluated_canvas_new(o)))
+            return js_invalid_args(ret);
 
-	canvas_id = canvas->id;
+        canvas_id = canvas->id;
     }
 
     *ret = object_new();

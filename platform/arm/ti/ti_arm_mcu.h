@@ -126,13 +126,13 @@ static inline void ti_arm_mcu_pin_mode_output(int pin)
 static inline void ti_arm_mcu_pin_config(int pin, int mode)
 {
     MAP_GPIOPadConfigSet(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
-	GPIO_STRENGTH_8MA, mode);
+        GPIO_STRENGTH_8MA, mode);
 }
 
 static inline int ti_arm_mcu_pin_mode_adc(int pin)
 {
     if (ti_arm_mcu_gpio_pins[pin].adc_channel == -1)
-	return -1;
+        return -1;
 
     ti_arm_mcu_periph_enable(SYSCTL_PERIPH_ADC0);
     MAP_GPIOPinTypeADC(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
@@ -144,11 +144,11 @@ static inline void ti_arm_mcu_pin_mode_timer(int pin)
     int timer_function;
 
     MAP_GPIODirModeSet(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
-	GPIO_DIR_MODE_HW);
+        GPIO_DIR_MODE_HW);
     ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
     MAP_GPIOPinTypeTimer(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     if ((timer_function = ti_arm_mcu_gpio_pins[pin].timer_function) != -1)
-	MAP_GPIOPinConfigure(timer_function);
+        MAP_GPIOPinConfigure(timer_function);
 }
 
 int ti_arm_mcu_pin_mode_pwm(int pin);

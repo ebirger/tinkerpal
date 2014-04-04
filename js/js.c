@@ -53,15 +53,15 @@ static int js_get_constants_cb(int *constant, tstr_t *s)
 
 #ifdef CONFIG_GPIO
     if (!gpio_get_constant(constant, TPTR(s), s->len))
-	return 0;
+        return 0;
 #endif
 #ifdef CONFIG_PLAT_HAS_SERIAL
     if (!serial_get_constant(constant, TPTR(s), s->len))
-	return 0;
+        return 0;
 #endif
 #ifdef CONFIG_SPI
     if (!spi_get_constant(constant, TPTR(s), s->len))
-	return 0;
+        return 0;
 #endif
 
     return -1;

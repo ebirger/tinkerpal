@@ -57,10 +57,10 @@ static void reset_line(void)
 
     /* Clear to end of line */
     for (i = cur_line.len - cur_line_pos; i; i--)
-	CTRL(SPACE);
+        CTRL(SPACE);
     /* Clear to start of line */
     for (i = cur_line.len; i; i--)
-	CTRL(TERM_BS);
+        CTRL(TERM_BS);
 }
 
 static void syntax_hightlight(void)
@@ -72,10 +72,10 @@ static void syntax_hightlight(void)
 
     /* Move to start of line */
     while (pos--)
-	CTRL(TERM_CURSOR_LEFT);
+        CTRL(TERM_CURSOR_LEFT);
 
     if (g_client->syntax_hightlight)
-	g_client->syntax_hightlight(&cur_line);
+        g_client->syntax_hightlight(&cur_line);
 
     CTRL(TERM_RESTORE_CURSOR);
 #endif
@@ -124,7 +124,7 @@ static void do_down(void)
 static void do_left(void)
 {
     if (!cur_line_pos)
-	return;
+        return;
 
     cur_line_pos--;
     CTRL(TERM_CURSOR_LEFT);
@@ -135,7 +135,7 @@ static void do_right(void)
     char b;
 
     if (cur_line_pos == cur_line.len)
-	return;
+        return;
 
     /* Write current character */
     b = *(TPTR(&cur_line) + cur_line_pos);
@@ -148,7 +148,7 @@ static void do_bs(void)
     int delta;
 
     if (!cur_line.len || !cur_line_pos)
-	return;
+        return;
 
     /* Move back */
     CTRL(TERM_CURSOR_LEFT);
@@ -156,10 +156,10 @@ static void do_bs(void)
     delta = cur_line.len - cur_line_pos;
     if (delta)
     {
-	char *cur = TPTR(&cur_line) + cur_line_pos;
+        char *cur = TPTR(&cur_line) + cur_line_pos;
 
-	memmove(cur - 1, cur, delta);
-	console_write(cur - 1, delta);
+        memmove(cur - 1, cur, delta);
+        console_write(cur - 1, delta);
     }
 
     /* Erase last character */
@@ -168,7 +168,7 @@ static void do_bs(void)
 
     /* Reset cursor to its original position */
     while (delta--)
-	CTRL(TERM_CURSOR_LEFT);
+        CTRL(TERM_CURSOR_LEFT);
 
     size = -1;
     read_ack();
@@ -177,19 +177,19 @@ static void do_bs(void)
 static void do_home(void)
 {
     while (cur_line_pos)
-	do_left();
+        do_left();
 }
 
 static void do_end(void)
 {
     while (cur_line_pos < cur_line.len)
-	do_right();
+        do_right();
 }
 
 static void do_del(void)
 {
     if (cur_line_pos == cur_line.len)
-	return;
+        return;
 
     do_right();
     do_bs();
@@ -201,16 +201,16 @@ static void app_quit(void)
     event_watch_del_all();
     history_free(history);
     if (g_client->quit)
-	g_client->quit();
+        g_client->quit();
 }
 
 static void do_esc(void)
 {
     if ((read_buf - buf) + size < 3)
     {
-	/* Wait for more */
-	read_buf += size;
-	return;
+        /* Wait for more */
+        read_buf += size;
+        return;
     }
 
     size += (read_buf - buf);
@@ -218,24 +218,24 @@ static void do_esc(void)
     switch (buf[1])
     {
     case '[':
-	switch (buf[2])
-	{
-	case 'A': do_up(); return;
-	case 'B': do_down(); return;
-	case 'C': do_right(); return;
-	case 'D': do_left(); return;
-	case '1': if (size == 4 && buf[3] == '~') do_home(); return;
-	case '3': if (size == 4 && buf[3] == '~') do_del(); return;
-	case '4': if (size == 4 && buf[3] == '~') do_end(); return;
-	}
-	break;
+        switch (buf[2])
+        {
+        case 'A': do_up(); return;
+        case 'B': do_down(); return;
+        case 'C': do_right(); return;
+        case 'D': do_left(); return;
+        case '1': if (size == 4 && buf[3] == '~') do_home(); return;
+        case '3': if (size == 4 && buf[3] == '~') do_del(); return;
+        case '4': if (size == 4 && buf[3] == '~') do_end(); return;
+        }
+        break;
     case 'O':
-	switch (buf[2])
-	{
-	case 'H': do_home(); return;
-	case 'F': do_end(); return;
-	}
-	break;
+        switch (buf[2])
+        {
+        case 'H': do_home(); return;
+        case 'F': do_end(); return;
+        }
+        break;
     }
 }
 
@@ -247,16 +247,16 @@ static void write_buf(void)
     delta = cur_line.len - cur_line_pos;
     if (delta)
     {
-	output -= delta;
-	output_size += delta;
-	memmove(output + size, output, delta + size);
-	memmove(output, buf + size, size);
+        output -= delta;
+        output_size += delta;
+        memmove(output + size, output, delta + size);
+        memmove(output, buf + size, size);
     }
     console_write(output, output_size);
 
     /* Reset cursor to its original position */
     while (delta--)
-	CTRL(TERM_CURSOR_LEFT);
+        CTRL(TERM_CURSOR_LEFT);
     read_ack();
 }
 
@@ -273,38 +273,38 @@ static void on_event(event_t *e, u32 id)
     {
     case 0x7f:
     case '\b':
-	do_bs();
-	syntax_hightlight();
-	return;
+        do_bs();
+        syntax_hightlight();
+        return;
     case 0x1b:
-	do_esc();
-	syntax_hightlight();
-	return;
+        do_esc();
+        syntax_hightlight();
+        return;
     case '\r':
     case '\n':
-	CTRL(CRLF);
-	/* Got line, lets go right ahead and eval it */
-	break;
+        CTRL(CRLF);
+        /* Got line, lets go right ahead and eval it */
+        break;
     default:
-	write_buf();
-	syntax_hightlight();
-	/* Continue accumulating input */
-	return;
+        write_buf();
+        syntax_hightlight();
+        /* Continue accumulating input */
+        return;
     }
 
     if (!tstr_cmp(&cur_line, &quit_cmd))
     {
-	app_quit();
-	return;
+        app_quit();
+        return;
     }
 
     if (cur_line.len)
     {
-	if (g_client->process_line)
-	    g_client->process_line(&cur_line);
-	history_commit(history, &cur_line);
-	cur_line.len = cur_line_pos = 0;
-	TPTR(&cur_line) = read_buf = buf = cli_buf;
+        if (g_client->process_line)
+            g_client->process_line(&cur_line);
+        history_commit(history, &cur_line);
+        cur_line.len = cur_line_pos = 0;
+        TPTR(&cur_line) = read_buf = buf = cli_buf;
     }
 
     console_write(prompt, sizeof(prompt));

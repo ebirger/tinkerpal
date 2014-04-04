@@ -63,8 +63,8 @@ typedef u16 resource_t;
 
 #define RES(base, maj, min) \
     ((resource_t)((((base) & RES_BASE_MASK) << RES_BASE_SHIFT) | \
-	(((maj) & RES_MAJ_MASK) << RES_MAJ_SHIFT) | \
-	(((min) & RES_MIN_MASK) << RES_MIN_SHIFT)))
+        (((maj) & RES_MAJ_MASK) << RES_MAJ_SHIFT) | \
+        (((min) & RES_MIN_MASK) << RES_MIN_SHIFT)))
 #define RES_MIN(res) (((res) >> RES_MIN_SHIFT) & RES_MIN_MASK)
 #define RES_MAJ(res) (((res) >> RES_MAJ_SHIFT) & RES_MAJ_MASK)
 #define RES_BASE(res) (((res) >> RES_BASE_SHIFT) & RES_BASE_MASK)

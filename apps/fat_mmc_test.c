@@ -39,7 +39,7 @@ static int fat_mmc_test_readdir_cb(tstr_t *file_name, void *ctx)
 static void fat_mmc_test_process_line(tstr_t *line)
 {
     if (!tstr_cmp(line, &S("dir")))
-	vfs_readdir(&S("FAT/"), fat_mmc_test_readdir_cb, NULL);
+        vfs_readdir(&S("FAT/"), fat_mmc_test_readdir_cb, NULL);
 
     console_printf("Ok\n");
 }

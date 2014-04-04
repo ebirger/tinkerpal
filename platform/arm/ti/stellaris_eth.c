@@ -62,7 +62,7 @@ static int stellaris_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
     length = MAP_EthernetPacketGetNonBlocking(ETH_BASE, buf, size);
     MAP_EthernetIntEnable(ETH_BASE, ETH_INT_RX);
     if (length < 0)
-	tp_err(("Buffer too small (%d). Packet length %d\n", size, -length));
+        tp_err(("Buffer too small (%d). Packet length %d\n", size, -length));
     return (int)length;
 }
 
@@ -72,7 +72,7 @@ static void stellaris_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 
     length = MAP_EthernetPacketPut(ETH_BASE, buf, size);
     if (length < 0)
-	tp_err(("No space for packet (%d). Space left %d\n", size, -length));
+        tp_err(("No space for packet (%d). Space left %d\n", size, -length));
 }
 
 static void stellaris_eth_free(etherif_t *ethif)
@@ -95,7 +95,7 @@ static void phy_info(void)
     mr2 = MAP_EthernetPHYRead(ETH_BASE, PHY_MR2);
     mr3 = MAP_EthernetPHYRead(ETH_BASE, PHY_MR3);
     tp_out(("PHY OUI %x:%x\n", (mr2 & PHY_MR2_OUI_M) >> PHY_MR2_OUI_S,
-	(mr3 & PHY_MR3_OUI_M) >> PHY_MR3_OUI_S));
+        (mr3 & PHY_MR3_OUI_M) >> PHY_MR3_OUI_S));
     tp_out(("Model Number %x\n", (mr3 & PHY_MR3_MN_M) >> PHY_MR3_MN_S));
     tp_out(("Revision Number %x\n", (mr3 & PHY_MR3_RN_M) >> PHY_MR3_RN_S));
 }
@@ -104,7 +104,7 @@ static void phy_cfg(void)
 {
     /* Enable link change interrupt */
     MAP_EthernetPHYWrite(ETH_BASE, PHY_MR17,
-	MAP_EthernetPHYRead(ETH_BASE, PHY_MR17) | PHY_MR17_LSCHG_IE);
+        MAP_EthernetPHYRead(ETH_BASE, PHY_MR17) | PHY_MR17_LSCHG_IE);
 }
 
 int stellaris_eth_event_process(void)
@@ -112,30 +112,30 @@ int stellaris_eth_event_process(void)
     MAP_IntDisable(INT_ETH);
     if (!g_eth.istat)
     {
-	MAP_IntEnable(INT_ETH);
-	return 0;
+        MAP_IntEnable(INT_ETH);
+        return 0;
     }
 
     if (g_eth.istat & ETH_INT_PHY)
     {
-	/* Ack PHY interrupt */
-	MAP_EthernetPHYWrite(ETH_BASE, PHY_MR17,
-	    MAP_EthernetPHYRead(ETH_BASE, PHY_MR17) | PHY_MR17_LSCHG_INT);
+        /* Ack PHY interrupt */
+        MAP_EthernetPHYWrite(ETH_BASE, PHY_MR17,
+            MAP_EthernetPHYRead(ETH_BASE, PHY_MR17) | PHY_MR17_LSCHG_INT);
 
-	etherif_port_changed(&g_eth.ethif);
-	MAP_EthernetIntEnable(ETH_BASE, ETH_INT_PHY);
+        etherif_port_changed(&g_eth.ethif);
+        MAP_EthernetIntEnable(ETH_BASE, ETH_INT_PHY);
     }
     
     if (g_eth.istat & ETH_INT_RX)
     {
-	etherif_packet_received(&g_eth.ethif);
-	/* Interrupt will be unmasked after read */
+        etherif_packet_received(&g_eth.ethif);
+        /* Interrupt will be unmasked after read */
     }
     
     if (g_eth.istat & ETH_INT_TX)
     {
-	etherif_packet_xmitted(&g_eth.ethif);
-	MAP_EthernetIntEnable(ETH_BASE, ETH_INT_TX);
+        etherif_packet_xmitted(&g_eth.ethif);
+        MAP_EthernetIntEnable(ETH_BASE, ETH_INT_TX);
     }
 
     g_eth.istat = 0;
@@ -168,7 +168,7 @@ static void hw_init(void)
 
     /* Disable all Ethernet Interrupts. */
     MAP_EthernetIntDisable(ETH_BASE, ETH_INT_PHY | ETH_INT_MDIO |
-	ETH_INT_RXER | ETH_INT_RXOF | ETH_INT_TX | ETH_INT_TXER | ETH_INT_RX);
+        ETH_INT_RXER | ETH_INT_RXOF | ETH_INT_TX | ETH_INT_TXER | ETH_INT_RX);
     /* Disable any possible pending interrupts */
     MAP_EthernetIntClear(ETH_BASE, MAP_EthernetIntStatus(ETH_BASE, false));
 
@@ -177,7 +177,7 @@ static void hw_init(void)
 
     /* Configure the Ethernet Controller */
     MAP_EthernetConfigSet(ETH_BASE, ETH_CFG_TX_DPLXEN | ETH_CFG_TX_CRCEN |
-	ETH_CFG_TX_PADEN | ETH_CFG_RX_AMULEN);
+        ETH_CFG_TX_PADEN | ETH_CFG_RX_AMULEN);
 
     /* Enable the Ethernet Controller transmitter and receiver */
     MAP_EthernetEnable(ETH_BASE);

@@ -78,7 +78,7 @@ void msp430f5529_usci_init(int port)
     msp430f5529_gpio_set_pin_function(usci->txpin, 1);
     if (usci->clkpin != -1)
     {
-	msp430f5529_gpio_set_pin_mode(usci->clkpin, GPIO_PM_OUTPUT);
-	msp430f5529_gpio_set_pin_function(usci->clkpin, 1);
+        msp430f5529_gpio_set_pin_mode(usci->clkpin, GPIO_PM_OUTPUT);
+        msp430f5529_gpio_set_pin_function(usci->clkpin, 1);
     }
 }

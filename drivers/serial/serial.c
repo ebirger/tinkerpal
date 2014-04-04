@@ -41,8 +41,8 @@ int buffered_serial_push(int u, char c)
 {
     if (uart_bufs[u]->len == sizeof(uart_bufs[u]->buf))
     {
-	/* XXX: should we disable uart irq here? */
-	return -1;
+        /* XXX: should we disable uart irq here? */
+        return -1;
     }
 
     uart_bufs[u]->buf[uart_bufs[u]->len] = c;
@@ -56,13 +56,13 @@ int buffered_serial_events_process(void)
 
     for (u = 0; u < NUM_UARTS; u++)
     {
-	platform.serial.irq_enable(u, 0);
-	if ((uart_bufs[u]->len != 0))
-	{
-	    serial_event_trigger(u);
-	    event = 1;
-	}
-	platform.serial.irq_enable(u, 1);
+        platform.serial.irq_enable(u, 0);
+        if ((uart_bufs[u]->len != 0))
+        {
+            serial_event_trigger(u);
+            event = 1;
+        }
+        platform.serial.irq_enable(u, 1);
     }
     return event;
 }
@@ -83,17 +83,17 @@ int buffered_serial_read(int u, char *buf, int size)
 int buffered_serial_enable(int u, int enabled)
 {
     if (!!uart_bufs[u] == !!enabled)
-	return -1;
+        return -1;
 
     if (enabled)
     {
-	uart_bufs[u] = tmalloc_type(uart_buf_t);
-	uart_bufs[u]->len = 0;
+        uart_bufs[u] = tmalloc_type(uart_buf_t);
+        uart_bufs[u]->len = 0;
     }
     else
     {
-	tfree(uart_bufs[u]);
-	uart_bufs[u] = NULL;
+        tfree(uart_bufs[u]);
+        uart_bufs[u] = NULL;
     }
     return 0;
 }
@@ -108,11 +108,11 @@ void serial_event_trigger(int u)
 int serial_enable(resource_t id, int enabled)
 {
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
-	return -1;
+        return -1;
 
 #ifdef CONFIG_BUFFERED_SERIAL
     if (buffered_serial_enable(RES_MAJ(id), enabled))
-	return -1;
+        return -1;
 #endif
 
     return platform.serial.enable(RES_MAJ(id), enabled);

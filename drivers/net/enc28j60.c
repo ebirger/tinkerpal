@@ -353,8 +353,8 @@ static u8 read_op(enc28j60_t *e, u8 op, u8 addr)
     spi_send(e->spi_port, op | REG(addr));
     if (addr & REG_MII_MAC)
     {
-	/* MAC and MII registers also return a dummy byte */
-	spi_receive(e->spi_port);
+        /* MAC and MII registers also return a dummy byte */
+        spi_receive(e->spi_port);
     }
     ret = (u8)spi_receive(e->spi_port);
     cs_high(e);
@@ -374,12 +374,12 @@ static void bank_select(enc28j60_t *e, u8 addr)
     u8 bank = REG_BANK(addr), reg = REG(addr);
 
     if (e->bank == bank)
-	return;
+        return;
 
     if (reg >= EIE && reg <= ECON1)
     {
-	/* No need to switch banks, all banks have these registers */
-	return;
+        /* No need to switch banks, all banks have these registers */
+        return;
     }
 
     write_op(e, ENC28J60_OPCODE_BFC, ECON1, BSEL0 | BSEL1);
@@ -473,7 +473,7 @@ static int chip_reset(enc28j60_t *e)
 
     /* Wait for reset to complete */
     while (!(ready = (ctrl_reg_read(e, ESTAT) & CLKRDY)) && 
-	(ticks() - start < 1000));
+        (ticks() - start < 1000));
 
     return ready ? 0 : -1;
 }
@@ -484,7 +484,7 @@ static void erxrdpt_set(enc28j60_t *e, u16 addr)
     addr--;
 
     if (addr < RX_BUF_START || addr > RX_BUF_END)
-	addr = RX_BUF_END;
+        addr = RX_BUF_END;
 
     ctrl_wreg_write(e, ERXRDPTL, addr);
 }
@@ -524,8 +524,8 @@ static void chip_init(enc28j60_t *e)
     tp_out(("ENC28J60 Init\n"));
     if (chip_reset(e))
     {
-	tp_err(("ENC28J60 Reset failed. Is it connected?\n"));
-	return;
+        tp_err(("ENC28J60 Reset failed. Is it connected?\n"));
+        return;
     }
 
     tp_out(("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
@@ -595,12 +595,12 @@ static int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size)
     stat = MK_U16(header[5], header[4]);
     if (!(stat & RX_STAT_OK))
     {
-	tp_info(("Invalid packet received\n"));
-	goto Exit;
+        tp_info(("Invalid packet received\n"));
+        goto Exit;
     }
 
     if (size > packet_length)
-	size = packet_length;
+        size = packet_length;
     
     spi_receive_mult(e->spi_port, buf, size);
 
@@ -649,7 +649,7 @@ static void packet_xmitted(enc28j60_t *e)
 static void link_status_changed(enc28j60_t *e)
 {
     tp_info(("ENC28J60 Link state change - state %d\n", 
-	enc28j60_link_status(e)));
+        enc28j60_link_status(e)));
     etherif_port_changed(&e->ethif);
 }
 
@@ -664,22 +664,22 @@ static void enc28j60_isr(event_t *ev, u32 resource_id)
     if (eir & LINKIF)
     {
 #ifdef CONFIG_ENC28J60_PHY_ACCESS
-	phy_reg_read(e, PHIR); /* Ack PHY interrupt */
+        phy_reg_read(e, PHIR); /* Ack PHY interrupt */
 #endif
-	ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
-	link_status_changed(e);
+        ctrl_reg_bits_clear(e, EIR, LINKIF); /* Ack interrupt */
+        link_status_changed(e);
     }
     if (eir & PKTIF)
     {
-	ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
-	ctrl_reg_bits_clear(e, EIE, PKTIE); /* Mask packet received interrupt */
-	packet_received(e);
+        ctrl_reg_bits_clear(e, EIR, PKTIF); /* Ack interrupt */
+        ctrl_reg_bits_clear(e, EIE, PKTIE); /* Mask packet received interrupt */
+        packet_received(e);
     }
 
     if (eir & TXIF)
     {
-	ctrl_reg_bits_clear(e, EIR, TXIF); /* Ack interrupt */
-	packet_xmitted(e);
+        ctrl_reg_bits_clear(e, EIR, TXIF); /* Ack interrupt */
+        packet_xmitted(e);
     }
 }
 

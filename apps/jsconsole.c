@@ -50,31 +50,31 @@ void jsconsole_syntax_highlight(tstr_t *line)
     s = js_scan_init(line);
     while ((CUR_TOK(s)) != TOK_EOF)
     {
-	int offset;
+        int offset;
 
-	switch (js_scan_get_token_group(s))
-	{
-	case TOKEN_GRP_SCOPE:
-	    COLOR(TERM_COLOR_CYAN); 
-	    break;
-	case TOKEN_GRP_CONTROL:
-	    COLOR(TERM_COLOR_RED);
-	    break;
-	case TOKEN_GRP_DATA:
-	    COLOR(TERM_COLOR_MAGENTA);
-	    break;
-	case TOKEN_GRP_CONSTANT:
-	    COLOR(TERM_COLOR_BLUE);
-	    break;
-	default:
-	    break;
-	}
+        switch (js_scan_get_token_group(s))
+        {
+        case TOKEN_GRP_SCOPE:
+            COLOR(TERM_COLOR_CYAN); 
+            break;
+        case TOKEN_GRP_CONTROL:
+            COLOR(TERM_COLOR_RED);
+            break;
+        case TOKEN_GRP_DATA:
+            COLOR(TERM_COLOR_MAGENTA);
+            break;
+        case TOKEN_GRP_CONSTANT:
+            COLOR(TERM_COLOR_BLUE);
+            break;
+        default:
+            break;
+        }
 
-	offset = line->len - js_scan_get_remaining(s);
-	console_write(TPTR(line) + last_offset, offset - last_offset);
-	COLOR(TERM_COLOR_RESET);
-	last_offset = offset;
-	js_scan_next_token(s);
+        offset = line->len - js_scan_get_remaining(s);
+        console_write(TPTR(line) + last_offset, offset - last_offset);
+        COLOR(TERM_COLOR_RESET);
+        last_offset = offset;
+        js_scan_next_token(s);
     }
     js_scan_uninit(s);
 }
@@ -90,13 +90,13 @@ void jsconsole_process_line(tstr_t *line)
     rc = js_eval(&o, line);
     if (rc)
     {
-	COLOR(TERM_COLOR_RED);
-	console_printf("%o\n", o);
+        COLOR(TERM_COLOR_RED);
+        console_printf("%o\n", o);
     }
     else
     {
-	COLOR(TERM_COLOR_DIM);
-	console_printf("= %o\n", o);
+        COLOR(TERM_COLOR_DIM);
+        console_printf("= %o\n", o);
     }
 
     COLOR(TERM_COLOR_RESET);

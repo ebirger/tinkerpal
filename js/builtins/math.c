@@ -32,7 +32,7 @@
 int do_##name(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
 { \
     if (argc != 2) \
-    	return js_invalid_args(ret); \
+        return js_invalid_args(ret); \
     *ret = num_new_##type(name(obj_get_##type(argv[1]))); \
     return 0; \
 }
@@ -40,7 +40,7 @@ int do_##name(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
 int do_##name(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
 { \
     if (argc != 3) \
-    	return js_invalid_args(ret); \
+        return js_invalid_args(ret); \
     *ret = num_new_##type(name(obj_get_##type(argv[1]), obj_get_##type(argv[2]))); \
     return 0; \
 }

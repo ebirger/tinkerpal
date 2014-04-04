@@ -62,12 +62,12 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
 #define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
     [SSI##num] = { \
-	.periph = SYSCTL_PERIPH_SSI##num, \
-	.base = SSI##num##_BASE, \
-	.clk = clkpin, \
-	.fss = fsspin, \
-	.rx = rxpin, \
-	.tx = txpin, \
+        .periph = SYSCTL_PERIPH_SSI##num, \
+        .base = SSI##num##_BASE, \
+        .clk = clkpin, \
+        .fss = fsspin, \
+        .rx = rxpin, \
+        .tx = txpin, \
     }
     SSI_DEF(0, PA2, PA2, PA4, PA5)
 };
@@ -98,25 +98,25 @@ static int lm3s6965_set_pin_mode(int pin, gpio_pin_mode_t mode)
     switch (mode)
     {
     case GPIO_PM_INPUT:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_OUTPUT:
-	ti_arm_mcu_pin_mode_output(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_pin_mode_output(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_INPUT_PULLUP:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+        break;
     case GPIO_PM_INPUT_PULLDOWN:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
+        break;
     case GPIO_PM_OUTPUT_ANALOG:
-	return ti_arm_mcu_pin_mode_pwm(pin);
+        return ti_arm_mcu_pin_mode_pwm(pin);
     default:
-	return -1;
+        return -1;
     }
     return 0;
 }
@@ -137,28 +137,28 @@ static void lm3s6965_init(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_uart_enable,
-	.read = buffered_serial_read,
-	.write = ti_arm_mcu_serial_write,
-	.irq_enable = ti_arm_mcu_serial_irq_enable,
+        .enable = ti_arm_mcu_uart_enable,
+        .read = buffered_serial_read,
+        .write = ti_arm_mcu_serial_write,
+        .irq_enable = ti_arm_mcu_serial_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {
-	.digital_write = ti_arm_mcu_gpio_digital_write,
-	.digital_read = ti_arm_mcu_gpio_digital_read,
-	.analog_write = ti_arm_mcu_gpio_pwm_analog_write,
-	.set_pin_mode = lm3s6965_set_pin_mode,
-	.set_port_val = ti_arm_mcu_gpio_set_port_val,
-	.get_port_val = ti_arm_mcu_gpio_get_port_val,
+        .digital_write = ti_arm_mcu_gpio_digital_write,
+        .digital_read = ti_arm_mcu_gpio_digital_read,
+        .analog_write = ti_arm_mcu_gpio_pwm_analog_write,
+        .set_pin_mode = lm3s6965_set_pin_mode,
+        .set_port_val = ti_arm_mcu_gpio_set_port_val,
+        .get_port_val = ti_arm_mcu_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI
     .spi = {
-	.init = ti_arm_mcu_spi_init,
-	.reconf = ti_arm_mcu_spi_reconf,
-	.set_max_speed = ti_arm_mcu_spi_set_max_speed,
-	.send = ti_arm_mcu_spi_send,
-	.receive = ti_arm_mcu_spi_receive,
+        .init = ti_arm_mcu_spi_init,
+        .reconf = ti_arm_mcu_spi_reconf,
+        .set_max_speed = ti_arm_mcu_spi_set_max_speed,
+        .send = ti_arm_mcu_spi_send,
+        .receive = ti_arm_mcu_spi_receive,
     },
 #endif
     .init = lm3s6965_init,

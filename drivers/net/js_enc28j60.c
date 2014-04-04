@@ -37,14 +37,14 @@ int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     /* XXX: ideally, we should receive an object with optional override info */
     if (argc == 1)
-	p = &board.enc28j60_params;
+        p = &board.enc28j60_params;
     else if (argc != 4)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
     else
     {
-	params.spi_port = obj_get_int(argv[1]);
-	params.cs = obj_get_int(argv[2]);
-	params.intr = obj_get_int(argv[3]);
+        params.spi_port = obj_get_int(argv[1]);
+        params.cs = obj_get_int(argv[2]);
+        params.intr = obj_get_int(argv[3]);
     }
 
     ethif = enc28j60_new(p);

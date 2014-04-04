@@ -57,13 +57,13 @@ const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
 const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 #define UART_DEF(num, rx, tx) \
     [UART##num] = { \
-	.periph = SYSCTL_PERIPH_UART##num, \
-	.base = UART##num##_BASE, \
-	.irq = INT_UART##num, \
-	.rxpin = rx, \
-	.txpin = tx, \
-	.rx_af = GPIO_##rx##_U##num##RX, \
-	.tx_af = GPIO_##tx##_U##num##TX, \
+        .periph = SYSCTL_PERIPH_UART##num, \
+        .base = UART##num##_BASE, \
+        .irq = INT_UART##num, \
+        .rxpin = rx, \
+        .txpin = tx, \
+        .rx_af = GPIO_##rx##_U##num##RX, \
+        .tx_af = GPIO_##tx##_U##num##TX, \
     }
     UART_DEF(0, PA0, PA1),
     UART_DEF(1, PB0, PB1),
@@ -78,16 +78,16 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
 #define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
     [SSI##num] = { \
-	.periph = SYSCTL_PERIPH_SSI##num, \
-	.base = SSI##num##_BASE, \
-	.clk = clkpin, \
-	.fss = fsspin, \
-	.rx = rxpin, \
-	.tx = txpin, \
-	.clk_af = GPIO_##clkpin##_SSI##num##CLK, \
-	.fss_af = GPIO_##fsspin##_SSI##num##FSS, \
-	.rx_af = GPIO_##rxpin##_SSI##num##RX, \
-	.tx_af = GPIO_##txpin##_SSI##num##TX, \
+        .periph = SYSCTL_PERIPH_SSI##num, \
+        .base = SSI##num##_BASE, \
+        .clk = clkpin, \
+        .fss = fsspin, \
+        .rx = rxpin, \
+        .tx = txpin, \
+        .clk_af = GPIO_##clkpin##_SSI##num##CLK, \
+        .fss_af = GPIO_##fsspin##_SSI##num##FSS, \
+        .rx_af = GPIO_##rxpin##_SSI##num##RX, \
+        .tx_af = GPIO_##txpin##_SSI##num##TX, \
     }
     SSI_DEF(0, PA2, PA3, PA4, PA5),
     SSI_DEF(1, PD0, PD1, PD2, PD3),
@@ -185,7 +185,7 @@ static void pinmode_pwm(int pin)
 
     /* Configure Timer */
     ROM_TimerConfigure(timer->base, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM | 
-	TIMER_CFG_B_PWM));
+        TIMER_CFG_B_PWM));
     ROM_TimerPrescaleSet(timer->base, half_timer, 0); // ~1230 Hz PWM
     /* Timer will load this value on timeout */
     ROM_TimerLoadSet(timer->base, half_timer, 65279);
@@ -201,38 +201,38 @@ static int lm4120xl_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
     /* Anti-brick JTAG Protection */
     if (pin >= PC0 && pin <= PC3) 
-	return -1;
+        return -1;
 
     if (mode == GPIO_PM_OUTPUT_ANALOG && ti_arm_mcu_gpio_pins[pin].timer == -1)
-	return -1;
+        return -1;
 
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
 
     switch (mode)
     {
     case GPIO_PM_INPUT:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_OUTPUT:
-	ti_arm_mcu_pin_mode_output(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
-	break;
+        ti_arm_mcu_pin_mode_output(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD);
+        break;
     case GPIO_PM_INPUT_PULLUP:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+        break;
     case GPIO_PM_INPUT_PULLDOWN:
-	ti_arm_mcu_gpio_input(pin);
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
-	break;
+        ti_arm_mcu_gpio_input(pin);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPD);
+        break;
     case GPIO_PM_INPUT_ANALOG:
-	if (ti_arm_mcu_pin_mode_adc(pin))
-	    return -1;
-	break;
+        if (ti_arm_mcu_pin_mode_adc(pin))
+            return -1;
+        break;
     case GPIO_PM_OUTPUT_ANALOG:
-	pinmode_pwm(pin);
-	break;
+        pinmode_pwm(pin);
+        break;
     }
     return 0;
 }
@@ -244,12 +244,12 @@ static void ti_arm_mcu_gpio_analog_write(int pin, double value)
     int_val = 255 * value;
 
     if (int_val > 255)
-	int_val = 255;
+        int_val = 255;
     
     if (int_val == 0)
-	int_val = 65278;
+        int_val = 65278;
     else
-	int_val = 65280 - (256 * int_val);
+        int_val = 65280 - (256 * int_val);
 
     TIMER_SET(pin, int_val);
 }
@@ -284,7 +284,7 @@ static void lm4f120xl_init(void)
 
     /* Set the clocking to run directly from the crystal at 80 MHz */
     ROM_SysCtlClockSet(SYSCTL_RCC2_DIV400 | SYSCTL_SYSDIV_2_5 |
-	SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+        SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
                        
     ti_arm_mcu_systick_init();
     buttons_init(); 
@@ -292,29 +292,29 @@ static void lm4f120xl_init(void)
 
 const platform_t platform = {
     .serial = {
-	.enable = ti_arm_mcu_uart_enable,
-	.read = buffered_serial_read,
-	.write = ti_arm_mcu_serial_write,
-	.irq_enable = ti_arm_mcu_serial_irq_enable,
+        .enable = ti_arm_mcu_uart_enable,
+        .read = buffered_serial_read,
+        .write = ti_arm_mcu_serial_write,
+        .irq_enable = ti_arm_mcu_serial_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {
-	.digital_write = ti_arm_mcu_gpio_digital_write,
-	.digital_read = ti_arm_mcu_gpio_digital_read,
-	.analog_write = ti_arm_mcu_gpio_analog_write,
-	.analog_read = ti_arm_mcu_gpio_analog_read,
-	.set_pin_mode = lm4120xl_set_pin_mode,
-	.set_port_val = ti_arm_mcu_gpio_set_port_val,
-	.get_port_val = ti_arm_mcu_gpio_get_port_val,
+        .digital_write = ti_arm_mcu_gpio_digital_write,
+        .digital_read = ti_arm_mcu_gpio_digital_read,
+        .analog_write = ti_arm_mcu_gpio_analog_write,
+        .analog_read = ti_arm_mcu_gpio_analog_read,
+        .set_pin_mode = lm4120xl_set_pin_mode,
+        .set_port_val = ti_arm_mcu_gpio_set_port_val,
+        .get_port_val = ti_arm_mcu_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI
     .spi = {
-	.init = ti_arm_mcu_spi_init,
-	.reconf = ti_arm_mcu_spi_reconf,
-	.set_max_speed = ti_arm_mcu_spi_set_max_speed,
-	.send = ti_arm_mcu_spi_send,
-	.receive = ti_arm_mcu_spi_receive,
+        .init = ti_arm_mcu_spi_init,
+        .reconf = ti_arm_mcu_spi_reconf,
+        .set_max_speed = ti_arm_mcu_spi_set_max_speed,
+        .send = ti_arm_mcu_spi_send,
+        .receive = ti_arm_mcu_spi_receive,
     },
 #endif
     .init = lm4f120xl_init,

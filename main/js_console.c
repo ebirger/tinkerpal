@@ -30,7 +30,7 @@
 int do_console_set(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     console_set_id(serial_obj_get_id(argv[1]));
     *ret = UNDEF;
@@ -40,7 +40,7 @@ int do_console_set(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_console_log(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     console_printf("%o\n", argv[1]);
     *ret = UNDEF;

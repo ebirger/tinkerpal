@@ -64,7 +64,7 @@ void unix_sim_remove_fd_event_from_map(int event)
     tp_assert(to->event != -1);
     from = to;
     while (to->event != -1)
-	*to++ = *++from;
+        *to++ = *++from;
     unix_sim_event_fd_count--;
 }
 
@@ -76,20 +76,20 @@ static int pty_open(void)
     fdm = posix_openpt(O_RDWR);
     if (fdm < 0)
     { 
-	perror("posix_openpt()\n");
-	return -1; 
+        perror("posix_openpt()\n");
+        return -1; 
     }
 
     if (grantpt(fdm))
     {
-	perror("grantpt()\n");
-	return -1;
+        perror("grantpt()\n");
+        return -1;
     }
 
     if (unlockpt(fdm))
     {
-	perror("unlockpt()\n");
-	return -1;
+        perror("unlockpt()\n");
+        return -1;
     }
 
     printf("PTY at : %s\n", ptsname(fdm));
@@ -124,8 +124,8 @@ int sim_unix_block_disk_init(void)
     block_disk = fopen(CONFIG_PLATFORM_EMULATION_BLOCK_DISK_PATH, "r+");
     if (!block_disk)
     {
-	tp_err(("Could not open block disk file\n"));
-	return -1;
+        tp_err(("Could not open block disk file\n"));
+        return -1;
     }
 
     return 0;
@@ -136,17 +136,17 @@ static int sim_unix_block_disk_ioctl(int cmd, void *buf)
     switch (cmd)
     {
     case BLOCK_IOCTL_SYNC:
-	fflush(block_disk);
-	return 0;
+        fflush(block_disk);
+        return 0;
     case BLOCK_IOCTL_GET_SECTOR_SIZE:
-	*(int *)buf = SEC_SIZE;
-	return 0;
+        *(int *)buf = SEC_SIZE;
+        return 0;
     case BLOCK_IOCTL_GET_SECTOR_COUNT:
-	*(int *)buf = CONFIG_PLATFORM_EMULATION_BLOCK_DISK_NUM_SECTORS;
-	return 0;
+        *(int *)buf = CONFIG_PLATFORM_EMULATION_BLOCK_DISK_NUM_SECTORS;
+        return 0;
     case BLOCK_IOCTL_GET_BLOCK_SIZE:
     case BLOCK_IOCTL_ERASE_SECTOR:
-	break;
+        break;
     }
     return -1;
 }
@@ -164,8 +164,8 @@ int sim_unix_block_disk_read(unsigned char *buf, int sector, int count)
     n = fread(buf, count, SEC_SIZE, block_disk);
     if (n != count * SEC_SIZE)
     {
-	tp_err(("read %d/%d bytes\n", n, count * SEC_SIZE));
-	return -1;
+        tp_err(("read %d/%d bytes\n", n, count * SEC_SIZE));
+        return -1;
     }
     tp_info(("sector %d count %d read %d bytes\n", sector, count, n));
     return 0;
@@ -179,8 +179,8 @@ int sim_unix_block_disk_write(const unsigned char *buf, int sector, int count)
     n = fwrite(buf, count, SEC_SIZE, block_disk);
     if (n != count * SEC_SIZE)
     {
-	tp_err(("wrote %d/%d bytes\n", n, count * SEC_SIZE));
-	return -1;
+        tp_err(("wrote %d/%d bytes\n", n, count * SEC_SIZE));
+        return -1;
     }
     tp_info(("sector %d count %d wrote %d bytes\n", sector, count, n));
     return 0;
@@ -191,9 +191,9 @@ static void sim_unix_uninit(void)
 {
     printf("Unix Platform Simulator Uninit\n");
     if (pty_fd != -1)
-	close(pty_fd);
+        close(pty_fd);
     if (block_disk)
-	fclose(block_disk);
+        fclose(block_disk);
     unix_set_term_raw(STDIN_FD, 0);
     unix_uninit();
 }
@@ -214,23 +214,23 @@ static void sim_unix_init(void)
 
     unix_sim_add_fd_event_to_map(STDIO_ID, STDIN_FD, STDOUT_FD);
     if (pty_fd != -1)
-	unix_sim_add_fd_event_to_map(PTY_ID, pty_fd, pty_fd);
+        unix_sim_add_fd_event_to_map(PTY_ID, pty_fd, pty_fd);
     atexit(sim_unix_uninit);
 }
 
 const platform_t platform = {
     .serial = {
-	.enable = sim_unix_serial_enable,
-	.read = sim_unix_serial_read,
-	.write = sim_unix_serial_write,
+        .enable = sim_unix_serial_enable,
+        .read = sim_unix_serial_read,
+        .write = sim_unix_serial_write,
     },
 #ifdef CONFIG_PLATFORM_EMULATION_BLOCK_DISK
     .block = {
-	.init = sim_unix_block_disk_init,
-	.status = sim_unix_block_disk_status,
-	.ioctl = sim_unix_block_disk_ioctl,
-	.read = sim_unix_block_disk_read,
-	.write = sim_unix_block_disk_write,
+        .init = sim_unix_block_disk_init,
+        .status = sim_unix_block_disk_status,
+        .ioctl = sim_unix_block_disk_ioctl,
+        .read = sim_unix_block_disk_read,
+        .write = sim_unix_block_disk_write,
     },
 #endif
     .init = sim_unix_init,

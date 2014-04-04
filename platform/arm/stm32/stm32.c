@@ -37,9 +37,9 @@ int stm32_select(int ms)
 
     while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
     {
-	event |= buffered_serial_events_process();
+        event |= buffered_serial_events_process();
 
-	/* XXX: Sleep */
+        /* XXX: Sleep */
     }
 
     return event;

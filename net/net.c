@@ -36,7 +36,7 @@ u16 net_csum(u16 *addr, u16 byte_len)
         sum += *addr++;
 
     if (byte_len)
-	sum += *(u8 *)addr;
+        sum += *(u8 *)addr;
     while (sum >> 16)
         sum = (sum & 0xffff) + (sum >> 16);
 

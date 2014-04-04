@@ -31,7 +31,7 @@ static char buf[18];
 char *eth_mac_serialize(eth_mac_t *m)
 {
     tsnprintf(buf, sizeof(buf), "%02x:%02x:%02x:%02x:%02x:%02x", m->mac[0],
-	m->mac[1], m->mac[2], m->mac[3], m->mac[4], m->mac[5]);
+        m->mac[1], m->mac[2], m->mac[3], m->mac[4], m->mac[5]);
     return buf;
 }
 

@@ -68,14 +68,14 @@ void tstr_list_free(tstr_list_t **l);
 static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
 {
     return a->len != b->len || (b->len && (*TPTR(a) != *TPTR(b))) ||
-	memcmp(TPTR(a), TPTR(b), b->len);
+        memcmp(TPTR(a), TPTR(b), b->len);
 }
 
 static inline int _tstr_cmp_str(const tstr_t *a, const char *b,
     unsigned short blen)
 {
     return a->len != blen || (blen && (*TPTR(a) != *b)) ||
-	memcmp(TPTR(a), b, blen);
+        memcmp(TPTR(a), b, blen);
 }
 
 static inline int tstr_cmp_str(const tstr_t *a, const char *b)

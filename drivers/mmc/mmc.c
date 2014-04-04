@@ -89,9 +89,9 @@ static void xmit_spi_multi(const u8 *data, int cnt)
 {
     while (cnt)
     {
-	xmit_spi(*data++);
-	xmit_spi(*data++);
-	cnt -= 2;
+        xmit_spi(*data++);
+        xmit_spi(*data++);
+        cnt -= 2;
     }
 }
 
@@ -130,7 +130,7 @@ static void send_initial_clock_train(void)
     /* required number of times
      */
     for (i = 0; i < 10; i++)
-	spi_send(g_mmc.spi_port, 0xFF); /* Write DUMMY data */
+        spi_send(g_mmc.spi_port, 0xFF); /* Write DUMMY data */
 
     /* Revert to hardware control of the SSI TX line. */
     spi_reconf(g_mmc.spi_port);
@@ -146,7 +146,7 @@ static void power_on(void)
      */
 
     if (spi_init(g_mmc.spi_port))
-	return;
+        return;
 
     gpio_set_pin_mode(g_mmc.cs, GPIO_PM_OUTPUT);
     cs_high();
@@ -170,11 +170,11 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
 
     /* Check for invalid token */
     if (token != 0xFE)
-	return -1;
+        return -1;
 
     do 
     {
-	/* Receive the data block into buffer */
+        /* Receive the data block into buffer */
         *buff++ = rcvr_spi();
         *buff++ = rcvr_spi();
     } while (byte_count -= 2);
@@ -190,13 +190,13 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
 static int xmit_datablock(const u8 *buff, u8 token)
 {
     if (wait_ready() != 0xFF) 
-	return -1;
+        return -1;
 
     xmit_spi(token);
     if (token == 0xFD) 
     {
-	/* Stop token. Finished */
-	return 0;
+        /* Stop token. Finished */
+        return 0;
     }
 
     /* Data token */
@@ -212,7 +212,7 @@ static u8 send_cmd(u8 cmd, u32 arg)
     u8 n, res;
     
     if (wait_ready() != 0xFF) 
-	return 0xFF;
+        return 0xFF;
 
     /* Send command packet */
     xmit_spi(cmd); /* Command */
@@ -222,14 +222,14 @@ static u8 send_cmd(u8 cmd, u32 arg)
     xmit_spi((u8)arg); /* Argument[7..0] */
     n = 0xFF;
     if (cmd == CMD_GO_IDLE_STATE) 
-	n = 0x95; /* CRC for CMD_GO_IDLE_STATE(0) */
+        n = 0x95; /* CRC for CMD_GO_IDLE_STATE(0) */
     if (cmd == CMD_SEND_IF_COND) 
-	n = 0x87; /* CRC for CMD_SEND_IF_COND(0x1AA) */
+        n = 0x87; /* CRC for CMD_SEND_IF_COND(0x1AA) */
     xmit_spi(n);
 
     /* Receive command response */
     if (cmd == CMD_STOP_TRANSMISSION)
-	rcvr_spi(); /* Skip a stuff byte when stop reading */
+        rcvr_spi(); /* Skip a stuff byte when stop reading */
 
     /* Wait for a valid response in timeout of 10 attempts */
     n = 10;
@@ -287,8 +287,8 @@ int mmc_spi_disk_init(void)
 
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_DISK)
     { 
-	/* No card in the socket */
-	return g_mmc.disc_status;
+        /* No card in the socket */
+        return g_mmc.disc_status;
     }
 
     /* Force socket power on */
@@ -299,62 +299,62 @@ int mmc_spi_disk_init(void)
     ty = 0;
 
     if (send_cmd(CMD_GO_IDLE_STATE, 0) != 1)
-	goto Exit;
+        goto Exit;
 
     /* Enter Idle state */
     expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
     if (send_cmd(CMD_SEND_IF_COND, 0x1AA) == 1) 
     {
-	u8 n, ocr[4];
+        u8 n, ocr[4];
 
-	/* SDC Ver2+ */
-	for (n = 0; n < 4; n++)
-	    ocr[n] = rcvr_spi();
-	if (ocr[2] == 0x01 && ocr[3] == 0xAA)
-	{
-	    /* The card can work at vdd range of 2.7-3.6V */
-	    while (TICKS() < expiry)
-	    {
-		if (send_cmd(CMD_APP_CMD, 0) <= 1 &&
-		    send_cmd(CMD_SEND_OP_COND_ACMD, 1UL << 30) == 0)
-		{
-		    /* ACMD41 with HCS bit */
-		    break;
-		}
-	    }
-	    if (TICKS() >= expiry || send_cmd(CMD_READ_OCR, 0))
-		goto Exit;
+        /* SDC Ver2+ */
+        for (n = 0; n < 4; n++)
+            ocr[n] = rcvr_spi();
+        if (ocr[2] == 0x01 && ocr[3] == 0xAA)
+        {
+            /* The card can work at vdd range of 2.7-3.6V */
+            while (TICKS() < expiry)
+            {
+                if (send_cmd(CMD_APP_CMD, 0) <= 1 &&
+                    send_cmd(CMD_SEND_OP_COND_ACMD, 1UL << 30) == 0)
+                {
+                    /* ACMD41 with HCS bit */
+                    break;
+                }
+            }
+            if (TICKS() >= expiry || send_cmd(CMD_READ_OCR, 0))
+                goto Exit;
 
-	    /* Check CCS bit */
-	    for (n = 0; n < 4; n++)
-		ocr[n] = rcvr_spi();
-	    ty = CARD_SDC | ((ocr[0] & 0x40) ? CARD_BLOCK_ADDRESSING : 0);
-	}
+            /* Check CCS bit */
+            for (n = 0; n < 4; n++)
+                ocr[n] = rcvr_spi();
+            ty = CARD_SDC | ((ocr[0] & 0x40) ? CARD_BLOCK_ADDRESSING : 0);
+        }
     }
     else 
     {
-	/* SDC Ver1 or MMC */
-	ty = (send_cmd(CMD_APP_CMD, 0) <= 1 &&
-	    send_cmd(CMD_SEND_OP_COND_ACMD, 0) <= 1) ? CARD_SDC : CARD_MMC;
-	while (TICKS() < expiry)
-	{
-	    if (ty == CARD_SDC)
-	    {
-		if (send_cmd(CMD_APP_CMD, 0) <= 1 &&
-		    send_cmd(CMD_SEND_OP_COND_ACMD, 0) == 0)
-		{
-		    break;
-		}
-	    }
-	    else
-	    {
-		if (send_cmd(CMD_SEND_OP_COND, 0) == 0)
-		    break;
-	    }
-	}
-	/* Select R/W block length */
-	if (TICKS() >= expiry || send_cmd(CMD_SET_BLOCKLEN, 512) != 0)
-	    ty = 0;
+        /* SDC Ver1 or MMC */
+        ty = (send_cmd(CMD_APP_CMD, 0) <= 1 &&
+            send_cmd(CMD_SEND_OP_COND_ACMD, 0) <= 1) ? CARD_SDC : CARD_MMC;
+        while (TICKS() < expiry)
+        {
+            if (ty == CARD_SDC)
+            {
+                if (send_cmd(CMD_APP_CMD, 0) <= 1 &&
+                    send_cmd(CMD_SEND_OP_COND_ACMD, 0) == 0)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                if (send_cmd(CMD_SEND_OP_COND, 0) == 0)
+                    break;
+            }
+        }
+        /* Select R/W block length */
+        if (TICKS() >= expiry || send_cmd(CMD_SET_BLOCKLEN, 512) != 0)
+            ty = 0;
     }
 
 Exit:
@@ -362,7 +362,7 @@ Exit:
     rcvr_spi(); /* Idle (Release DO) */
 
     if (!(card_type = ty))
-	return -1;
+        return -1;
 
     /* Initialization succeded */
     g_mmc.disc_status &= ~BLOCK_DISK_STATUS_NO_INIT;
@@ -378,40 +378,40 @@ int mmc_spi_disk_status(void)
 int mmc_spi_disk_read(u8 *buff, int sector, int count)
 {
     if (!count) 
-	return -1;
+        return -1;
 
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT) 
-	return -1;
+        return -1;
 
     if (!(CARD_IS_BLOCK_ADDRESSING(card_type)))
     { 
-	/* Convert to byte address if needed */
-	sector *= 512;
+        /* Convert to byte address if needed */
+        sector *= 512;
     }
 
     cs_low();
 
     if (count == 1)
     {
-	/* Single block read */
+        /* Single block read */
         if (send_cmd(CMD_READ_SINGLE_BLOCK, sector) ||
-	   rcvr_datablock(buff, 512))
-	{
-	   goto Exit;
-	}
+           rcvr_datablock(buff, 512))
+        {
+           goto Exit;
+        }
 
-	count = 0;
+        count = 0;
     }
     else
     {
-	/* Multiple block read */
-	if (send_cmd(CMD_READ_MULTIPLE_BLOCK, sector)) 
-	    goto Exit;
+        /* Multiple block read */
+        if (send_cmd(CMD_READ_MULTIPLE_BLOCK, sector)) 
+            goto Exit;
 
-	/* Do the actual reading */
-	while (count-- && !rcvr_datablock(buff += 512, 512));
+        /* Do the actual reading */
+        while (count-- && !rcvr_datablock(buff += 512, 512));
 
-	send_cmd_stop_transmission();
+        send_cmd_stop_transmission();
     }
 
 Exit:
@@ -427,13 +427,13 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
     if (!count || g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT ||
         g_mmc.disc_status & BLOCK_DISK_STATUS_PROTECTED)
     {
-	return -1;
+        return -1;
     }
 
     if (!(CARD_IS_BLOCK_ADDRESSING(card_type)))
     {
-	/* Convert to byte address if needed */
-	sector *= 512;
+        /* Convert to byte address if needed */
+        sector *= 512;
     }
 
     cs_low();
@@ -442,28 +442,28 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
     {
         /* WRITE_BLOCK */
         if (send_cmd(CMD_WRITE_BLOCK, sector) || xmit_datablock(buff, 0xFE))
-	    goto Exit;
+            goto Exit;
 
-	count = 0;
+        count = 0;
     }
     else 
     {
-	/* Multiple block write */
-	if (CARD_IS_SDC(card_type))
-	{
-	    send_cmd(CMD_APP_CMD, 0); 
-	    send_cmd(CMD_SET_BLOCK_COUNT, count); /* ACMD23 */
-	}
+        /* Multiple block write */
+        if (CARD_IS_SDC(card_type))
+        {
+            send_cmd(CMD_APP_CMD, 0); 
+            send_cmd(CMD_SET_BLOCK_COUNT, count); /* ACMD23 */
+        }
 
-	if (send_cmd(CMD_WRITE_MULTIPLE_BLOCK, sector)) 
-	    goto Exit;
+        if (send_cmd(CMD_WRITE_MULTIPLE_BLOCK, sector)) 
+            goto Exit;
 
-	/* WRITE_MULTIPLE_BLOCK */
-	while (count-- && !xmit_datablock(buff += 512, 0xFC));
+        /* WRITE_MULTIPLE_BLOCK */
+        while (count-- && !xmit_datablock(buff += 512, 0xFC));
 
-	/* STOP_TRAN token */
-	if (xmit_datablock(0, 0xFD))
-	    count = 1;
+        /* STOP_TRAN token */
+        if (xmit_datablock(0, 0xFD))
+            count = 1;
     }
 
 Exit:
@@ -481,23 +481,23 @@ static int mmc_spi_ioctl_get_sector_count(void *buff)
 
     /* Get number of sectors on the disk (u32) */
     if (send_cmd(CMD_SEND_CSD, 0) || rcvr_datablock(csd, 16))
-	return -1;
+        return -1;
 
     if ((csd[0] >> 6) == 1) 
     {
-	/* SDC ver 2.00 */
-	csize = csd[9] + ((u16)csd[8] << 8) + 1;
-	*(u32 *)buff = (u32)csize << 10;
+        /* SDC ver 2.00 */
+        csize = csd[9] + ((u16)csd[8] << 8) + 1;
+        *(u32 *)buff = (u32)csize << 10;
     }
     else 
     {
-	u8 n;
+        u8 n;
 
-	/* MMC or SDC ver 1.XX */
-	n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
-	csize = (csd[8] >> 6) + ((u16)csd[7] << 2) + 
-	    ((u16)(csd[6] & 3) << 10) + 1;
-	*(u32 *)buff = (u32)csize << (n - 9);
+        /* MMC or SDC ver 1.XX */
+        n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
+        csize = (csd[8] >> 6) + ((u16)csd[7] << 2) + 
+            ((u16)(csd[6] & 3) << 10) + 1;
+        *(u32 *)buff = (u32)csize << (n - 9);
     }
     return 0;
 }
@@ -507,27 +507,27 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
     int res = -1;
 
     if (g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT) 
-	return -1;
+        return -1;
 
     cs_low();
 
     switch (cmd) 
     {
     case BLOCK_IOCTL_GET_SECTOR_COUNT:
-	res = mmc_spi_ioctl_get_sector_count(buff);
-	break;
+        res = mmc_spi_ioctl_get_sector_count(buff);
+        break;
     case BLOCK_IOCTL_GET_SECTOR_SIZE:
-    	/* Get sectors on the disk (u16) */
-	*(u16 *)buff = 512;
-	res = 0;
-	break;
+        /* Get sectors on the disk (u16) */
+        *(u16 *)buff = 512;
+        res = 0;
+        break;
     case BLOCK_IOCTL_SYNC:
-    	/* Make sure that data has been written */
-	if (wait_ready() == 0xFF)
-	    res = 0;
-	break;
+        /* Make sure that data has been written */
+        if (wait_ready() == 0xFF)
+            res = 0;
+        break;
     default:
-	break;
+        break;
     }
 
     cs_high();

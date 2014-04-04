@@ -109,7 +109,7 @@ void (*const g_pfnVectors[])(void) =
     gpio_port_c_isr,                  // GPIO Port C
     gpio_port_d_isr,                  // GPIO Port D
     gpio_port_e_isr,                  // GPIO Port E
-    uart0_isr,	                      // UART0 Rx and Tx
+    uart0_isr,                        // UART0 Rx and Tx
     uart1_isr,                        // UART1 Rx and Tx
     default_isr,                      // SSI0 Rx and Tx
     default_isr,                      // I2C0 Master and Slave
@@ -134,7 +134,7 @@ void (*const g_pfnVectors[])(void) =
     default_isr,                      // Analog Comparator 2
     default_isr,                      // System Control (PLL, OSC, BO)
     default_isr,                      // FLASH Control
-    gpio_port_f_isr,	              // GPIO Port F
+    gpio_port_f_isr,                  // GPIO Port F
     gpio_port_g_isr,                  // GPIO Port G
     gpio_port_h_isr,                  // GPIO Port H
     uart2_isr,                        // UART2 Rx and Tx
@@ -144,7 +144,7 @@ void (*const g_pfnVectors[])(void) =
     default_isr,                      // I2C1 Master and Slave
     default_isr,                      // CAN0
     default_isr,                      // CAN1
-    tiva_c_emac_isr,	              // Ethernet
+    tiva_c_emac_isr,                  // Ethernet
     default_isr,                      // Hibernate
     default_isr,                      // USB0
     default_isr,                      // PWM Generator 3

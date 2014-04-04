@@ -78,9 +78,9 @@ static void clock_init(void)
     /* Loop until XT1,XT2 & DCO fault flag is cleared */
     do
     {
-	UCSCTL7 &= ~(XT2OFFG + XT1LFOFFG + DCOFFG);
-	/* Clear XT2,XT1,DCO fault flags */
-	SFRIFG1 &= ~OFIFG; /* Clear fault flags */
+        UCSCTL7 &= ~(XT2OFFG + XT1LFOFFG + DCOFFG);
+        /* Clear XT2,XT1,DCO fault flags */
+        SFRIFG1 &= ~OFIFG; /* Clear fault flags */
     } while (SFRIFG1&OFIFG); /* Test oscillator fault flag */
 }
 
@@ -119,9 +119,9 @@ int msp430f5529_serial_write(int u, char *buf, int size)
 
     while (size-- > 0)
     {
-	/* Wait until transmit buffer is empty */
-	while (!(*usci->ifg & UCTXIFG));
-	*usci->txbuf = *buf++;
+        /* Wait until transmit buffer is empty */
+        while (!(*usci->ifg & UCTXIFG));
+        *usci->txbuf = *buf++;
     }
     return 0;
 }
@@ -143,9 +143,9 @@ void msp430f5529_serial_irq_enable(int u, int enabled)
     const msp430f5529_usci_t *usci = &msp430f5529_uscis[u];
 
     if (enabled)
-	*usci->ie |= UCRXIE;
+        *usci->ie |= UCRXIE;
     else
-	*usci->ie &= ~UCRXIE;
+        *usci->ie &= ~UCRXIE;
 }
 
 int msp430f5529_select(int ms)
@@ -154,12 +154,12 @@ int msp430f5529_select(int ms)
 
     while (!event)
     {
-	event |= buffered_serial_events_process();
+        event |= buffered_serial_events_process();
 #ifdef CONFIG_GPIO
-	event |= gpio_events_process();
+        event |= gpio_events_process();
 #endif
 
-	/* XXX: Sleep */
+        /* XXX: Sleep */
     }
 
     return event;
@@ -167,27 +167,27 @@ int msp430f5529_select(int ms)
 
 const platform_t platform = {
     .serial = {
-	.enable = msp430f5529_serial_enable,
-	.read = buffered_serial_read,
-	.write = msp430f5529_serial_write,
-	.irq_enable = msp430f5529_serial_irq_enable,
+        .enable = msp430f5529_serial_enable,
+        .read = buffered_serial_read,
+        .write = msp430f5529_serial_write,
+        .irq_enable = msp430f5529_serial_irq_enable,
     },
 #ifdef CONFIG_GPIO
     .gpio = {
-	.digital_write = msp430f5529_gpio_digital_write,
-	.digital_read = msp430f5529_gpio_digital_read,
-	.set_pin_mode = msp430f5529_gpio_set_pin_mode,
-	.set_port_val = msp430f5529_gpio_set_port_val,
-	.get_port_val = msp430f5529_gpio_get_port_val,
+        .digital_write = msp430f5529_gpio_digital_write,
+        .digital_read = msp430f5529_gpio_digital_read,
+        .set_pin_mode = msp430f5529_gpio_set_pin_mode,
+        .set_port_val = msp430f5529_gpio_set_port_val,
+        .get_port_val = msp430f5529_gpio_get_port_val,
     },
 #endif
 #ifdef CONFIG_SPI
     .spi = {
-	.init = msp430f5529_spi_init,
-	.reconf = msp430f5529_spi_reconf,
-	.set_max_speed = msp430f5529_usci_set_speed,
-	.send = msp430f5529_spi_send,
-	.receive = msp430f5529_spi_receive,
+        .init = msp430f5529_spi_init,
+        .reconf = msp430f5529_spi_reconf,
+        .set_max_speed = msp430f5529_usci_set_speed,
+        .send = msp430f5529_spi_send,
+        .receive = msp430f5529_spi_receive,
     },
 #endif
     .init = msp430f5529_init,

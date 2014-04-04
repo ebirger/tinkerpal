@@ -98,14 +98,14 @@ static void probe_helper(u16 chip_id)
     /* Try to provide info on a close match */
     for (c = controllers; c->chip_id; c++)
     {
-	u16 delta = chip_id ^ c->chip_id;
+        u16 delta = chip_id ^ c->chip_id;
 
-	if (!delta || MORE_THAN_ONE_SET_BIT(delta))
-	    continue;
+        if (!delta || MORE_THAN_ONE_SET_BIT(delta))
+            continue;
 
-	tp_out(("Note: %x is supported, and is one bit away.\n"
-	    "You may have missed a connection - check D%d\n",
-	    c->chip_id, find_bit(delta)));
+        tp_out(("Note: %x is supported, and is one bit away.\n"
+            "You may have missed a connection - check D%d\n",
+            c->chip_id, find_bit(delta)));
     }
 }
 
@@ -118,8 +118,8 @@ static const ili93xx_cmd_t *ili93xx_probe(ili93xx_t *i)
 
     if (!chip_id)
     {
-	tp_err(("No ILI93xx controllers found\n"));
-	return NULL;
+        tp_err(("No ILI93xx controllers found\n"));
+        return NULL;
     }
 
     tp_info(("Probing chip ID: %x\n", chip_id));
@@ -128,9 +128,9 @@ static const ili93xx_cmd_t *ili93xx_probe(ili93xx_t *i)
     for (c = controllers; c->chip_id && c->chip_id != chip_id; c++);
     if (!c->chip_id)
     {
-	tp_out(("Chip ID %x is not supported\n", chip_id));
-	probe_helper(chip_id);
-	return NULL;
+        tp_out(("Chip ID %x is not supported\n", chip_id));
+        probe_helper(chip_id);
+        return NULL;
     }
 
     tp_out(("Found ILI93xx controller %x\n", chip_id));
@@ -145,14 +145,14 @@ static int chip_init(ili93xx_t *i)
     if (gpio_set_pin_mode(RST(i), GPIO_PM_OUTPUT) ||
         gpio_set_pin_mode(BL(i), GPIO_PM_OUTPUT))
     {
-	tp_err(("Unable to set pin mode for control pins\n"));
-	return -1;
+        tp_err(("Unable to set pin mode for control pins\n"));
+        return -1;
     }
 
     if (TRNS(i)->ops->db_init(TRNS(i)))
     {
-	tp_err(("Unable to init DB transport\n"));
-	return -1;
+        tp_err(("Unable to init DB transport\n"));
+        return -1;
     }
 
     /* Set GPIO Values */
@@ -169,14 +169,14 @@ static int chip_init(ili93xx_t *i)
     platform_msleep(60);
 
     if (!(sequence = ili93xx_probe(i)))
-	return -1;
+        return -1;
 
     for (; sequence->cmd != CMD_END; sequence++)
     {
-	if (sequence->cmd == CMD_DELAY)
-	    platform_msleep(sequence->data);
-	else
-	    ili93xx_reg_write(i, (u8)sequence->cmd, sequence->data);
+        if (sequence->cmd == CMD_DELAY)
+            platform_msleep(sequence->data);
+        else
+            ili93xx_reg_write(i, (u8)sequence->cmd, sequence->data);
     }
     return 0;
 }

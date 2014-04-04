@@ -64,9 +64,9 @@ const board_t board = {
     .leds = leds,
 #ifdef CONFIG_ILI93XX
     .ili93xx_params = {
-	.trns = &stm32_fsmc_ili93xx_trns,
-	.rst = GPIO_RES(PE1),
-	.backlight = GPIO_RES(PB10),
+        .trns = &stm32_fsmc_ili93xx_trns,
+        .rst = GPIO_RES(PE1),
+        .backlight = GPIO_RES(PB10),
     },
 #endif
 };

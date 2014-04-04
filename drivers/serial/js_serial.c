@@ -81,7 +81,7 @@ int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int event_id;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     e = js_event_new(argv[1], this, serial_on_data_cb);
 
@@ -96,7 +96,7 @@ int do_serial_print(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     string_t *s;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     s = to_string(argv[1]);
 
@@ -110,7 +110,7 @@ int do_serial_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int id;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     id = obj_get_int(argv[1]);
     *ret = object_new();

@@ -38,16 +38,16 @@ const board_t board = {
     .leds = leds,
 #ifdef CONFIG_MMC
     .mmc_params = {
-	.spi_port = SPI_RES(SSI0),
-	.mosi = GPIO_RES(PA5),
-	.cs = GPIO_RES(PB6),
+        .spi_port = SPI_RES(SSI0),
+        .mosi = GPIO_RES(PA5),
+        .cs = GPIO_RES(PB6),
     },
 #endif
 #ifdef CONFIG_ENC28J60
     .enc28j60_params = {
-	.spi_port = SPI_RES(SSI1),
-	.cs = GPIO_RES(PE3),
-	.intr = GPIO_RES(PF4),
+        .spi_port = SPI_RES(SSI1),
+        .cs = GPIO_RES(PE3),
+        .intr = GPIO_RES(PF4),
     },
 #endif
 };

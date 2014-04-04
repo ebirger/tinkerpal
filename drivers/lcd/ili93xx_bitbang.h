@@ -28,13 +28,13 @@
 typedef struct {
     ili93xx_db_transport_t trns;
     struct {
-	resource_t rs;
-	resource_t wr;
-	resource_t rd;
-	resource_t data_port_low;
-	u16 data_port_low_shift;
-	resource_t data_port_high;
-	u16 data_port_high_shift;
+        resource_t rs;
+        resource_t wr;
+        resource_t rd;
+        resource_t data_port_low;
+        u16 data_port_low_shift;
+        resource_t data_port_high;
+        u16 data_port_high_shift;
     } params;
 } ili93xx_db_bitbang_t;
 
@@ -43,7 +43,7 @@ extern const ili93xx_db_transport_ops_t ili93xx_bitbang_ops;
 #define ILI93XX_BITBANG_TRNS(p...) \
     (ili93xx_db_transport_t *)&((ili93xx_db_bitbang_t){ \
         .trns = {.ops = &ili93xx_bitbang_ops, }, \
-	.params = p, \
+        .params = p, \
 })
 
 #endif

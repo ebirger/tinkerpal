@@ -101,7 +101,7 @@ static inline int is_whitespace(char c)
 static inline int is_control_char(char c)
 {
     return c == '{' || c == '}' || c == '(' || c == ')' || c == ';' || 
-	c == ',' || c == '?' || c == ':' || c == '.' || c == '[' || c == ']';
+        c == ',' || c == '?' || c == ':' || c == '.' || c == '[' || c == ']';
 }
 
 static inline int is_string_delim(char c)
@@ -113,17 +113,17 @@ static void _get_char(scan_t *scan)
 {
     if (scan->size > 0)
     {
-	scan->lpc = scan->pc;
-	if (scan->size > 1)
-	    scan->look = *scan->pc;
-	scan->pc++;
-	scan->size--;
+        scan->lpc = scan->pc;
+        if (scan->size > 1)
+            scan->look = *scan->pc;
+        scan->pc++;
+        scan->size--;
     }
     if (scan->size == 0)
     {
-	scan->look = 255; /* invalid char */
-	SET_EOF(scan);
-	return;
+        scan->look = 255; /* invalid char */
+        SET_EOF(scan);
+        return;
     }
     tp_debug(("[%x:%c] ", scan->look, scan->look));
 }
@@ -132,37 +132,37 @@ static void skip_white(scan_t *scan)
 {
     while (1)
     {
-	char next;
+        char next;
 
-	while (is_whitespace(scan->look) && !IS_EOF(scan))
-	    _get_char(scan);
+        while (is_whitespace(scan->look) && !IS_EOF(scan))
+            _get_char(scan);
 
-	if (scan->look != '/')
-	    break;
-	
-	/* XXX: rewrite this pretty */
-	next = *scan->pc;
-	/* Skip single line comment */
-	if (next == '/')
-	{
-	    _get_char(scan); /* Skip '/' */
-	    _get_char(scan); /* Skip '/' */
-	    while (!is_newline(scan->look) && !IS_EOF(scan))
-		_get_char(scan);
-	}
-	/* Skip multiline comments */
-	else if (next == '*')
-	{
-	    _get_char(scan); /* Skip '/' */
-	    _get_char(scan); /* Skip '*' */
-	    /* XXX: assert on nested comments */
-	    while (scan->look != '*' && *scan->pc != '/' && !IS_EOF(scan))
-		_get_char(scan);
-	    _get_char(scan); /* Skip '*' */
-	    _get_char(scan); /* Skip '/' */
-	}
-	else
-	    break;
+        if (scan->look != '/')
+            break;
+        
+        /* XXX: rewrite this pretty */
+        next = *scan->pc;
+        /* Skip single line comment */
+        if (next == '/')
+        {
+            _get_char(scan); /* Skip '/' */
+            _get_char(scan); /* Skip '/' */
+            while (!is_newline(scan->look) && !IS_EOF(scan))
+                _get_char(scan);
+        }
+        /* Skip multiline comments */
+        else if (next == '*')
+        {
+            _get_char(scan); /* Skip '/' */
+            _get_char(scan); /* Skip '*' */
+            /* XXX: assert on nested comments */
+            while (scan->look != '*' && *scan->pc != '/' && !IS_EOF(scan))
+                _get_char(scan);
+            _get_char(scan); /* Skip '*' */
+            _get_char(scan); /* Skip '/' */
+        }
+        else
+            break;
     }
 }
 
@@ -177,14 +177,14 @@ static inline tstr_t extract_string(scan_t *scan)
     start = scan->lpc;
     while (scan->look != delim && !IS_EOF(scan))
     {
-	if (is_newline(scan->look))
-	    tp_crit(("Newlines are not allowed in strings\n"));
+        if (is_newline(scan->look))
+            tp_crit(("Newlines are not allowed in strings\n"));
 
-	if (scan->look == '\\')
-	    tflags |= TSTR_FLAG_ESCAPED;
+        if (scan->look == '\\')
+            tflags |= TSTR_FLAG_ESCAPED;
 
-	/* XXX: allow escaping the delimiter */
-	_get_char(scan);
+        /* XXX: allow escaping the delimiter */
+        _get_char(scan);
     }
 
     tstr_init(&ret, start, scan->lpc - start, tflags);
@@ -201,7 +201,7 @@ static inline tstr_t extract_identifier(scan_t *scan)
 
     start = scan->lpc;
     while (is_valid_identifier_non_first_letter(scan->look))
-	_get_char(scan);
+        _get_char(scan);
 
     tstr_init(&ret, start, scan->lpc - start, tflags);
     skip_white(scan);
@@ -293,13 +293,13 @@ static inline token_type_t identifier_to_tok(const tstr_t *str)
     int len = str->len;
 
     if (len < 2 || len > 9)
-	return TOK_ID;
+        return TOK_ID;
 
     for (k = keywords[len]; k->tok; k++)
     {
-	/* Exit on exact match */
-	if (!_tstr_cmp_str(str, k->str, len))
-	    return k->tok;
+        /* Exit on exact match */
+        if (!_tstr_cmp_str(str, k->str, len))
+            return k->tok;
     }
 
     return TOK_ID;
@@ -313,14 +313,14 @@ static inline tnum_t extract_num(scan_t *scan)
 
     start = scan->lpc;
     while (is_number_letter(scan->look))
-	_get_char(scan);
+        _get_char(scan);
     tstr_init(&s, start, scan->lpc - start, 0);
     skip_white(scan);
 
     if (tstr_to_tnum(&ret, &s))
     {
-	/* Invalid number, mark scan as invalid */
-	scan->flags |= SCAN_FLAG_INVALID;
+        /* Invalid number, mark scan as invalid */
+        scan->flags |= SCAN_FLAG_INVALID;
     }
 
     return ret;
@@ -335,26 +335,26 @@ void js_scan_next_token(scan_t *scan)
     scan->last_token_start = scan->lpc;
     if (is_control_char(scan->look))
     {
-	scan->tok = scan->look;
-	_get_char(scan);
-	skip_white(scan);
-	return;
+        scan->tok = scan->look;
+        _get_char(scan);
+        skip_white(scan);
+        return;
     }
     if (is_digit(scan->look)) 
     {
-	scan->tok = TOK_NUM;
-	scan->value.num = extract_num(scan);
-	return;
+        scan->tok = TOK_NUM;
+        scan->value.num = extract_num(scan);
+        return;
     }
     if (scan->size > 1)
     {
-	next = *scan->pc;
-	if (scan->size > 2)
-	{
-	    next2 = *(scan->pc + 1);
-	    if (scan->size > 3)
-		next3 = *(scan->pc + 2);
-	}
+        next = *scan->pc;
+        if (scan->size > 2)
+        {
+            next2 = *(scan->pc + 1);
+            if (scan->size > 3)
+                next3 = *(scan->pc + 2);
+        }
     }
     switch (scan->look)
     {
@@ -365,73 +365,73 @@ void js_scan_next_token(scan_t *scan)
     case '>':
     case '<':
     case '=':
-	if (next == scan->look)
-	    scan->tok |= DOUBLE;
+        if (next == scan->look)
+            scan->tok |= DOUBLE;
     case '*':
     case '/':
     case '%':
     case '~':
     case '!':
     case '^':
-	scan->tok |= scan->look;
-	if (next == '=' && scan->look != '=')
-	    scan->tok |= EQ;
-	if ((scan->tok == TOK_IS_EQ || scan->tok == TOK_NOT_EQ) && 
-	    next2 == '=')
-	{
-	    scan->tok |= STRICT;
-	}
-	if (scan->tok == TOK_SHR && next2 == '>')
-	    scan->tok |= TRIPPLE;
+        scan->tok |= scan->look;
+        if (next == '=' && scan->look != '=')
+            scan->tok |= EQ;
+        if ((scan->tok == TOK_IS_EQ || scan->tok == TOK_NOT_EQ) && 
+            next2 == '=')
+        {
+            scan->tok |= STRICT;
+        }
+        if (scan->tok == TOK_SHR && next2 == '>')
+            scan->tok |= TRIPPLE;
 
-	if ((scan->tok == TOK_SHR || scan->tok == TOK_SHL) && next2 == '=')
-	    scan->tok |= EQ;
-	if (scan->tok == TOK_SHRZ && next3 == '=')
-	    scan->tok |= EQ;
+        if ((scan->tok == TOK_SHR || scan->tok == TOK_SHL) && next2 == '=')
+            scan->tok |= EQ;
+        if (scan->tok == TOK_SHRZ && next3 == '=')
+            scan->tok |= EQ;
 
-	_get_char(scan);
-	if (scan->tok & (DOUBLE | EQ))
-	    _get_char(scan);
-	if (scan->tok & (STRICT | TRIPPLE) ||
+        _get_char(scan);
+        if (scan->tok & (DOUBLE | EQ))
+            _get_char(scan);
+        if (scan->tok & (STRICT | TRIPPLE) ||
             ((scan->tok & (DOUBLE | EQ)) == (DOUBLE | EQ)))
-	{
-	    _get_char(scan);
-	}
+        {
+            _get_char(scan);
+        }
 
-	if ((scan->tok & (TRIPPLE | DOUBLE | EQ)) == (TRIPPLE | DOUBLE | EQ))
-	    _get_char(scan);
+        if ((scan->tok & (TRIPPLE | DOUBLE | EQ)) == (TRIPPLE | DOUBLE | EQ))
+            _get_char(scan);
 
-	skip_white(scan);
-	return;
+        skip_white(scan);
+        return;
     }
     if (is_string_delim(scan->look))
     {
-	scan->tok = TOK_STRING;
-	scan->value.string = extract_string(scan);
-	return;
+        scan->tok = TOK_STRING;
+        scan->value.string = extract_string(scan);
+        return;
     }
     if (is_valid_identifier_first_letter(scan->look))
     {
-	int constant;
-	tstr_t id = extract_identifier(scan);
+        int constant;
+        tstr_t id = extract_identifier(scan);
 
-	if (g_get_constants_cb && !g_get_constants_cb(&constant, &id))
-	{
-	    scan->tok = TOK_CONSTANT;
-	    scan->value.constant = constant;
-	}
-	else
-	{
-	    scan->tok = identifier_to_tok(&id);
-	    if (scan->tok == TOK_ID)
-		scan->value.identifier = id;
-	}
-	return;
+        if (g_get_constants_cb && !g_get_constants_cb(&constant, &id))
+        {
+            scan->tok = TOK_CONSTANT;
+            scan->value.constant = constant;
+        }
+        else
+        {
+            scan->tok = identifier_to_tok(&id);
+            if (scan->tok == TOK_ID)
+                scan->value.identifier = id;
+        }
+        return;
     }
     if (IS_EOF(scan))
     {
-	scan->tok = TOK_EOF;
-	return;
+        scan->tok = TOK_EOF;
+        return;
     }
     /* Unknown character, just skip it */
     _get_char(scan);
@@ -444,11 +444,11 @@ static char *tok_to_str(token_type_t tok)
     switch (tok)
     {
     case TOK_NUM:
-	return "number";
+        return "number";
     case TOK_ID:
-	return "identifier";
+        return "identifier";
     default:
-	break;
+        break;
     }
     s[1] = tok & 0xff;
     return s;
@@ -459,13 +459,13 @@ void js_scan_trace(scan_t *scan)
     char *p;
 
     for (p = scan->trace_point; p - scan->pc < scan->size && *p != '\n' && 
-	*p != '\r' ; p++)
+        *p != '\r' ; p++)
     {
-	tp_out(("%c", *p));
+        tp_out(("%c", *p));
     }
     tp_out(("\n"));
     for (p = scan->trace_point; p < scan->last_token_start; p++)
-	tp_out((" ", *p));
+        tp_out((" ", *p));
     tp_out(("^\n"));
 }
 
@@ -480,10 +480,10 @@ int _js_scan_match(scan_t *scan, token_type_t tok)
 {
     /* Poor man's semicolon insertion - only on EOF */
     if (tok == TOK_END_STATEMENT && scan->tok == TOK_EOF)
-	return 0;
+        return 0;
 
     if (scan->tok != tok)
-	return scan_failure(scan, tok);
+        return scan_failure(scan, tok);
 
     js_scan_next_token(scan);
     return 0;
@@ -492,7 +492,7 @@ int _js_scan_match(scan_t *scan, token_type_t tok)
 int js_scan_get_identifier(scan_t *scan, tstr_t *id)
 {
     if (scan->tok != TOK_ID)
-	return scan_failure(scan, TOK_ID);
+        return scan_failure(scan, TOK_ID);
     
     *id = tstr_dup(scan->value.identifier);
 
@@ -505,14 +505,14 @@ int js_scan_get_string(scan_t *scan, tstr_t *str)
     tstr_t *src;
 
     if (scan->tok != TOK_STRING)
-	return scan_failure(scan, TOK_STRING);
+        return scan_failure(scan, TOK_STRING);
 
     src = &scan->value.string;
 
     if (TSTR_IS_ESCAPED(src))
-	tstr_unescape(str, src);
+        tstr_unescape(str, src);
     else
-	*str = tstr_dup(*src);
+        *str = tstr_dup(*src);
 
     js_scan_next_token(scan);
     return 0;
@@ -524,8 +524,8 @@ int js_scan_get_num(scan_t *scan, tnum_t *ret)
 
     if (scan->tok != TOK_NUM || scan->flags & SCAN_FLAG_INVALID)
     {
-	scan_failure(scan, TOK_NUM);
-	goto Exit;
+        scan_failure(scan, TOK_NUM);
+        goto Exit;
     }
 
     *ret = scan->value.num;
@@ -559,7 +559,7 @@ token_group_t js_scan_get_token_group(scan_t *scan)
     case TOK_CLOSE_MEMBER:
     case TOK_FUNCTION:
     case TOK_THIS:
-	return TOKEN_GRP_SCOPE;
+        return TOKEN_GRP_SCOPE;
     case TOK_FOR:
     case TOK_WHILE:
     case TOK_ELSE:
@@ -574,17 +574,17 @@ token_group_t js_scan_get_token_group(scan_t *scan)
     case TOK_IN:
     case TOK_TRY:
     case TOK_CATCH:
-	return TOKEN_GRP_CONTROL;
+        return TOKEN_GRP_CONTROL;
     case TOK_NUM:
     case TOK_STRING:
     case TOK_TRUE:
     case TOK_FALSE:
     case TOK_ARGUMENTS:
-	return TOKEN_GRP_DATA;
+        return TOKEN_GRP_DATA;
     case TOK_CONSTANT:
-	return TOKEN_GRP_CONSTANT;
+        return TOKEN_GRP_CONSTANT;
     default:
-	break;
+        break;
     }
     return TOKEN_GRP_NONE;
 }
@@ -613,11 +613,11 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
     ret->size = end->lpc - start->lpc;
     if (start->flags & SCAN_FLAG_ALLOCED)
     {
-	ret->internal_buf = tmalloc(ret->size, "scan internal buffer");
-	memcpy(ret->internal_buf, start->lpc, ret->size);
-	ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 
-	    ret->internal_buf; 
-	ret->pc += start->pc - start->lpc;
+        ret->internal_buf = tmalloc(ret->size, "scan internal buffer");
+        memcpy(ret->internal_buf, start->lpc, ret->size);
+        ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 
+            ret->internal_buf; 
+        ret->pc += start->pc - start->lpc;
     }
     return ret;
 }
@@ -625,10 +625,10 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
 void js_scan_free(scan_t *scan)
 {
     if (!scan)
-	return;
+        return;
 
     if (scan->internal_buf)
-	tfree(scan->internal_buf);
+        tfree(scan->internal_buf);
     tfree(scan);
 }
 

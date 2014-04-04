@@ -46,8 +46,8 @@ void ti_arm_mcu_spi_set_max_speed(int port, unsigned long speed)
     /* Configure the SSI port */
     /* XXX: transfer length should be configured by init */
     MAP_SSIConfigSetExpClk(ti_arm_mcu_ssi_base(port),
-	platform.get_system_clock(), SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER,
-	speed, 8);
+        platform.get_system_clock(), SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER,
+        speed, 8);
 
     MAP_SSIEnable(ti_arm_mcu_ssi_base(port));
 }
@@ -73,7 +73,7 @@ static inline void ti_arm_mcu_pin_mode_ssi(int pin, int ssi_af)
 {
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
     if (ssi_af)
-	MAP_GPIOPinConfigure(ssi_af);
+        MAP_GPIOPinConfigure(ssi_af);
     MAP_GPIOPinTypeSSI(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
 }

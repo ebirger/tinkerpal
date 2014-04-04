@@ -40,13 +40,13 @@ static int gpio_event(int port)
 
     for (i = 0; i < GPIO_NUM_PORT_PINS; i++)
     {
-	if (state & GPIO_BIT(i))
-	{
-	    u32 res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i), 0);
+        if (state & GPIO_BIT(i))
+        {
+            u32 res = RES(GPIO_RESOURCE_ID_BASE, GPIO(port, i), 0);
 
-	    event_watch_trigger(res);
-	    ret = 1;
-	}
+            event_watch_trigger(res);
+            ret = 1;
+        }
     }
     return ret;
 }
@@ -57,8 +57,8 @@ int gpio_events_process(void)
 
     for (i = 0; i < NUM_GPIO_PORTS; i++)
     {
-	if (gpio_int_state[i])
-	    event |= gpio_event(i);
+        if (gpio_int_state[i])
+            event |= gpio_event(i);
     }
     return event;
 }
@@ -68,15 +68,15 @@ int gpio_set_port_mode(resource_t port, u16 mask, gpio_pin_mode_t mode)
     u16 pin;
 
     if (RES_BASE(port) != GPIO_RESOURCE_ID_BASE)
-	return -1;
+        return -1;
 
     for (pin = 0; pin < GPIO_NUM_PORT_PINS; pin++)
     {
-	if (!(mask & (1 << pin)))
-	    continue;
+        if (!(mask & (1 << pin)))
+            continue;
 
-	if (gpio_set_pin_mode(GPIO_RES(GPIO(RES_MAJ(port), pin)), mode))
-	    return -1;
+        if (gpio_set_pin_mode(GPIO_RES(GPIO(RES_MAJ(port), pin)), mode))
+            return -1;
     }
 
     return 0;

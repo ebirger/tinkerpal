@@ -32,25 +32,25 @@ const board_t board = {
     .default_console_id = UART_RES(USCIA1),
 #ifdef CONFIG_DOGS102X6
     .dogs102x6_params = {
-	.rst = GPIO_RES(PE7),
-	.cs = GPIO_RES(PG4),
-	.cd = GPIO_RES(PE6),
-	.spi_port = SPI_RES(USCIB1),
-	.backlight = GPIO_RES(PG6),
+        .rst = GPIO_RES(PE7),
+        .cs = GPIO_RES(PG4),
+        .cd = GPIO_RES(PE6),
+        .spi_port = SPI_RES(USCIB1),
+        .backlight = GPIO_RES(PG6),
     },
 #endif
 #ifdef CONFIG_MMC
     .mmc_params = {
-	.spi_port = SPI_RES(USCIB1),
-	.mosi = GPIO_RES(PD1),
-	.cs = GPIO_RES(PC7),
+        .spi_port = SPI_RES(USCIB1),
+        .mosi = GPIO_RES(PD1),
+        .cs = GPIO_RES(PC7),
     },
 #endif
 #ifdef CONFIG_ENC28J60
     .enc28j60_params = {
-	.spi_port = SPI_RES(USCIA0),
-	.cs = GPIO_RES(PC5),
-	.intr = GPIO_RES(PA4),
+        .spi_port = SPI_RES(USCIA0),
+        .cs = GPIO_RES(PC5),
+        .intr = GPIO_RES(PA4),
     },
 #endif
 };

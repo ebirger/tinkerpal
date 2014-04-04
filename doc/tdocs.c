@@ -126,24 +126,24 @@ static void print_breadcrumb(doc_element_t **e)
 
     for (; *e; e++, i++)
     {
-	if (eprev)
-	{
-	    int l = level;
+        if (eprev)
+        {
+            int l = level;
 
-	    P("  <li>");
-	    _P("   <a href='");
-	    while (l--)
-		_P("../");
-	    if (i != 1)
-	    {
-		snprintf(path, sizeof(path), "%s%s%s/", path, *path ? "/" : "",
-		    eprev->name);
-	    }
-	    P("%s%s.html'>%s</a>", path, eprev->name, eprev->display_name);
-	    P("    <span class='divider'>/</span>");
-	    P("  </li>");
-	}
-	eprev = *e;
+            P("  <li>");
+            _P("   <a href='");
+            while (l--)
+                _P("../");
+            if (i != 1)
+            {
+                snprintf(path, sizeof(path), "%s%s%s/", path, *path ? "/" : "",
+                    eprev->name);
+            }
+            P("%s%s.html'>%s</a>", path, eprev->name, eprev->display_name);
+            P("    <span class='divider'>/</span>");
+            P("  </li>");
+        }
+        eprev = *e;
     }
     P("  <li class='active'>");
     P("    %s", eprev->display_name);
@@ -156,7 +156,7 @@ static void print_function_params(doc_function_t *f)
     const doc_function_param_t *p;
 
     if (!f->params->name)
-	return;
+        return;
 
     P("<h2>Params</h2>");
     P("<table class='table'>");
@@ -169,14 +169,14 @@ static void print_function_params(doc_function_t *f)
     P("  <tbody>");
     for (p = f->params; p->name; p++)
     {
-	P("    <tr>");
-	P("      <td>");
-	P("        <strong>%s</strong><br>", p->name);
-	P("      </td>");
-	P("      <td>");
-	P("        <p>%s</p>", p->description);
-	P("      </td>");
-	P("    </tr>");
+        P("    <tr>");
+        P("      <td>");
+        P("        <strong>%s</strong><br>", p->name);
+        P("      </td>");
+        P("      <td>");
+        P("        <p>%s</p>", p->description);
+        P("      </td>");
+        P("    </tr>");
     }
     P("  </tbody>");
     P("</table>");
@@ -186,7 +186,7 @@ static void print_function(void *ctx)
 {
     doc_function_t *f = ctx;
     doc_element_t *bc[] = { &main_de, (doc_element_t *)f->parent, 
-	(doc_element_t *)f, NULL };
+        (doc_element_t *)f, NULL };
     const doc_function_param_t *p;
     int is_top = f->parent == &global_env_desc;
 
@@ -197,9 +197,9 @@ static void print_function(void *ctx)
     P("  <div class='page-header'>");
     P("    <h1>");
     _P("      %s%s%s(", !is_top ? f->parent->display_name : "", 
-	!is_top ? "." : "", f->display_name);
+        !is_top ? "." : "", f->display_name);
     for (p = f->params; p->name; p++)
-	_P("%s%s", p == f->params ? "" : ", ", p->name);
+        _P("%s%s", p == f->params ? "" : ", ", p->name);
     _P(")<br>");
     P("      <small>%s</small>", f->description);
     P("    </h1>");
@@ -232,29 +232,29 @@ static void print_object(void *ctx)
     P("<div class='accordion' id='accordion'>");
     for (f = funcs; *f; f++)
     {
-	if ((*f)->parent != o)
-	    continue;
+        if ((*f)->parent != o)
+            continue;
 
-	P("  <hr>");
-	P("  <div class='pull-right small'>");
-	P("    <a href='./%s.html'> >>> </a>", function_file_path(*f));
-	P("  </div>");
-	P("  <div>");
-	P("    <h2>");
-	P("      <a href='#description-index'");
-	P("        class='accordion-toggle'");
-	P("        data-toggle='collapse'");
-	P("        data-parent='#accordion'>");
-	P("         %s", (*f)->display_name);
-	P("      </a><br>");
-	P("      <small>%s</small>", (*f)->description);
-	P("    </h2>");
-	P("  </div>");
-	P("  <div id='description-index' class='collapse accordion-body'>");
-	P("    <h3>Examples</h3>");
-	P("    <pre class=\"prettyprint\">%s</pre>", (*f)->example);
-	print_function_params(*f);
-	P("  </div>");
+        P("  <hr>");
+        P("  <div class='pull-right small'>");
+        P("    <a href='./%s.html'> >>> </a>", function_file_path(*f));
+        P("  </div>");
+        P("  <div>");
+        P("    <h2>");
+        P("      <a href='#description-index'");
+        P("        class='accordion-toggle'");
+        P("        data-toggle='collapse'");
+        P("        data-parent='#accordion'>");
+        P("         %s", (*f)->display_name);
+        P("      </a><br>");
+        P("      <small>%s</small>", (*f)->description);
+        P("    </h2>");
+        P("  </div>");
+        P("  <div id='description-index' class='collapse accordion-body'>");
+        P("    <h3>Examples</h3>");
+        P("    <pre class=\"prettyprint\">%s</pre>", (*f)->example);
+        print_function_params(*f);
+        P("  </div>");
     }
     P("</div>");
 }
@@ -278,11 +278,11 @@ static int object_has_constructors(doc_object_t *o)
 
     for (f = funcs; *f; f++)
     {
-	if ((*f)->parent != o)
-	    continue;
+        if ((*f)->parent != o)
+            continue;
 
-	if ((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR)
-	    return 1;
+        if ((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR)
+            return 1;
     }
     return 0;
 }
@@ -293,11 +293,11 @@ static int object_has_methods(doc_object_t *o)
 
     for (f = funcs; *f; f++)
     {
-	if ((*f)->parent != o)
-	    continue;
+        if ((*f)->parent != o)
+            continue;
 
-	if (!((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
-	    return 1;
+        if (!((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
+            return 1;
     }
     return 0;
 }
@@ -313,53 +313,53 @@ static void print_functions_table(doc_object_t *o)
 
     if (object_has_constructors(o))
     {
-	P("<table class='table'>");
-	P("  <thead>");
-	P("    <tr>");
-	P("      <th>Constructor</th>");
-	P("    </tr>");
-	P("  </thead>");
-	P("  <tbody>");
-	for (f = funcs; *f; f++)
-	{
-	    if ((*f)->parent != o)
-		continue;
+        P("<table class='table'>");
+        P("  <thead>");
+        P("    <tr>");
+        P("      <th>Constructor</th>");
+        P("    </tr>");
+        P("  </thead>");
+        P("  <tbody>");
+        for (f = funcs; *f; f++)
+        {
+            if ((*f)->parent != o)
+                continue;
 
-	    if (!((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
-		continue;
+            if (!((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
+                continue;
 
-	    P("    <tr><td><a href='./%s/%s.html'>%s()</a></td></tr>", o->name, 
-		    function_file_path(*f), (*f)->display_name);
-	}
-	P("  </tbody>");
-	P("</table>");
+            P("    <tr><td><a href='./%s/%s.html'>%s()</a></td></tr>", o->name, 
+                    function_file_path(*f), (*f)->display_name);
+        }
+        P("  </tbody>");
+        P("</table>");
     }
     if (object_has_methods(o))
     {
-	P("<table class='table'>");
-	P("  <thead>");
-	P("    <tr>");
-	P("      <th>Method</th>");
-	P("      <th>Description</th>");
-	P("    </tr>");
-	P("  </thead>");
-	P("  <tbody>");
-	for (f = funcs; *f; f++)
-	{
-	    if ((*f)->parent != o)
-		continue;
+        P("<table class='table'>");
+        P("  <thead>");
+        P("    <tr>");
+        P("      <th>Method</th>");
+        P("      <th>Description</th>");
+        P("    </tr>");
+        P("  </thead>");
+        P("  <tbody>");
+        for (f = funcs; *f; f++)
+        {
+            if ((*f)->parent != o)
+                continue;
 
-	    if (((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
-		continue;
+            if (((*f)->flags & FUNCTION_FLAG_CONSTRUCTOR))
+                continue;
 
-	    P("    <tr>");
-	    P("      <td><a href='./%s/%s.html'>%s()</a></td>", o->name, 
-		function_file_path(*f), (*f)->display_name);
-	    P("      <td width='60%%'>%s</td>", (*f)->description);
-	    P("    </tr>");
-	}
-	P("  </tbody>");
-	P("</table>");
+            P("    <tr>");
+            P("      <td><a href='./%s/%s.html'>%s()</a></td>", o->name, 
+                function_file_path(*f), (*f)->display_name);
+            P("      <td width='60%%'>%s</td>", (*f)->description);
+            P("    </tr>");
+        }
+        P("  </tbody>");
+        P("</table>");
     }
 }
 
@@ -369,16 +369,16 @@ static void print_objects_table(void)
 
     for (o = objs; *o; o++)
     {
-	if (!object_has_functions(*o))
-	    continue;
+        if (!object_has_functions(*o))
+            continue;
 
-	P("<h2>");
-	P("  <a href='./%s/%s.html'>%s</a></br>", (*o)->name, (*o)->name,
-	    (*o)->display_name);
-	P("  <small></small>");
-	P("</h2>");
+        P("<h2>");
+        P("  <a href='./%s/%s.html'>%s</a></br>", (*o)->name, (*o)->name,
+            (*o)->display_name);
+        P("  <small></small>");
+        P("</h2>");
 
-	print_functions_table(*o);
+        print_functions_table(*o);
     }
 }
 
@@ -468,18 +468,18 @@ static void open_file(const char *folder, const char *file)
     char buf[256];
 
     if (fp)
-	fclose(fp);
+        fclose(fp);
 
     if (folder)
     {
-	sprintf(buf, "mkdir -p %s/%s", getenv("DOCS_DIR"), folder);
-	system(buf);
+        sprintf(buf, "mkdir -p %s/%s", getenv("DOCS_DIR"), folder);
+        system(buf);
     }
 
     sprintf(buf, "%s/%s%s%s.html", getenv("DOCS_DIR"), folder ? : "", 
-	folder ? "/" : "", file);
+        folder ? "/" : "", file);
     if (!(fp = fopen(buf, "w")))
-	exit(1);
+        exit(1);
 }
 
 int main(void)
@@ -495,17 +495,17 @@ int main(void)
 
     for (o = objs; *o; o++)
     {
-	if (!object_has_functions(*o))
-	    continue;
+        if (!object_has_functions(*o))
+            continue;
 
-	open_file((*o)->name, (*o)->name);
-	print_html(print_object, (void *)*o);
+        open_file((*o)->name, (*o)->name);
+        print_html(print_object, (void *)*o);
     }
 
     for (f = funcs; *f; f++)
     {
-	open_file((*f)->parent->name, function_file_path(*f));
-	print_html(print_function, (void *)*f);
+        open_file((*f)->parent->name, function_file_path(*f));
+        print_html(print_function, (void *)*f);
     }
 
     fclose(fp);

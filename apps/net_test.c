@@ -52,7 +52,7 @@ static void net_test_process_line(tstr_t *line)
 {
 #ifdef CONFIG_DHCP_CLIENT
     if (!tstr_cmp(line, &S("dhcp")))
-	dhcpc_start(ethif);
+        dhcpc_start(ethif);
 #endif
     console_printf("Ok\n");
 }
@@ -70,7 +70,7 @@ void app_start(int argc, char *argv[])
 
 #if defined(CONFIG_LINUX_PACKET_ETH)
     if (argc != 2)
-	tp_crit(("Usage: %s <network interface>\n", argv[0]));
+        tp_crit(("Usage: %s <network interface>\n", argv[0]));
 
     ethif = linux_packet_eth_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)

@@ -36,7 +36,7 @@ int do_linux_eth_constructor(obj_t **ret, obj_t *this, int argc,
     etherif_t *ethif;
 
     if (argc != 2)
-	return js_invalid_args(ret);
+        return js_invalid_args(ret);
 
     dev_name_tstr = obj_get_str(argv[1]);
     dev_name = tstr_to_strz(&dev_name_tstr);
@@ -45,7 +45,7 @@ int do_linux_eth_constructor(obj_t **ret, obj_t *this, int argc,
     tfree(dev_name);
 
     if (!ethif)
-	return throw_exception(ret, &S("Exception: can't create device"));
+        return throw_exception(ret, &S("Exception: can't create device"));
 
     return etherif_obj_constructor(ethif, ret, this, argc, argv);
 }
