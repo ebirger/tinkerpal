@@ -983,7 +983,6 @@ static obj_t *array_cast(obj_t *o, unsigned char class)
 
 static obj_t *array_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
-
     switch (op)
     {
     case TOK_PLUS:
