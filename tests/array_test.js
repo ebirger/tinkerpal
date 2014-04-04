@@ -68,3 +68,9 @@ debug.assert(jh[1], 2);
 var in_array_test = [ "a", "b", "c" ];
 debug.assert_cond(1 in in_array_test);
 debug.assert_cond(!(8 in in_array_test));
+
+console.log([1,2,3].toString());
+debug.assert([1,2,3].toString(), '1,2,3');
+debug.assert([1,2,3] + 50, '1,2,350');
+debug.assert([1,2,3] + 'test', '1,2,3test');
+debug.assert([1,2,3] + [4,5,6], '1,2,34,5,6');
