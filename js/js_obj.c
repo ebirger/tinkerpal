@@ -967,7 +967,17 @@ static void array_dump(printer_t *printer, obj_t *o)
 static obj_t *array_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
-	return string_new(S("Array"));
+    {
+        obj_t *join, *ret;
+
+        join = obj_get_property(NULL, o, &S("join"));
+
+        if (!join || function_call(&ret, o, 1, &join))
+            ret = string_new(S("Array"));
+
+        obj_put(join);
+        return ret;
+    }
     return UNDEF;
 }
 
