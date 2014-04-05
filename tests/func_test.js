@@ -61,3 +61,7 @@ var kuku = function pupu() {
 debug.assert(kuku(), 1);
 debug.assert(pupu, undefined);
 main();
+
+lulu = 3;
+function kuku() { return this; };
+debug.assert(kuku().lulu, 3);
