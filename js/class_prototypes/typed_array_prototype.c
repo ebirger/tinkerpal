@@ -72,11 +72,23 @@ int do_array_buffer_view_subarray(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
+static void abv_cpy(array_buffer_view_t *dst, array_buffer_view_t *src)
+{
+    int idx;
+
+    for (idx = 0; idx < src->length; idx++)
+    {
+        array_buffer_view_item_val_set(dst, idx,
+            array_buffer_view_item_val_get(src, idx));
+    }
+}
+
 static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[], unsigned short flags)
 {
     obj_t *array_buffer;
     int length, offset = 0;
+    array_buffer_view_t *orig_abv = NULL;
 
     if (argc < 2)
         return throw_exception(ret, &S("Wrong number of arguments"));
@@ -84,7 +96,7 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
     if (is_array_buffer(argv[1]))
     {
         array_buffer = obj_get(argv[1]);
-        length = ((array_buffer_t *)array_buffer)->value.len >> 
+        length = to_array_buffer(array_buffer)->value.len >> 
             (flags & ABV_SHIFT_MASK);
         if (argc > 2)
         {
@@ -92,6 +104,12 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
             if (argc == 4)
                 length = obj_get_int(argv[3]);
         }
+    }
+    else if (is_array_buffer_view(argv[1]))
+    {
+        orig_abv = (array_buffer_view_t *)argv[1];
+        length = orig_abv->length;
+        array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
     }
     else if (is_num(argv[1]))
     {
@@ -102,6 +120,9 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
         return throw_exception(ret, &S("Invalid arguments"));
 
     *ret = array_buffer_view_new(array_buffer, flags, offset, length);
+
+    if (orig_abv)
+        abv_cpy(to_array_buffer_view(*ret), orig_abv);
 
     obj_put(array_buffer);
     return 0;
