@@ -179,7 +179,7 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
     {
         obj_t *this_obj;
 
-        this_obj = ref->parent ? : UNDEF;
+        this_obj = ref->parent ? : global_env;
         rc = function_call(po, this_obj, args.argc, args.argv);
     }
     if (rc == COMPLETION_RETURN)
