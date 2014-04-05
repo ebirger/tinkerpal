@@ -81,3 +81,11 @@ for (var i = 0; i < 16; i++)
     k8[i] = (i + 1) * 2;
 for (var i = 0; i < 5; i++)
     debug.assert(k8_2[i], k8[i+1]);
+
+var a = new Int8Array(16);
+a[5] = 3;
+var b = new Int16Array(a);
+debug.assert(b[5], 3);
+a[3] = 5;
+debug.assert(b[3], 0);
+debug.assert(a.length, b.length);
