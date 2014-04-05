@@ -87,8 +87,18 @@ static void print_fp(printer_t *printer, double num, unsigned dec_digits)
 
     PRINT_SINGLE('.');
 
+    /* remove trailing '0's */
+    while (!(frac % 10) && dec_digits)
+    {
+        frac /= 10;
+        dec_digits--;
+    }
+
     /* print fractional portion */
-    tprint_integer(printer, frac, 10, dec_digits);
+    if (dec_digits)
+        tprint_integer(printer, frac, 10, dec_digits);
+    else
+        PRINT_SINGLE('0');
 }
 
 static void print_integer(printer_t *printer, int num, int base, int sign,
