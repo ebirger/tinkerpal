@@ -1320,6 +1320,13 @@ obj_t *string_new(tstr_t s)
 
 #define SbyteLength S("byteLength")
 
+static obj_t *array_buffer_cast(obj_t *o, unsigned char class)
+{
+    if (class == STRING_CLASS)
+        return string_new(S("[object ArrayBuffer]"));
+
+    return UNDEF;
+}
 static obj_t *array_buffer_get_own_property(obj_t ***lval, obj_t *o, 
     const tstr_t *str)
 {
@@ -1355,6 +1362,39 @@ obj_t *array_buffer_new(int length)
     
     tstr_zalloc(&ret->value, length);
     return (obj_t *)ret;
+}
+
+static obj_t *array_buffer_view_cast(obj_t *o, unsigned char class)
+{
+    array_buffer_view_t *v = to_array_buffer_view(o);
+
+    if (class == STRING_CLASS)
+    {
+        int shift = v->flags & ABV_SHIFT_MASK;
+
+        switch (shift)
+        {
+        case 0:
+            if (v->flags & ABV_FLAG_UNSIGNED)
+                return string_new(S("[object Uint8Array]"));
+            else
+                return string_new(S("[object int8Array]"));
+        case 1:
+            if (v->flags & ABV_FLAG_UNSIGNED)
+                return string_new(S("[object Uint16Array]"));
+            else
+                return string_new(S("[object int16Array]"));
+        case 2:
+            if (v->flags & ABV_FLAG_UNSIGNED)
+                return string_new(S("[object Uint32Array]"));
+            else
+                return string_new(S("[object int32rray]"));
+        default:
+            return string_new(S("ArrayBufferView"));
+        }
+    }
+
+    return UNDEF;
 }
 
 static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o, 
@@ -1639,11 +1679,13 @@ const obj_class_t classes[] = {
     },
     [ ARRAY_BUFFER_CLASS ] = {
         .dump = array_buffer_dump,
+        .cast = array_buffer_cast,
         .free = array_buffer_free,
         .get_own_property = array_buffer_get_own_property,
     },
     [ ARRAY_BUFFER_VIEW_CLASS ] = {
         .dump = array_dump,
+        .cast = array_buffer_view_cast,
         .free = array_buffer_view_free,
         .get_own_property = array_buffer_view_get_own_property,
         .set_own_property = array_buffer_view_set_own_property,
