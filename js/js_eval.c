@@ -89,6 +89,7 @@ static void function_args_bind(obj_t *env, tstr_list_t *params,
 int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
     obj_t *argv[])
 {
+    function_args_t args = { .argc = argc, .argv = argv}, saved_args;
     scan_t *s;
     obj_t *saved_env;
     int rc;
@@ -105,10 +106,15 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
     if (this_obj)
         this = this_obj;
 
+    saved_args = cur_function_args;
+    cur_function_args = args;
+
     if (CUR_TOK(s) == TOK_OPEN_SCOPE)
         rc = eval_block(ret, s);
     else
         rc = eval_statement_list(ret, s);
+    
+    cur_function_args = saved_args;
 
     if (rc == COMPLETION_NORNAL)
     {
