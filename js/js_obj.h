@@ -359,6 +359,12 @@ static inline void *array_buffer_ptr(obj_t *o)
     return (void *)TPTR(&(to_array_buffer(o)->value));
 }
 
+/* Note: no bounds checking on array_buffer_view_item_val_get() and
+ * array_buffer_view_item_val_set()
+ */
+int array_buffer_view_item_val_get(array_buffer_view_t *v, int idx);
+int array_buffer_view_item_val_set(array_buffer_view_t *v, int idx, int val);
+
 static inline int is_array_buffer_view(obj_t *o)
 {
     return o && OBJ_CLASS(o) == ARRAY_BUFFER_VIEW_CLASS;

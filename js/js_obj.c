@@ -1397,94 +1397,43 @@ static obj_t *array_buffer_view_cast(obj_t *o, unsigned char class)
     return UNDEF;
 }
 
-static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o, 
-    const tstr_t *str)
+int array_buffer_view_item_val_get(array_buffer_view_t *v, int idx)
 {
-    tnum_t tidx;
-    int idx, shift, retval;
-    array_buffer_view_t *v = to_array_buffer_view(o);
-    tstr_t *buf, bval;
-
-    buf = &v->array_buffer->value;
-    shift = v->flags & ABV_SHIFT_MASK;
-
-    if (!tstr_cmp(str, &Slength))
-    {
-        retval = v->length;
-        goto Ok;
-    }
-    if (!tstr_cmp(str, &S("BYTES_PER_ELEMENT")))
-    {
-        retval = 1 << shift;
-        goto Ok;
-    }
-
-    if (!tstr_cmp(str, &S("buffer")))
-    {
-        *lval = NULL;
-        return obj_get((obj_t *)v->array_buffer);
-    }
-
-    if (tstr_to_tnum(&tidx, str))
-        return NULL;
-
-    idx = NUMERIC_INT(tidx);
-    if (v->length < idx)
-        return NULL;
+    int shift;
+    tstr_t bval;
 
     idx += v->offset;
-    bval = tstr_piece(*buf, idx << shift, 1 << shift);
+    shift = v->flags & ABV_SHIFT_MASK;
+    bval = tstr_piece(v->array_buffer->value, idx << shift, 1 << shift);
     switch (shift)
     {
     case 0:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            retval = *(u8 *)TPTR(&bval);
+            return (int)*(u8 *)TPTR(&bval);
         else
-            retval = *(s8 *)TPTR(&bval);
-        goto Ok;
+            return (int)*(s8 *)TPTR(&bval);
     case 1:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            retval = *((u16 *)TPTR(&bval));
+            return (int)*((u16 *)TPTR(&bval));
         else
-            retval = *((s16 *)TPTR(&bval));
-        goto Ok;
+            return (int)*((s16 *)TPTR(&bval));
     case 2:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            retval = *(u32 *)TPTR(&bval);
+            return (int)*(u32 *)TPTR(&bval);
         else
-            retval = *(s32 *)TPTR(&bval);
-        goto Ok;
-    default:
-        return NULL;
+            return (int)*(s32 *)TPTR(&bval);
     }
-
-Ok:
-    if (lval)
-        *lval = NULL;
-    return num_new_int(retval);
+    return 0;
 }
 
-static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
-    obj_t *value)
+int array_buffer_view_item_val_set(array_buffer_view_t *v, int idx, int val)
 {
-    tnum_t tidx;
-    int idx, shift, val;
-    array_buffer_view_t *v = to_array_buffer_view(o);
-    tstr_t *buf, bval;
-
-    if (tstr_to_tnum(&tidx, &str))
-        return -1;
-
-    idx = NUMERIC_INT(tidx);
-    if (v->length < idx)
-        return -1;
-
-    buf = &v->array_buffer->value;
+    int shift;
+    tstr_t bval;
 
     shift = v->flags & ABV_SHIFT_MASK;
     idx += v->offset;
-    bval = tstr_piece(*buf, idx << shift, 1 << shift);
-    val = obj_get_int(value);
+    bval = tstr_piece(v->array_buffer->value, idx << shift, 1 << shift);
     switch (shift)
     {
     case 0:
@@ -1508,9 +1457,67 @@ static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
     default:
         return -1;
     }
+    return 0;
+}
+
+static obj_t *array_buffer_view_get_own_property(obj_t ***lval, obj_t *o, 
+    const tstr_t *str)
+{
+    array_buffer_view_t *v = to_array_buffer_view(o);
+    tnum_t tidx;
+    int retval, idx;
+
+    if (!tstr_cmp(str, &Slength))
+    {
+        retval = v->length;
+        goto Ok;
+    }
+    if (!tstr_cmp(str, &S("BYTES_PER_ELEMENT")))
+    {
+        retval = 1 << (v->flags & ABV_SHIFT_MASK);
+        goto Ok;
+    }
+
+    if (!tstr_cmp(str, &S("buffer")))
+    {
+        *lval = NULL;
+        return obj_get((obj_t *)v->array_buffer);
+    }
+
+    if (tstr_to_tnum(&tidx, str))
+        return NULL;
+
+    idx = NUMERIC_INT(tidx);
+    if (v->length < idx)
+        return NULL;
+
+    retval = array_buffer_view_item_val_get(v, idx);
+
+Ok:
+    if (lval)
+        *lval = NULL;
+    return num_new_int(retval);
+}
+
+static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
+    obj_t *value)
+{
+    array_buffer_view_t *v = to_array_buffer_view(o);
+    tnum_t tidx;
+    int val, idx;
+
+    if (tstr_to_tnum(&tidx, &str))
+        return -1;
+
+    idx = NUMERIC_INT(tidx);
+    if (v->length < idx)
+        return -1;
+
+    val = obj_get_int(value);
     /* value is no longer needed. We do not really store a reference to it */
     obj_put(value);
-    return 0;
+
+    return array_buffer_view_item_val_set(v, idx, val);
 }
 
 static void array_buffer_view_free(obj_t *o)
