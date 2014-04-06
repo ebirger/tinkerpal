@@ -179,3 +179,15 @@ debug.assert(0?0:1+0?1:2+3?1:0,1);
 
 /* Large numbers */
 debug.assert((1<<30) + 1, 1073741825);
+
+/* Integer literals */
+debug.assert(0x12, 18);
+debug.assert(0X12, 18);
+debug.assert(-0x12, -18);
+debug.assert(012, 10);
+debug.assert(-012, -10);
+debug.assert(0o12, 10);
+debug.assert(0O12, 10);
+debug.assert(0b110, 6);
+debug.assert(-0b110, -6);
+debug.assert(-0B110, -6);
