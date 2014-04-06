@@ -73,19 +73,30 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
         i++;
     }
 
-    if (s->len > 2 && TPTR(s)[i] == '0' && !is_fp(s))
+    if (s->len - i > 1 && TPTR(s)[i] == '0' && !is_fp(s))
     {
         radix = 8;
         i++;
-        if (s->len > 2 && TPTR(s)[1] == 'x')
+        if (s->len - i > 1)
         {
-            radix = 16;
-            i++;
-        }
-        if (s->len > 2 && TPTR(s)[1] == 'b')
-        {
-            radix = 2;
-            i++;
+            switch (TPTR(s)[i])
+            {
+            case 'b':
+            case 'B':
+                radix = 2;
+                i++;
+                break;
+            case 'o':
+            case 'O':
+                radix = 8;
+                i++;
+                break;
+            case 'x':
+            case 'X':
+                radix = 16;
+                i++;
+                break;
+            }
         }
     }
 

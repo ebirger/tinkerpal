@@ -68,7 +68,8 @@ static inline int is_x_digit(char c)
 
 static inline int is_number_letter(char c)
 {
-    return is_x_digit((int)c) || c == '.' || c == 'e' || c == 'x';
+    return is_x_digit((int)c) || c == '.' || c == 'e' || c == 'x' ||
+        c == 'X' || c == 'b' || c == 'B' || c == 'o' || c == 'O';
 }
 
 static inline int is_alpha(char c)
