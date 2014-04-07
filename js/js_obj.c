@@ -284,6 +284,16 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_IN:
         ret = obj_do_in_op(oa, ob);
         break;
+    case TOK_MULT:
+    case TOK_DIV:
+    case TOK_MOD:
+    case TOK_MINUS:
+        {
+            obj_t *a = obj_cast(oa, NUM_CLASS), *b = obj_cast(ob, NUM_CLASS);
+
+            ret = CLASS(a)->do_op(op, a, b);
+            break;
+        }
     case TOK_NOT_EQ_STRICT:
     case TOK_IS_EQ_STRICT:
         if (CLASS(oa) != CLASS(ob))
