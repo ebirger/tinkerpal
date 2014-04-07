@@ -32,11 +32,10 @@
 
 int do_eval(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
+    *ret = UNDEF;
+
     if (argc == 1)
-    {
-        *ret = UNDEF;
         return 0;
-    }
 
     return js_eval_obj(ret, argv[1]);
 }
