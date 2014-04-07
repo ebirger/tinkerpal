@@ -191,3 +191,11 @@ debug.assert(0O12, 10);
 debug.assert(0b110, 6);
 debug.assert(-0b110, -6);
 debug.assert(-0B110, -6);
+
+/* String Multiplicative Operators */
+debug.assert("123"*3, 369);
+debug.assert("72"/3, 24);
+debug.assert("73"%3, 1);
+
+/* String Subtraction Operator */
+debug.assert("73"-3, 70);
