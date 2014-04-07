@@ -1195,7 +1195,8 @@ static void env_dump(printer_t *printer, obj_t *o)
     for (p = o->properties; p; p = p->next)
     {
         tprintf(printer, "%S : %o [refs %d]%s", &p->key, p->obj, 
-            p->obj->ref_count, p->next ?  ", " : "");
+            OBJ_IS_INT_VAL(p->obj) ? 1 : p->obj->ref_count, p->next ?  ", " : 
+            "");
     }
 
     tprintf(printer, " }");
