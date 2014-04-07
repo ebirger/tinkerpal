@@ -182,9 +182,11 @@ static inline tstr_t extract_string(scan_t *scan)
             tp_crit(("Newlines are not allowed in strings\n"));
 
         if (scan->look == '\\')
+        {
             tflags |= TSTR_FLAG_ESCAPED;
+            _get_char(scan);
+        }
 
-        /* XXX: allow escaping the delimiter */
         _get_char(scan);
     }
 

@@ -178,6 +178,8 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
         case 'r': *out++ = '\r'; break;
         case '\\': *out++ = '\\'; break;
         case '0': *out++ = '\0'; break;
+        case '\'': *out++ = '\''; break;
+        case '"': *out++ = '"'; break;
         case 'u':
             {
                 char c;
