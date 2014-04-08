@@ -98,6 +98,9 @@ tstr_t tstr_slice(tstr_t s, int index, int count);
 void tstr_free(tstr_t *s);
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b);
 void tstr_unescape(tstr_t *dst, tstr_t *src);
+
+tstr_t tstr_to_upper_lower(tstr_t s, int is_lower);
+
 /* Returns a new tstr pointing to the old value, with len set
  * to the substring until delim
  * The prefix is cut from the original tstr.

@@ -210,6 +210,22 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
     TSTR_SET_ALLOCATED(dst);
 }
 
+tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
+{
+    char *out;
+    tstr_t ret;
+
+    tstr_alloc(&ret, s.len);
+    out = TPTR(&ret);
+    while (s.len)
+    {
+        *out++ = is_lower ? tolower(*TPTR(&s)) : toupper(*TPTR(&s));
+        tstr_advance(&s, 1);
+    }
+
+    return ret;
+}
+
 /* XXX: this is stupid. Should use tstr and have tstr prefix comp */
 int prefix_comp(int len, char *a, char *b)
 {
