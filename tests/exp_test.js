@@ -199,3 +199,17 @@ debug.assert("73"%3, 1);
 
 /* String Subtraction Operator */
 debug.assert("73"-3, 70);
+
+/* isNaN */
+debug.assert(isNaN(1), false);
+debug.assert(isNaN("kuku"), true);
+debug.assert(isNaN(""), false); // converted to 0
+debug.assert(isNaN("  "), false); // converted to 0
+debug.assert(isNaN("123"), false);
+debug.assert(isNaN(" 123"), false);
+debug.assert(isNaN(" 123.0"), false);
+debug.assert(isNaN({}), true);
+debug.assert(isNaN(true), false);
+debug.assert(isNaN(false), false);
+debug.assert(isNaN(undefined), true);
+debug.assert(isNaN(null), false);
