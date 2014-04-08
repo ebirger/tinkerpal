@@ -67,3 +67,21 @@ FUNCTION("charCodeAt", string_prototype, do_string_prototype_char_code_at, {
     .example = "var s = 'a string';\n"
         "var ninty_seven = s.charCodeAt(0);",
 })
+
+FUNCTION("toLowerCase", string_prototype, do_string_prototype_to_lower_case, { 
+    .params = { 
+     },
+    .description = "Convert a string to lower case characters",
+    .return_value = "Lower case string",
+    .example = "var s = 'Hello World';\n"
+        "s.toLowerCase(); // 'hello world'",
+})
+
+FUNCTION("toUpperCase", string_prototype, do_string_prototype_to_upper_case, { 
+    .params = { 
+     },
+    .description = "Convert a string to upper case characters",
+    .return_value = "Upper case string",
+    .example = "var s = 'Hello World';\n"
+        "s.toUpperCase(); // 'HELLO WORLD'",
+})

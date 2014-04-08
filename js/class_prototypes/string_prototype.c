@@ -88,7 +88,6 @@ int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc,
     if (argc != 2 && argc != 3)
         return js_invalid_args(ret);
 
-
     s = obj_get_str(this);
 
     start = obj_get_int(argv[1]);
@@ -144,6 +143,34 @@ int do_string_prototype_char_code_at(obj_t **ret, obj_t *this, int argc,
 Exit:
     tstr_free(&s);
     return 0;
+}
+
+static int string_to_upper_lower_case(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[], int is_lower)
+{
+    tstr_t s;
+
+    if (argc != 1)
+        return js_invalid_args(ret);
+
+    s = obj_get_str(this);
+
+    *ret = string_new(tstr_to_upper_lower(s, is_lower));
+
+    tstr_free(&s);
+    return 0;
+}
+
+int do_string_prototype_to_lower_case(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
+{
+    return string_to_upper_lower_case(ret, this, argc, argv, 1);
+}
+
+int do_string_prototype_to_upper_case(obj_t **ret, obj_t *this, int argc, 
+    obj_t *argv[])
+{
+    return string_to_upper_lower_case(ret, this, argc, argv, 0);
 }
 
 int do_string_constructor(obj_t **ret, obj_t *this_obj, int argc, obj_t *argv[])
