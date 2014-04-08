@@ -41,3 +41,9 @@ var fui = String("fui");
 debug.assert(fui, "fui");
 debug.assert("abc"[1], "b");
 debug.assert([].map.call("abc", function(x) { return x + 1; })[1], "b1");
+
+/* Upper | Lower case */
+debug.assert("kuku".toUpperCase(), "KUKU");
+debug.assert("ku123Lku".toUpperCase(), "KU123LKU");
+debug.assert("KUKU".toLowerCase(), "kuku");
+debug.assert("ku123Lku".toLowerCase(), "ku123lku");
