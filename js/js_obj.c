@@ -656,6 +656,8 @@ static obj_t *null_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
         return string_new(S("null"));
+    if (class == NUM_CLASS)
+        return num_new_int(0);
 
     return UNDEF;
 }
@@ -863,6 +865,9 @@ static obj_t *object_cast(obj_t *o, unsigned char class)
 {
     if (class == STRING_CLASS)
         return string_new(S("Object"));
+    if (class == NUM_CLASS)
+        return NAN_OBJ; /* XXX: not accurate, but will do */
+
     return UNDEF;
 }
 
