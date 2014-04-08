@@ -1669,6 +1669,10 @@ static int eval_for(obj_t **ret, scan_t *scan)
         if ((rc = eval_var(ret, scan)))
             return rc;
     }
+    else if (CUR_TOK(scan) == TOK_END_STATEMENT)
+    {
+        /* Nothing to do */
+    }
     else
     {
         if ((rc = eval_expression(ret, scan)))
@@ -1680,7 +1684,7 @@ static int eval_for(obj_t **ret, scan_t *scan)
 
     /* Condition */
     cond = js_scan_save(scan);
-    next = eval_condition(scan);
+    next = CUR_TOK(scan) == TOK_END_STATEMENT ? 1 : eval_condition(scan);
     js_scan_match(scan, TOK_END_STATEMENT);
 
     /* Repeat */
