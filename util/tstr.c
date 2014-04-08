@@ -219,7 +219,7 @@ tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
     out = TPTR(&ret);
     while (s.len)
     {
-        *out++ = is_lower ? tolower(*TPTR(&s)) : toupper(*TPTR(&s));
+        *out++ = is_lower ? (char)tolower(*TPTR(&s)) : (char)toupper(*TPTR(&s));
         tstr_advance(&s, 1);
     }
 
