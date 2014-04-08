@@ -55,3 +55,11 @@ var i, j;
 for (i = 0; i < 10; i++)
     for (j = 0; j < 10; j++)
         console.log("(" + i + ", " + j + ")");
+
+var count = 5;
+for (;--count;);
+debug.assert(count, 0);
+var count = 5;
+for (;;) if (count-- == 3) break;
+debug.assert(count, 2);
+
