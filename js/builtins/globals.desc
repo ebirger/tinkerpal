@@ -16,6 +16,17 @@ FUNCTION("toInteger", global_env, do_to_integer, {
     .example = "var n = toInteger('5') + 1;",
 })
 
+FUNCTION("isNaN", global_env, do_is_nan, {
+    .params = { 
+       { .name = "number", .description = "Object to be tested for NaNity" },
+     },
+    .description = "Tests if the object is NaN",
+    .return_value = "'true' if the object converted to Number is NaN, "
+        "'false' otherwise",
+    .example = "isNaN(1); // false\n"
+        "isNaN('abc'); // true",
+})
+
 OBJECT("debug", debug, {
 })
 

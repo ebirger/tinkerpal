@@ -65,6 +65,19 @@ Exit:
     return 0;
 }
 
+int do_is_nan(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    obj_t *obj_num;
+
+    if (argc != 2)
+        return js_invalid_args(ret);
+
+    obj_num = obj_cast(argv[1], NUM_CLASS);
+    *ret = obj_num == NAN_OBJ ? TRUE : FALSE;
+    obj_put(obj_num);
+    return 0;
+}
+
 int do_assert(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *lv, *rv, *cond;
