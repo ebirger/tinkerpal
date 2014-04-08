@@ -62,10 +62,23 @@ static int is_fp(const tstr_t *s)
     return 0;
 }
 
+static inline int is_whitespace(char c)
+{
+    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+}
+
 int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
 {
     int i = 0, fp = 0, e = 0, exp = 0, radix = 10, sign = 1;
     tnum_t v = {};
+
+    /* Skip leading whitespace
+     * XXX: skip trailing whitespace too */
+    while (i < s->len && is_whitespace(TPTR(s)[i]))
+        i++;
+
+    if (i == s->len)
+        goto Exit;
 
     if (TPTR(s)[i] == '-')
     {
@@ -154,6 +167,7 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
     else
         v.value.i *= (exp_power(exp) * sign);
 
+Exit:
     *ret = v;
     return 0;
 }
