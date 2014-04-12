@@ -48,12 +48,30 @@ static void net_test_quit(void)
     etherif_free(ethif);
 }
 
+#ifdef CONFIG_DHCP_CLIENT
+void got_ip(event_t *e, u32 resource_id)
+{
+    tp_out(("DHCP: IP address aquired\n"));
+    etherif_on_event_clear(ethif, ETHERIF_EVENT_IPV4_INFO_SET);
+}
+
+static event_t got_ip_event = {
+    .trigger = got_ip
+};
+#endif
+
 static void net_test_process_line(tstr_t *line)
 {
 #ifdef CONFIG_DHCP_CLIENT
     if (!tstr_cmp(line, &S("dhcp")))
+    {
+        etherif_on_event_set(ethif, ETHERIF_EVENT_IPV4_INFO_SET, &got_ip_event);
         dhcpc_start(ethif);
+    }
 #endif
+    if (!tstr_cmp(line, &S("link")))
+        console_printf("Link status: %d\n", etherif_link_status(ethif));
+
     console_printf("Ok\n");
 }
 
