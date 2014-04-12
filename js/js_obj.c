@@ -358,11 +358,11 @@ void obj_set_property_int(obj_t *o, tstr_t property, int value)
     _obj_set_property(o, property, num_new_int(value));
 }
 
-void obj_set_int_property(obj_t *o, int property, obj_t *value)
+void _obj_set_int_property(obj_t *o, int property, obj_t *value)
 {
     tstr_t s = int_to_tstr(property);
 
-    obj_set_property(o, s, value);
+    _obj_set_property(o, s, value);
     tstr_free(&s);
 }
 
