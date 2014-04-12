@@ -165,6 +165,7 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     function_t *cb;
     obj_t *cb_this, *new_arr;
     array_iter_t iter;
+    int rc = 0;
 
     if (argc != 2 && argc != 3)
         return js_invalid_args(ret);
@@ -180,18 +181,28 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     while (array_iter_next(&iter))
     {
-        obj_t *new_item;
+        obj_t *new_item = UNDEF;
         tstr_t kstr;
 
         kstr = int_to_tstr(iter.k);
-        array_cb_call(&new_item, cb, cb_this, iter.obj, iter.k, this);
+        rc = array_cb_call(&new_item, cb, cb_this, iter.obj, iter.k, this);
+        if (rc == COMPLETION_THROW)
+        {
+            obj_put(new_arr);
+            *ret = new_item;
+            tstr_free(&kstr);
+            goto Exit;
+        }
+        if (rc == COMPLETION_RETURN)
+            rc = 0;
+
         _obj_set_property(new_arr, kstr, new_item);
         tstr_free(&kstr);
     }
 
 Exit:
     array_iter_uninit(&iter);
-    return 0;
+    return rc;
 }
 
 int do_array_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
