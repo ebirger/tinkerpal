@@ -138,10 +138,6 @@ static unsigned long system_clock;
 
 static int tm4c1294_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
-    /* Anti-brick JTAG Protection */
-    if (pin >= PC0 && pin <= PC3) 
-        return -1;
-
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
 
     switch (mode)
