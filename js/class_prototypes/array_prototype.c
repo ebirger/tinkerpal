@@ -193,7 +193,7 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         if (rc == COMPLETION_RETURN)
             rc = 0;
 
-        _obj_set_int_property(new_arr, iter.k, new_item);
+        _array_set_item(new_arr, iter.k, new_item);
     }
 
 Exit:
