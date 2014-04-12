@@ -43,6 +43,7 @@ typedef struct {
     u32 istat;
 } stellaris_eth_t;
 
+static u8 test_mac[] = { 0, 1, 2, 3, 4, 5 };
 static stellaris_eth_t g_eth; /* Singleton */
 
 static int stellaris_eth_link_status(etherif_t *ethif)
@@ -178,6 +179,8 @@ static void hw_init(void)
     /* Configure the Ethernet Controller */
     MAP_EthernetConfigSet(ETH_BASE, ETH_CFG_TX_DPLXEN | ETH_CFG_TX_CRCEN |
         ETH_CFG_TX_PADEN | ETH_CFG_RX_AMULEN);
+    
+    MAP_EthernetMACAddrSet(ETH_BASE, test_mac);
 
     /* Enable the Ethernet Controller transmitter and receiver */
     MAP_EthernetEnable(ETH_BASE);
