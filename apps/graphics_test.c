@@ -31,6 +31,18 @@
 
 static canvas_t *canvas;
 
+/* XXX: When rect API is available, use it */
+static void rect(u16 color)
+{
+    int i, j;
+
+    for (i = 0; i < canvas->width; i++)
+    {
+        for (j = 0; j < canvas->height; j++)
+            canvas_pixel_set(canvas, i, j, color);
+    }
+}
+
 static void graphics_test_process_line(tstr_t *line)
 {
     if (!tstr_cmp(line, &S("fill")))
@@ -43,21 +55,20 @@ static void graphics_test_process_line(tstr_t *line)
                 canvas_pixel_set(canvas, i, j, (i * j) & 0xffff);
         }
     }
-    if (!tstr_cmp(line, &S("clear")))
-    {
-        /* XXX: When rect API is available, use it */
-        int i, j;
-
-        for (i = 0; i < canvas->width; i++)
-        {
-            for (j = 0; j < canvas->height; j++)
-                canvas_pixel_set(canvas, i, j, 0);
-        }
-    }
+    if (!tstr_cmp(line, &S("black")))
+        rect(COLOR_BLACK);
+    if (!tstr_cmp(line, &S("white")))
+        rect(COLOR_WHITE);
+    if (!tstr_cmp(line, &S("red")))
+        rect(COLOR_RED);
+    if (!tstr_cmp(line, &S("green")))
+        rect(COLOR_GREEN);
+    if (!tstr_cmp(line, &S("blue")))
+        rect(COLOR_BLUE);
     if (!tstr_cmp(line, &S("circle")))
     {
         circle_draw(canvas, canvas->width / 2, canvas->height / 2,
-            canvas->width / 4, 0xffff);
+            canvas->width / 4, COLOR_WHITE);
     }
     if (!tstr_cmp(line, &S("text")))
         string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 0xffff);
