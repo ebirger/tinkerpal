@@ -39,7 +39,7 @@ int do_console_set(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_console_log(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    if (argc != 2)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     console_printf("%o\n", argv[1]);
