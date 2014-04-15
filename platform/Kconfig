@@ -116,6 +116,10 @@ config STM32F103VET6
 	bool
 	select STM32F103XX
 
+config STM32F103RCT6
+	bool
+	select STM32F103XX
+
 config STM32F3XX
 	bool
 	select STM32

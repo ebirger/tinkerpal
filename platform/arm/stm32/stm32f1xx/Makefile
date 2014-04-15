@@ -23,6 +23,10 @@ ifneq ($(CONFIG_GCC),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f103vet6.ld
     ST_DEF=STM32F10X_HD
   endif
+  ifneq ($(CONFIG_STM32F103RCT6),)
+    LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f103rct6.ld
+    ST_DEF=STM32F10X_XL
+  endif
 
   CFLAGS+=-mthumb -mcpu=cortex-m3 -O3 -mfix-cortex-m3-ldrd  -mthumb-interwork \
     -mfloat-abi=soft -ffunction-sections -fdata-sections \
