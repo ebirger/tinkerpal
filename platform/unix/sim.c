@@ -115,6 +115,29 @@ static int sim_unix_serial_write(int id, char *buf, int size)
 
 static int sim_unix_serial_enable(int id, int enabled)
 {
+    if (!enabled)
+        return -1; /* Not implemented yet */
+
+    switch (id)
+    {
+    case STDIO_ID:
+        unix_set_nonblock(STDIN_FD);
+        unix_set_term_raw(STDIN_FD, 1);
+        unix_sim_add_fd_event_to_map(STDIO_ID, STDIN_FD, STDOUT_FD);
+        break;
+#ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
+    case PTY_ID:
+        pty_fd = pty_open();
+        unix_set_nonblock(pty_fd);
+        unix_set_term_raw(pty_fd, 1);
+        unix_sim_add_fd_event_to_map(PTY_ID, pty_fd, pty_fd);
+        break;
+#endif
+    default:
+        tp_err(("Unsupported Serial ID %d\n", id));
+        return -1;
+    }
+
     return 0;
 }
 
@@ -204,17 +227,6 @@ static void sim_unix_init(void)
 
     unix_init();
 
-    unix_set_nonblock(STDIN_FD);
-    unix_set_term_raw(STDIN_FD, 1);
-#ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
-    pty_fd = pty_open();
-    unix_set_nonblock(pty_fd);
-    unix_set_term_raw(pty_fd, 1);
-#endif
-
-    unix_sim_add_fd_event_to_map(STDIO_ID, STDIN_FD, STDOUT_FD);
-    if (pty_fd != -1)
-        unix_sim_add_fd_event_to_map(PTY_ID, pty_fd, pty_fd);
     atexit(sim_unix_uninit);
 }
 
