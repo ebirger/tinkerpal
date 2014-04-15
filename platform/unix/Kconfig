@@ -1,8 +1,17 @@
 menu "Platform Emulation Options"
 
 config PLATFORM_EMULATION_PTY_TERM
-	bool "PTY Terminal"
+	bool "PTY Serial Device"
 	default y
+
+config PLATFORM_EMULATION_EXT_TTY
+	bool "Extenal TTY Serial Device"
+	default y
+
+config PLATFORM_EMULATION_EXT_TTY_PATH
+        string "External TTY path"
+        depends on PLATFORM_EMULATION_EXT_TTY
+        default "/dev/ttyACM0"
 
 config PLATFORM_EMULATION_BLOCK_DISK
 	bool "Block Disk Emulation"

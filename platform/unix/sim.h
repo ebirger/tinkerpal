@@ -30,7 +30,8 @@
 #define STDIO_ID 0
 #define PTY_ID 1
 #define NET_ID 2
-#define NUM_IDS 3
+#define EXT_TTY_ID 3
+#define NUM_IDS 4
 
 void unix_sim_add_fd_event_to_map(int event, int in_fd, int out_fd);
 void unix_sim_remove_fd_event_from_map(int event);

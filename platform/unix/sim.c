@@ -28,13 +28,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h> 
+#include <fcntl.h>
+#include <termios.h>
 #include "util/debug.h"
 #include "drivers/block/block.h"
 #include "platform/platform.h"
 #include "platform/unix/unix.h"
 
 static int pty_fd = -1;
+static int ext_tty_fd = -1;
 
 static int unix_sim_event_fd_count;
 static unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1] = { 
@@ -98,6 +100,27 @@ static int pty_open(void)
 }
 #endif
 
+#ifdef CONFIG_PLATFORM_EMULATION_EXT_TTY
+static int ext_tty_open(void)
+{
+    struct termios options;
+    int fd;
+
+    if ((fd = open(CONFIG_PLATFORM_EMULATION_EXT_TTY_PATH,
+        O_RDWR | O_NONBLOCK)) < 0)
+    {
+        return -1;
+    }
+
+    tcgetattr(fd, &options);
+    cfsetispeed(&options, B115200);
+    cfsetospeed(&options, B115200);
+    tcsetattr(fd, TCSANOW, &options);
+
+    return fd;
+}
+#endif
+
 static int sim_unix_select(int ms)
 {
     return unix_select(ms, unix_sim_event_fd_map);
@@ -115,22 +138,25 @@ static int sim_unix_serial_write(int id, char *buf, int size)
 
 static int sim_unix_serial_enable(int id, int enabled)
 {
+    int in_fd, out_fd;
+
     if (!enabled)
         return -1; /* Not implemented yet */
 
     switch (id)
     {
     case STDIO_ID:
-        unix_set_nonblock(STDIN_FD);
-        unix_set_term_raw(STDIN_FD, 1);
-        unix_sim_add_fd_event_to_map(STDIO_ID, STDIN_FD, STDOUT_FD);
+        in_fd = STDIN_FD;
+        out_fd = STDOUT_FD;
         break;
 #ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
     case PTY_ID:
-        pty_fd = pty_open();
-        unix_set_nonblock(pty_fd);
-        unix_set_term_raw(pty_fd, 1);
-        unix_sim_add_fd_event_to_map(PTY_ID, pty_fd, pty_fd);
+        in_fd = out_fd = pty_fd = pty_open();
+        break;
+#endif
+#ifdef CONFIG_PLATFORM_EMULATION_EXT_TTY
+    case EXT_TTY_ID:
+        in_fd = out_fd = ext_tty_fd = ext_tty_open();
         break;
 #endif
     default:
@@ -138,6 +164,9 @@ static int sim_unix_serial_enable(int id, int enabled)
         return -1;
     }
 
+    unix_set_nonblock(in_fd);
+    unix_set_term_raw(in_fd, 1);
+    unix_sim_add_fd_event_to_map(id, in_fd, out_fd);
     return 0;
 }
 
@@ -215,6 +244,8 @@ static void sim_unix_uninit(void)
     printf("Unix Platform Simulator Uninit\n");
     if (pty_fd != -1)
         close(pty_fd);
+    if (ext_tty_fd != -1)
+        close(ext_tty_fd);
     if (block_disk)
         fclose(block_disk);
     unix_set_term_raw(STDIN_FD, 0);
