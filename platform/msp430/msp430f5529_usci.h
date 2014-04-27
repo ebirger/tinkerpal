@@ -34,7 +34,7 @@ typedef struct {
     volatile unsigned char *stat;
     volatile unsigned char *ie;
     volatile unsigned char *txbuf;
-    volatile unsigned char *rxbuf;
+    const volatile unsigned char *rxbuf;
     volatile unsigned char *ifg;
     int txpin;
     int rxpin;
