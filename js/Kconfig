@@ -1,5 +1,9 @@
 menu "JS Tuning"
 
+config JIT
+        bool "JIT Support (Experimental)"
+        default n
+
 config MAX_FUNCTION_CALL_ARGS
 	int "Maximum Number of Arguments Allowed on a Function Call"
 	range 1 20

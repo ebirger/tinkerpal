@@ -28,6 +28,7 @@
 #include "js/js_scan.h"
 #include "js/js_types.h"
 #include "js/js_obj.h"
+#include "js/js_jit.h"
 #include "js/js_utils.h"
 #include "js/js_builtins.h"
 
@@ -1765,6 +1766,10 @@ static int eval_block(obj_t **ret, scan_t *scan)
     int rc;
 
     js_scan_match(scan, TOK_OPEN_SCOPE);
+
+    /* XXX: Under construction. ignoring output */
+    jit_statement_list(scan);
+
     if ((rc = eval_statement_list(ret, scan)))
         return rc;
 
