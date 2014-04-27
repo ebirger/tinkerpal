@@ -44,7 +44,6 @@ static int jit_num_new(tnum_t num)
 static int jit_atom(scan_t *scan)
 {
     token_type_t tok = CUR_TOK(scan);
-    int rc = 0;
 
     switch (tok)
     {
@@ -55,8 +54,8 @@ static int jit_atom(scan_t *scan)
             if (js_scan_get_num(scan, &num))
                 return -1;
 
-            if ((rc = jit_num_new(num)))
-                return rc;
+            if (jit_num_new(num))
+                return -1;
         }
         break;
     case TOK_OPEN_PAREN:
@@ -64,7 +63,7 @@ static int jit_atom(scan_t *scan)
         return -1;
     }
 
-    return rc;
+    return 0;
 }
 
 #define GEN_JIT(name, condition, lower) \
