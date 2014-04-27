@@ -22,6 +22,9 @@
  * (including negligence or otherwise) arising in any way out of the use of this
  * software, even if advised of the possibility of such damage.
  */
+#include "js/js_jit.h"
+#include "util/tnum.h"
+
 static int jit_expression(scan_t *scan);
 
 #define JIT_FUNC_CALL1(func, arg1) do { \
