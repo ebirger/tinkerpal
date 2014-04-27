@@ -22,6 +22,7 @@
  * (including negligence or otherwise) arising in any way out of the use of this
  * software, even if advised of the possibility of such damage.
  */
+static int jit_expression(scan_t *scan);
 
 #define JIT_FUNC_CALL1(func, arg1) do { \
     tp_out(("JIT: CALL %s(%s:%d)\n", #func, #arg1, arg1)); \
@@ -85,6 +86,11 @@ GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
     jit_atom)
 GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
 
+static int jit_expression(scan_t *scan)
+{
+    return jit_term(scan);
+}
+
 int jit_statement_list(scan_t *scan)
 {
     int rc;
@@ -92,7 +98,7 @@ int jit_statement_list(scan_t *scan)
 
     scan_copy = js_scan_save(scan);
 
-    rc = jit_term(scan_copy);
+    rc = jit_expression(scan_copy);
 
     js_scan_free(scan_copy);
     tp_out(("JIT Status: %s\n", rc ? "Failed" : "Success"));
