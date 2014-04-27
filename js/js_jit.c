@@ -59,6 +59,15 @@ static int jit_atom(scan_t *scan)
         }
         break;
     case TOK_OPEN_PAREN:
+        js_scan_next_token(scan);
+
+        if (jit_expression(scan))
+            return -1;
+
+        if (_js_scan_match(scan, TOK_CLOSE_PAREN))
+            return -1;
+
+        break;
     default:
         return -1;
     }
