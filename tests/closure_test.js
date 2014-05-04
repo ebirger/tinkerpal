@@ -32,3 +32,13 @@ var sum_factory = function() {
 
 var sum = sum_factory();
 debug.assert(sum(1, 2), 3);
+
+function P(v) { this.v = v; };
+P.prototype.get = function() { return this.v; };
+var a = new P(1);
+var b = new P(2);
+debug.assert(a.get(), 1);
+debug.assert(b.get(), 2);
+b.get = function() { return 3; };
+debug.assert(a.get(), 1);
+debug.assert(b.get(), 3);
