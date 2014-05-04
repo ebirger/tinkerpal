@@ -181,11 +181,10 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)
      * to itself...
      */
     if (!val && CLASS_PROTOTYPE(o) && CLASS_PROTOTYPE(o) != o)
-    {
         val = obj_get_property(&ref, CLASS_PROTOTYPE(o), property);
-        /* User is not allowed to change the class prototype */
-        ref = NULL;
-    }
+
+    /* User is not allowed to change class or object prototypes */
+    ref = NULL;
 
 Exit:
     if (lval)
