@@ -160,18 +160,21 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_PUSH(0, (1<<R0)); \
 } while(0)
 
-#define JIT_FUNC_CALL1(func, arg1) do { \
-    ARM_THM_JIT_MOV(R0, arg1); \
-    ARM_THM_JIT_CALL(func); \
-    ARM_THM_JIT_PUSH(0, (1<<R0)); \
+#define JIT_FUNC_CALL1(func) do { \
+    ARM_THM_JIT_POP(0, 1<<R0); \
+    JIT_FUNC_CALL0(func); \
 } while(0)
 
-#define JIT_FUNC_CALL2(func, arg1) do { \
+#define JIT_FUNC_CALL1_ARG(func, arg) do { \
+    ARM_THM_JIT_MOV(R0, arg); \
+    JIT_FUNC_CALL0(func); \
+} while(0)
+
+#define JIT_FUNC_CALL2_ARG(func, arg) do { \
     ARM_THM_JIT_POP(0, (1<<R2)); \
     ARM_THM_JIT_POP(0, (1<<R1)); \
-    ARM_THM_JIT_MOV(R0, arg1); \
-    ARM_THM_JIT_CALL(func); \
-    ARM_THM_JIT_PUSH(0, (1<<R0)); \
+    ARM_THM_JIT_MOV(R0, arg); \
+    JIT_FUNC_CALL0(func); \
 } while(0)
 
 /* Return value in <R0, R1> */
@@ -214,7 +217,7 @@ static int jit_num_new(tnum_t num)
     if (NUMERIC_IS_FP(num))
        return -1;
 
-    JIT_FUNC_CALL1(num_new_int, NUMERIC_INT(num));
+    JIT_FUNC_CALL1_ARG(num_new_int, NUMERIC_INT(num));
     return 0;
 }
 
@@ -254,7 +257,26 @@ static int jit_atom(scan_t *scan)
                 return -1;
 
             if (jit_string_new(str))
+            {
+                tstr_free(&str);
                 return -1;
+            }
+
+            /* XXX: memory leak since we don't provide means to free str */
+        }
+        break;
+    case TOK_ID:
+        {
+            tstr_t id;
+
+            if (js_scan_get_identifier(scan, &id))
+                return -1;
+
+            if (jit_string_new(id))
+            {
+                tstr_free(&id);
+                return -1;
+            }
 
             /* XXX: memory leak since we don't provide means to free str */
         }
@@ -276,6 +298,39 @@ static int jit_atom(scan_t *scan)
     return 0;
 }
 
+static obj_t *jit_get_property_do(obj_t *property)
+{
+    extern obj_t *cur_env;
+    obj_t *o;
+    tstr_t prop_name = obj_get_str(property);
+
+    o = obj_get_property(NULL, cur_env, &prop_name);
+
+    tstr_free(&prop_name);
+    /* XXX: 'property' should be stored when assignement is implemented */
+    obj_put(property);
+    return o ? o : UNDEF;
+}
+
+static int jit_get_property(void)
+{
+    JIT_FUNC_CALL1(jit_get_property_do);
+    return 0;
+}
+
+static int jit_member(scan_t *scan)
+{
+    token_type_t tok = CUR_TOK(scan);
+
+    if (jit_atom(scan))
+        return -1;
+
+    if (tok == TOK_ID)
+        return jit_get_property();
+
+    return 0;
+}
+
 #define GEN_JIT(name, condition, lower) \
 static int name(scan_t *scan) \
 { \
@@ -288,14 +343,14 @@ static int name(scan_t *scan) \
         js_scan_next_token(scan); \
         if (lower(scan)) \
             return -1; \
-        JIT_FUNC_CALL2(obj_do_op, tok); \
+        JIT_FUNC_CALL2_ARG(obj_do_op, tok); \
         tok = CUR_TOK(scan); \
     } \
     return 0; \
 }
 
 GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
-    jit_atom)
+    jit_member)
 GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
 
 static int jit_expression(scan_t *scan)

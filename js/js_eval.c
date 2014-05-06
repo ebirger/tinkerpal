@@ -46,7 +46,7 @@ typedef struct {
 
 extern obj_t *global_env;
 
-static obj_t *cur_env;
+obj_t *cur_env;
 static obj_t *this = NULL;
 static function_args_t cur_function_args;
 
