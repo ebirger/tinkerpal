@@ -62,6 +62,7 @@ static int jit_op32(u32 op)
 #define R2 2
 #define R3 3
 #define R4 4
+#define SP 13
 
 /* op: 0 - push, 1 - pop
  * R: 1 - operate on lr too
@@ -84,6 +85,12 @@ static int jit_op32(u32 op)
         return -1; \
     tp_info(("JIT: mov ld %d, imm8 %x\n", ld, imm8)); \
     if (jit_op16(0x2000 | ((ld)<<8) | (imm8))) \
+        return -1; \
+} while(0)
+
+#define ARM_THM_JIT_MOV_REG(rd, rm) do { \
+    tp_info(("JIT: mov rd %d, rm %d\n", rd, rm)); \
+    if (jit_op16(0x4600 | ((rm)<<3) | (rd))) \
         return -1; \
 } while(0)
 
@@ -148,6 +155,11 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_POP(1, (1<<R0)|(1<<R4)); \
 } while(0)
 
+#define JIT_FUNC_CALL0(func) do { \
+    ARM_THM_JIT_CALL(func); \
+    ARM_THM_JIT_PUSH(0, (1<<R0)); \
+} while(0)
+
 #define JIT_FUNC_CALL1(func, arg1) do { \
     ARM_THM_JIT_MOV(R0, arg1); \
     ARM_THM_JIT_CALL(func); \
@@ -160,6 +172,20 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_MOV(R0, arg1); \
     ARM_THM_JIT_CALL(func); \
     ARM_THM_JIT_PUSH(0, (1<<R0)); \
+} while(0)
+
+/* Return value in <R0, R1> */
+#define JIT_FUNC_CALL2_RET(func, arg1, arg2) do { \
+    ARM_THM_JIT_REG_SET(R1, arg1); \
+    ARM_THM_JIT_REG_SET(R2, arg2); \
+    /* Make space for return value */ \
+    ARM_THM_JIT_PUSH(0, (1<<R1) | (1<<R2)); \
+    ARM_THM_JIT_MOV_REG(R0, SP); /* values pointer */ \
+    JIT_FUNC_CALL0(func); \
+    ARM_THM_JIT_POP(0, 1<<R0); /* Don't need the return value */ \
+    /* Fetch the dupped tstr from the stack */ \
+    ARM_THM_JIT_POP(0, 1<<R0); \
+    ARM_THM_JIT_POP(0, 1<<R1); \
 } while(0)
 
 static void jit_call(void)
@@ -192,6 +218,17 @@ static int jit_num_new(tnum_t num)
     return 0;
 }
 
+static int jit_string_new(tstr_t str)
+{
+    u32 *s = (u32 *)&str;
+
+    /* tstr_dup the value so it can be used more than once */
+    JIT_FUNC_CALL2_RET(tstr_dup, s[0], s[1]);
+
+    JIT_FUNC_CALL0(string_new);
+    return 0;
+}
+
 static int jit_atom(scan_t *scan)
 {
     token_type_t tok = CUR_TOK(scan);
@@ -207,6 +244,19 @@ static int jit_atom(scan_t *scan)
 
             if (jit_num_new(num))
                 return -1;
+        }
+        break;
+    case TOK_STRING:
+        {
+            tstr_t str;
+
+            if (js_scan_get_string(scan, &str))
+                return -1;
+
+            if (jit_string_new(str))
+                return -1;
+
+            /* XXX: memory leak since we don't provide means to free str */
         }
         break;
     case TOK_OPEN_PAREN:
