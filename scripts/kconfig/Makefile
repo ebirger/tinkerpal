@@ -52,7 +52,11 @@ $(obj)/dochecklxdialog:
 # Add environment specific flags
 HOST_EXTRACFLAGS += $(shell $(CONFIG_SHELL) ./check.sh $(HOSTCC) $(HOSTCFLAGS))
 
-HOSTLOADLIBES_mconf = $(shell $(CONFIG_SHELL) $(check-lxdialog) -ldflags $(HOSTCC))
+ifeq ($(shell uname),Darwin)
+  HOSTLOADLIBES_mconf = -lncurses
+else
+  HOSTLOADLIBES_mconf = $(shell $(CONFIG_SHELL) $(check-lxdialog) -ldflags $(HOSTCC))
+endif
 
 $(obj)/zconf.tab.o: $(obj)/zconf.lex.c $(obj)/zconf.hash.c
 
