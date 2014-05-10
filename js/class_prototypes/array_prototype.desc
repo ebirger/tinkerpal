@@ -102,3 +102,20 @@ FUNCTION("map", array_prototype, do_array_prototype_map, {
 	"var b = a.map(function(value, k, obj) { return value + 1 });\n"
 	"debug.assert(b, [ 2, 3, 4 ]);",
 })
+
+FUNCTION("slice", array_prototype, do_array_prototype_slice, {
+    .params = {
+        {
+            .name = "start",
+            .description = "Element index to start from, may be undefined",
+        },
+        {
+            .name = "end",
+	    .description = "Last element index (not inclusive), may be undefined"
+        },
+    },
+    .description = "Creates a new array with elements from the specified array "
+        "starting from index 'start' up to index 'end'",
+    .return_value = "The constructed array",
+    .example = "[ 1, 2, 3].slice(1); // [2, 3]"
+})

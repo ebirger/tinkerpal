@@ -201,6 +201,51 @@ Exit:
     return rc;
 }
 
+int do_array_prototype_slice(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    obj_t *new_arr;
+    array_iter_t iter;
+    int rc = 0, start = 0, end = 0;
+
+    if (argc > 3)
+        return js_invalid_args(ret);
+
+    if (argc >= 2)
+    {
+        if (argv[1] != UNDEF)
+            start = obj_get_int(argv[1]);
+        if (argc == 3 && argv[2] != UNDEF)
+            end = obj_get_int(argv[2]);
+    }
+
+    *ret = new_arr = array_new();
+
+    array_iter_init(&iter, this, 0);
+    if (iter.len == 0)
+        goto Exit;
+
+    if (start < 0)
+        start += iter.len;
+    if (argc < 3)
+        end = iter.len;
+    else if (end < 0)
+        end += iter.len;
+
+    while (array_iter_next(&iter))
+    {
+        if (iter.k < start)
+            continue;
+        if (iter.k == end)
+            break;
+
+        array_push(new_arr, obj_get(iter.obj));
+    }
+
+Exit:
+    array_iter_uninit(&iter);
+    return rc;
+}
+
 int do_array_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *a;
