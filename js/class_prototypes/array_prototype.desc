@@ -75,7 +75,6 @@ FUNCTION("join", array_prototype, do_array_prototype_join, {
     .description = "Joins the string coversions of the elements of the array "
         "separated by occurrences of the separator",
     .return_value = "The resulted string",
-         "the first such position (zero based); otherwise, -1 is returned",
     .example = "var a = [ 1, 2, 3 ];\n"
 	"debug.assert(a.join('-'), '1-2-3');\n",
 })
