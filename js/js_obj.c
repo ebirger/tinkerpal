@@ -172,7 +172,10 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)
         obj_put(proto);
     }
 
-    /* If this is an env obj, there is nothing more we can do. */
+    /* If this is an env obj, there is nothing more we can do.
+     * Note: we do return references to prototype properties on
+     * 'env' objects as they signify the 'outer' env (needed for closures)
+     */
     if (is_env(o))
         goto Exit;
 
