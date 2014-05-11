@@ -24,6 +24,7 @@
  */
 #include "js/js_jit.h"
 #include "js/js_obj.h"
+#include "js/js_types.h"
 #include "util/tnum.h"
 #include "util/tp_types.h"
 
@@ -298,24 +299,19 @@ static int jit_atom(scan_t *scan)
     return 0;
 }
 
-static obj_t *jit_get_property_do(obj_t *property)
+static obj_t *jit_get_property_helper(obj_t *property)
 {
     extern obj_t *cur_env;
     obj_t *o;
-    tstr_t prop_name = obj_get_str(property);
+    tstr_t prop_name;
+
+    prop_name = to_string(property)->value;
 
     o = obj_get_property(NULL, cur_env, &prop_name);
 
-    tstr_free(&prop_name);
     /* XXX: 'property' should be stored when assignement is implemented */
     obj_put(property);
     return o ? o : UNDEF;
-}
-
-static int jit_get_property(void)
-{
-    JIT_FUNC_CALL1(jit_get_property_do);
-    return 0;
 }
 
 static int jit_member(scan_t *scan)
@@ -326,8 +322,53 @@ static int jit_member(scan_t *scan)
         return -1;
 
     if (tok == TOK_ID)
-        return jit_get_property();
+        JIT_FUNC_CALL1(jit_get_property_helper);
 
+    return 0;
+}
+
+static obj_t *jit_function_call_helper(obj_t *func)
+{
+    extern obj_t *global_env;
+    function_args_t args;
+    obj_t *argv[1];
+    obj_t *ret = UNDEF;
+    int rc;
+
+    /* XXX: assert is function */
+    argv[0] = func;
+    args.argc = 1;
+    args.argv = argv;
+
+    rc = function_call(&ret, global_env, args.argc, args.argv);
+    if (rc == COMPLETION_RETURN)
+        rc = 0;
+
+    return ret;
+}
+
+static int jit_function_call(scan_t *scan)
+{
+    js_scan_match(scan, TOK_OPEN_PAREN);
+    if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
+        return -1;
+
+    js_scan_match(scan, TOK_CLOSE_PAREN);
+
+    JIT_FUNC_CALL1(jit_function_call_helper);
+    return 0;
+}
+
+static int jit_functions(scan_t *scan)
+{
+    if (jit_member(scan))
+        return -1;
+    
+    while (CUR_TOK(scan) == TOK_OPEN_PAREN)
+    {
+        if (jit_function_call(scan))
+            return -1;
+    }
     return 0;
 }
 
@@ -350,7 +391,7 @@ static int name(scan_t *scan) \
 }
 
 GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
-    jit_member)
+    jit_functions)
 GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
 
 static int jit_expression(scan_t *scan)
