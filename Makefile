@@ -5,7 +5,8 @@ PATCH_VERSION=2
 HOST_OS=$(shell uname)
 
 BUILD?=build.$(HOST_OS)
-BSPS_DIR?=staging.$(HOST_OS)/bsps
+STAGING=staging.$(HOST_OS)
+BSPS_DIR?=$(STAGING)/bsps
 
 ifeq ($(V),1)
     quiet_=
@@ -130,4 +131,11 @@ $(IMAGE) : $(TARGET)
 	@echo $($(quiet_)obj_to_bin)
 	@$(call obj_to_bin)
 
-.PHONY: build_dir _all docs
+burn : $(BURN_CMD)
+ifneq ($(BURN_CMD),)
+	@sudo $(BURN_CMD)
+else
+	$(error burn command not available)
+endif
+
+.PHONY: build_dir _all docs burn
