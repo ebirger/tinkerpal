@@ -41,3 +41,18 @@ ifneq ($(CONFIG_GCC),)
     $(error Please set CROSS_COMPILE environment variable)
   endif
 endif
+
+LM4TOOLS=$(STAGING)/lm4tools
+LM4TOOLS_FETCHED=$(LM4TOOLS)/.fetched
+BURNER=$(LM4TOOLS)/lm4flash/lm4flash
+
+$(LM4TOOLS_FETCHED) :
+	@echo Fetching LM4Tools
+	git clone https://github.com/utzig/lm4tools.git $(LM4TOOLS)
+	@touch $(LM4TOOLS_FETCHED)
+
+$(BURNER) : $(LM4TOOLS_FETCHED)
+	@echo Building LM4Flash
+	cd $(LM4TOOLS)/lm4flash; make
+
+BURN_CMD=$(BURNER) $(IMAGE)
