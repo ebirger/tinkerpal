@@ -149,6 +149,7 @@ config STM32_FSMC_LCD
 config MSP430
 	bool
 	select PLAT_HAS_TI_CCS5
+        select PLAT_HAS_GCC
 	select PLAT_HAS_MALLOC
 	select 16_BIT
 
