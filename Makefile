@@ -131,7 +131,7 @@ $(IMAGE) : $(TARGET)
 	@echo $($(quiet_)obj_to_bin)
 	@$(call obj_to_bin)
 
-burn : $(BURN_CMD)
+burn : $(BURNER)
 ifneq ($(BURN_CMD),)
 	@sudo $(BURN_CMD)
 else
