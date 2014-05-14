@@ -16,6 +16,23 @@ ifneq ($(CONFIG_TI_CCS5),)
 endif
 
 ifneq ($(CONFIG_GCC),)
+  MSPDEBUG_VER=0.22
+  MSPDEBUG_URL=http://sourceforge.net/projects/mspdebug/files/mspdebug-$(MSPDEBUG_VER).tar.gz
+  MSPDEBUG_DIR=$(STAGING)/mspdebug-$(MSPDEBUG_VER)
+  MSPDEBUG_FETCHED=$(MSPDEBUG_DIR)/.fetched
+  BURNER=$(MSPDEBUG_DIR)/mspdebug
+  
+$(MSPDEBUG_FETCHED) :
+	@echo Fetching mspdebug
+	@cd $(STAGING); wget $(MSPDEBUG_URL) -O - | tar -xzv
+	@touch $(MSPDEBUG_FETCHED)
+  
+$(BURNER) : $(MSPDEBUG_FETCHED)
+	@echo Building mspdebug
+	cd $(MSPDEBUG_DIR); make
+  
   CFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog
   LDFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog
+
+  BURN_CMD=$(BURNER) tilib "prog $(TARGET)"
 endif
