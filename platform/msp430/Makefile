@@ -31,7 +31,7 @@ $(BURNER) : $(MSPDEBUG_FETCHED)
 	@echo Building mspdebug
 	cd $(MSPDEBUG_DIR); make
   
-  CFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog
+  CFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog -Os
   LDFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog
 
   BURN_CMD=$(BURNER) tilib "prog $(TARGET)"
