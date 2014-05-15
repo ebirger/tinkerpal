@@ -69,7 +69,7 @@ $(call include_deps)
 TARGET=$(BUILD)/$(TARGET_NAME)
 IMAGE=$(BUILD)/$(IMAGE_NAME)
 
-_all: $(IMAGE) $(BUILD)/auto.conf
+_all: $(BSPS_DIR)/.fetched $(IMAGE) $(BUILD)/auto.conf
   
 clean: 
 	$(Q)$(RM) $(TARGET) $(IMAGE) $(OBJS) $(AUTO_GEN_FILES) $(OBJS:.o=.d) $(LINK_DEPS)
