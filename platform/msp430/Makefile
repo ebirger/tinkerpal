@@ -16,27 +16,6 @@ ifneq ($(CONFIG_TI_CCS5),)
 endif
 
 ifneq ($(CONFIG_GCC),)
-  MSPDEBUG_VER=0.22
-  MSPDEBUG_URL=http://sourceforge.net/projects/mspdebug/files/mspdebug-$(MSPDEBUG_VER).tar.gz
-  MSPDEBUG_DIR=$(STAGING)/mspdebug-$(MSPDEBUG_VER)
-  MSPDEBUG_FETCHED=$(MSPDEBUG_DIR)/.fetched
-  MSP430_LIB=$(MSPDEBUG_DIR)/libmsp430.so
-  BURNER=$(MSPDEBUG_DIR)/mspdebug
-  
-$(MSPDEBUG_FETCHED) :
-	@echo Fetching mspdebug
-	@cd $(STAGING); wget $(MSPDEBUG_URL) -O - | tar -xzv
-	@touch $(MSPDEBUG_FETCHED)
-
-$(MSP430_LIB) :
-	@wget www.tinkerpal.org/libmsp430.so -O $(MSP430_LIB)
-
-$(BURNER) : $(MSPDEBUG_FETCHED) $(MSP430_LIB)
-	@echo Building mspdebug
-	cd $(MSPDEBUG_DIR); make
-  
   CFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog -Os
   LDFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog
-
-  BURN_CMD=LD_LIBRARY_PATH=$(MSPDEBUG_DIR) $(BURNER) tilib "prog $(TARGET)"
 endif
