@@ -33,3 +33,18 @@ $(MSP430_LIB) :
 $(MSPDEBUG_BURNER) : $(MSPDEBUG_FETCHED) $(MSP430_LIB)
 	@echo Building mspdebug
 	cd $(MSPDEBUG_DIR); make
+
+# STLink Burner
+
+STLINK=$(STAGING)/stlink
+STLINK_FETCHED=$(STLINK)/.fetched
+STLINK_BURNER=$(STLINK)/st-flash
+
+$(STLINK_FETCHED) :
+	@echo Fetching STLink
+	git clone https://github.com/texane/stlink.git $(STLINK)
+	@touch $(STLINK_FETCHED)
+
+$(STLINK_BURNER) : $(STLINK_FETCHED)
+	@echo Building STLink
+	cd $(STLINK); ./autogen.sh; ./configure; make
