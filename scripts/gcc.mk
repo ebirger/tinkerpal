@@ -10,7 +10,8 @@ OBJCOPY=$(CROSS_COMPILE)objcopy
 LINK_DEPS=$(LINKER_SCRIPT)
 
 CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h -Wall -Werror -g -ansi \
-  -std=gnu99
+  -std=gnu99 $(if $(CONFIG_GCC_LTO),-flto)
+LDFLAGS+=$(if $(CONFIG_GCC_LTO),-flto)
 get_libgcc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-libgcc-file-name))
 get_libc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-file-name=libc.a))
 

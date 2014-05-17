@@ -17,3 +17,10 @@ config TI_CCS5
 	depends on PLAT_HAS_TI_CCS5
 
 endchoice
+
+if GCC
+
+config GCC_LTO
+	bool "GCC Link Time Optimization"
+
+endif
