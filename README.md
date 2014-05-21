@@ -34,6 +34,16 @@ Installation
 - libusb-1.0.0-dev
 - pkg-config
 
+### mspdebug
+- libreadline6
+
+### ST Link
+- autoconf
+
+### STM32Loader
+- python
+- python-serial
+
 ### Runtime
 screen / minicom / putty
 
@@ -52,14 +62,12 @@ Building
 
 ### Environment Variables
 - CROSS_COMPILE - compiler prefix
-- Other platform specific variables are required. See boards/env/
 
 Building for a specific target
 ------------------------------
 ```
 > make <defconfig file>
 Where defconfig files can be found in boards/configs/
-> . ./boards/env/setenv_<target>.sh
 > make
 ```
 
@@ -68,16 +76,20 @@ Where defconfig files can be found in boards/configs/
 Building as a Linux executable
 ```
 > make unix_sim_gcc_defconfig
-> . ./boards/env/setenv_unix_sim.sh
 > make
 ```
 The output executable can be found at ./build.Linux/tp
 
 Building for the Stellaris Launchpad on Linux
 ```
+> export CROSS_COMPILE=arm-none-eabi-
 > make lm4f120xl_gcc_defconfig
-> . ./boards/env/setenv_lm4f120xl.sh
 > make
 ```
 
 The output file can be found at ./build.Linux/tp.bin
+
+Flashing TinkerPal
+------------------
+Most targets can be flashed by running 'make burn'. Note: this requires root
+privileges
