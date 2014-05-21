@@ -48,3 +48,12 @@ $(STLINK_FETCHED) :
 $(STLINK_BURNER) : $(STLINK_FETCHED)
 	@echo Building STLink
 	cd $(STLINK); ./autogen.sh; ./configure; make
+
+# STM32 Serial Loader
+
+STM32LOADER=$(STAGING)/stm32loader
+STM32LOADER_BURNER=$(STM32LOADER)/stm32loader.py
+
+$(STM32LOADER_BURNER) :
+	@echo Fetching stm32loader
+	git clone https://github.com/jsnyder/stm32loader.git $(STM32LOADER)

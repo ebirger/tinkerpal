@@ -32,6 +32,6 @@ endif
 
 ifneq ($(CONFIG_STM32_HY_24),)
   PORT=/dev/ttyUSB1
-  BURNER=scripts/stm32loader.py
+  BURNER=$(STM32LOADER_BURNER)
   BURN_CMD=python $(BURNER) -p $(PORT) -evw $(IMAGE)
 endif
