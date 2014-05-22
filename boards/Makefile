@@ -31,7 +31,8 @@ ifneq ($(CONFIG_STM32F3DISCOVERY)$(CONFIG_STM32F429IDISCOVERY)$(CONFIG_STM32F429
 endif
 
 ifneq ($(CONFIG_STM32_HY_24),)
-  PORT=/dev/ttyUSB1
+  PORT?=/dev/ttyUSB1
   BURNER=$(STM32LOADER_BURNER)
+  BURN_NOTE='You can set the port by running PORT=<your port> make burn'
   BURN_CMD=python $(BURNER) -p $(PORT) -evw $(IMAGE)
 endif
