@@ -132,7 +132,15 @@ $(IMAGE) : $(TARGET)
 	@$(call obj_to_bin)
 
 burn : $(BURNER)
+
+define note
+	@printf *********************************************************\\n
+	@printf $1\\n
+	@printf *********************************************************\\n
+endef
+
 ifneq ($(BURN_CMD),)
+	$(if $(BURN_NOTE),$(call note,$(BURN_NOTE)))
 	@sudo $(BURN_CMD)
 else
 	$(error burn command not available)
