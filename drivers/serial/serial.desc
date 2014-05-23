@@ -36,6 +36,20 @@ FUNCTION("print", serial, do_serial_print, {
         "s.print('Hello World!');",
 })
 
+FUNCTION("write", serial, do_serial_write, {
+    .params = {
+        {
+	    .name = "data" ,
+	    .description = "Data (byte/array/string/typed array) to be sent" 
+	},
+    },
+    .description = "Writes data to the serial port",
+    .return_value = "None",
+    .example = "var s = new Serial(UART1);\n"
+        "s.write(255);\n"
+	"s.write([1,2,3])",
+})
+
 FUNCTION("onData", serial, do_serial_on_data, {
     .params = {
         { .name = "cb", .description = "callback function accepting a data object" },
