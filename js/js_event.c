@@ -102,16 +102,21 @@ obj_t *js_event_get_this(event_t *e)
 
 void js_event_gen_trigger(event_t *e, u32 id, u32 timestamp)
 {
-    obj_t *o, *this, *func;
+    obj_t *o, *this, *func, *data_obj, *argv[2];
 
-    func = js_event_get_func(e);
+    data_obj = object_new();
+    obj_set_property_int(data_obj, S("timestamp"), timestamp);
+
+    argv[0] = func = js_event_get_func(e);
+    argv[1] = data_obj;
     this = js_event_get_this(e);
 
-    function_call(&o, this, 1, &func);
+    function_call(&o, this, 2, argv);
 
     obj_put(func);
     obj_put(this);
     obj_put(o);
+    obj_put(data_obj);
 }
 
 void js_event_uninit(void)
