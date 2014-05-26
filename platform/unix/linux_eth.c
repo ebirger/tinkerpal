@@ -120,7 +120,7 @@ static void linux_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
     etherif_packet_xmitted(&eth->ethif);
 }
 
-static void linux_eth_packet_event(event_t *ev, u32 resource_id)
+static void linux_eth_packet_event(event_t *ev, u32 resource_id, u32 timestamp)
 {
     linux_eth_t *eth = container_of(ev, linux_eth_t,
         packet_event);

@@ -159,7 +159,7 @@ static void timeout_process(void)
         else
             EVENT_SET_DELETED(t);
 
-        e->trigger(e, 0 /* dummy */);
+        e->trigger(e, 0 /* dummy */, 0 /* dummy */);
 
         /* Go back to the start. We don't know what happend to the list
          * while we ran the cb.
@@ -306,7 +306,7 @@ static int watches_process(void)
 	if (!EVENT_TS_COUNT(e))
 	    EVENT_OFF(e);
 
-        e->e->trigger(e->e, e->resource_id);
+        e->e->trigger(e->e, e->resource_id, ts);
         /* trigger may have triggered new watches */
         more = 1;
     }

@@ -29,7 +29,7 @@
 
 static int cur_led;
 
-static void blinky_trigger(event_t *e, u32 resource_id)
+static void blinky_trigger(event_t *e, u32 resource_id, u32 timestamp)
 {
     gpio_digital_write(board.leds[cur_led], 0);
     if (!board.leds[++cur_led])

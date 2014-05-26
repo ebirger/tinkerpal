@@ -53,7 +53,7 @@ int ethernet_xmit(etherif_t *ethif, const eth_mac_t *dst_mac, u16 eth_type)
     return 0;
 }
 
-static void ethernet_packet_received(event_t *e, u32 resource_id)
+static void ethernet_packet_received(event_t *e, u32 resource_id, u32 timestamp)
 {
     etherif_t *ethif;
     eth_hdr_t *eth_hdr;

@@ -39,7 +39,7 @@ typedef struct {
 
 static sdl_screen_t g_sdl_screen;
 
-static void render_timer_trigger(event_t *e, u32 resource_id)
+static void render_timer_trigger(event_t *e, u32 resource_id, u32 timestamp)
 {
     sdl_screen_t *screen = container_of(e, sdl_screen_t, render_timer);
 

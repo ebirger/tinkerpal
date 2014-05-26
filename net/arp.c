@@ -41,7 +41,7 @@ static arp_resolve_t *pending_resolve;
 static int arp_timeout_event_id;
 static int arp_retries;
 
-static void arp_timeout(event_t *e, u32 resource_id);
+static void arp_timeout(event_t *e, u32 resource_id, u32 timestamp);
 
 static event_t arp_timeout_event = {
     .trigger = arp_timeout
@@ -89,7 +89,7 @@ static void arp_resolve_pending(void)
         htonl(ipv4_addr(ethif)), htonl(pending_resolve->ip));
 }
 
-static void arp_timeout(event_t *e, u32 resource_id)
+static void arp_timeout(event_t *e, u32 resource_id, u32 timestamp)
 {
     if (!pending_resolve)
         return;
