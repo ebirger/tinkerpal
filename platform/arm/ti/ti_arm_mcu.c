@@ -154,9 +154,9 @@ int ti_arm_mcu_uart_enable(int u, int enabled)
 
 int ti_arm_mcu_select(int ms)
 {
-    int expire = cortex_m_get_ticks_from_boot() + ms, event = 0;
+    int expire = platform_get_ticks_from_boot() + ms, event = 0;
 
-    while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
+    while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {
 #ifdef CONFIG_GPIO
         event |= gpio_events_process();

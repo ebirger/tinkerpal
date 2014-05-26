@@ -102,9 +102,9 @@ static void kl25z_serial_irq_enable(int u, int enabled)
 
 static int kl25z_select(int ms)
 {
-    int expire = cortex_m_get_ticks_from_boot() + ms, event = 0;
+    int expire = platform_get_ticks_from_boot() + ms, event = 0;
 
-    while ((!ms || cortex_m_get_ticks_from_boot() < expire) && !event)
+    while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {
         event |= buffered_serial_events_process();
 
