@@ -138,6 +138,17 @@ int unix_get_ticks_from_boot(void)
     return diff.tv_sec * 1000 + diff.tv_usec / 1000;
 }
 
+void unix_get_time_from_boot(unsigned int *sec, unsigned int *usec)
+{
+    struct timeval now, diff;
+
+    gettimeofday(&now, NULL);
+
+    timersub(&now, &boot, &diff);
+    *sec = diff.tv_sec;
+    *usec = diff.tv_usec;
+}
+
 void unix_set_term_raw(int fd, int raw)
 {
     struct termios term;
