@@ -128,16 +128,6 @@ void unix_panic(void)
     exit(1);
 }
 
-int unix_get_ticks_from_boot(void)
-{
-    struct timeval now, diff;
-
-    gettimeofday(&now, NULL);
-
-    timersub(&now, &boot, &diff);
-    return diff.tv_sec * 1000 + diff.tv_usec / 1000;
-}
-
 void unix_get_time_from_boot(unsigned int *sec, unsigned int *usec)
 {
     struct timeval now, diff;

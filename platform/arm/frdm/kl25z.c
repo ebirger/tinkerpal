@@ -201,5 +201,5 @@ const platform_t platform = {
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = kl25z_select,
-    .get_ticks_from_boot = cortex_m_get_ticks_from_boot,
+    .get_time_from_boot = cortex_m_get_time_from_boot,
 };

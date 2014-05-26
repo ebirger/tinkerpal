@@ -100,11 +100,6 @@ void cortex_m_systick_isr(void)
     }
 }
 
-int cortex_m_get_ticks_from_boot(void)
-{
-    return cm_time_sec * 1000 + cm_time_usec / 1000;
-}
-
 void cortex_m_get_time_from_boot(unsigned int *sec, unsigned int *usec)
 {
     *sec = cm_time_sec;

@@ -278,7 +278,6 @@ const platform_t platform = {
 #endif
     .init = sim_unix_init,
     .select = sim_unix_select,
-    .get_ticks_from_boot = unix_get_ticks_from_boot,
     .get_time_from_boot = unix_get_time_from_boot,
     .panic = unix_panic,
 };
