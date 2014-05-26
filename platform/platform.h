@@ -72,6 +72,7 @@ typedef struct {
     void (*init)(void);
     void (*meminfo)(void);
     int (*get_ticks_from_boot)(void);
+    void (*get_time_from_boot)(unsigned int *sec, unsigned int *usec);
     unsigned long (*get_system_clock)(void);
     void (*msleep)(double ms);
     int (*select)(int ms);
@@ -101,6 +102,13 @@ static inline int platform_get_ticks_from_boot(void)
 {
     tp_assert(platform.get_ticks_from_boot);
     return platform.get_ticks_from_boot();
+}
+
+static inline void platform_get_time_from_boot(unsigned int *sec,
+    unsigned int *usec)
+{
+    tp_assert(platform.get_time_from_boot);
+    platform.get_time_from_boot(sec, usec);
 }
 
 static inline void platform_msleep(double ms)
