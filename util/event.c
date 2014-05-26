@@ -30,20 +30,29 @@
 #include "mem/tmalloc.h"
 #include "js/js.h"
 
-#define EVENT_FLAG_ON 0x0001
-#define EVENT_FLAG_DELETED 0x0002
-#define EVENT_FLAG_PERIODIC 0x0004
+#define EVENT_FLAG_ON 0x01000000
+#define EVENT_FLAG_DELETED 0x02000000
+#define EVENT_FLAG_PERIODIC 0x04000000
+#define EVENT_TS_SIZE_SHIFT 16
+#define EVENT_TS_COUNT_SHIFT 8 /* Number of current elements */
+#define EVENT_TS_START_SHIFT 0
 
 typedef struct event_internal_t {
     struct event_internal_t *next;
     event_t *e;
     u32 resource_id;
-    u32 resource_mask;
     int event_id;
     int period;
     int expire;
-    unsigned int flags;
+    u32 flags; /* Doubles as a counters for timestamps */
+    u32 timestamps[0];
 } event_internal_t;
+
+#define EVENT_FLAGS_U8_SET(e, x, shift) do { \
+    (e)->flags &= ~(0xff << (shift)); \
+    (e)->flags |= (x) << (shift); \
+} while(0)
+#define EVENT_FLAGS_U8_GET(e, shift) (((e)->flags >> (shift)) & 0xff)
 
 #define EVENT_IS_ON(e) ((e)->flags & EVENT_FLAG_ON)
 #define EVENT_ON(e) bit_set((e)->flags, EVENT_FLAG_ON, 1)
@@ -52,7 +61,13 @@ typedef struct event_internal_t {
 #define EVENT_SET_DELETED(e) bit_set((e)->flags, EVENT_FLAG_DELETED, 1)
 #define EVENT_IS_PERIODIC(e) ((e)->flags & EVENT_FLAG_PERIODIC)
 #define EVENT_SET_PERIODIC(e) bit_set((e)->flags, EVENT_FLAG_PERIODIC, 1)
-
+#define EVENT_TS_SIZE(e) EVENT_FLAGS_U8_GET(e, EVENT_TS_SIZE_SHIFT)
+#define EVENT_TS_COUNT(e) EVENT_FLAGS_U8_GET(e, EVENT_TS_COUNT_SHIFT)
+#define EVENT_TS_START(e) EVENT_FLAGS_U8_GET(e, EVENT_TS_START_SHIFT)
+#define EVENT_SET_TS_SIZE(e, n) EVENT_FLAGS_U8_SET(e, n, EVENT_TS_SIZE_SHIFT)
+#define EVENT_SET_TS_COUNT(e, n) EVENT_FLAGS_U8_SET(e, n, EVENT_TS_COUNT_SHIFT)
+#define EVENT_SET_TS_START(e, n) EVENT_FLAGS_U8_SET(e, n, EVENT_TS_START_SHIFT)
+ 
 static event_internal_t *watches, *timers;
 static int g_event_id = 0;
 
@@ -164,31 +179,63 @@ static void get_next_timeout(int *timeout)
     tp_debug(("Next timeout: %d ms\n", *timeout));
 }
 
+static inline void event_ts_enqueue(event_internal_t *e, u32 ts)
+{
+    u8 count, size;
+
+    count = EVENT_TS_COUNT(e);
+    size = EVENT_TS_SIZE(e);
+
+    if (count == size)
+	return; /* Full, silently discard */
+
+    e->timestamps[(EVENT_TS_START(e) + count) & (size - 1)] = ts;
+    EVENT_SET_TS_COUNT(e, count + 1);
+}
+
+static int event_ts_dequeue(event_internal_t *e, u32 *ts)
+{
+    u8 start, count;
+
+    if (!(count = EVENT_TS_COUNT(e)))
+	return -1;
+
+    start = EVENT_TS_START(e);
+
+    *ts = e->timestamps[start];
+    EVENT_SET_TS_START(e, (start + 1) & (EVENT_TS_SIZE(e) - 1));
+    EVENT_SET_TS_COUNT(e, count - 1);
+    return 0;
+}
+
 void event_watch_trigger(u32 resource_id)
 {
     event_internal_t *e;
+    u32 ts = platform_get_ticks_from_boot();
 
     watches_foreach(e)
     {
-        if ((e->resource_id ^ resource_id) & e->resource_mask)
+        if (e->resource_id ^ resource_id)
             continue;
 
         EVENT_ON(e);
+	event_ts_enqueue(e, ts);
     }
 }
 
-int _event_watch_set(u32 resource_id, u32 resource_mask, event_t *e)
+int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps)
 {
     event_internal_t *n;
     
-    n = tmalloc_type(event_internal_t);
+    n = tmalloc(sizeof(event_internal_t) + (num_timestamps * sizeof(u32)),
+	"event_internal_t");
 
     n->event_id = g_event_id++;
     n->resource_id = resource_id;
-    n->resource_mask = resource_mask;
     n->e = e;
     n->next = watches;
     n->flags = 0;
+    EVENT_SET_TS_SIZE(n, num_timestamps);
     watches = n;
     return n->event_id;
 }
@@ -249,10 +296,16 @@ static int watches_process(void)
 
     watches_foreach(e)
     {
+	u32 ts = 0;
+
         if (EVENT_IS_DELETED(e) || !(EVENT_IS_ON(e)))
             continue;
 
-        EVENT_OFF(e);
+	event_ts_dequeue(e, &ts);
+
+	if (!EVENT_TS_COUNT(e))
+	    EVENT_OFF(e);
+
         e->e->trigger(e->e, e->resource_id);
         /* trigger may have triggered new watches */
         more = 1;

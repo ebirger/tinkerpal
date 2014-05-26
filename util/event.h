@@ -34,11 +34,12 @@ struct event_t {
     void (*free)(event_t *e);
 };
 
-int _event_watch_set(u32 resource_id, u32 resource_mask, event_t *e);
+/* num_timestamps must be a power of 2 */
+int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps);
 
 static inline int event_watch_set(u32 resource_id, event_t *e)
 {
-    return _event_watch_set(resource_id, (u32)-1, e);
+    return _event_watch_set(resource_id, e, 0);
 }
 
 void event_watch_del(int watch_id);
