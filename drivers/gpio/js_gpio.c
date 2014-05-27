@@ -207,15 +207,24 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     event_t *e;
-    int event_id, qlen = 0;
+    int event_id, qlen = 1;
 
     if (argc != 3 && argc != 4)
         return js_invalid_args(ret);
 
-    e = js_event_new(argv[1], this, js_event_gen_trigger);
-
     if (argc == 4)
-	obj_get_property_int(&qlen, argv[3], &S("qlen"));
+    {
+	if (!obj_get_property_int(&qlen, argv[3], &S("qlen")))
+	{
+	    if (qlen > 127 || (qlen & (qlen - 1)))
+	    {
+		return throw_exception(ret,
+		    &S("qlen must be <128 and power of 2"));
+	    }
+	}
+    }
+
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
 
     event_id = _event_watch_set(obj_get_int(argv[2]), e, qlen);
     *ret = num_new_int(event_id);
