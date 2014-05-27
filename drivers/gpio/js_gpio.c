@@ -210,6 +210,7 @@ static void set_watch_trigger(event_t *e, u32 id, u32 timestamp)
 
     data_obj = object_new();
     obj_set_property_int(data_obj, S("timestamp"), timestamp);
+    obj_set_property_int(data_obj, S("state"), gpio_digital_read(id));
 
     _js_event_gen_trigger(e, id, data_obj);
 
