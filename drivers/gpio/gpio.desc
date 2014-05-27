@@ -61,19 +61,22 @@ FUNCTION("analogRead", gpio, do_analog_read, {
 
 FUNCTION("setWatch", gpio, do_set_watch, {
     .params = { 
-       { .name = "cb", .description = "callback function" },
+        { 
+            .name = "cb", 
+            .description = "callback function:\n"
+                 "The function may receive an object of type:\n"
+                 "{\n"
+                 "     timestamp: int - in 1/10 ms resolution,\n"
+                 "     state: int - current pin state\n"
+                 "}",
+	},
        { .name = "pin", .description = "GPIO pin ID" },
        { .name = "options", .description = "optional options object of type "
            "{ qlen : int // number of pending samples for processing "
 	  " smaller than 128, must be power of 2. Default =1 } " 
        },
      },
-    .description = "Calls a function whenever the GPIO pin changes state\n"
-        "The function may receive an object of type: \n"
-	"{\n"
-	"     timestamp: int - in 1/10 ms resolution,\n"
-	"     state: int - current pin state\n"
-        "}",
+    .description = "Calls a function whenever the GPIO pin changes state\n",
     .return_value = "Event ID",
     .example = "setWatch(function() { console.log('button changed state'); }, GPIO_PF0);",
 })
