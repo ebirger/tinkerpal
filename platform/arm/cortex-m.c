@@ -25,7 +25,7 @@
 #include "util/debug.h"
 
 static volatile unsigned int cm_time_sec = 0;
-static volatile unsigned int cm_time_usec = 0;
+static volatile unsigned int cm_time_msec = 0;
 
 #ifdef CONFIG_GCC
 static char *heap_end = 0;
@@ -92,10 +92,10 @@ void cortex_m_reset_isr(void)
 
 void cortex_m_systick_isr(void)
 {
-    cm_time_usec += 1000;
-    if (cm_time_usec == 1000000)
+    cm_time_msec++;
+    if (cm_time_msec == 1000)
     {
-	cm_time_usec = 0;
+	cm_time_msec = 0;
 	cm_time_sec++;
     }
 }
@@ -103,7 +103,7 @@ void cortex_m_systick_isr(void)
 void cortex_m_get_time_from_boot(unsigned int *sec, unsigned int *usec)
 {
     *sec = cm_time_sec;
-    *usec = cm_time_usec;
+    *usec = cm_time_msec * 1000;
 }
 
 void cortex_m_panic(void)
