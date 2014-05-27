@@ -58,27 +58,34 @@ volatile unsigned int ctrl_dummy;
 void ti_arm_mcu_systick_isr(void)
 {
     extern void cortex_m_systick_isr(void);
-    ctrl_dummy = HWREG(NVIC_ST_CTRL); /* Clear the 'count' bit */
     cortex_m_systick_isr();
+    ctrl_dummy = HWREG(NVIC_ST_CTRL); /* Clear the 'count' bit */
 }
 
 void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec)
 {
     do
     {
-	unsigned int current;
+	unsigned int current, tmp_usec;
 
-	cortex_m_get_time_from_boot(sec, usec);
+	cortex_m_get_time_from_boot(sec, &tmp_usec);
 	current = MAP_SysTickValueGet();
+	cortex_m_get_time_from_boot(sec, usec);
 
-	if (HWREG(NVIC_ST_CTRL) & NVIC_ST_CTRL_COUNT)
+	if ((HWREG(NVIC_ST_CTRL) & NVIC_ST_CTRL_COUNT) || tmp_usec != *usec)
 	{
-	    /* Completed a tick, but the ISR was not called yet. Retry */
+	    /* Wrap around. Retry */
 	    continue;
 	}
 
 	/* adjust usec to sub ms resolution */
-	*usec += current / (SYSTEM_CLOCK() / 1000000);
+	*usec += 1000000 - (current / (SYSTEM_CLOCK() / 1000000));
+	if (*usec >= 1000000)
+	{
+	    /* Assuming only one wrap around... */
+	    *usec -= 1000000;
+	    (*sec)++;
+	}
     } while (0);
 }
 
