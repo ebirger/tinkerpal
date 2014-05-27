@@ -100,23 +100,26 @@ obj_t *js_event_get_this(event_t *e)
     return obj_get_property(NULL, js_event_obj(e), &Sevent_this);
 }
 
-void js_event_gen_trigger(event_t *e, u32 id, u32 timestamp)
+void _js_event_gen_trigger(event_t *e, u32 id, obj_t *data_obj)
 {
-    obj_t *o, *this, *func, *data_obj, *argv[2];
+    obj_t *o, *this, *func, *argv[2];
+    int argc = 0;
 
-    data_obj = object_new();
-    obj_set_property_int(data_obj, S("timestamp"), timestamp);
-
-    argv[0] = func = js_event_get_func(e);
-    argv[1] = data_obj;
+    argv[argc++] = func = js_event_get_func(e);
+    if (data_obj)
+	argv[argc++] = data_obj;
     this = js_event_get_this(e);
 
-    function_call(&o, this, 2, argv);
+    function_call(&o, this, argc, argv);
 
     obj_put(func);
     obj_put(this);
     obj_put(o);
-    obj_put(data_obj);
+}
+
+void js_event_gen_trigger(event_t *e, u32 id, u32 timestamp)
+{
+    _js_event_gen_trigger(e, id, NULL);
 }
 
 void js_event_uninit(void)
