@@ -24,6 +24,7 @@
  */
 #include "inc/hw_types.h"
 #include "inc/hw_memmap.h"
+#include "inc/hw_nvic.h"
 #include "driverlib/systick.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/rom.h"
@@ -52,17 +53,33 @@ void ti_arm_mcu_systick_init(void)
     MAP_IntMasterEnable();
 }
 
+volatile unsigned int ctrl_dummy;
+
+void ti_arm_mcu_systick_isr(void)
+{
+    extern void cortex_m_systick_isr(void);
+    ctrl_dummy = HWREG(NVIC_ST_CTRL);
+    cortex_m_systick_isr();
+}
+
 void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec)
 {
-    /* XXX: Assuming this is Ok since it should not take more than a ms to grab
-     * time.
-     */
-    MAP_SysTickIntDisable();
-    cortex_m_get_time_from_boot(sec, usec);
+    do
+    {
+	unsigned int current;
 
-    /* adjust usec to sub ms resolution */
-    *usec += MAP_SysTickValueGet() / (SYSTEM_CLOCK() / 1000000);
-    MAP_SysTickIntEnable();
+	cortex_m_get_time_from_boot(sec, usec);
+	current = MAP_SysTickValueGet();
+
+	if (HWREG(NVIC_ST_CTRL) & NVIC_ST_CTRL_COUNT)
+	{
+	    /* Completed a tick, but the ISR was not called yet. Retry */
+	    continue;
+	}
+
+	/* adjust usec to sub ms resolution */
+	*usec += current / (SYSTEM_CLOCK() / 1000000);
+    } while (0);
 }
 
 unsigned long ti_arm_mcu_get_system_clock(void)

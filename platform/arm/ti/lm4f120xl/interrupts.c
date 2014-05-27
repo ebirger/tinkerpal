@@ -33,7 +33,7 @@ extern void ti_arm_mcu_gpio_isr(int port);
 #else
 void ti_arm_mcu_gpio_isr(int port) { }
 #endif
-extern void cortex_m_systick_isr(void);
+extern void ti_arm_mcu_systick_isr(void);
 
 static void uart0_isr(void) { ti_arm_mcu_uart_isr(UART0); }
 static void uart1_isr(void) { ti_arm_mcu_uart_isr(UART1); }
@@ -99,7 +99,7 @@ void (*const g_pfnVectors[])(void) =
     default_isr,                      // Debug monitor handler
     0,                                // Reserved
     default_isr,                      // The PendSV handler
-    cortex_m_systick_isr,             // The SysTick handler
+    ti_arm_mcu_systick_isr,           // The SysTick handler
     gpio_port_a_isr,                  // GPIO Port A
     gpio_port_b_isr,                  // GPIO Port B
     gpio_port_c_isr,                  // GPIO Port C
