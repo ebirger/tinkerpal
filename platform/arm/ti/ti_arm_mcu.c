@@ -52,6 +52,19 @@ void ti_arm_mcu_systick_init(void)
     MAP_IntMasterEnable();
 }
 
+void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec)
+{
+    /* XXX: Assuming this is Ok since it should not take more than a ms to grab
+     * time.
+     */
+    MAP_SysTickIntDisable();
+    cortex_m_get_time_from_boot(sec, usec);
+
+    /* adjust usec to sub ms resolution */
+    *usec += MAP_SysTickValueGet() / (SYSTEM_CLOCK() / 1000000);
+    MAP_SysTickIntEnable();
+}
+
 unsigned long ti_arm_mcu_get_system_clock(void)
 {
     return MAP_SysCtlClockGet();

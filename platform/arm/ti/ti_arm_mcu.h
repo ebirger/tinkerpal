@@ -89,6 +89,7 @@ extern const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[];
 extern const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[];
 
 void ti_arm_mcu_systick_init(void);
+void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec);
 unsigned long ti_arm_mcu_get_system_clock(void);
 void ti_arm_mcu_msleep(double ms);
 
