@@ -58,7 +58,7 @@ volatile unsigned int ctrl_dummy;
 void ti_arm_mcu_systick_isr(void)
 {
     extern void cortex_m_systick_isr(void);
-    ctrl_dummy = HWREG(NVIC_ST_CTRL);
+    ctrl_dummy = HWREG(NVIC_ST_CTRL); /* Clear the 'count' bit */
     cortex_m_systick_isr();
 }
 
