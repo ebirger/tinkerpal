@@ -211,7 +211,9 @@ static int event_ts_dequeue(event_internal_t *e, u32 *ts)
 void event_watch_trigger(u32 resource_id)
 {
     event_internal_t *e;
-    u32 ts = platform_get_ticks_from_boot();
+    u32 sec, usec;
+   
+    platform_get_time_from_boot(&sec, &usec);
 
     watches_foreach(e)
     {
@@ -219,7 +221,8 @@ void event_watch_trigger(u32 resource_id)
             continue;
 
         EVENT_ON(e);
-	event_ts_enqueue(e, ts);
+	/* Timestamp in 1/10 ms */
+	event_ts_enqueue(e, sec * 10000 + usec / 100);
     }
 }
 
