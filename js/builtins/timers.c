@@ -115,9 +115,10 @@ int do_clear_timeout(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_get_time(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int ticks = platform_get_ticks_from_boot();
+    u32 sec, usec;
+    
+    platform_get_time_from_boot(&sec, &usec);
 
-    /* Ticking every ms */
-    *ret = num_new_fp((double)ticks / 1000);
+    *ret = num_new_fp(sec + (double)usec / 1000000);
     return 0;
 }
