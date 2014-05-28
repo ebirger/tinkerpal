@@ -549,9 +549,7 @@ static int num_is_true(obj_t *o)
 {
     num_t *n = to_num(o);
 
-    /* Use integer all the time for this... 
-     * XXX: should we panic on FP? */
-    return NUM_INT(n) ? 1 : 0;
+    return NUM_IS_FP(n) ? !!NUM_FP(n) : !!NUM_INT(n);
 }
 
 #define NUM_BITS ((sizeof(uint_ptr_t) << 3))
