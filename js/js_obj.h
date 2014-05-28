@@ -404,6 +404,7 @@ static inline void obj_set_property(obj_t *o, tstr_t property, obj_t *value)
 
 void obj_set_property_str(obj_t *o, tstr_t property, tstr_t value);
 void obj_set_property_int(obj_t *o, tstr_t property, int value);
+void obj_set_property_fp(obj_t *o, tstr_t property, double value);
 void _obj_set_int_property(obj_t *o, int property, obj_t *value);
 static inline void obj_set_int_property(obj_t *o, int property, obj_t *value)
 {
