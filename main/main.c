@@ -26,6 +26,7 @@
 #include "util/debug.h"
 #include "mem/tmalloc.h"
 #include "main/console.h"
+#include "util/tp_types.h"
 #include "platform/platform.h"
 #include "boards/board.h"
 #include "drivers/fs/vfs.h"
@@ -42,6 +43,18 @@ static inline void tp_banner(void)
         console_printf("Running on %s\n", board.desc);
 }
 
+static void validate_types(void)
+{
+    tp_assert(sizeof(s8) == 1);
+    tp_assert(sizeof(u8) == 1);
+    tp_assert(sizeof(s16) == 2);
+    tp_assert(sizeof(u16) == 2);
+    tp_assert(sizeof(s32) == 4);
+    tp_assert(sizeof(u32) == 4);
+    tp_assert(sizeof(s64) == 8);
+    tp_assert(sizeof(u64) == 8);
+}
+
 int tp_main(int argc, char *argv[])
 {
     debugfn_t dbg = {};
@@ -49,6 +62,7 @@ int tp_main(int argc, char *argv[])
     platform_init();
     tmalloc_init();
     console_init();
+    validate_types();
     tp_banner();
 
     dbg.print = console_printf;
