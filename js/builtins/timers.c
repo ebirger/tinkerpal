@@ -31,7 +31,7 @@
 
 #define Stimer_id S("timer_id")
 
-static void interval_cb(event_t *e, u32 resource_id, u32 timestamp)
+static void interval_cb(event_t *e, u32 resource_id, u64 timestamp)
 {
     obj_t *o, *this, *func;
 

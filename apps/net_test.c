@@ -49,7 +49,7 @@ static void net_test_quit(void)
 }
 
 #ifdef CONFIG_DHCP_CLIENT
-void got_ip(event_t *e, u32 resource_id, u32 timestamp)
+void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 {
     tp_out(("DHCP: IP address aquired\n"));
     etherif_on_event_clear(ethif, ETHERIF_EVENT_IPV4_INFO_SET);

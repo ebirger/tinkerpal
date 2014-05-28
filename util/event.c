@@ -45,7 +45,7 @@ typedef struct event_internal_t {
     int period;
     int expire;
     u32 flags; /* Doubles as a counters for timestamps */
-    u32 timestamps[0];
+    u64 timestamps[0];
 } event_internal_t;
 
 #define EVENT_FLAGS_U8_SET(e, x, shift) do { \
@@ -179,7 +179,7 @@ static void get_next_timeout(int *timeout)
     tp_debug(("Next timeout: %d ms\n", *timeout));
 }
 
-static inline void event_ts_enqueue(event_internal_t *e, u32 ts)
+static inline void event_ts_enqueue(event_internal_t *e, u64 ts)
 {
     u8 count, size;
 
@@ -221,8 +221,7 @@ void event_watch_trigger(u32 resource_id)
             continue;
 
         EVENT_ON(e);
-	/* Timestamp in 1/10 ms */
-	event_ts_enqueue(e, sec * 10000 + usec / 100);
+	event_ts_enqueue(e, (u64)sec * 1000000 + usec);
     }
 }
 
@@ -230,7 +229,7 @@ int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps)
 {
     event_internal_t *n;
     
-    n = tmalloc(sizeof(event_internal_t) + (num_timestamps * sizeof(u32)),
+    n = tmalloc(sizeof(event_internal_t) + (num_timestamps * sizeof(u64)),
 	"event_internal_t");
 
     n->event_id = g_event_id++;

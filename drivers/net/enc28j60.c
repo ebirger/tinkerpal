@@ -653,7 +653,7 @@ static void link_status_changed(enc28j60_t *e)
     etherif_port_changed(&e->ethif);
 }
 
-static void enc28j60_isr(event_t *ev, u32 resource_id, u32 timestamp)
+static void enc28j60_isr(event_t *ev, u32 resource_id, u64 timestamp)
 {
     enc28j60_t *e = container_of(ev, enc28j60_t, irq_event);
     u8 eir;

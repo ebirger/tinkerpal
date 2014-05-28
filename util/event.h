@@ -30,7 +30,7 @@
 typedef struct event_t event_t;
 
 struct event_t {
-    void (*trigger)(event_t *e, u32 resource_id, u32 timestamp);
+    void (*trigger)(event_t *e, u32 resource_id, u64 timestamp);
     void (*free)(event_t *e);
 };
 

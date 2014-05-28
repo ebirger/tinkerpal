@@ -204,12 +204,12 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 }
 #endif
 
-static void set_watch_trigger(event_t *e, u32 id, u32 timestamp)
+static void set_watch_trigger(event_t *e, u32 id, u64 timestamp)
 {
     obj_t *data_obj;
 
     data_obj = object_new();
-    obj_set_property_int(data_obj, S("timestamp"), timestamp);
+    obj_set_property_fp(data_obj, S("timestamp"), (double)timestamp / 1000000);
     obj_set_property_int(data_obj, S("state"), gpio_digital_read(id));
 
     _js_event_gen_trigger(e, id, data_obj);

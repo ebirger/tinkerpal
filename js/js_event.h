@@ -30,7 +30,7 @@
 
 void js_event_free(event_t *e);
 event_t *js_event_new(obj_t *func, obj_t *this, 
-    void (*trigger)(event_t *e, u32 resource_id, u32 timestamp));
+    void (*trigger)(event_t *e, u32 resource_id, u64 timestamp));
 
 obj_t *js_event_obj(event_t *e);
 obj_t *js_event_get_func(event_t *e);
@@ -40,7 +40,7 @@ obj_t *js_event_get_this(event_t *e);
 void _js_event_gen_trigger(event_t *e, u32 id, obj_t *data_obj);
 
 /* gen trigger just calls func() with no arguments */
-void js_event_gen_trigger(event_t *e, u32 id, u32 timestamp);
+void js_event_gen_trigger(event_t *e, u32 id, u64 timestamp);
 
 void js_event_uninit(void);
 void js_event_init(void);

@@ -260,7 +260,7 @@ static void write_buf(void)
     read_ack();
 }
 
-static void on_event(event_t *e, u32 id, u32 timestamp)
+static void on_event(event_t *e, u32 id, u64 timestamp)
 {
     tstr_t quit_cmd = S("quit");
 

@@ -31,7 +31,7 @@
 
 #define Sserial_id S("serial_id")
 
-static void serial_on_data_cb(event_t *e, u32 id, u32 timestamp)
+static void serial_on_data_cb(event_t *e, u32 id, u64 timestamp)
 {
     obj_t *o, *argv[2], *data_obj, *this, *func;
     tstr_t data;

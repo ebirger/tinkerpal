@@ -70,7 +70,7 @@ void js_event_free(event_t *e)
 }
 
 event_t *js_event_new(obj_t *func, obj_t *this, 
-    void (*trigger)(event_t *e, u32 resource_id, u32 timestamp))
+    void (*trigger)(event_t *e, u32 resource_id, u64 timestamp))
 {
     js_event_t *jse = tmalloc_type(js_event_t);
     int id = g_js_event_id++;
@@ -117,7 +117,7 @@ void _js_event_gen_trigger(event_t *e, u32 id, obj_t *data_obj)
     obj_put(o);
 }
 
-void js_event_gen_trigger(event_t *e, u32 id, u32 timestamp)
+void js_event_gen_trigger(event_t *e, u32 id, u64 timestamp)
 {
     _js_event_gen_trigger(e, id, NULL);
 }
