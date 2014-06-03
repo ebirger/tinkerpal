@@ -42,7 +42,7 @@ static char TERM_COLOR_MAGENTA[] = { 0x1b, '[', '3', '5', 'm' };
 static char TERM_COLOR_BLUE[] = { 0x1b, '[', '3', '4', 'm' };
 static char TERM_COLOR_RESET[] = { 0x1b, '[', '0', 'm' };
 
-void jsconsole_syntax_highlight(tstr_t *line)
+static void repl_syntax_highlight(tstr_t *line)
 {
     scan_t *s;
     int last_offset = 0;
@@ -82,7 +82,7 @@ void jsconsole_syntax_highlight(tstr_t *line)
 #define COLOR(code)
 #endif
 
-void jsconsole_process_line(tstr_t *line)
+static void repl_process_line(tstr_t *line)
 {
     obj_t *o;
     int rc;
@@ -103,11 +103,11 @@ void jsconsole_process_line(tstr_t *line)
     obj_put(o);
 }
 
-static cli_client_t jsconsole_cli_client = {
-    .process_line = jsconsole_process_line,
+static cli_client_t repl_cli_client = {
+    .process_line = repl_process_line,
     .signal = js_eval_stop_execution,
 #ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
-    .syntax_hightlight = jsconsole_syntax_highlight,
+    .syntax_hightlight = repl_syntax_highlight,
 #endif
 };
 
@@ -115,5 +115,5 @@ void app_start(int argc, char *argv[])
 {
     console_printf("Application - JS Console\n");
 
-    cli_start(&jsconsole_cli_client);
+    cli_start(&repl_cli_client);
 }
