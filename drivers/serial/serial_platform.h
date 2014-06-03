@@ -29,6 +29,7 @@
 
 /* Used by the platform to set/test serial events */
 void serial_event_trigger(int u);
+void serial_event_signal(int u);
 
 #ifdef CONFIG_BUFFERED_SERIAL
 

@@ -105,6 +105,11 @@ void serial_event_trigger(int u)
     event_watch_trigger(UART_RES(u));
 }
 
+void serial_event_signal(int u)
+{
+    event_watch_signal(UART_RES(u));
+}
+
 int serial_enable(resource_t id, int enabled)
 {
     if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
