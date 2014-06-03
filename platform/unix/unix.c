@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <fcntl.h> 
 #include <errno.h> 
+#include <signal.h> 
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -64,7 +65,7 @@ int unix_select(int ms, unix_fd_event_map_t *map)
     tv.tv_usec = (ms - sec * 1000) * 1000;
 
     rc = select(max_fd, &rfds, NULL, NULL, ms ? &tv : NULL);
-    if (rc == -1)
+    if (rc == -1 && errno != EINTR)
         perror("select");
     if (rc > 0)
     {
