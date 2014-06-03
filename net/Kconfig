@@ -1,4 +1,8 @@
-menu "Networking"
+menuconfig NET
+	bool "Networking Support"
+	default y
+
+if NET
 
 config ETHERIF
 	bool
@@ -56,4 +60,4 @@ config NET_DEBUG
 	bool "Network Debugging"
 	default n
 
-endmenu
+endif

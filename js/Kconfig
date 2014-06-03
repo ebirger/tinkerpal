@@ -1,4 +1,8 @@
-menu "JS Tuning"
+menuconfig JS
+	bool "JS support"
+	default y
+
+if JS
 
 config JIT
         bool "JIT Support (Experimental)"
@@ -18,16 +22,6 @@ config OBJ_DOC
 	default y if UNIX
 
 source "js/builtins/Kconfig"
-
-config MODULES
-	bool "Modules support"
-	depends on VFS
-	default y
-
-if MODULES
-
 source "js/modules/Kconfig"
 
 endif
-
-endmenu

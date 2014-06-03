@@ -1,7 +1,12 @@
-menu "Modules"
+menuconfig MODULES
+	bool "Modules support"
+	depends on VFS
+	default y
+
+if MODULES
 
 config MODULE_ASSERT
 	bool "Assert module"
 	default y
 
-endmenu
+endif

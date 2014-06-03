@@ -6,22 +6,8 @@ config TINKERPAL
 
 source "boards/Kconfig"
 source "apps/Kconfig"
-
-config JS
-	bool "JS support"
-	default y
-
-if JS
 source "js/Kconfig"
-endif
-
-config NET
-	bool "Networking Support"
-	default y
-
-if NET
 source "net/Kconfig"
-endif
 
 config GRAPHICS
 	bool "Graphics support"
