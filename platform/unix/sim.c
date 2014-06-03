@@ -30,8 +30,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <signal.h>
 #include "util/debug.h"
 #include "drivers/block/block.h"
+#include "drivers/serial/serial_platform.h"
 #include "platform/platform.h"
 #include "platform/unix/unix.h"
 
@@ -239,6 +241,21 @@ int sim_unix_block_disk_write(const unsigned char *buf, int sector, int count)
 }
 #endif
 
+void sigint_handler(int s)
+{
+    serial_event_signal(STDIO_ID);
+}
+
+static void set_sigint_handler(void (*cb)(int))
+{
+    struct sigaction handler = {
+	.sa_handler = sigint_handler,
+    };
+
+    sigemptyset(&handler.sa_mask);
+    sigaction(SIGINT, &handler, NULL);
+}
+
 static void sim_unix_uninit(void)
 {
     printf("Unix Platform Simulator Uninit\n");
@@ -248,6 +265,7 @@ static void sim_unix_uninit(void)
         close(ext_tty_fd);
     if (block_disk)
         fclose(block_disk);
+    set_sigint_handler(SIG_DFL);
     unix_set_term_raw(STDIN_FD, 0);
     unix_uninit();
 }
@@ -257,6 +275,8 @@ static void sim_unix_init(void)
     printf("Unix Platform Simulator Init\n");
 
     unix_init();
+
+    set_sigint_handler(sigint_handler);
 
     atexit(sim_unix_uninit);
 }
