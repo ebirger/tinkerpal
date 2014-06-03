@@ -6,8 +6,8 @@ config CLI
 choice
 	prompt "Application"
 
-config APP_JSCONSOLE
-	bool "JavaScript Command Line Interface (CLI) Application"
+config APP_REPL
+	bool "JavaScript Read Eval Print Loop (REPL) Application"
 	depends on JS
 	select CLI
 
