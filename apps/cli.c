@@ -310,8 +310,15 @@ static void on_event(event_t *e, u32 id, u64 timestamp)
     console_write(prompt, sizeof(prompt));
 }
 
+static void on_signal(event_t *e, u32 id, u64 timestamp)
+{
+    if (g_client->signal)
+	g_client->signal();
+}
+
 static event_t cli_event = {
     .trigger = on_event,
+    .signal = on_signal,
 };
 
 void cli_start(cli_client_t *client)

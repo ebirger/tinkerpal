@@ -32,6 +32,7 @@
 
 typedef struct {
     void (*process_line)(tstr_t *line);
+    void (*signal)(void);
     void (*quit)(void);
 #ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
     void (*syntax_hightlight)(tstr_t *line);
