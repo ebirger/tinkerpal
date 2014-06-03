@@ -46,6 +46,17 @@ typedef struct {
 
 extern obj_t *global_env;
 
+#define JS_EVAL_FLAG_SIGNALLED 0x00000001
+static volatile u32 g_flags;
+
+#define EXECUTION_STOPPED() (g_flags & JS_EVAL_FLAG_SIGNALLED)
+#define EXECUTION_STOPPED_SET() do { \
+    g_flags |= JS_EVAL_FLAG_SIGNALLED; \
+    tp_out(("Execution Stopped\n")); \
+} while(0)
+
+#define EXECUTION_STOPPED_RESET() g_flags &= ~JS_EVAL_FLAG_SIGNALLED
+
 obj_t *cur_env;
 static obj_t *this = NULL;
 static function_args_t cur_function_args;
@@ -1353,7 +1364,7 @@ static int eval_while(obj_t **ret, scan_t *scan)
             return rc;
         }
 
-        if (!next)
+        if (!next || EXECUTION_STOPPED())
         {
             skip_statement(scan);
             break;
@@ -1397,8 +1408,11 @@ static int eval_do_while(obj_t **ret, scan_t *scan)
         obj_put(*ret);
         *ret = UNDEF;
 
-        if (rc == COMPLETION_BREAK || rc == COMPLETION_CONTINUE)
+        if (rc == COMPLETION_BREAK || rc == COMPLETION_CONTINUE ||
+	    EXECUTION_STOPPED())
+	{
             break;
+	}
 
         js_scan_match(scan, TOK_WHILE);
 
@@ -1578,7 +1592,7 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
         obj_put(*ret);
         *ret = UNDEF;
 
-        if (rc == COMPLETION_BREAK)
+        if (rc == COMPLETION_BREAK || EXECUTION_STOPPED())
         {
             rc = 0;
             goto Exit;
@@ -1710,7 +1724,7 @@ static int eval_for(obj_t **ret, scan_t *scan)
 
         obj_put(*ret);
 
-        if (rc == COMPLETION_BREAK)
+        if (rc == COMPLETION_BREAK || EXECUTION_STOPPED())
         {
             js_scan_restore(scan, end);
             rc = 0;
@@ -1825,6 +1839,8 @@ int js_eval(obj_t **ret, tstr_t *code)
     scan = js_scan_init(code);
     rc = eval_statement_list(ret, scan);
     js_scan_uninit(scan);
+
+    EXECUTION_STOPPED_RESET();
     return rc;
 }
 
@@ -1873,6 +1889,11 @@ int js_eval_obj(obj_t **ret, obj_t *obj)
     obj_put(cur_env);
     cur_env = saved_env;
     return rc;
+}
+
+void js_eval_stop_execution(void)
+{
+    EXECUTION_STOPPED_SET();
 }
 
 void js_eval_uninit(void)

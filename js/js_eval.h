@@ -31,6 +31,8 @@
 int js_eval(obj_t **ret, tstr_t *code);
 int js_eval_module(obj_t **ret, tstr_t *code);
 int js_eval_obj(obj_t **ret, obj_t *obj);
+/* Stop current execution */
+void js_eval_stop_execution(void);
 
 int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
     obj_t *argv[]);
