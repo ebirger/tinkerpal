@@ -105,6 +105,7 @@ void jsconsole_process_line(tstr_t *line)
 
 static cli_client_t jsconsole_cli_client = {
     .process_line = jsconsole_process_line,
+    .signal = js_eval_stop_execution,
 #ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
     .syntax_hightlight = jsconsole_syntax_highlight,
 #endif
