@@ -225,6 +225,23 @@ void event_watch_trigger(u32 resource_id)
     }
 }
 
+void event_watch_signal(u32 resource_id)
+{
+    event_internal_t *e;
+    u32 sec, usec;
+   
+    platform_get_time_from_boot(&sec, &usec);
+
+    watches_foreach(e)
+    {
+        if (e->resource_id ^ resource_id)
+            continue;
+
+	if (e->e->signal)
+	    e->e->signal(e->e, e->resource_id, (u64)sec * 1000000 + usec);
+    }
+}
+
 int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps)
 {
     event_internal_t *n;

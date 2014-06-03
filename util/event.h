@@ -30,7 +30,10 @@
 typedef struct event_t event_t;
 
 struct event_t {
+    /* Trigger is called from the event loop */
     void (*trigger)(event_t *e, u32 resource_id, u64 timestamp);
+    /* Signal may be called from interrupts */
+    void (*signal)(event_t *e, u32 resource_id, u64 timestamp);
     void (*free)(event_t *e);
 };
 
@@ -46,6 +49,7 @@ void event_watch_del(int watch_id);
 void event_watch_del_by_resource(u32 resource_id);
 void event_watch_del_all(void);
 void event_watch_trigger(u32 resource_id);
+void event_watch_signal(u32 resource_id);
 
 int event_timer_set(int ms, event_t *e);
 int event_timer_set_period(int ms, event_t *e);
