@@ -37,7 +37,7 @@ CONFIG_GCC=y
 #
 # Application
 #
-# CONFIG_APP_JSCONSOLE is not set
+# CONFIG_APP_REPL is not set
 # CONFIG_APP_ECHO_CONSOLE is not set
 CONFIG_APP_FILE_LOADER=y
 # CONFIG_APP_STATIC_FILE is not set
