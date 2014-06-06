@@ -80,6 +80,15 @@ typedef struct {
     int adc_channel;
 } ti_arm_mcu_gpio_pin_t;
 
+typedef struct {
+    unsigned long periph;
+    unsigned long base;
+    int scl;
+    int sda;
+    int scl_af;
+    int sda_af;
+} ti_arm_mcu_i2c_t;
+
 /* Defined in each specific target board */
 extern const ti_arm_mcu_uart_t ti_arm_mcu_uarts[];
 extern const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[];
@@ -87,6 +96,7 @@ extern const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[];
 extern const ti_arm_mcu_timer_t ti_arm_mcu_timers[];
 extern const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[];
 extern const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[];
+extern const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[];
 
 void ti_arm_mcu_systick_init(void);
 void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec);
