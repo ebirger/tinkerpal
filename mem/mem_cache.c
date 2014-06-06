@@ -196,12 +196,29 @@ void mem_cache_stats(void)
     for (cache = mem_cache_head; cache; cache = cache->next)
     {
         mem_cache_block_t *block;
+        int n, full = 0, free_slots = 0, empty = 0, used_size = 0;
 
-        tp_out(("%s (%p):\n", cache->name, cache));
-        for (block = cache->head; block; block = block->next)
+        for (block = cache->head, n = 0; block; block = block->next, n++)
         {
-            tp_out(("\tblock %p free %d\n", block, 
-                mem_cache_block_num_free(block)));
+            int num_free, used, size;
+
+            num_free = mem_cache_block_num_free(block);
+            if (!num_free)
+                full++;
+            else if (num_free == NUM_ITEMS)
+                empty++;
+            else
+                free_slots += num_free;
+            
+            used = NUM_ITEMS - mem_cache_block_num_free(block);
+            size = used * cache->item_size;
+            used_size += size;
+
+            tp_debug(("\t[%d] block %p used %d, size %d\n", n, block, used,
+                size));
         }
+        tp_out(("%s:\nsz %d, item sz %d, num blocks %d, full blocks %d, "
+            "empty blocks %d, free slots %d\n", cache->name, used_size,
+            cache->item_size, n, full, empty, free_slots));
     }
 }
