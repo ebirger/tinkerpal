@@ -44,6 +44,10 @@ config DOGS102X6
 	depends on GPIO && SPI && GRAPHICS
 	default y if MSP430F5529_EXP
 
+config SSD1306
+	bool "Support for SSD1306 LCD controllers"
+	depends on GPIO && I2C && GRAPHICS
+
 config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS

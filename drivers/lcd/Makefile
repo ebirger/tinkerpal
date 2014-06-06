@@ -22,5 +22,9 @@ ifneq ($(CONFIG_DOGS102X6),)
   MK_OBJS+=$(if $(CONFIG_JS),js_dogs102x6.o)
 endif
 
+ifneq ($(CONFIG_SSD1306),)
+  MK_OBJS+=ssd1306.o
+endif
+
 MODULES=$(if $(CONFIG_TEXT_LCD),text_lcd.js)
 MK_BUILTIN_FS_INTERNAL_FILES=$(MODULES)
