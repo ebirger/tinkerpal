@@ -108,6 +108,19 @@ const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
     [ WTIMER5 ] = { SYSCTL_PERIPH_WTIMER5, WTIMER5_BASE }
 };
 
+const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[] = {
+#define I2C_DEF(num, sclpin, sdapin) \
+    [I2C##num] = { \
+        .periph = SYSCTL_PERIPH_I2C##num, \
+        .base = I2C##num##_MASTER_BASE, \
+        .scl = sclpin, \
+        .sda = sdapin, \
+        .scl_af = GPIO_##sclpin##_I2C##num##SCL, \
+        .sda_af = GPIO_##sdapin##_I2C##num##SDA, \
+    }
+    I2C_DEF(0, PB2, PB3),
+};
+
 /* Notes:
  * - PC4/5 can be used for either UART1 or UART4. Currently going for 4, 
  * since PB0/1 can be used for UART1
