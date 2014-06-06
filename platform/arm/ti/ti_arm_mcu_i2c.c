@@ -23,19 +23,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "inc/hw_types.h"
+#include "inc/hw_memmap.h"
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
-#include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
+#include "driverlib/i2c.h"
 #include "platform/platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 
+static inline void ti_arm_mcu_pin_mode_i2c(int pin, int i2c_af)
+{
+    ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
+    if (i2c_af)
+        MAP_GPIOPinConfigure(i2c_af);
+    MAP_GPIOPinTypeI2C(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
+    ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+}
+
 int ti_arm_mcu_i2c_init(int port)
 {
+    const ti_arm_mcu_i2c_t *i2c = &ti_arm_mcu_i2cs[port];
+
+    ti_arm_mcu_periph_enable(i2c->periph);
+    MAP_I2CMasterInitExpClk(i2c->base, platform.get_system_clock(), 0);
+    ti_arm_mcu_pin_mode_i2c(i2c->scl, i2c->scl_af);
+    ti_arm_mcu_pin_mode_i2c(i2c->sda, i2c->sda_af);
     return 0;
 }
 
 void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
     unsigned char *data, int len)
 {
+    const ti_arm_mcu_i2c_t *i2c = &ti_arm_mcu_i2cs[port];
+    
+    MAP_I2CMasterControl(i2c->base, I2C_MASTER_CMD_BURST_SEND_START);
+    MAP_I2CMasterDataPut(i2c->base, addr);
+    MAP_I2CMasterDataPut(i2c->base, reg);
+    while (len--)
+        MAP_I2CMasterDataPut(i2c->base, *data++);
+    MAP_I2CMasterControl(i2c->base, I2C_MASTER_CMD_BURST_SEND_FINISH);
 }
