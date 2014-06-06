@@ -15,6 +15,11 @@ config MMC
 	depends on SPI && GPIO
 	default y
 
+config I2C
+	bool "I2C support"
+	depends on PLAT_HAS_I2C
+	default y
+
 source "drivers/fs/Kconfig"
 source "drivers/lcd/Kconfig"
 

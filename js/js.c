@@ -41,6 +41,9 @@
 #ifdef CONFIG_SPI
 #include "drivers/spi/spi.h"
 #endif
+#ifdef CONFIG_I2C
+#include "drivers/i2c/i2c.h"
+#endif
 
 /* Global environment for user objects */
 obj_t *global_env;
@@ -61,6 +64,10 @@ static int js_get_constants_cb(int *constant, tstr_t *s)
 #endif
 #ifdef CONFIG_SPI
     if (!spi_get_constant(constant, TPTR(s), s->len))
+        return 0;
+#endif
+#ifdef CONFIG_I2C
+    if (!i2c_get_constant(constant, TPTR(s), s->len))
         return 0;
 #endif
 
