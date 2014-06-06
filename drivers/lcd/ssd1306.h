@@ -31,6 +31,7 @@
 
 typedef struct {
     resource_t i2c_port;
+    resource_t i2c_addr;
 } ssd1306_params_t;
 
 canvas_t *ssd1306_new(const ssd1306_params_t *params);
