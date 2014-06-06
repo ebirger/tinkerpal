@@ -34,6 +34,9 @@
 #ifdef CONFIG_SPI
 #include "drivers/spi/spi.h"
 #endif
+#ifdef CONFIG_I2C
+#include "drivers/i2c/i2c.h"
+#endif
 #ifdef CONFIG_ILI93XX
 #include "drivers/lcd/ili93xx.h"
 #endif
