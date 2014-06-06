@@ -317,6 +317,12 @@ const platform_t platform = {
         .receive = ti_arm_mcu_spi_receive,
     },
 #endif
+#ifdef CONFIG_I2C
+    .i2c = {
+        .init = ti_arm_mcu_i2c_init,
+        .reg_write = ti_arm_mcu_i2c_reg_write,
+    },
+#endif
     .init = lm4f120xl_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,

@@ -51,6 +51,7 @@ config LM4F120XL
 	bool
 	select STELLARIS
 	select PLAT_HAS_GPIO_INTERRUPTS
+	select PLAT_HAS_I2C
 
 config TM4C123G
 	bool
