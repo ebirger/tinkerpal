@@ -28,7 +28,7 @@
 #include "drivers/resources.h"
 #include "drivers/lcd/ssd1306.h"
 #include "drivers/gpio/gpio.h"
-#include "drivers/spi/spi.h"
+#include "drivers/i2c/i2c.h"
 #include "graphics/colors.h"
 
 typedef struct {
