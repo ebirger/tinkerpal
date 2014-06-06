@@ -12,6 +12,9 @@ config PLAT_HAS_SERIAL
 config PLAT_HAS_SPI
 	bool
 
+config PLAT_HAS_I2C
+	bool
+
 config PLAT_HAS_EMBEDDED_ETH
 	bool
 
