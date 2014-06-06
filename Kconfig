@@ -15,4 +15,4 @@ config GRAPHICS
 
 source "drivers/Kconfig"
 source "platform/Kconfig"
-source "main/Kconfig"
+source "mem/Kconfig"
