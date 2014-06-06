@@ -6,6 +6,7 @@ CC=$(CROSS_COMPILE)gcc
 # Note: we use gcc as ld on Unix builds so that we get crtX.o paths
 LD=$(if $(CONFIG_UNIX)$(CONFIG_MSP430),$(CC),$(CROSS_COMPILE)ld)
 OBJCOPY=$(CROSS_COMPILE)objcopy
+CPP=$(CROSS_COMPILE)cpp
 #LDFLAGS+=$(if $(CONFIG_UNIX),-Wl,)-Map=$@.map
 LINK_DEPS=$(LINKER_SCRIPT)
 
@@ -30,5 +31,5 @@ IMAGE_NAME:=tp.bin
 # Rules
 $(BUILD)/%.ld : %.ld.S
 	@echo GEN $@
-	$(Q)cpp -MM -MT $@ -MF $(@:.ld=.ld.d) -I. -P $< $@
-	$(Q)cpp -I. -P $< $@
+	$(Q)$(CPP) -MM -MT $@ -MF $(@:.ld=.ld.d) -I. -P $< $@
+	$(Q)$(CPP) -I. -P $< $@
