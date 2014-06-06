@@ -1,3 +1,10 @@
+config UNIX
+	bool
+	select PLAT_HAS_MALLOC
+	select PLAT_HAS_GCC
+
+if UNIX
+
 menu "Platform Emulation Options"
 
 config PLATFORM_EMULATION_PTY_TERM
@@ -39,3 +46,4 @@ config LINUX_ETH
 		root permissions
 
 endmenu
+endif

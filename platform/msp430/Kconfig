@@ -1,0 +1,16 @@
+config MSP430
+	bool
+	select PLAT_HAS_TI_CCS5
+        select PLAT_HAS_GCC
+	select PLAT_HAS_MALLOC
+	select 16_BIT
+
+config MSP430F5529
+	bool
+	select MSP430
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select PLAT_HAS_SPI
+	select PLAT_HAS_GPIO_INTERRUPTS
+	select BUFFERED_SERIAL
+

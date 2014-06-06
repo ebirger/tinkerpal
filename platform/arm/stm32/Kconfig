@@ -1,0 +1,68 @@
+config STM32
+	bool
+	select ARM
+	select PLAT_HAS_GCC
+	select PLAT_HAS_MALLOC
+	select PLAT_HAS_GPIO
+	select PLAT_HAS_SERIAL
+	select PLAT_HAS_SPI
+	select BUFFERED_SERIAL
+	select GPIO
+
+config STM32_USART_NO_IN_AF
+	bool
+
+config STM32_GPIO_API_LEGACY
+	bool
+
+config STM32_HAS_FSMC_LCD
+	bool
+
+config STM32F1XX
+	bool
+	select STM32
+	select STM32_GPIO_API_LEGACY
+	select STM32_USART_NO_IN_AF
+	select STM32_HAS_FSMC_LCD
+
+config STM32F103XX
+	bool
+	select STM32F1XX
+
+config STM32F103RBT
+	bool
+	select STM32F103XX
+
+config STM32F103VET6
+	bool
+	select STM32F103XX
+
+config STM32F103RCT6
+	bool
+	select STM32F103XX
+
+config STM32F3XX
+	bool
+	select STM32
+
+config STM32F303XX
+	bool
+	select STM32F3XX
+
+config STM32F4XX
+	bool
+	select STM32
+
+config STM32F407XX
+	bool
+	select STM32F4XX
+	select STM32_HAS_FSMC_LCD
+
+config STM32F429XX
+	bool
+	select STM32F4XX
+
+config STM32_FSMC_LCD
+	bool "Support for FSMC connected ILI93XX LCD controller"
+	depends on STM32_HAS_FSMC_LCD
+	default y
