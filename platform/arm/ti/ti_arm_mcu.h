@@ -171,5 +171,10 @@ void ti_arm_mcu_spi_set_max_speed(int port, unsigned long speed);
 void ti_arm_mcu_spi_send(int port, unsigned long data);
 unsigned long ti_arm_mcu_spi_receive(int port);
 #endif
+#ifdef CONFIG_I2C
+int ti_arm_mcu_i2c_init(int port);
+void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
+    unsigned char *data, int len);
+#endif
 
 #endif
