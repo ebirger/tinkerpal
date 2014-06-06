@@ -1,4 +1,4 @@
-menu "Core Tuning"
+menu "Memory Allocation Tuning"
 
 config PLAT_HAS_MALLOC
 	bool
