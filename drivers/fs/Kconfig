@@ -1,4 +1,8 @@
-menu "File Systems"
+menuconfig VFS
+	bool "File Systems Support"
+	default y
+
+if VFS
 
 config FAT_FS
 	bool "FAT support"
@@ -21,4 +25,4 @@ config BUILTIN_FS_EXTERNAL_PATH
 	string "Builtin FS External Files Path"
 	depends on BUILTIN_FS
 
-endmenu
+endif

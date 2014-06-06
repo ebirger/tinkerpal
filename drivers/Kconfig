@@ -15,21 +15,8 @@ config MMC
 	depends on SPI && GPIO
 	default y
 
-config VFS
-	bool "File Systems Support"
-	default y
-
-if VFS
 source "drivers/fs/Kconfig"
-endif
-
-config LCD
-	bool "LCD Drivers"
-	default y
-
-if LCD
 source "drivers/lcd/Kconfig"
-endif
 
 if NET
 source "drivers/net/Kconfig"

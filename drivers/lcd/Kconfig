@@ -1,4 +1,8 @@
-menu "LCD"
+menuconfig LCD
+	bool "LCD Drivers"
+	default y
+
+if LCD
 
 config TEXT_LCD
 	bool "Support for Hitachi HD44780 like text LCD screens over GPIO"
@@ -45,4 +49,4 @@ config SDL_SCREEN
 	depends on UNIX && GRAPHICS
 	default y if PLATFORM_EMULATION
 
-endmenu
+endif
