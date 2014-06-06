@@ -69,6 +69,11 @@ typedef struct {
         void (*send)(int port, unsigned long data);
         unsigned long (*receive)(int port);
     } spi;
+    struct {
+        int (*init)(int port);
+        void (*reg_write)(int port, unsigned char addr, unsigned char reg,
+            unsigned char *data, int len);
+    } i2c;
     void (*init)(void);
     void (*meminfo)(void);
     void (*get_time_from_boot)(unsigned int *sec, unsigned int *usec);
