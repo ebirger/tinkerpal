@@ -88,6 +88,8 @@ static void lcd_init(void)
     canvas = sdl_screen_new(&board.sdl_screen_params);
 #elif defined(CONFIG_DOGS102X6)
     canvas = dogs102x6_new(&board.dogs102x6_params);
+#elif defined(CONFIG_SSD1306)
+    canvas = ssd1306_new(&board.ssd1306_params);
 #else
 #error No LCD hookup information available
 #endif
