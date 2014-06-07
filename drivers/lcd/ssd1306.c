@@ -31,9 +31,13 @@
 #include "drivers/i2c/i2c.h"
 #include "graphics/colors.h"
 
+#define WIDTH 128
+#define HEIGHT 64
+
 typedef struct {
     ssd1306_params_t params;
     canvas_t canvas;
+    u8 shadow[WIDTH * (HEIGHT / 8)];
 } ssd1306_t;
 
 #define SSD1306_DISPLAY_OFF 0xae
@@ -52,6 +56,9 @@ typedef struct {
 #define SSD1306_SET_VCOM_DSELECT 0xdb
 #define SSD1306_ENTIRE_DISPLAY_ON_RESUME 0xa4
 #define SSD1306_SET_NORMAL_DISPLAY 0xa6
+#define SSD1306_SET_COL_ADDR 0x21
+#define SSD1306_SET_PAGE_ADDR 0x22
+
 #define SSD1306_INIT_SEQ_END 0xff
 
 static u8 ssd1306_init_seq[] = {
@@ -85,22 +92,57 @@ static u8 ssd1306_init_seq[] = {
 
 static ssd1306_t g_ssd1306_screen;
 
+static inline void ssd1306_write(ssd1306_t *screen, int is_cmd, u8 data)
+{
+    i2c_reg_write(screen->params.i2c_port, screen->params.i2c_addr,
+	is_cmd ? 0x0 : 0x40, &data, 1);
+}
+
 static void chip_init(ssd1306_t *screen)
 {
     u8 *cmd;
 
-    tp_out(("SSD1306 chip init!\n"));
     i2c_init(screen->params.i2c_port);
     
     for (cmd = ssd1306_init_seq; *cmd != SSD1306_INIT_SEQ_END; cmd++)
-    {
-	i2c_reg_write(screen->params.i2c_port, screen->params.i2c_addr, 0, cmd,
-	    1);
-    }
+	ssd1306_write(screen, 1, *cmd);
+}
+
+static void ssd1306_set_address(ssd1306_t *screen, u8 pa, u8 ca)
+{
+    ssd1306_write(screen, 1, SSD1306_SET_COL_ADDR);
+    ssd1306_write(screen, 1, ca);
+    ssd1306_write(screen, 1, ca);
+
+    ssd1306_write(screen, 1, SSD1306_SET_PAGE_ADDR);
+    ssd1306_write(screen, 1, pa);
+    ssd1306_write(screen, 1, pa);
 }
 
 static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
+    ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
+    u8 page, line_bit;
+
+    if (x > WIDTH - 1)
+        x = WIDTH - 1;
+
+    if (y > HEIGHT - 1)
+        y = HEIGHT -1;
+
+    page = y >> 3; /* Each 8 vertical lines are one byte */
+    line_bit = 1 << (y & 0x07);
+
+    /* Set shadow */
+    if (val)
+        screen->shadow[page * WIDTH + x] |= line_bit;
+    else
+        screen->shadow[page * WIDTH + x] &= ~line_bit;
+
+    ssd1306_set_address(screen, page, x);
+
+    /* Draw on screen */
+    ssd1306_write(screen, 0, *(screen->shadow + (page * WIDTH + x)));
 }
 
 static const canvas_ops_t ssd1306_ops = {
@@ -115,8 +157,8 @@ canvas_t *ssd1306_new(const ssd1306_params_t *params)
 
     chip_init(screen);
 
-    screen->canvas.width = 128;
-    screen->canvas.height = 64;
+    screen->canvas.width = WIDTH;
+    screen->canvas.height = HEIGHT;
     screen->canvas.ops = &ssd1306_ops;
 
     canvas_register(&screen->canvas);
