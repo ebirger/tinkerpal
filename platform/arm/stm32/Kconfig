@@ -57,6 +57,7 @@ config STM32F407XX
 	bool
 	select STM32F4XX
 	select STM32_HAS_FSMC_LCD
+	select PLAT_HAS_I2C
 
 config STM32F429XX
 	bool

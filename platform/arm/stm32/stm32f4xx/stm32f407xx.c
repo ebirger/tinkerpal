@@ -31,6 +31,7 @@
 #include "platform/arm/stm32/stm32_usart.h"
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32_spi.h"
+#include "platform/arm/stm32/stm32_i2c.h"
 #include "platform/arm/stm32/stm32.h"
 #include "drivers/serial/serial_platform.h"
 
@@ -132,6 +133,19 @@ const stm32_spi_t stm32_spis[] = {
 };
 #endif
 
+#ifdef CONFIG_I2C
+const stm32_i2c_t stm32_i2cs[] = {
+    [I2C_PORT1] = {
+        .i2cx = I2C1,
+        .periph_enable = RCC_APB1PeriphClockCmd,
+        .clk = RCC_APB1Periph_I2C1,
+        .scl = PB6,
+        .sda = PB9,
+        .af = GPIO_AF_I2C1,
+    },
+};
+#endif
+
 const platform_t platform = {
     .serial = {
         .enable = stm32_usart_enable,
@@ -155,6 +169,12 @@ const platform_t platform = {
         .set_max_speed = stm32_spi_set_max_speed,
         .send = stm32_spi_send,
         .receive = stm32_spi_receive,
+    },
+#endif
+#ifdef CONFIG_I2C
+    .i2c = {
+        .init = stm32_i2c_init,
+        .reg_write = stm32_i2c_reg_write,
     },
 #endif
     .init = stm32_init,
