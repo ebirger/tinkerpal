@@ -40,7 +40,7 @@ static inline void ti_arm_mcu_pin_mode_i2c(int pin, int scl, int i2c_af)
     if (scl)
 	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
     else
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_OD_WPU);
+	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_OD);
 }
 
 int ti_arm_mcu_i2c_init(int port)
