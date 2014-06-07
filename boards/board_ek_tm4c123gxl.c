@@ -36,6 +36,12 @@ const board_t board = {
     .desc = "EK TM4C123GXL (Tiva C Launchpad)",
     .default_console_id = UART_RES(UART0),
     .leds = leds,
+#ifdef CONFIG_SSD1306
+    .ssd1306_params = {
+        .i2c_port = I2C_RES(I2C1),
+	.i2c_addr = 0x78,
+    },
+#endif
 #ifdef CONFIG_MMC
     .mmc_params = {
         .spi_port = SPI_RES(SSI0),
