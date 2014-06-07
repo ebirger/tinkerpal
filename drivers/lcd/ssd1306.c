@@ -36,11 +36,67 @@ typedef struct {
     canvas_t canvas;
 } ssd1306_t;
 
+#define SSD1306_DISPLAY_OFF 0xae
+#define SSD1306_DISPLAY_ON 0xaf
+#define SSD1306_SET_DISPLAY_CLOCK_DIV 0xd5
+#define SSD1306_SET_MULTIPLEX_RATIO 0xa8
+#define SSD1306_SET_DISPLAY_OFFSET 0xd3
+#define SSD1306_SET_START_LINE 0x40
+#define SSD1306_CHARGE_PUMP 0x8d
+#define SSD1306_MEM_ADDR_MODE 0x20
+#define SSD1306_SEGMENT_RE_MAP 0xa0
+#define SSD1306_SET_COM_OUTPUT_SCAN_DIR(dec) (0xc0 | ((dec) ? 0x08 : 0x0))
+#define SSD1306_SET_COM_PINS 0xda
+#define SSD1306_SET_CONTRAST 0x81
+#define SSD1306_SET_PRE_CHARGE 0xd9
+#define SSD1306_SET_VCOM_DSELECT 0xdb
+#define SSD1306_ENTIRE_DISPLAY_ON_RESUME 0xa4
+#define SSD1306_SET_NORMAL_DISPLAY 0xa6
+#define SSD1306_INIT_SEQ_END 0xff
+
+static u8 ssd1306_init_seq[] = {
+    SSD1306_DISPLAY_OFF,
+    SSD1306_SET_MULTIPLEX_RATIO,
+    63,
+    SSD1306_SET_DISPLAY_OFFSET,
+    0x0,
+    SSD1306_SET_START_LINE | 0x0,
+    SSD1306_SEGMENT_RE_MAP | 0x1,
+    SSD1306_SET_COM_OUTPUT_SCAN_DIR(1),
+    SSD1306_SET_COM_PINS,
+    0x12,
+    SSD1306_SET_CONTRAST,
+    0xcf,
+    SSD1306_ENTIRE_DISPLAY_ON_RESUME,
+    SSD1306_SET_NORMAL_DISPLAY,
+    SSD1306_SET_DISPLAY_CLOCK_DIV,
+    0x80, /* Default value per spec */
+    SSD1306_CHARGE_PUMP,
+    0x14,
+    SSD1306_SET_PRE_CHARGE,
+    0xf1,
+    SSD1306_SET_VCOM_DSELECT,
+    0x40,
+    SSD1306_MEM_ADDR_MODE,
+    0x00,
+    SSD1306_DISPLAY_ON,
+    SSD1306_INIT_SEQ_END
+};
+
 static ssd1306_t g_ssd1306_screen;
 
 static void chip_init(ssd1306_t *screen)
 {
+    u8 *cmd;
+
     tp_out(("SSD1306 chip init!\n"));
+    i2c_init(screen->params.i2c_port);
+    
+    for (cmd = ssd1306_init_seq; *cmd != SSD1306_INIT_SEQ_END; cmd++)
+    {
+	i2c_reg_write(screen->params.i2c_port, screen->params.i2c_addr, 0, cmd,
+	    1);
+    }
 }
 
 static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
