@@ -119,6 +119,9 @@ const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[] = {
         .sda_af = GPIO_##sdapin##_I2C##num##SDA, \
     }
     I2C_DEF(0, PB2, PB3),
+    I2C_DEF(1, PA6, PA7),
+    I2C_DEF(2, PE4, PE5),
+    I2C_DEF(3, PD0, PD1),
 };
 
 /* Notes:
