@@ -25,11 +25,6 @@
 #include "platform/arm/stm32/stm32_i2c.h"
 #include "platform/arm/stm32/stm32_gpio.h"
 
-static inline void wait_for_completion(I2C_TypeDef *i2cx)
-{
-    while (!I2C_CheckEvent(i2cx, I2C_EVENT_MASTER_BYTE_TRANSMITTING));
-}
-
 void stm32_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
     unsigned char *data, int len)
 {
@@ -65,7 +60,7 @@ void stm32_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
 
     /* Send I2C1 STOP Condition after last byte has been transmitted */
     I2C_GenerateSTOP(i2c->i2cx, ENABLE);
-    /* wait for last byte transmitted */
+    /* Wait for last byte transmitted */
     while (!I2C_CheckEvent(i2c->i2cx, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 }
 
