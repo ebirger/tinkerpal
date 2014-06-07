@@ -139,9 +139,25 @@ const stm32_i2c_t stm32_i2cs[] = {
         .i2cx = I2C1,
         .periph_enable = RCC_APB1PeriphClockCmd,
         .clk = RCC_APB1Periph_I2C1,
-        .scl = PB6,
+        .scl = PB8,
         .sda = PB9,
         .af = GPIO_AF_I2C1,
+    },
+    [I2C_PORT2] = {
+        .i2cx = I2C2,
+        .periph_enable = RCC_APB1PeriphClockCmd,
+        .clk = RCC_APB1Periph_I2C2,
+        .scl = PB10,
+        .sda = PB11,
+        .af = GPIO_AF_I2C2,
+    },
+    [I2C_PORT3] = {
+        .i2cx = I2C3,
+        .periph_enable = RCC_APB1PeriphClockCmd,
+        .clk = RCC_APB1Periph_I2C3,
+        .scl = PA8,
+        .sda = PC9,
+        .af = GPIO_AF_I2C3,
     },
 };
 #endif

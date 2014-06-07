@@ -52,6 +52,8 @@ typedef short gpio_port_t;
 #define SPI_PORT3 2
 
 #define I2C_PORT1 0
+#define I2C_PORT2 1
+#define I2C_PORT3 2
 
 #define PA0 0x00
 #define PA1 0x01
