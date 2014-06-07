@@ -64,7 +64,7 @@ void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
 {
     const ti_arm_mcu_i2c_t *i2c = &ti_arm_mcu_i2cs[port];
     
-    MAP_I2CMasterSlaveAddrSet(i2c->base, addr, 0);
+    MAP_I2CMasterSlaveAddrSet(i2c->base, addr >> 1, 0);
     MAP_I2CMasterDataPut(i2c->base, reg);
     MAP_I2CMasterControl(i2c->base, I2C_MASTER_CMD_BURST_SEND_START);
     wait_for_completion(i2c->base);
