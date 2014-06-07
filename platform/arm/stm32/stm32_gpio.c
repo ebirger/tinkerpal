@@ -34,6 +34,10 @@
     init_struct.GPIO_Mode = GPIO_Mode_AF_PP; \
 } while (0)
 
+#define STM32_GPIO_PIN_TYPE_AF_OD(init_struct) do { \
+    init_struct.GPIO_Mode = GPIO_Mode_AF_OD; \
+} while (0)
+
 #define STM32_GPIO_PIN_TYPE_IN(init_struct) do { \
     init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING; \
 } while (0)
@@ -58,6 +62,12 @@
     init_struct.GPIO_OType = GPIO_OType_PP; \
     init_struct.GPIO_Mode = GPIO_Mode_AF; \
     init_struct.GPIO_PuPd = GPIO_PuPd_NOPULL; \
+} while (0)
+
+#define STM32_GPIO_PIN_TYPE_AF_OD(init_struct) do { \
+    init_struct.GPIO_OType = GPIO_OType_OD; \
+    init_struct.GPIO_Mode = GPIO_Mode_AF; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_UP; \
 } while (0)
 
 #define STM32_GPIO_PIN_TYPE_IN(init_struct) do { \
@@ -116,7 +126,7 @@ unsigned short stm32_gpio_get_port_val(int port, unsigned short mask)
     return GPIO_ReadInputData(stm32_gpio_ports[port].port) & mask;
 }
 
-void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af)
+void _stm32_gpio_set_pin_function(int pin, int od, stm32_gpio_af_t af)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -125,7 +135,10 @@ void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af)
 
     GPIO_InitStructure.GPIO_Pin = GPIO_BIT(pin);
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    STM32_GPIO_PIN_TYPE_AF(GPIO_InitStructure);
+    if (od)
+	STM32_GPIO_PIN_TYPE_AF_OD(GPIO_InitStructure);
+    else
+	STM32_GPIO_PIN_TYPE_AF(GPIO_InitStructure);
     GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
 }
 

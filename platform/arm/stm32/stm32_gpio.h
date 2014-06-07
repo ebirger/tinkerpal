@@ -43,7 +43,13 @@ extern const stm32_gpio_port_t stm32_gpio_ports[];
 
 int stm32_gpio_digital_read(int pin);
 void stm32_gpio_digital_write(int pin, int value);
-void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af);
+void _stm32_gpio_set_pin_function(int pin, int od, stm32_gpio_af_t af);
+/* XXX: get rid of this wrapper */
+static inline void stm32_gpio_set_pin_function(int pin, stm32_gpio_af_t af)
+{
+    _stm32_gpio_set_pin_function(pin, 0, af);
+}
+
 int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode);
 void stm32_gpio_set_port_val(int port, unsigned short mask,
     unsigned short value);
