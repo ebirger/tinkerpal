@@ -29,6 +29,7 @@
 #include "stm32f4xx_usart.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_spi.h"
+#include "stm32f4xx_i2c.h"
 #include "stm32f4xx_fsmc.h"
 #include "misc.h"
 
