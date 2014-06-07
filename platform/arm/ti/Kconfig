@@ -23,6 +23,7 @@ config TIVA_C
 	select BUFFERED_SERIAL
 	select PLAT_HAS_SPI
 	select PLAT_HAS_MALLOC
+	select PLAT_HAS_I2C
 
 config STELLARIS_ETH
 	bool
