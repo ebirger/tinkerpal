@@ -24,6 +24,8 @@ endif
 
 ifneq ($(CONFIG_SSD1306),)
   MK_OBJS+=ssd1306.o
+  MK_DESCS=ssd1306.desc
+  MK_OBJS+=$(if $(CONFIG_JS),js_ssd1306.o)
 endif
 
 MODULES=$(if $(CONFIG_TEXT_LCD),text_lcd.js)

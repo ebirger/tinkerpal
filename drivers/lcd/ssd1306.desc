@@ -1,0 +1,8 @@
+CONSTRUCTOR("SSD1306", canvas, do_ssd1306_constructor, {
+    .params = {
+    },
+    .description = "SSD1306 Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new SSD1306();\n"
+        "lcd.pixelDraw(10, 10, 1);",
+})
