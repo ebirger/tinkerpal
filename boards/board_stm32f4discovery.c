@@ -32,6 +32,12 @@ extern ili93xx_db_transport_t stm32_fsmc_ili93xx_trns;
 const board_t board = {
     .desc = "STM32F4Discovery",
     .default_console_id = UART_RES(USART_PORT2),
+#ifdef CONFIG_SSD1306
+    .ssd1306_params = {
+        .i2c_port = I2C_RES(I2C_PORT1),
+	.i2c_addr = 0x78,
+    },
+#endif
 #ifdef CONFIG_ENC28J60
     .enc28j60_params = {
         .spi_port = SPI_RES(SPI_PORT1),
