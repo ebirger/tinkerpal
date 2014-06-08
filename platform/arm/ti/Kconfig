@@ -37,6 +37,9 @@ config TIVA_C_EMAC
 	select ETHERIF
 	default y
 
+config TI_I2C_WAIT_FOR_BUSY_WAR
+	bool
+	
 config LM3S6918
 	bool
 	select STELLARIS

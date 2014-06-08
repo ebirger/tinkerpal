@@ -54,8 +54,16 @@ int ti_arm_mcu_i2c_init(int port)
     return 0;
 }
 
-static inline void wait_for_completion(unsigned long base)
+static void wait_for_completion(unsigned long base)
 {
+#ifdef CONFIG_TI_I2C_WAIT_FOR_BUSY_WAR
+    /* XXX: Ugly workaround:
+     * Busy flag takes a while to be asserted, so we wait for it.
+     * Assumption is that the operation is long enough so we won't
+     * miss it
+     */
+    while (!MAP_I2CMasterBusy(base));
+#endif
     while (MAP_I2CMasterBusy(base));
 }
 
