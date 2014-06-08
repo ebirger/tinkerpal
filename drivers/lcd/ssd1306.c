@@ -61,7 +61,7 @@ typedef struct {
 
 #define SSD1306_INIT_SEQ_END 0xff
 
-static u8 ssd1306_init_seq[] = {
+static const u8 ssd1306_init_seq[] = {
     SSD1306_DISPLAY_OFF,
     SSD1306_SET_MULTIPLEX_RATIO,
     63,
@@ -95,17 +95,17 @@ static ssd1306_t g_ssd1306_screen;
 static inline void ssd1306_write(ssd1306_t *screen, int is_cmd, u8 data)
 {
     i2c_reg_write(screen->params.i2c_port, screen->params.i2c_addr,
-	is_cmd ? 0x0 : 0x40, &data, 1);
+        is_cmd ? 0x0 : 0x40, &data, 1);
 }
 
 static void chip_init(ssd1306_t *screen)
 {
-    u8 *cmd;
+    const u8 *cmd;
 
     i2c_init(screen->params.i2c_port);
     
     for (cmd = ssd1306_init_seq; *cmd != SSD1306_INIT_SEQ_END; cmd++)
-	ssd1306_write(screen, 1, *cmd);
+        ssd1306_write(screen, 1, *cmd);
 }
 
 static void ssd1306_set_address(ssd1306_t *screen, u8 pa, u8 ca)
