@@ -38,9 +38,9 @@ static inline void ti_arm_mcu_pin_mode_i2c(int pin, int scl, int i2c_af)
         MAP_GPIOPinConfigure(i2c_af);
     MAP_GPIOPinTypeI2C(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     if (scl)
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_STD_WPU);
     else
-	ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_OD);
+        ti_arm_mcu_pin_config(pin, GPIO_PIN_TYPE_OD);
 }
 
 int ti_arm_mcu_i2c_init(int port)
@@ -79,11 +79,11 @@ void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
     while (len--)
     {
         MAP_I2CMasterDataPut(i2c->base, *data++);
-	if (len)
-	{
-	    MAP_I2CMasterControl(i2c->base, I2C_MASTER_CMD_BURST_SEND_CONT);
-	    wait_for_completion(i2c->base);
-	}
+        if (len)
+        {
+            MAP_I2CMasterControl(i2c->base, I2C_MASTER_CMD_BURST_SEND_CONT);
+            wait_for_completion(i2c->base);
+        }
     }
     MAP_I2CMasterControl(i2c->base, I2C_MASTER_CMD_BURST_SEND_FINISH);
     wait_for_completion(i2c->base);
