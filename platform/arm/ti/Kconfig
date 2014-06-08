@@ -23,7 +23,6 @@ config TIVA_C
 	select BUFFERED_SERIAL
 	select PLAT_HAS_SPI
 	select PLAT_HAS_MALLOC
-	select PLAT_HAS_I2C
 
 config STELLARIS_ETH
 	bool
@@ -60,9 +59,12 @@ config LM4F120XL
 config TM4C123G
 	bool
 	select TIVA_C
+	select PLAT_HAS_I2C
 
 config TM4C1294
 	bool
 	select TIVA_C
 	select PLAT_HAS_PWM
 	select PLAT_HAS_EMBEDDED_ETH
+	select PLAT_HAS_I2C
+	select TI_I2C_WAIT_FOR_BUSY_WAR
