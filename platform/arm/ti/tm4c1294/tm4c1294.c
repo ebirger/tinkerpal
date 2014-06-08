@@ -104,6 +104,28 @@ const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
     SSI_DEF(2, PD3, PD2, PD1, PD0),
 };
 
+const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[] = {
+#define I2C_DEF(num, sclpin, sdapin) \
+    [I2C##num] = { \
+        .periph = SYSCTL_PERIPH_I2C##num, \
+        .base = I2C##num##_BASE, \
+        .scl = sclpin, \
+        .sda = sdapin, \
+        .scl_af = GPIO_##sclpin##_I2C##num##SCL, \
+        .sda_af = GPIO_##sdapin##_I2C##num##SDA, \
+    }
+    I2C_DEF(0, PB2, PB3),
+    I2C_DEF(1, PG0, PG1),
+    I2C_DEF(2, PN5, PN4),
+    I2C_DEF(3, PK4, PK5),
+    I2C_DEF(4, PK6, PK7),
+    I2C_DEF(5, PB0, PB1),
+    I2C_DEF(6, PA6, PA7),
+    I2C_DEF(7, PA4, PA5),
+    I2C_DEF(8, PA2, PA3),
+    I2C_DEF(9, PA0, PA1),
+};
+
 const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
 };
 
@@ -209,6 +231,12 @@ const platform_t platform = {
         .set_max_speed = ti_arm_mcu_spi_set_max_speed,
         .send = ti_arm_mcu_spi_send,
         .receive = ti_arm_mcu_spi_receive,
+    },
+#endif
+#ifdef CONFIG_I2C
+    .i2c = {
+        .init = ti_arm_mcu_i2c_init,
+        .reg_write = ti_arm_mcu_i2c_reg_write,
     },
 #endif
     .init = tm4c1294_init,

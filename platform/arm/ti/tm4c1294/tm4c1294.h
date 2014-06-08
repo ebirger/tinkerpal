@@ -59,6 +59,17 @@ typedef char gpio_port_t;
 #define SSI1 1
 #define SSI2 2
 
+#define I2C0 0
+#define I2C1 1
+#define I2C2 2
+#define I2C3 3
+#define I2C4 4
+#define I2C5 5
+#define I2C6 6
+#define I2C7 7
+#define I2C8 8
+#define I2C9 9
+
 #define PA0 0x00 
 #define PA1 0x01 
 #define PA2 0x02 
