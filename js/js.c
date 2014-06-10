@@ -32,6 +32,9 @@
 #include "js/js_obj.h"
 #include "js/js_event.h"
 #include "js/js_builtins.h"
+#ifdef CONFIG_JIT
+#include "js/js_jit.h"
+#endif
 #ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio.h"
 #endif
@@ -91,6 +94,7 @@ void js_uninit(void)
      * want to tear it down.
      */
     _obj_put(global_env);
+    jit_uninit();
     js_builtins_uninit();
     js_event_uninit();
     js_eval_uninit();
@@ -109,6 +113,7 @@ void js_init(void)
     js_eval_init();
     js_event_init();
     js_builtins_init();
+    jit_init();
     tp_info(("Object sizes:\n"));
 #define OSIZE(o) tp_info((#o ": %d\n", sizeof(o)))
     OSIZE(obj_t);

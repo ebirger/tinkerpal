@@ -25,27 +25,39 @@
 #include "js/js_jit.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"
+#include "mem/mem_cache.h"
 #include "util/tnum.h"
 #include "util/tp_types.h"
 
-static int jit_expression(scan_t *scan);
+static mem_cache_t *jit_mem_cache;
+
+static int arm_jit_expression(scan_t *scan);
+
+struct js_jit_t {
+    void *buffer;
+};
 
 #define ARM_THUMB
 #ifdef ARM_THUMB
 
-#define ARM_THM_JIT_MAX_OPS_NUM 128
+#define ARM_THM_JIT_MAX_OPS_NUM 64
+#define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
 
-static u16 jit_buffer[ARM_THM_JIT_MAX_OPS_NUM];
-static int jit_buffer_idx;
+static u16 *cur_jit_buffer;
+static int cur_jit_buffer_idx;
 
 static int jit_op16(u16 op)
 {
     tp_debug(("JIT: OP 0x%x\n", op));
 
-    jit_buffer[jit_buffer_idx] = op;
-    jit_buffer_idx++;
-    if (jit_buffer_idx == ARM_THM_JIT_MAX_OPS_NUM)
+    cur_jit_buffer[cur_jit_buffer_idx] = op;
+    cur_jit_buffer_idx++;
+    if (cur_jit_buffer_idx == ARM_THM_JIT_MAX_OPS_NUM)
+    {
+        /* TODO: alloc next buffer, add jump instruction to it */
+        tp_err(("JIT: too many ops\n"));
         return -1;
+    }
 
     return 0;
 }
@@ -147,8 +159,9 @@ static int jit_op32(u32 op)
 } while(0)
 
 /* API */
-#define JIT_INIT() do { \
-    jit_buffer_idx = 0; \
+#define JIT_INIT(buffer) do { \
+    cur_jit_buffer = buffer; \
+    cur_jit_buffer_idx = 0; \
     ARM_THM_JIT_PUSH(1, (1<<R4)); \
 } while(0)
 
@@ -192,18 +205,27 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_POP(0, 1<<R1); \
 } while(0)
 
-static void jit_call(void)
+static int arm_jit_init(void *buf)
+{
+    cur_jit_buffer = buf;
+    cur_jit_buffer_idx = 0;
+    ARM_THM_JIT_PUSH(1, (1<<R4));
+    return 0;
+}
+
+static int arm_jit_uninit(void)
+{
+    ARM_THM_JIT_POP(1, (1<<R0)|(1<<R4));
+    return 0;
+}
+
+void jit_call(u8 *buf)
 {
     obj_t *(*func)(void);
-    u8 *buf;
-
-    buf = tmalloc(jit_buffer_idx * sizeof(u16), "jit_function");
-    memcpy(buf, jit_buffer, jit_buffer_idx * sizeof(u16));
 
     /* '1' in LSB denotes thumb function call */
     func = (obj_t *(*)(void))(buf + 1);
     tp_out(("Result %o\n", func()));
-    tfree(buf);
 }
 
 #else
@@ -285,7 +307,7 @@ static int jit_atom(scan_t *scan)
     case TOK_OPEN_PAREN:
         js_scan_next_token(scan);
 
-        if (jit_expression(scan))
+        if (arm_jit_expression(scan))
             return -1;
 
         if (_js_scan_match(scan, TOK_CLOSE_PAREN))
@@ -394,27 +416,53 @@ GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
     jit_functions)
 GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
 
-static int jit_expression(scan_t *scan)
+static int arm_jit_expression(scan_t *scan)
 {
     return jit_term(scan);
 }
 
-int jit_statement_list(scan_t *scan)
+void jit_free(js_jit_t *j)
 {
-    int rc = 0;
+    mem_cache_free(jit_mem_cache, j);
+}
+
+js_jit_t *jit_statement_list(scan_t *scan)
+{
     scan_t *scan_copy;
+    void *buffer;
+    int rc;
+
+    buffer = mem_cache_alloc(jit_mem_cache);
+
     scan_copy = js_scan_save(scan);
 
-    JIT_INIT();
+    if ((rc = arm_jit_init(buffer)))
+        goto Exit;
 
-    rc = jit_expression(scan_copy);
+    if ((rc = arm_jit_expression(scan_copy)))
+        goto Exit;
 
-    JIT_UNINIT();
+    if ((rc = arm_jit_uninit()))
+        goto Exit;
 
-    if (!rc)
-        jit_call();
-
+Exit:
     js_scan_free(scan_copy);
+
     tp_out(("JIT Status: %s\n", rc ? "Failed" : "Success"));
-    return rc;
+    if (rc)
+    {
+        jit_free(buffer);
+        return NULL;
+    }
+    return buffer;
+}
+
+void jit_uninit(void)
+{
+    mem_cache_destroy(jit_mem_cache);
+}
+
+void jit_init(void)
+{
+    jit_mem_cache = mem_cache_create(JIT_MEM_CACHE_ITEM_SIZE, "JIT");
 }

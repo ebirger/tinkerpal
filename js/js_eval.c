@@ -1778,11 +1778,20 @@ static int eval_statement_list(obj_t **ret, scan_t *scan)
 static int eval_block(obj_t **ret, scan_t *scan)
 {
     int rc;
+#ifdef CONFIG_JIT
+    void *buf;
+#endif
 
     js_scan_match(scan, TOK_OPEN_SCOPE);
 
-    /* XXX: Under construction. ignoring output */
-    jit_statement_list(scan);
+#ifdef CONFIG_JIT
+    /* XXX: Under construction. */
+    if ((buf = jit_statement_list(scan)))
+    {
+        jit_call(buf);
+        jit_free(buf);
+    }
+#endif
 
     if ((rc = eval_statement_list(ret, scan)))
         return rc;

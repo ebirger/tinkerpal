@@ -25,18 +25,30 @@
 #ifndef __JS_JIT_H__
 #define __JS_JIT_H__
 
+#include <util/tp_types.h>
+
+typedef struct js_jit_t js_jit_t;
+
 #ifdef CONFIG_JIT
 
 #include <js/js_scan.h>
 
-int jit_statement_list(scan_t *scan);
+void jit_init(void);
+void jit_uninit(void);
+js_jit_t *jit_statement_list(scan_t *scan);
+void jit_free(js_jit_t *j);
+void jit_call(u8 *buf);
 
 #else
 
-static inline int jit_statement_list(scan_t *scan)
+static inline void jit_init(void) { }
+static inline void jit_uninit(void) { }
+static inline void jit_call(u8 *buf) { }
+static inline js_jit_t *jit_statement_list(scan_t *scan)
 {
-    return -1;
+    return NULL;
 }
+static inline void jit_free(js_jit_t *j) { }
 
 #endif
 
