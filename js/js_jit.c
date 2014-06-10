@@ -37,9 +37,6 @@ struct js_jit_t {
     void *buffer;
 };
 
-#define ARM_THUMB
-#ifdef ARM_THUMB
-
 #define ARM_THM_JIT_MAX_OPS_NUM 64
 #define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
 
@@ -227,12 +224,6 @@ void jit_call(u8 *buf)
     func = (obj_t *(*)(void))(buf + 1);
     tp_out(("Result %o\n", func()));
 }
-
-#else
-
-#error JIT not available yet
-
-#endif
 
 static int jit_num_new(tnum_t num)
 {
