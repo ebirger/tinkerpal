@@ -146,17 +146,23 @@ static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     ssd1306_write(screen, 0, *(screen->shadow + (page * WIDTH + x)));
 }
 
-static void ssd1306_fill(canvas_t *c, u16 val)
+static void ssd1306_flip(canvas_t *c)
 {
     ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
     int i;
-
-    memset(screen->shadow, val ? 0xff : 0, sizeof(screen->shadow));
 
     ssd1306_set_address(screen, 0, (HEIGHT / 8) - 1, 0, WIDTH - 1);
     
     for (i = 0; i < WIDTH * (HEIGHT / 8); i++)
         ssd1306_write(screen, 0, *(screen->shadow + i));
+}
+
+static void ssd1306_fill(canvas_t *c, u16 val)
+{
+    ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
+
+    memset(screen->shadow, val ? 0xff : 0, sizeof(screen->shadow));
+    ssd1306_flip(c);
 }
 
 static const canvas_ops_t ssd1306_ops = {
