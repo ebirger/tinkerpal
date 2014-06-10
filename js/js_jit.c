@@ -216,12 +216,12 @@ static int arm_jit_uninit(void)
     return 0;
 }
 
-void jit_call(u8 *buf)
+void jit_call(js_jit_t *j)
 {
     obj_t *(*func)(void);
 
     /* '1' in LSB denotes thumb function call */
-    func = (obj_t *(*)(void))(buf + 1);
+    func = (obj_t *(*)(void))((u8 *)j + 1);
     tp_out(("Result %o\n", func()));
 }
 
