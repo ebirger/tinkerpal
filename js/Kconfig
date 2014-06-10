@@ -6,6 +6,7 @@ if JS
 
 config JIT
         bool "JIT Support (Experimental)"
+        depends on ARM
         default n
 
 config MAX_FUNCTION_CALL_ARGS
