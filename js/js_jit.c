@@ -31,8 +31,6 @@
 
 static mem_cache_t *jit_mem_cache;
 
-static int arm_jit_expression(scan_t *scan);
-
 struct js_jit_t {
     void *buffer;
 };
@@ -246,6 +244,8 @@ static int jit_string_new(tstr_t str)
     return 0;
 }
 
+static int jit_expression(scan_t *scan);
+
 static int jit_atom(scan_t *scan)
 {
     token_type_t tok = CUR_TOK(scan);
@@ -298,7 +298,7 @@ static int jit_atom(scan_t *scan)
     case TOK_OPEN_PAREN:
         js_scan_next_token(scan);
 
-        if (arm_jit_expression(scan))
+        if (jit_expression(scan))
             return -1;
 
         if (_js_scan_match(scan, TOK_CLOSE_PAREN))
@@ -407,7 +407,7 @@ GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
     jit_functions)
 GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
 
-static int arm_jit_expression(scan_t *scan)
+static int jit_expression(scan_t *scan)
 {
     return jit_term(scan);
 }
@@ -430,7 +430,7 @@ js_jit_t *jit_statement_list(scan_t *scan)
     if ((rc = arm_jit_init(buffer)))
         goto Exit;
 
-    if ((rc = arm_jit_expression(scan_copy)))
+    if ((rc = jit_expression(scan_copy)))
         goto Exit;
 
     if ((rc = arm_jit_uninit()))
