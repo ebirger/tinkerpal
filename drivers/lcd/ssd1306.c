@@ -108,15 +108,16 @@ static void chip_init(ssd1306_t *screen)
         ssd1306_write(screen, 1, *cmd);
 }
 
-static void ssd1306_set_address(ssd1306_t *screen, u8 pa, u8 ca)
+static void ssd1306_set_address(ssd1306_t *screen, u8 min_pa, u8 max_pa,
+    u8 min_ca, u8 max_ca)
 {
     ssd1306_write(screen, 1, SSD1306_SET_COL_ADDR);
-    ssd1306_write(screen, 1, ca);
-    ssd1306_write(screen, 1, ca);
+    ssd1306_write(screen, 1, min_ca);
+    ssd1306_write(screen, 1, max_ca);
 
     ssd1306_write(screen, 1, SSD1306_SET_PAGE_ADDR);
-    ssd1306_write(screen, 1, pa);
-    ssd1306_write(screen, 1, pa);
+    ssd1306_write(screen, 1, min_pa);
+    ssd1306_write(screen, 1, max_pa);
 }
 
 static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
@@ -139,14 +140,28 @@ static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     else
         screen->shadow[page * WIDTH + x] &= ~line_bit;
 
-    ssd1306_set_address(screen, page, x);
+    ssd1306_set_address(screen, page, page, x, x);
 
     /* Draw on screen */
     ssd1306_write(screen, 0, *(screen->shadow + (page * WIDTH + x)));
 }
 
+static void ssd1306_fill(canvas_t *c, u16 val)
+{
+    ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
+    int i;
+
+    memset(screen->shadow, val ? 0xff : 0, sizeof(screen->shadow));
+
+    ssd1306_set_address(screen, 0, (HEIGHT / 8) - 1, 0, WIDTH - 1);
+    
+    for (i = 0; i < WIDTH * (HEIGHT / 8); i++)
+        ssd1306_write(screen, 0, *(screen->shadow + i));
+}
+
 static const canvas_ops_t ssd1306_ops = {
     .pixel_set = ssd1306_pixel_set,
+    .fill = ssd1306_fill,
 };
 
 canvas_t *ssd1306_new(const ssd1306_params_t *params)
