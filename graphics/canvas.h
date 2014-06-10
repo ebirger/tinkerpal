@@ -31,6 +31,7 @@ typedef struct canvas_t canvas_t;
 
 typedef struct {
     void (*pixel_set)(canvas_t *c, u16 x, u16 y, u16 val);
+    void (*fill)(canvas_t *c, u16 val);
 } canvas_ops_t;
 
 struct canvas_t {
@@ -49,6 +50,8 @@ static inline void canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
         y = c->height;
     c->ops->pixel_set(c, x, y, val);
 }
+
+void canvas_fill(canvas_t *c, u16 val);
 
 canvas_t *canvas_get_by_id(int id);
 

@@ -28,6 +28,26 @@
 static canvas_t *canvases;
 static int canvases_last_id;
 
+void canvas_fill(canvas_t *c, u16 val)
+{
+    int i, j;
+
+    if (c->ops->fill)
+    {
+        c->ops->fill(c, val);
+        return;
+    }
+
+    for (i = 0; i < c->width; i++)
+    {
+        for (j = 0; j < c->height; j++)
+        {
+            /* Skipping sanity checks */
+            c->ops->pixel_set(c, i, j, val);
+        }
+    }
+}
+
 void canvas_register(canvas_t *c)
 {
     c->id = ++canvases_last_id;
