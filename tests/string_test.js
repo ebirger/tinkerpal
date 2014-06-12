@@ -47,3 +47,10 @@ debug.assert("kuku".toUpperCase(), "KUKU");
 debug.assert("ku123Lku".toUpperCase(), "KU123LKU");
 debug.assert("KUKU".toLowerCase(), "kuku");
 debug.assert("ku123Lku".toLowerCase(), "ku123lku");
+
+/* Implicit casting */
+debug.assert(undefined + "", "undefined");
+debug.assert("" + undefined, "undefined");
+debug.assert("" + 3, "3");
+debug.assert(3 + "", "3");
+debug.assert(true + "", "true");
