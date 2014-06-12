@@ -22,16 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __GRAPHICS_H__
-#define __GRAPHICS_H__
+#include "graphics/graphics.h"
 
-#include "util/tp_types.h"
-#include "util/tstr.h"
-#include "graphics/canvas.h"
-
-void circle_draw(canvas_t *c, int x0, int y0, int radius, u16 color);
-void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
-void line_draw(canvas_t *c, int x0, int y0, int x1, int y1, u16 color);
-void rect_draw(canvas_t *c, int x, int y, int w, int h, u16 color);
-
-#endif
+void rect_draw(canvas_t *c, int x, int y, int w, int h, u16 color)
+{
+    line_draw(c, x, y, x + w, y, color);
+    line_draw(c, x + w, y, x + w, y + h, color);
+    line_draw(c, x + w, y + h, x, y + h, color);
+    line_draw(c, x, y + h, x, y, color);
+}
