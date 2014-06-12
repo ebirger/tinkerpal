@@ -476,12 +476,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
      * is ZERO, in which case, this is a unary operation which takes precedence 
      */
     if (oa != ZERO && is_string(ob))
-    {
-        obj_t *ret, *n = num_cast(oa, STRING_CLASS);
-        ret = string_do_op(op, n, ob);
-        obj_put(n);
-        return ret;
-    }
+        return obj_do_op(op, num_cast(oa, OBJ_CLASS(ob)), obj_get(ob));
 
     ob = CLASS(ob)->cast(ob, NUM_CLASS);
     b = to_num(ob);
@@ -601,6 +596,8 @@ obj_t *num_new(tnum_t n)
 
 /*** "undefined" Class ***/
 
+static obj_t *undefined_cast(obj_t *o, unsigned char class);
+
 static void undefined_dump(printer_t *printer, obj_t *o)
 {
     tprintf(printer, "undefined");
@@ -608,6 +605,9 @@ static void undefined_dump(printer_t *printer, obj_t *o)
 
 static obj_t *undefined_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
+    if (is_string(ob) || is_num(ob))
+        return obj_do_op(op, undefined_cast(oa, OBJ_CLASS(ob)), obj_get(ob));
+
     switch (op)
     {
     case TOK_NOT_EQ: return (oa == ob || ob == NULL_OBJ) ? FALSE : TRUE;
@@ -693,13 +693,8 @@ static obj_t *bool_cast(obj_t *o, unsigned char class)
 
 static obj_t *bool_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
-    if (is_num(ob))
-    {
-        obj_t *ret, *n = bool_cast(oa, NUM_CLASS);
-        ret = num_do_op(op, n, ob);
-        obj_put(n);
-        return ret;
-    }
+    if (is_num(ob) || is_string(ob))
+        return obj_do_op(op, bool_cast(oa, OBJ_CLASS(ob)), obj_get(ob));
 
     switch (op)
     {
