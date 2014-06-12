@@ -91,10 +91,16 @@ static void function_args_bind(obj_t *env, tstr_list_t *params,
 {
     int i = 0;
 
-    while (params && argc--)
+    for (; params; params = params->next)
     {
-        obj_set_property(env, params->str, argv[i++]);
-        params = params->next;
+        obj_t *o = UNDEF;
+
+        if (argc)
+        {
+            o = argv[i++];
+            argc--;
+        }
+        obj_set_property(env, params->str, o);
     }
 }
 
