@@ -62,3 +62,18 @@ FUNCTION("lineDraw", graphics, do_graphics_line_draw, {
         "var g = new Graphics(lcd);\n"
         "g.lineDraw(10, 10, 20, 20, 0xffff);",
 })
+
+FUNCTION("rectDraw", graphics, do_graphics_rect_draw, {
+    .params = {
+        { .name = "x" , .description = "X coordinate" },
+        { .name = "y" , .description = "Y coordinate" },
+        { .name = "w" , .description = "Width" },
+        { .name = "h" , .description = "Height" },
+        { .name = "color" , .description = "Color" },
+    },
+    .description = "Draws a rectangle on LCD",
+    .return_value = "None",
+    .example = "var lcd = new Dogs102x6();\n"
+        "var g = new Graphics(lcd);\n"
+        "g.rectDraw(10, 10, 20, 20, 0xffff);",
+})
