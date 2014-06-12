@@ -14,3 +14,7 @@ function p() {
 }
 
 p(2, 3, 4, 5);
+
+b = 3;
+function f(a, b, c) { debug.assert(b, undefined); }
+f(1);
