@@ -60,6 +60,11 @@ static void graphics_test_process_line(tstr_t *line)
     }
     if (!tstr_cmp(line, &S("text")))
         string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 0xffff);
+    if (!tstr_cmp(line, &S("rect")))
+    {
+        rect_draw(canvas, canvas->width / 4, canvas->height / 4,
+            canvas->width / 2, canvas->height / 2, COLOR_WHITE);
+    }
 
     console_printf("Ok\n");
 }
