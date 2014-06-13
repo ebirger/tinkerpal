@@ -14,3 +14,13 @@ FUNCTION(TpixelDraw, canvas, do_canvas_pixel_draw, {
     .example = "var l = new ILI93XX();\n"
         "l.pixelDraw(10, 10, 1);",
 })
+
+FUNCTION(Tfill, canvas, do_canvas_fill, {
+    .params = {
+        { .name = "value" , .description = "Color Value" }
+    },
+    .description = "Fills the canvas with a color",
+    .return_value = "None",
+    .example = "var l = new ILI93XX();\n"
+        "l.fill(0xfe);",
+})

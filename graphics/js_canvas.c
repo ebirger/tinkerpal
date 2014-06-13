@@ -53,6 +53,29 @@ int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
+int do_canvas_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    u16 color;
+    canvas_t *c;
+
+    if (argc != 2)
+        return js_invalid_args(ret);
+
+    c = canvas_get_by_id(canvas_obj_get_id(this));
+    if (!c)
+    {
+        tp_err(("'this' is not a valid canvas object\n"));
+        return js_invalid_args(ret);
+    }
+
+    color = (u16)obj_get_int(argv[1]);
+
+    canvas_fill(c, color);
+
+    *ret = UNDEF;
+    return 0;
+}
+
 int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
