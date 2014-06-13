@@ -65,6 +65,12 @@ static void graphics_test_process_line(tstr_t *line)
         rect_draw(canvas, canvas->width / 4, canvas->height / 4,
             canvas->width / 2, canvas->height / 2, COLOR_WHITE);
     }
+    if (!tstr_cmp(line, &S("rrect")))
+    {
+        round_rect_draw(canvas, canvas->width / 4, canvas->height / 4,
+            canvas->width / 2, canvas->height / 2, canvas->width / 10,
+            COLOR_WHITE);
+    }
 
     console_printf("Ok\n");
 }

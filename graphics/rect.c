@@ -31,3 +31,17 @@ void rect_draw(canvas_t *c, int x, int y, int w, int h, u16 color)
     line_draw(c, x + w, y + h, x, y + h, color);
     line_draw(c, x, y + h, x, y, color);
 }
+
+void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, u16 color)
+{
+    /* Corners */
+    _circle_draw(c, x + r, y + r, r, CIRC_270_315 | CIRC_315_0, color);
+    _circle_draw(c, x + w - r, y + r, r, CIRC_0_45 | CIRC_45_90, color);
+    _circle_draw(c, x + r, y + h - r, r, CIRC_180_225 | CIRC_225_270, color);
+    _circle_draw(c, x + w - r, y + h - r, r, CIRC_90_135 | CIRC_135_180, color);
+    /* Lines */
+    line_draw(c, x + r, y, x + w - r, y, color);
+    line_draw(c, x + w, y + r, x + w, y + h - r, color);
+    line_draw(c, x + w - r, y + h, x + r, y + h, color);
+    line_draw(c, x, y + h - r, x, y + r, color);
+}

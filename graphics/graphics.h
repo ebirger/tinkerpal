@@ -48,5 +48,6 @@ static inline void circle_draw(canvas_t *c, int x0, int y0, int radius,
 void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
 void line_draw(canvas_t *c, int x0, int y0, int x1, int y1, u16 color);
 void rect_draw(canvas_t *c, int x, int y, int w, int h, u16 color);
+void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, u16 color);
 
 #endif
