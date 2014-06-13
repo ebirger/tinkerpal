@@ -28,23 +28,27 @@
  * Adapted from http://en.wikipedia.org/wiki/Midpoint_circle_algorithm 
  */
 
-void circle_draw(canvas_t *c, int x0, int y0, int radius, u16 color)
+void _circle_draw(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color)
 {
     int error = 1 - radius;
     int errorY = 1;
     int errorX = -2 * radius;
     int x = radius, y = 0;
 
-    canvas_pixel_set(c, x0, y0 + radius, color);
-    canvas_pixel_set(c, x0, y0 - radius, color);
-    canvas_pixel_set(c, x0 + radius, y0, color);
-    canvas_pixel_set(c, x0 - radius, y0, color);
+    if (quad & CIRCLE_DRAW_QUAD_180_225 || quad & CIRCLE_DRAW_QUAD_135_180)
+        canvas_pixel_set(c, x0, y0 + radius, color);
+    if (quad & CIRCLE_DRAW_QUAD_0_45 || quad & CIRCLE_DRAW_QUAD_315_0)
+        canvas_pixel_set(c, x0, y0 - radius, color);
+    if (quad & CIRCLE_DRAW_QUAD_45_90 || quad & CIRCLE_DRAW_QUAD_90_135)
+        canvas_pixel_set(c, x0 + radius, y0, color);
+    if (quad & CIRCLE_DRAW_QUAD_225_270 || quad & CIRCLE_DRAW_QUAD_270_315)
+        canvas_pixel_set(c, x0 - radius, y0, color);
 
     while (y < x)
     {
         if (error > 0)
-        { 
-            /* >= 0 produces a slimmer circle. 
+        {
+            /* >= 0 produces a slimmer circle.
              * =0 produces the circle at radius 11
              */
             x--;
@@ -53,14 +57,22 @@ void circle_draw(canvas_t *c, int x0, int y0, int radius, u16 color)
         }
         y++;
         errorY += 2;
-        error += errorY;    
-        canvas_pixel_set(c, x0 + x, y0 + y, color);
-        canvas_pixel_set(c, x0 - x, y0 + y, color);
-        canvas_pixel_set(c, x0 + x, y0 - y, color);
-        canvas_pixel_set(c, x0 - x, y0 - y, color);
-        canvas_pixel_set(c, x0 + y, y0 + x, color);
-        canvas_pixel_set(c, x0 - y, y0 + x, color);
-        canvas_pixel_set(c, x0 + y, y0 - x, color);
-        canvas_pixel_set(c, x0 - y, y0 - x, color);
+        error += errorY;
+        if (quad & CIRCLE_DRAW_QUAD_90_135)
+            canvas_pixel_set(c, x0 + x, y0 + y, color);
+        if (quad & CIRCLE_DRAW_QUAD_225_270)
+            canvas_pixel_set(c, x0 - x, y0 + y, color);
+        if (quad & CIRCLE_DRAW_QUAD_45_90)
+            canvas_pixel_set(c, x0 + x, y0 - y, color);
+        if (quad & CIRCLE_DRAW_QUAD_270_315)
+            canvas_pixel_set(c, x0 - x, y0 - y, color);
+        if (quad & CIRCLE_DRAW_QUAD_135_180)
+            canvas_pixel_set(c, x0 + y, y0 + x, color);
+        if (quad & CIRCLE_DRAW_QUAD_180_225)
+            canvas_pixel_set(c, x0 - y, y0 + x, color);
+        if (quad & CIRCLE_DRAW_QUAD_0_45)
+            canvas_pixel_set(c, x0 + y, y0 - x, color);
+        if (quad & CIRCLE_DRAW_QUAD_315_0)
+            canvas_pixel_set(c, x0 - y, y0 - x, color);
     }
 }
