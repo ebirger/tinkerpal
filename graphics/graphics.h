@@ -29,20 +29,20 @@
 #include "util/tstr.h"
 #include "graphics/canvas.h"
 
-#define CIRCLE_DRAW_QUAD_0_45 (1<<0)
-#define CIRCLE_DRAW_QUAD_45_90 (1<<1)
-#define CIRCLE_DRAW_QUAD_90_135 (1<<2)
-#define CIRCLE_DRAW_QUAD_135_180 (1<<3)
-#define CIRCLE_DRAW_QUAD_180_225 (1<<4)
-#define CIRCLE_DRAW_QUAD_225_270 (1<<5)
-#define CIRCLE_DRAW_QUAD_270_315 (1<<6)
-#define CIRCLE_DRAW_QUAD_315_0 (1<<7)
-#define CIRCLE_DRAW_QUAD_ALL 0xff
+#define CIRC_0_45 (1<<0)
+#define CIRC_45_90 (1<<1)
+#define CIRC_90_135 (1<<2)
+#define CIRC_135_180 (1<<3)
+#define CIRC_180_225 (1<<4)
+#define CIRC_225_270 (1<<5)
+#define CIRC_270_315 (1<<6)
+#define CIRC_315_0 (1<<7)
+#define CIRC_ALL 0xff
 void _circle_draw(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color);
 static inline void circle_draw(canvas_t *c, int x0, int y0, int radius,
     u16 color)
 {
-    _circle_draw(c, x0, y0, radius, CIRCLE_DRAW_QUAD_ALL, color);
+    _circle_draw(c, x0, y0, radius, CIRC_ALL, color);
 }
 
 void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
