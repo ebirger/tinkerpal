@@ -28,6 +28,7 @@
 #include "util/tp_misc.h"
 
 #define SpixelDraw S(TpixelDraw)
+#define Sfill S(Tfill)
 
 typedef struct {
     canvas_t canvas;
@@ -36,7 +37,7 @@ typedef struct {
 
 #define JS_CANVAS_FROM_CANVAS(c) container_of(c, js_evaluated_canvas_t, canvas);
 
-void js_evaluated_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+static void js_evaluated_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
     js_evaluated_canvas_t *jscanvas = JS_CANVAS_FROM_CANVAS(c);
     obj_t *argv[4];
@@ -54,8 +55,23 @@ void js_evaluated_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     obj_put(argv[3]);
 }
 
+static void js_evaluated_canvas_fill(canvas_t *c, u16 val)
+{
+    js_evaluated_canvas_t *jscanvas = JS_CANVAS_FROM_CANVAS(c);
+    obj_t *argv[2];
+    obj_t *ret = UNDEF;
+
+    argv[0] = obj_get_property(NULL, jscanvas->obj, &Sfill);
+    argv[1] = num_new_int(val);
+    function_call(&ret, jscanvas->obj, 2, argv);
+    obj_put(ret);
+    obj_put(argv[0]);
+    obj_put(argv[1]);
+}
+
 static const canvas_ops_t js_evaluated_canvas_ops = {
     .pixel_set = js_evaluated_canvas_pixel_set,
+    .fill = js_evaluated_canvas_fill,
 };
 
 canvas_t *js_evaluated_canvas_new(obj_t *o)
