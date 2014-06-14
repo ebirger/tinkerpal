@@ -6,7 +6,7 @@ LM4FLASH_BURNER=$(LM4TOOLS)/lm4flash/lm4flash
 
 $(LM4TOOLS_FETCHED) :
 	@echo Fetching LM4Tools
-	git clone https://github.com/utzig/lm4tools.git $(LM4TOOLS)
+	git clone git://github.com/utzig/lm4tools.git $(LM4TOOLS)
 	@touch $(LM4TOOLS_FETCHED)
 
 $(LM4FLASH_BURNER) : $(LM4TOOLS_FETCHED)
@@ -42,7 +42,7 @@ STLINK_BURNER=$(STLINK)/st-flash
 
 $(STLINK_FETCHED) :
 	@echo Fetching STLink
-	git clone https://github.com/texane/stlink.git $(STLINK)
+	git clone git://github.com/texane/stlink.git $(STLINK)
 	@touch $(STLINK_FETCHED)
 
 $(STLINK_BURNER) : $(STLINK_FETCHED)
@@ -56,4 +56,4 @@ STM32LOADER_BURNER=$(STM32LOADER)/stm32loader.py
 
 $(STM32LOADER_BURNER) :
 	@echo Fetching stm32loader
-	git clone https://github.com/jsnyder/stm32loader.git $(STM32LOADER)
+	git clone git://github.com/jsnyder/stm32loader.git $(STM32LOADER)
