@@ -49,9 +49,10 @@ screen / minicom / putty
 
 Obtaining Toolchain / SDK
 -------------------------
-- Use ./scripts/get_tools.sh as root (recommended basedir /usr/local/tinkerpal,
-  otherwise setenv_<target> scripts would need to be adjusted)
-- You can also download a ready to use CD image file with all the required tools and pre-requisites from http://www.tinkerpal.org/tinkerpal.iso
+ARM cross compilation toolchain can be found at https://launchpad.net/gcc-arm-embedded
+Alternatively, you can use an optimized toolchain from http://tinkerpal.org/sat.tgz
+
+BSPs are downloaded automatically as part of the build process
 
 Building
 --------
