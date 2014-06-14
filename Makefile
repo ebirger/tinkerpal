@@ -131,14 +131,13 @@ $(IMAGE) : $(TARGET)
 	@echo $($(quiet_)obj_to_bin)
 	@$(call obj_to_bin)
 
-burn : $(BURNER)
-
 define note
 	@printf *********************************************************\\n
 	@printf $1\\n
 	@printf *********************************************************\\n
 endef
 
+burn : $(BURNER)
 ifneq ($(BURN_CMD),)
 	$(if $(BURN_NOTE),$(call note,$(BURN_NOTE)))
 	@sudo $(BURN_CMD)
