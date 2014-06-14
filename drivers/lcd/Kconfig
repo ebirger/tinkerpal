@@ -51,6 +51,5 @@ config SSD1306
 config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS
-	default y if PLATFORM_EMULATION
 
 endif
