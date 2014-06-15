@@ -27,7 +27,12 @@ function build()
 build lm4f120xl .bin
 build lm3s6965 .bin
 build lm3s6918 .bin
+build tm4c123g .bin
+build tm4c1294 .bin
 build stm32f3discovery .bin
+build stm32f3discovery .bin
+build stm32f429idiscovery .bin
+build stm32f4discovery .bin
 build frdm_kl25z .bin
 build unix_sim
 
