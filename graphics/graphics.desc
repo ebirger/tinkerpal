@@ -77,3 +77,19 @@ FUNCTION("rectDraw", graphics, do_graphics_rect_draw, {
         "var g = new Graphics(lcd);\n"
         "g.rectDraw(10, 10, 20, 20, 0xffff);",
 })
+
+FUNCTION("roundRectDraw", graphics, do_graphics_round_rect_draw, {
+    .params = {
+        { .name = "x" , .description = "X coordinate" },
+        { .name = "y" , .description = "Y coordinate" },
+        { .name = "w" , .description = "Width" },
+        { .name = "h" , .description = "Height" },
+        { .name = "r" , .description = "Corner Radius" },
+        { .name = "color" , .description = "Color" },
+    },
+    .description = "Draws a round rectangle on LCD",
+    .return_value = "None",
+    .example = "var lcd = new Dogs102x6();\n"
+        "var g = new Graphics(lcd);\n"
+        "g.roundRectDraw(10, 10, 20, 20, 4, 0xffff);",
+})
