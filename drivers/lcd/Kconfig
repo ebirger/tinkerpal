@@ -45,11 +45,11 @@ config DOGS102X6
 	default y if MSP430F5529_EXP
 
 config SSD1306
-	bool "Support for the SSD1306 LCD controller"
+	bool "Support for the SSD1306 OLED display controller (over I2C)"
 	depends on GPIO && I2C && GRAPHICS
 
 config SSD1329
-	bool "Support for the SSD1329 LCD controller (over SPI)"
+	bool "Support for the SSD1329 OLED display controller (over SPI)"
 	depends on GPIO && SPI && GRAPHICS
 	default y if EK_LM3S6965
 
