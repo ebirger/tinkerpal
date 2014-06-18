@@ -3,8 +3,7 @@ ifneq ($(CONFIG_STELLARIS),)
 endif
 ifneq ($(CONFIG_TIVA_C),)
   TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/tivaware
-  INC:=-include $(d)/tivaware.h
-  CFLAGS+=$(INC)
+  ADDITIONAL_INCLUDES:=$(ADDITIONAL_INCLUDES) $(d)/tivaware.h
 endif
 
 MK_OBJS=ti_arm_mcu.o 
