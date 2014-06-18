@@ -1,7 +1,9 @@
 MK_OBJS=tm4c123g.o interrupts.o
 
 ifneq ($(CONFIG_GCC),)
-  MK_OBJS+=entry_gcc.o 
+  BSP_SRCS:=gpio.c
+  MK_LINKS:=$(addprefix $(TI_ARM_MCU_BSP_DIR)/driverlib/,$(BSP_SRCS))
+  MK_OBJS+=entry_gcc.o $(BSP_SRCS:%.c=%.o)
 
   LINKER_SCRIPT:=$(BUILD)/$(d)/tm4c123g.ld
   CFLAGS+=-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -O3 \
