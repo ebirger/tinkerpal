@@ -7,7 +7,8 @@ CFLAGS+=-O2 -g --gcc --define=ccs="ccs" --diag_warning=225 \
   --preproc_with_compile 
 
 INC+=--include_path=./ --include_path=$(BUILD) \
-  --include_path="$(TI_COMPILER)/include"
+  --include_path="$(TI_COMPILER)/include" \
+  $(addprefix --include_path=,$(ADDITIONAL_INCLUDES))
 
 # These flags must come after the regular ldflags (specifically -z)
 ADDITIONAL_LDFLAGS=-O2 -g --gcc --define=ccs="ccs" --diag_warning=225 \

@@ -10,7 +10,8 @@ CPP=$(CROSS_COMPILE)cpp
 #LDFLAGS+=$(if $(CONFIG_UNIX),-Wl,)-Map=$@.map
 LINK_DEPS=$(LINKER_SCRIPT)
 
-CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h -Wall -Werror -g -ansi \
+CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h \
+  $(addprefix -include ,$(ADDITIONAL_INCLUDES)) -Wall -Werror -g -ansi \
   -std=gnu99 $(if $(CONFIG_GCC_LTO),-flto)
 LDFLAGS+=$(if $(CONFIG_GCC_LTO),-flto)
 get_libgcc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-libgcc-file-name))
