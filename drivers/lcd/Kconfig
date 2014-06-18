@@ -48,6 +48,11 @@ config SSD1306
 	bool "Support for the SSD1306 LCD controller"
 	depends on GPIO && I2C && GRAPHICS
 
+config SSD1329
+	bool "Support for the SSD1329 LCD controller (over SPI)"
+	depends on GPIO && SPI && GRAPHICS
+	default y if EK_LM3S6965
+
 config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS
