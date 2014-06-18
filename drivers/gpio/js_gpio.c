@@ -221,6 +221,7 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     event_t *e;
     int event_id, qlen = 1;
+    resource_t pin;
 
     if (argc != 3 && argc != 4)
         return js_invalid_args(ret);
@@ -237,9 +238,14 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 	}
     }
 
+    pin = obj_get_int(argv[2]);
+
+    if (gpio_set_pin_mode(pin, GPIO_PM_INPUT_PULLUP))
+        return throw_exception(ret, &Sexception_gpio_pin_mode_unavail);
+
     e = js_event_new(argv[1], this, set_watch_trigger);
 
-    event_id = _event_watch_set(obj_get_int(argv[2]), e, qlen);
+    event_id = _event_watch_set(pin, e, qlen);
     *ret = num_new_int(event_id);
     return 0;
 }
