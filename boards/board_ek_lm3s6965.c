@@ -28,6 +28,14 @@
 const board_t board = {
     .desc = "EK LM3S6965",
     .default_console_id = UART_RES(UART0),
+#ifdef CONFIG_SSD1329
+    .ssd1329_params = {
+        .spi_port = SPI_RES(SSI0),
+	.cs = GPIO_RES(PA3),
+	.cd = GPIO_RES(PC7),
+	.pwr = GPIO_RES(PC6),
+    },
+#endif
 #ifdef CONFIG_MMC
     .mmc_params = {
         .spi_port = SPI_RES(SSI0),
