@@ -60,6 +60,7 @@ config TM4C123G
 	bool
 	select TIVA_C
 	select PLAT_HAS_I2C
+	select PLAT_HAS_GPIO_INTERRUPTS
 
 config TM4C1294
 	bool
