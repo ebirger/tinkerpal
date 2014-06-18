@@ -1,5 +1,6 @@
 ifneq ($(CONFIG_STELLARIS),)
   TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/stellarisware
+  ADDITIONAL_INCLUDES:=$(ADDITIONAL_INCLUDES) $(d)/stellarisware.h
 endif
 ifneq ($(CONFIG_TIVA_C),)
   TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/tivaware
