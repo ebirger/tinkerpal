@@ -35,13 +35,18 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS
+#define GPIO_INT_STATUS TI_BSP_IFDEF(MAP_GPIOPinIntStatus, MAP_GPIOIntStatus)
+#define GPIO_INT_CLEAR TI_BSP_IFDEF(MAP_GPIOPinIntClear, MAP_GPIOIntClear)
+#define GPIO_INT_DISABLE TI_BSP_IFDEF(MAP_GPIOPinIntDisable, MAP_GPIOIntDisable)
+#define GPIO_INT_ENABLE TI_BSP_IFDEF(MAP_GPIOPinIntEnable, MAP_GPIOIntEnable)
+
 void ti_arm_mcu_gpio_isr(int port)
 {
     long istat;
     unsigned long base = ti_arm_mcu_gpio_ports[port].base;
 
-    istat = MAP_GPIOPinIntStatus(base, 1);
-    MAP_GPIOPinIntClear(base, istat);
+    istat = GPIO_INT_STATUS(base, 1);
+    GPIO_INT_CLEAR(base, istat);
     gpio_state_set(port, istat);
 }
 #endif
@@ -52,7 +57,7 @@ void ti_arm_mcu_gpio_input(int pin)
     int bit = GPIO_BIT(pin);
 
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS
-    MAP_GPIOPinIntDisable(base, bit);
+    GPIO_INT_DISABLE(base, bit);
 #endif
 
     MAP_GPIODirModeSet(base, bit, GPIO_DIR_MODE_IN);
@@ -60,7 +65,7 @@ void ti_arm_mcu_gpio_input(int pin)
 
 #ifdef CONFIG_PLAT_HAS_GPIO_INTERRUPTS
     MAP_GPIOIntTypeSet(base, bit, GPIO_BOTH_EDGES);
-    MAP_GPIOPinIntEnable(base, bit);
+    GPIO_INT_ENABLE(base, bit);
     MAP_IntEnable(ti_arm_mcu_gpio_ports[GPIO_PORT(pin)].irq);
 #endif
 }
