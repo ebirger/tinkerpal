@@ -24,7 +24,6 @@
  */
 #include "drivers/gpio/gpio.h"
 #include "graphics/js_canvas.h"
-#include "drivers/lcd/dogs102x6.h"
 #include "boards/board.h"
 #include "js/js_obj.h"
 
