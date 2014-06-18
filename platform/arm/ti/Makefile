@@ -1,12 +1,11 @@
 ifneq ($(CONFIG_STELLARIS),)
   TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/stellarisware
-  ADDITIONAL_INCLUDES:=$(ADDITIONAL_INCLUDES) $(d)/stellarisware.h
 endif
 ifneq ($(CONFIG_TIVA_C),)
   TI_ARM_MCU_BSP_DIR=$(BSPS_DIR)/tivaware
-  ADDITIONAL_INCLUDES:=$(ADDITIONAL_INCLUDES) $(d)/tivaware.h
 endif
 
+ADDITIONAL_INCLUDES:=$(ADDITIONAL_INCLUDES) $(d)/ti_arm_mcu_bsp.h
 MK_OBJS=ti_arm_mcu.o 
 MK_OBJS+=$(if $(CONFIG_TI_CCS5),stellaris_entry_ccs5.o)
 MK_OBJS+=$(if $(CONFIG_GPIO),ti_arm_mcu_gpio.o)

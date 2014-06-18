@@ -22,7 +22,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __STELLARISWARE_H__
-#define __STELLARISWARE_H__
+#ifndef __TI_ARM_MCU_BSP_H__
+#define __TI_ARM_MCU_BSP_H__
+
+#if defined(CONFIG_STELLARIS)
+
+#define TI_BSP_IFDEF(a, b) a
+
+#elif defined(CONFIG_TIVA_C)
+
+#include <stdint.h>
+#include <stdbool.h>
+
+#define TI_BSP_IFDEF(a, b) b
+
+#endif
 
 #endif
