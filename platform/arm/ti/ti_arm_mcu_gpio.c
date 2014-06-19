@@ -71,10 +71,21 @@ void ti_arm_mcu_gpio_input(int pin)
 }
 
 #ifdef CONFIG_PLAT_HAS_PWM
-static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
-    unsigned long freq, double duty_cycle) 
+static const ti_arm_mcu_pwm_t *pin_pwm(int pin)
 {
+    const ti_arm_mcu_pwm_t *pwm;
+
+    for (pwm = ti_arm_mcu_pwms; pwm->base && pwm->pin != pin; pwm++);
+    return pwm;
+}
+
+void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle) 
+{
+    const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
     unsigned long period, width;
+
+    if (!pwm->base)
+        return;
     
     /* Compute the PWM period based on the system clock */
     period = platform.get_system_clock() / freq;
@@ -84,7 +95,7 @@ static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
         PWM_GEN_MODE_NO_SYNC);
     MAP_PWMGenPeriodSet(pwm->base, pwm->gen, period);
 
-    width = (unsigned long)(duty_cycle * period);
+    width = (unsigned long)(duty_cycle * period / 100);
     /* Taking up too much of the period will result in having nothing */
     if (width > period - 5)
         width = period - 5;
@@ -99,14 +110,6 @@ static void ti_arm_mcu_gpio_pwm_do(const ti_arm_mcu_pwm_t *pwm,
     MAP_PWMGenEnable(pwm->base, pwm->gen);
 }
 
-static const ti_arm_mcu_pwm_t *pin_pwm(int pin)
-{
-    const ti_arm_mcu_pwm_t *pwm;
-
-    for (pwm = ti_arm_mcu_pwms; pwm->base && pwm->pin != pin; pwm++);
-    return pwm;
-}
-
 int ti_arm_mcu_pin_mode_pwm(int pin)
 {
     const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
@@ -119,16 +122,6 @@ int ti_arm_mcu_pin_mode_pwm(int pin)
         MAP_GPIOPinConfigure(pwm->af);
     MAP_GPIOPinTypePWM(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     return 0;
-}
-
-void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value)
-{
-    const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
-
-    if (!pwm->base)
-        return;
-
-    ti_arm_mcu_gpio_pwm_do(pwm, 1846, value);
 }
 #endif
 

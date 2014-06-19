@@ -162,8 +162,10 @@ static inline void ti_arm_mcu_pin_mode_timer(int pin)
         MAP_GPIOPinConfigure(timer_function);
 }
 
+#ifdef CONFIG_PLAT_HAS_PWM
 int ti_arm_mcu_pin_mode_pwm(int pin);
-void ti_arm_mcu_gpio_pwm_analog_write(int pin, double value);
+void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle);
+#endif
 
 #ifdef CONFIG_GPIO
 void ti_arm_mcu_gpio_input(int pin);

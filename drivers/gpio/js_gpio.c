@@ -156,7 +156,7 @@ int do_analog_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (gpio_set_pin_mode(pin, GPIO_PM_OUTPUT_ANALOG))
         return throw_exception(ret, &Sexception_gpio_pin_mode_unavail);
 
-    gpio_analog_write(pin, value);
+    gpio_pwm_start(pin, 1846, value * 100);
     *ret = UNDEF;
     return 0;
 }

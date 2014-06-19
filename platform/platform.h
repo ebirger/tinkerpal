@@ -54,7 +54,7 @@ typedef struct {
     struct {
         void (*digital_write)(int pin, int value);
         int (*digital_read)(int pin);
-        void (*analog_write)(int pin, double value);
+        void (*pwm_start)(int pin, int freq, int duty_cycle);
         double (*analog_read)(int pin);
         int (*set_pin_mode)(int pin, gpio_pin_mode_t mode);
         void (*set_port_val)(int port, unsigned short mask,

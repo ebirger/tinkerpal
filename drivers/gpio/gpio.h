@@ -57,12 +57,12 @@ static inline int gpio_digital_read(resource_t pin)
     return platform.gpio.digital_read(RES_MAJ(pin));
 }
 
-static inline void gpio_analog_write(resource_t pin, double value)
+static inline void gpio_pwm_start(resource_t pin, int freq, int duty_cycle)
 {
     if (RES_BASE(pin) != GPIO_RESOURCE_ID_BASE)
         return;
 
-    platform.gpio.analog_write(RES_MAJ(pin), value);
+    platform.gpio.pwm_start(RES_MAJ(pin), freq, duty_cycle);
 }
 
 static inline double gpio_analog_read(resource_t pin)

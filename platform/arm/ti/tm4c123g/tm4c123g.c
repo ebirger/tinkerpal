@@ -253,11 +253,12 @@ static int tm4c123g_set_pin_mode(int pin, gpio_pin_mode_t mode)
     return 0;
 }
 
-static void ti_arm_mcu_gpio_analog_write(int pin, double value) 
+static void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle) 
 {
     int int_val;
 
-    int_val = 255 * value;
+    /* Ignoring freq for now */
+    int_val = 255 * duty_cycle / 100;
 
     if (int_val > 255)
         int_val = 255;
@@ -298,7 +299,7 @@ const platform_t platform = {
     .gpio = {
         .digital_write = ti_arm_mcu_gpio_digital_write,
         .digital_read = ti_arm_mcu_gpio_digital_read,
-        .analog_write = ti_arm_mcu_gpio_analog_write,
+        .pwm_start = ti_arm_mcu_gpio_pwm_start,
         .analog_read = ti_arm_mcu_gpio_analog_read,
         .set_pin_mode = tm4c123g_set_pin_mode,
         .set_port_val = ti_arm_mcu_gpio_set_port_val,
