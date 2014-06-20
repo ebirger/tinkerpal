@@ -26,12 +26,12 @@ CONSTRUCTOR(#type "Array", array_buffer_view_prototype, do_##ctype##array_constr
     .example = "var a = new " #type "Array(5);\n" \
 })
 
-GEN_ABV_CONSTURCTOR(Int8, int8);
-GEN_ABV_CONSTURCTOR(Uint8, uint8);
-GEN_ABV_CONSTURCTOR(Int16, int16);
-GEN_ABV_CONSTURCTOR(Uint16, uint16);
-GEN_ABV_CONSTURCTOR(Int32, int32);
-GEN_ABV_CONSTURCTOR(Uint32, uint32);
+GEN_ABV_CONSTURCTOR(Int8, int8)
+GEN_ABV_CONSTURCTOR(Uint8, uint8)
+GEN_ABV_CONSTURCTOR(Int16, int16)
+GEN_ABV_CONSTURCTOR(Uint16, uint16)
+GEN_ABV_CONSTURCTOR(Int32, int32)
+GEN_ABV_CONSTURCTOR(Uint32, uint32)
 
 FUNCTION("subarray", array_buffer_view_prototype, do_array_buffer_view_subarray, {
     .params = { 
