@@ -26,15 +26,21 @@
 #include "util/debug.h"
 #include "js/js_eval.h"
 #include "js/js.h"
+#include "js/js_types.h"
 
-extern tstr_t static_file;
+extern char *static_file;
 
 void app_start(int argc, char *argv[])
 {
     obj_t *o;
-
+    tstr_t code;
+    
     tp_out(("TinkerPal Application - static file\n"));
 
-    js_eval(&o, &static_file);
+    tstr_init(&code, static_file, strlen(static_file), 0);
+    if (js_eval(&o, &code) == COMPLETION_THROW)
+        tp_crit(("Evaluation resulted in exception %o\n", o));
+
     obj_put(o);
+    tstr_free(&code);
 }
