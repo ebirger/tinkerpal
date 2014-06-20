@@ -274,6 +274,17 @@ obj_t *obj_do_in_op(obj_t *oa, obj_t *ob)
     return ret;
 }
 
+static inline void obj_to_num(obj_t **o)
+{
+    obj_t *tmp = *o;
+
+    if (is_num(tmp))
+        return;
+
+    *o = obj_cast(tmp, NUM_CLASS);
+    obj_put(tmp);
+}
+
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
     obj_t *ret;
@@ -290,12 +301,9 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_DIV:
     case TOK_MOD:
     case TOK_MINUS:
-        {
-            obj_t *a = obj_cast(oa, NUM_CLASS), *b = obj_cast(ob, NUM_CLASS);
-
-            ret = CLASS(a)->do_op(op, a, b);
-            break;
-        }
+        obj_to_num(&oa);
+        obj_to_num(&ob);
+        goto do_op;
     case TOK_NOT_EQ_STRICT:
     case TOK_IS_EQ_STRICT:
         if (CLASS(oa) != CLASS(ob))
@@ -304,6 +312,7 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
             break;
         }
         /* Fallthrough */
+do_op:
     default:
         tp_assert(CLASS(oa)->do_op);
         ret = CLASS(oa)->do_op(op & ~STRICT, oa, ob);
