@@ -18,7 +18,7 @@ CONSTRUCTOR("ArrayBuffer", array_buffer_prototype, do_array_buffer_constructor, 
 #define GEN_ABV_CONSTURCTOR(type, ctype) \
 CONSTRUCTOR(#type "Array", array_buffer_view_prototype, do_##ctype##array_constructor, { \
     .params = { \
-       { .name = "ArrayBuffer/Size", .description = "ArrayBuffer or Number of " \
+       { .name = "Array/ArrayBuffer/Size", .description = "Array, ArrayBuffer or Number of " \
            "Elements in a newly created ArrayBuffer" }, \
     }, \
     .description = #type "Array Constructor", \
