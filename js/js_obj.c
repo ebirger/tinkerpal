@@ -1117,7 +1117,7 @@ void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
 {
     int len = 0;
 
-    len = array_length_get(arr);
+    obj_get_property_int(&len, arr, &Slength);
     iter->len = len;
     iter->reverse = reverse;
     iter->k = reverse ? iter->len : -1;
