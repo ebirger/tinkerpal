@@ -938,7 +938,7 @@ obj_t *object_new(void)
 
 /*** "array" Class ***/
 
-static obj_t **array_length_get(int *length, obj_t *arr);
+static obj_t **_array_length_get(int *length, obj_t *arr);
 static obj_t *array_lookup(obj_t *arr, int index);
 
 static void array_dump(printer_t *printer, obj_t *o)
@@ -1008,7 +1008,7 @@ static obj_t *array_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     return UNDEF;
 }
 
-static obj_t **array_length_get(int *length, obj_t *arr)
+static obj_t **_array_length_get(int *length, obj_t *arr)
 {
     obj_t **ret;
 
@@ -1018,12 +1018,20 @@ static obj_t **array_length_get(int *length, obj_t *arr)
     return ret;
 }
 
+int array_length_get(obj_t *arr)
+{
+    int ret;
+
+    _array_length_get(&ret, arr);
+    return ret;
+}
+
 void array_length_set(obj_t *arr, int length)
 {
     obj_t **len;
     int cur_len;
 
-    len = array_length_get(&cur_len, arr);
+    len = _array_length_get(&cur_len, arr);
 
     /* Release old length */
     obj_put(*len);
@@ -1037,7 +1045,7 @@ obj_t *array_push(obj_t *arr, obj_t *item)
     int idx;
     tstr_t idx_str;
     
-    len = array_length_get(&idx, arr);
+    len = _array_length_get(&idx, arr);
 
     /* shortcut: we call var_create directly in order not to trigger
      * array_pre_var_create hook.
@@ -1061,7 +1069,7 @@ obj_t *array_pop(obj_t *arr)
     var_t **iter, *tmp;
     tstr_t idx_id;
     
-    len = array_length_get(&idx, arr);
+    len = _array_length_get(&idx, arr);
 
     if (idx == 0)
         return UNDEF;
@@ -1109,7 +1117,7 @@ void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
 {
     int len = 0;
 
-    obj_get_property_int(&len, arr, &Slength);
+    len = array_length_get(arr);
     iter->len = len;
     iter->reverse = reverse;
     iter->k = reverse ? iter->len : -1;
@@ -1169,7 +1177,7 @@ static void array_pre_var_create(obj_t *arr, const tstr_t *str)
     }
     
     idx = NUMERIC_INT(tnum_idx);
-    len = array_length_get(&cur_len, arr);
+    len = _array_length_get(&cur_len, arr);
 
     if (cur_len > idx)
         return;
