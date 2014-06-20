@@ -89,3 +89,9 @@ debug.assert(b[5], 3);
 a[3] = 5;
 debug.assert(b[3], 0);
 debug.assert(a.length, b.length);
+
+var a = new Uint16Array([1, 2, 3]);
+debug.assert(a.length, 3);
+debug.assert(a[0], 1);
+debug.assert(a[1], 2);
+debug.assert(a[2], 3);
