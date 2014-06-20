@@ -83,10 +83,20 @@ static void abv_cpy(array_buffer_view_t *dst, array_buffer_view_t *src)
     }
 }
 
+static void arr_to_abv(array_buffer_view_t *dst, obj_t *arr)
+{
+    array_iter_t iter;
+
+    array_iter_init(&iter, arr, 0);
+    while (array_iter_next(&iter))
+        array_buffer_view_item_val_set(dst, iter.k, obj_get_int(iter.obj));
+    array_iter_uninit(&iter);
+}
+
 static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[], unsigned short flags)
 {
-    obj_t *array_buffer;
+    obj_t *array_buffer, *orig_arr = NULL;
     int length, offset = 0;
     array_buffer_view_t *orig_abv = NULL;
 
@@ -111,6 +121,12 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
         length = orig_abv->length;
         array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
     }
+    else if (is_array(argv[1]))
+    {
+        orig_arr = argv[1];
+        length = array_length_get(argv[1]);
+        array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
+    }
     else if (is_num(argv[1]))
     {
         length = obj_get_int(argv[1]);
@@ -123,6 +139,8 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
 
     if (orig_abv)
         abv_cpy(to_array_buffer_view(*ret), orig_abv);
+    else if (orig_arr)
+        arr_to_abv(to_array_buffer_view(*ret), orig_arr);
 
     obj_put(array_buffer);
     return 0;
