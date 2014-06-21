@@ -507,6 +507,9 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         case TOK_MINUS_MINUS: ret = nan ? NAN_OBJ : num_new_fp(va - 1); break;
         case TOK_MULT: ret = nan ? NAN_OBJ : num_new_fp(va * vb); break;
         case TOK_DIV: ret = nan ? NAN_OBJ : num_new_fp(va / vb); break;
+        case TOK_AND: ret = nan ? NAN_OBJ : num_new_int((int)va & (int)vb); break;
+        case TOK_OR: ret = nan ? NAN_OBJ : num_new_int((int)va | (int)vb); break;
+        case TOK_XOR: ret = nan ? NAN_OBJ : num_new_int((int)va ^ (int)vb); break;
         case TOK_GR: ret = !nan && (va > vb) ? TRUE : FALSE; break;
         case TOK_GE: ret = !nan && (va >= vb) ? TRUE : FALSE; break;
         case TOK_LT: ret = !nan && (va < vb) ? TRUE : FALSE; break;

@@ -213,3 +213,12 @@ debug.assert(isNaN(true), false);
 debug.assert(isNaN(false), false);
 debug.assert(isNaN(undefined), true);
 debug.assert(isNaN(null), false);
+
+/* FP <-> Int */
+debug.assert(0|0.1, 0);
+debug.assert(0|0.9, 0);
+debug.assert(0|1.9, 1);
+debug.assert(1&1.9, 1);
+debug.assert(1&0.9, 0);
+debug.assert(1^0.9, 1);
+debug.assert(1^1.9, 0);
