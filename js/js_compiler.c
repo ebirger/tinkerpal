@@ -31,7 +31,7 @@
 #include "util/tnum.h"
 #include "util/tp_types.h"
 
-static mem_cache_t *jit_mem_cache;
+static mem_cache_t *js_compiler_mem_cache;
 
 #define ARM_THM_JIT_MAX_OPS_NUM 64
 #define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
@@ -448,7 +448,7 @@ static int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc,
 
 static void compiled_function_code_free(void *code)
 {
-    mem_cache_free(jit_mem_cache, code);
+    mem_cache_free(js_compiler_mem_cache, code);
 }
 
 static int compile_function(function_t *f)
@@ -457,7 +457,7 @@ static int compile_function(function_t *f)
     void *buffer;
     int rc;
 
-    buffer = mem_cache_alloc(jit_mem_cache);
+    buffer = mem_cache_alloc(js_compiler_mem_cache);
 
     code_copy = js_scan_save(f->code);
 
@@ -521,10 +521,11 @@ int js_compile(obj_t **po)
 
 void js_compiler_uninit(void)
 {
-    mem_cache_destroy(jit_mem_cache);
+    mem_cache_destroy(js_compiler_mem_cache);
 }
 
 void js_compiler_init(void)
 {
-    jit_mem_cache = mem_cache_create(JIT_MEM_CACHE_ITEM_SIZE, "JIT");
+    js_compiler_mem_cache = mem_cache_create(JIT_MEM_CACHE_ITEM_SIZE,
+        "JS Compiler");
 }
