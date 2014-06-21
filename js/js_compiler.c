@@ -25,6 +25,7 @@
 #include "js/js_compiler.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"
+#include "js/js_utils.h"
 #include "mem/mem_cache.h"
 #include "util/tnum.h"
 #include "util/tp_types.h"
@@ -449,8 +450,22 @@ Exit:
     return buffer;
 }
 
-int js_compile_function(obj_t **func)
+int js_compile(obj_t **po)
 {
+    function_t *f;
+
+    if (!is_function(*po))
+        return throw_exception(po, &S("Only functions compilation for now"));
+
+    f = to_function(*po);
+
+    /* First parameter is function name, always exists */
+    if (f->formal_params->next)
+    {
+        return throw_exception(po, &S("Functions with parameters cannot be "
+            "compiled yet"));
+    }
+
     return 0;
 }
 

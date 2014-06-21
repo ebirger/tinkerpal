@@ -32,7 +32,7 @@
 void js_compiler_init(void);
 void js_compiler_uninit(void);
 
-int js_compile_function(obj_t **func);
+int js_compile(obj_t **po);
 
 #else
 
@@ -41,9 +41,9 @@ int js_compile_function(obj_t **func);
 static inline void js_compiler_init(void) { }
 static inline void js_compiler_uninit(void) { }
 
-static inline int js_compile_function(obj_t **func)
+static inline int js_compile(obj_t **po)
 {
-    return throw_exception(func, &S("CONFIG_JS_COMPILER not enabled."
+    return throw_exception(po, &S("CONFIG_JS_COMPILER not enabled."
         "Compilation not available")); 
 }
 

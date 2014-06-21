@@ -169,11 +169,11 @@ int do_compile(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int rc;
 
-    if (argc != 2 || !is_function(argv[1]))
+    if (argc != 2)
         return js_invalid_args(ret);
 
-    *ret = argv[1];
-    if ((rc = js_compile_function(ret)))
+    *ret = obj_get(argv[1]);
+    if ((rc = js_compile(ret)))
         return rc;
 
     return 0;
