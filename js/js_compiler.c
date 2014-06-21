@@ -94,6 +94,12 @@ static int jit_op32(u32 op)
         return -1; \
 } while(0)
 
+#define ARM_THM_JIT_STR(ld, ln, imm5) do { \
+    tp_info(("JIT: str ld %d, ln %d, imm5 %d\n", ld, ln, imm4)); \
+    if (jit_op16(0x6000 | ((ld) | (ln)<<3 | ((imm5)<<6)))) \
+        return -1; \
+} while(0)
+
 #define ARM_THM_JIT_MOV_REG(rd, rm) do { \
     tp_info(("JIT: mov rd %d, rm %d\n", rd, rm)); \
     if (jit_op16(0x4600 | ((rm)<<3) | (rd))) \
@@ -192,13 +198,20 @@ static int arm_function_prologue(void *buf)
 {
     cur_jit_buffer = buf;
     cur_jit_buffer_idx = 0;
-    ARM_THM_JIT_PUSH(1, (1<<R4));
+    /* Store &ret (R0) in stack */
+    ARM_THM_JIT_PUSH(1, (1<<R0)|(1<<R4));
     return 0;
 }
 
-static int arm_function_return(void)
+static int arm_function_return(int rc)
 {
-    ARM_THM_JIT_POP(1, (1<<R0)|(1<<R4));
+    ARM_THM_JIT_POP(0, (1<<R1));
+    /* Fetch &ret from stack */
+    ARM_THM_JIT_POP(0, (1<<R0));
+    /* Store return value in *ret */
+    ARM_THM_JIT_STR(R1, R0, 0);
+    ARM_THM_JIT_REG_SET(R0, rc);
+    ARM_THM_JIT_POP(1, (1<<R4));
     return 0;
 }
 
@@ -420,13 +433,11 @@ static int compile_statement_list(scan_t *scan)
 
 static int _call_compiled_function(obj_t **ret, function_t *f)
 {
-    obj_t *(*compiled_func)(void);
+    int (*compiled_func)(obj_t **ret);
 
     /* '1' in LSB denotes thumb function call */
-    compiled_func = (obj_t *(*)(void))((u8 *)f->code + 1);
-    *ret = compiled_func();
-    /* XXX: we should not always 'return' - this is for testing */
-    return COMPLETION_RETURN;
+    compiled_func = (int (*)(obj_t **))((u8 *)f->code + 1);
+    return compiled_func(ret);
 }
 
 static int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc, 
@@ -460,7 +471,7 @@ static int compile_function(function_t *f)
     if ((rc = compile_statement_list(code_copy)))
         goto Exit;
 
-    if ((rc = arm_function_return()))
+    if ((rc = arm_function_return(COMPLETION_NORNAL)))
         goto Exit;
 
 Exit:
