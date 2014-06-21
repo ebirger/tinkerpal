@@ -29,6 +29,7 @@
 #include "util/tnum.h"
 #include "util/tp_types.h"
 
+typedef struct js_jit_t js_jit_t;
 static mem_cache_t *jit_mem_cache;
 
 struct js_jit_t {
@@ -448,12 +449,12 @@ Exit:
     return buffer;
 }
 
-void jit_uninit(void)
+void js_compiler_uninit(void)
 {
     mem_cache_destroy(jit_mem_cache);
 }
 
-void jit_init(void)
+void js_compiler_init(void)
 {
     jit_mem_cache = mem_cache_create(JIT_MEM_CACHE_ITEM_SIZE, "JIT");
 }

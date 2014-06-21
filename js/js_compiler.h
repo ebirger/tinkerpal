@@ -22,31 +22,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __JS_JIT_H__
-#define __JS_JIT_H__
-
-typedef struct js_jit_t js_jit_t;
+#ifndef __JS_COMPILER_H__
+#define __JS_COMPILER_H__
 
 #ifdef CONFIG_JS_COMPILER
 
 #include <js/js_scan.h>
 
-void jit_init(void);
-void jit_uninit(void);
-js_jit_t *jit_statement_list(scan_t *scan);
-void jit_free(js_jit_t *j);
-void jit_call(js_jit_t *j);
+void js_compiler_init(void);
+void js_compiler_uninit(void);
 
 #else
 
-static inline void jit_init(void) { }
-static inline void jit_uninit(void) { }
-static inline void jit_call(js_jit_t *j) { }
-static inline js_jit_t *jit_statement_list(scan_t *scan)
-{
-    return NULL;
-}
-static inline void jit_free(js_jit_t *j) { }
+static inline void js_compiler_init(void) { }
+static inline void js_compiler_uninit(void) { }
 
 #endif
 

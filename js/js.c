@@ -92,7 +92,7 @@ void js_uninit(void)
      * want to tear it down.
      */
     _obj_put(global_env);
-    jit_uninit();
+    js_compiler_uninit();
     js_builtins_uninit();
     js_event_uninit();
     js_eval_uninit();
@@ -111,7 +111,7 @@ void js_init(void)
     js_eval_init();
     js_event_init();
     js_builtins_init();
-    jit_init();
+    js_compiler_init();
     tp_info(("Object sizes:\n"));
 #define OSIZE(o) tp_info((#o ": %d\n", sizeof(o)))
     OSIZE(obj_t);
