@@ -22,6 +22,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef __JS_UTILS_H__
+#define __JS_UTILS_H__
+
 #include "js/js_obj.h"
 #include "js/js_types.h"
 
@@ -36,3 +39,5 @@ static inline int js_invalid_args(obj_t **ret)
 {
     return throw_exception(ret, &S("Invalid arguments"));
 }
+
+#endif
