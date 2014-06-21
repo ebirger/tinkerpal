@@ -233,7 +233,7 @@ static int jit_string_new(tstr_t str)
     return 0;
 }
 
-static int jit_expression(scan_t *scan);
+static int compile_expression(scan_t *scan);
 
 static int jit_atom(scan_t *scan)
 {
@@ -287,7 +287,7 @@ static int jit_atom(scan_t *scan)
     case TOK_OPEN_PAREN:
         js_scan_next_token(scan);
 
-        if (jit_expression(scan))
+        if (compile_expression(scan))
             return -1;
 
         if (_js_scan_match(scan, TOK_CLOSE_PAREN))
@@ -396,9 +396,36 @@ GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
     jit_functions)
 GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
 
-static int jit_expression(scan_t *scan)
+static int compile_expression(scan_t *scan)
 {
     return jit_term(scan);
+}
+
+static int compile_statement(scan_t *scan)
+{
+    switch (CUR_TOK(scan))
+    {
+    default:
+        if (compile_expression(scan))
+            return -1;
+
+        if (_js_scan_match(scan, TOK_END_STATEMENT))
+            return -1;
+
+        break;
+    }
+
+    return 0;
+}
+
+static int compile_statement_list(scan_t *scan)
+{
+    while (!is_statement_list_terminator(CUR_TOK(scan)))
+    {
+        if (compile_statement(scan))
+            return -1;
+    }
+    return 0;
 }
 
 static int _call_compiled_function(obj_t **ret, function_t *f)
@@ -440,7 +467,7 @@ static int compile_function(function_t *f)
     if ((rc = arm_jit_init(buffer)))
         goto Exit;
 
-    if ((rc = jit_expression(code_copy)))
+    if ((rc = compile_statement_list(code_copy)))
         goto Exit;
 
     if ((rc = arm_jit_uninit()))
