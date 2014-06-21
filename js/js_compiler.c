@@ -215,6 +215,13 @@ static int arm_function_return(int rc)
     return 0;
 }
 
+static int arm_complete_statement(void)
+{
+    /* Throw top of stack value away */
+    ARM_THM_JIT_POP(0, (1<<R0));
+    return 0;
+}
+
 static int jit_num_new(tnum_t num)
 {
     /* XXX: Support FP */
@@ -419,7 +426,7 @@ static int compile_statement(scan_t *scan)
                 return -1;
         }
         arm_function_return(COMPLETION_RETURN);
-        break;
+        return 0;
     default:
         if (compile_expression(scan))
             return -1;
@@ -429,7 +436,8 @@ static int compile_statement(scan_t *scan)
 
         break;
     }
-
+    if (arm_complete_statement())
+        return -1;
     return 0;
 }
 
