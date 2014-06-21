@@ -56,11 +56,13 @@ typedef struct {
 } obj_t;
 
 typedef int (*call_t)(obj_t **ret, obj_t *this, int argc, obj_t *argv[]);
+typedef void (*code_free_cb_t)(void *code);
 
 typedef struct {
     obj_t obj;
     call_t call;
-    scan_t *code;
+    void *code;
+    code_free_cb_t code_free_cb;
     obj_t *scope;
     tstr_list_t *formal_params;
 #ifdef CONFIG_OBJ_DOC
@@ -231,8 +233,8 @@ static inline num_t *to_num(obj_t *o)
 }
 
 /* "function" objects methods */
-obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope, 
-    call_t call);
+obj_t *function_new(tstr_list_t *params, void *code, code_free_cb_t code_free,
+    obj_t *scope, call_t call);
 int function_call(obj_t **ret, obj_t *this_obj, int argc, obj_t *argv[]);
 int function_call_construct(obj_t **ret, int argc, obj_t *argv[]);
 

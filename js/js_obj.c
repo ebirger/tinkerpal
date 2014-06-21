@@ -779,7 +779,8 @@ static void function_free(obj_t *o)
     function_t *func = to_function(o);
 
     tstr_list_free(&func->formal_params);
-    js_scan_free(func->code);
+    if (func->code_free_cb)
+        func->code_free_cb(func->code);
     obj_put(func->scope);
 }
 
@@ -798,8 +799,8 @@ static obj_t *function_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     return ret;
 }
 
-obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope, 
-    call_t call)
+obj_t *function_new(tstr_list_t *params, void *code, code_free_cb_t code_free,
+    obj_t *scope, call_t call)
 {
     function_t *ret = (function_t *)obj_new(FUNCTION_CLASS);
 
@@ -807,6 +808,7 @@ obj_t *function_new(tstr_list_t *params, scan_t *code, obj_t *scope,
     _obj_set_property(&ret->obj, Sprototype, object_new());
     ret->formal_params = params;
     ret->code = code;
+    ret->code_free_cb = code_free;
     ret->scope = obj_get(scope);
     ret->call = call;
     return (obj_t *)ret;

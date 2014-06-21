@@ -34,6 +34,7 @@ int js_eval_obj(obj_t **ret, obj_t *obj);
 /* Stop current execution */
 void js_eval_stop_execution(void);
 
+void evaluated_function_code_free(void *code);
 int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
     obj_t *argv[]);
 int parse_function_param_list(tstr_list_t **params, scan_t *scan);

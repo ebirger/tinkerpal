@@ -104,6 +104,11 @@ static void function_args_bind(obj_t *env, tstr_list_t *params,
     }
 }
 
+void evaluated_function_code_free(void *code)
+{
+    js_scan_free(code);
+}
+
 int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
     obj_t *argv[])
 {
@@ -346,8 +351,8 @@ static int eval_function_definition(tstr_t *fname, obj_t **po, scan_t *scan)
     }
         
     end = js_scan_save(scan);
-    o = function_new(params, js_scan_slice(start, end), cur_env, 
-        call_evaluated_function);
+    o = function_new(params, js_scan_slice(start, end),
+        evaluated_function_code_free, cur_env, call_evaluated_function);
     js_scan_free(start);
     js_scan_free(end);
     *po = o;

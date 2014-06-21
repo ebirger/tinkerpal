@@ -124,7 +124,7 @@ int do_function_prototype_bind(obj_t **ret, obj_t *this, int argc,
     obj_set_property(wrapper_env, Sbound_func, this);
     obj_set_property(wrapper_env, Sbound_this, argv[1]);
 
-    *ret = function_new(NULL, NULL, wrapper_env, function_bind_call);
+    *ret = function_new(NULL, NULL, NULL, wrapper_env, function_bind_call);
     obj_put(wrapper_env);
     return 0;
 }
@@ -136,6 +136,7 @@ int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     tstr_t body;
     tstr_list_t *params = NULL;
     call_t call;
+    code_free_cb_t code_free_cb = NULL;
 
     argc--;
     argv++;
@@ -186,8 +187,9 @@ int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     body = obj_get_str(argv[0]);
     code = _js_scan_init(&body, 1);
     call = call_evaluated_function;
+    code_free_cb = evaluated_function_code_free;
 
 Exit:
-    *ret = function_new(params, code, global_env, call);
+    *ret = function_new(params, code, code_free_cb, global_env, call);
     return 0;
 }
