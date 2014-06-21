@@ -27,7 +27,7 @@
 
 typedef struct js_jit_t js_jit_t;
 
-#ifdef CONFIG_JIT
+#ifdef CONFIG_JS_COMPILER
 
 #include <js/js_scan.h>
 

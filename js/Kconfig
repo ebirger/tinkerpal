@@ -4,8 +4,8 @@ menuconfig JS
 
 if JS
 
-config JIT
-        bool "JIT Support (Experimental)"
+config JS_COMPILER
+        bool "Run-time Compilation Support (Experimental)"
         depends on ARM
         default n
 
