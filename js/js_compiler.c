@@ -30,12 +30,7 @@
 #include "util/tnum.h"
 #include "util/tp_types.h"
 
-typedef struct js_jit_t js_jit_t;
 static mem_cache_t *jit_mem_cache;
-
-struct js_jit_t {
-    void *buffer;
-};
 
 #define ARM_THM_JIT_MAX_OPS_NUM 64
 #define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
@@ -214,15 +209,6 @@ static int arm_jit_uninit(void)
 {
     ARM_THM_JIT_POP(1, (1<<R0)|(1<<R4));
     return 0;
-}
-
-void jit_call(js_jit_t *j)
-{
-    obj_t *(*func)(void);
-
-    /* '1' in LSB denotes thumb function call */
-    func = (obj_t *(*)(void))((u8 *)j + 1);
-    tp_out(("Result %o\n", func()));
 }
 
 static int jit_num_new(tnum_t num)
@@ -414,9 +400,23 @@ static int jit_expression(scan_t *scan)
     return jit_term(scan);
 }
 
-void jit_free(js_jit_t *j)
+int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc, 
+    obj_t *argv[])
 {
-    mem_cache_free(jit_mem_cache, j);
+    function_t *f;
+    obj_t *(*compiled_func)(void);
+
+    /* TODO: setup execution environment */
+    f = to_function(argv[0]);
+    /* '1' in LSB denotes thumb function call */
+    compiled_func = (obj_t *(*)(void))((u8 *)f->code + 1);
+    *ret = compiled_func();
+    return 0;
+}
+
+static void compiled_function_code_free(void *code)
+{
+    mem_cache_free(jit_mem_cache, code);
 }
 
 static int compile_function(function_t *f)
@@ -443,10 +443,20 @@ static int compile_function(function_t *f)
 
 Exit:
     js_scan_free(code_copy);
-    jit_free(buffer);
 
-    tp_out(("Compilation Status: %s\n", rc ? "Failed" : "Success"));
-    return rc;
+    if (rc)
+    {
+        compiled_function_code_free(buffer);
+        return rc;
+    }
+
+    /* Destroy original code */
+    f->code_free_cb(f->code);
+    /* Place our new compiled code, call function and destructor */
+    f->code = buffer;
+    f->code_free_cb = compiled_function_code_free;
+    f->call = call_compiled_function;
+    return 0;
 }
 
 int js_compile(obj_t **po)
