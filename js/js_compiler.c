@@ -408,6 +408,18 @@ static int compile_statement(scan_t *scan)
 {
     switch (CUR_TOK(scan))
     {
+    case TOK_END_STATEMENT:
+        js_scan_next_token(scan);
+        break;
+    case TOK_RETURN:
+        js_scan_match(scan, TOK_RETURN);
+        if (CUR_TOK(scan) != TOK_END_STATEMENT)
+        {
+            if (compile_expression(scan))
+                return -1;
+        }
+        arm_function_return(COMPLETION_RETURN);
+        break;
     default:
         if (compile_expression(scan))
             return -1;
