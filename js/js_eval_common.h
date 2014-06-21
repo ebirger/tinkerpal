@@ -22,24 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __JS_EVAL_H__
-#define __JS_EVAL_H__
+#ifndef __JS_EVAL_COMMON_H__
+#define __JS_EVAL_COMMON_H__
 
-#include "util/tstr.h"
-#include "js/js_obj.h"
+#include "js/js_scan.h"
 
-int js_eval(obj_t **ret, tstr_t *code);
-int js_eval_module(obj_t **ret, tstr_t *code);
-int js_eval_obj(obj_t **ret, obj_t *obj);
-/* Stop current execution */
-void js_eval_stop_execution(void);
+static inline int is_statement_list_terminator(token_type_t tok)
+{
+    return tok == TOK_CLOSE_SCOPE || tok == TOK_CASE || tok == TOK_DEFAULT || 
+        tok == TOK_EOF;
+}
 
-void evaluated_function_code_free(void *code);
-int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
-    obj_t *argv[]);
-int parse_function_param_list(tstr_list_t **params, scan_t *scan);
-
-void js_eval_uninit(void);
-void js_eval_init(void);
+int js_eval_wrap_function_execution(obj_t **ret, obj_t *this_obj, int argc, 
+    obj_t *argv[], int (*call)(obj_t **ret, function_t *f));
 
 #endif

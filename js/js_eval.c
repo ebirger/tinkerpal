@@ -25,6 +25,7 @@
 #include "util/tstr.h"
 #include "util/debug.h"
 #include "js/js_eval.h"
+#include "js/js_eval_common.h"
 #include "js/js_scan.h"
 #include "js/js_types.h"
 #include "js/js_obj.h"
@@ -78,12 +79,6 @@ static int eval_assert_is_function(obj_t **po, scan_t *scan);
 static int parse_error(obj_t **po)
 {
     return throw_exception(po, &S("Exception: Parse error"));
-}
-
-static inline int is_statement_list_terminator(token_type_t tok)
-{
-    return tok == TOK_CLOSE_SCOPE || tok == TOK_CASE || tok == TOK_DEFAULT || 
-        tok == TOK_EOF;
 }
 
 static void function_args_bind(obj_t *env, tstr_list_t *params, 

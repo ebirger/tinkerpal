@@ -26,7 +26,7 @@
 #include "js/js_obj.h"
 #include "js/js_types.h"
 #include "js/js_utils.h"
-#include "js/js_eval.h"
+#include "js/js_eval_common.h"
 #include "mem/mem_cache.h"
 #include "util/tnum.h"
 #include "util/tp_types.h"
