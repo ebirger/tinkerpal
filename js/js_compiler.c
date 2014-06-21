@@ -419,35 +419,34 @@ void jit_free(js_jit_t *j)
     mem_cache_free(jit_mem_cache, j);
 }
 
-js_jit_t *jit_statement_list(scan_t *scan)
+static int compile_function(function_t *f)
 {
-    scan_t *scan_copy;
+    scan_t *code_copy;
     void *buffer;
     int rc;
 
     buffer = mem_cache_alloc(jit_mem_cache);
 
-    scan_copy = js_scan_save(scan);
+    code_copy = js_scan_save(f->code);
+
+    /* Skip opening bracket */
+    js_scan_match(code_copy, TOK_OPEN_SCOPE);
 
     if ((rc = arm_jit_init(buffer)))
         goto Exit;
 
-    if ((rc = jit_expression(scan_copy)))
+    if ((rc = jit_expression(code_copy)))
         goto Exit;
 
     if ((rc = arm_jit_uninit()))
         goto Exit;
 
 Exit:
-    js_scan_free(scan_copy);
+    js_scan_free(code_copy);
+    jit_free(buffer);
 
-    tp_out(("JIT Status: %s\n", rc ? "Failed" : "Success"));
-    if (rc)
-    {
-        jit_free(buffer);
-        return NULL;
-    }
-    return buffer;
+    tp_out(("Compilation Status: %s\n", rc ? "Failed" : "Success"));
+    return rc;
 }
 
 int js_compile(obj_t **po)
@@ -471,6 +470,9 @@ int js_compile(obj_t **po)
         return throw_exception(po, &S("Functions with parameters cannot be "
             "compiled yet"));
     }
+
+    if (compile_function(f))
+        return throw_exception(po, &S("Function compilation failed"));
 
     return 0;
 }
