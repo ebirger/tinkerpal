@@ -459,6 +459,12 @@ int js_compile(obj_t **po)
 
     f = to_function(*po);
 
+    if (!f->code)
+    {
+        /* Built-in functions are already compiled. Nothing to do */
+        return 0;
+    }
+
     /* First parameter is function name, always exists */
     if (f->formal_params->next)
     {
