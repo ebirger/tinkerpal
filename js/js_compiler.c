@@ -152,16 +152,6 @@ static int jit_op32(u32 op)
 } while(0)
 
 /* API */
-#define JIT_INIT(buffer) do { \
-    cur_jit_buffer = buffer; \
-    cur_jit_buffer_idx = 0; \
-    ARM_THM_JIT_PUSH(1, (1<<R4)); \
-} while(0)
-
-#define JIT_UNINIT() do { \
-    ARM_THM_JIT_POP(1, (1<<R0)|(1<<R4)); \
-} while(0)
-
 #define JIT_FUNC_CALL0(func) do { \
     ARM_THM_JIT_CALL(func); \
     ARM_THM_JIT_PUSH(0, (1<<R0)); \
@@ -198,7 +188,7 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_POP(0, 1<<R1); \
 } while(0)
 
-static int arm_jit_init(void *buf)
+static int arm_function_prologue(void *buf)
 {
     cur_jit_buffer = buf;
     cur_jit_buffer_idx = 0;
@@ -206,7 +196,7 @@ static int arm_jit_init(void *buf)
     return 0;
 }
 
-static int arm_jit_uninit(void)
+static int arm_function_return(void)
 {
     ARM_THM_JIT_POP(1, (1<<R0)|(1<<R4));
     return 0;
@@ -464,13 +454,13 @@ static int compile_function(function_t *f)
     /* Skip opening bracket */
     js_scan_match(code_copy, TOK_OPEN_SCOPE);
 
-    if ((rc = arm_jit_init(buffer)))
+    if ((rc = arm_function_prologue(buffer)))
         goto Exit;
 
     if ((rc = compile_statement_list(code_copy)))
         goto Exit;
 
-    if ((rc = arm_jit_uninit()))
+    if ((rc = arm_function_return()))
         goto Exit;
 
 Exit:
