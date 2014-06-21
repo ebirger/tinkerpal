@@ -26,6 +26,7 @@
 #include "js/js_obj.h"
 #include "js/js_types.h"
 #include "js/js_utils.h"
+#include "js/js_eval.h"
 #include "mem/mem_cache.h"
 #include "util/tnum.h"
 #include "util/tp_types.h"
@@ -400,18 +401,22 @@ static int jit_expression(scan_t *scan)
     return jit_term(scan);
 }
 
-int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc, 
-    obj_t *argv[])
+static int _call_compiled_function(obj_t **ret, function_t *f)
 {
-    function_t *f;
     obj_t *(*compiled_func)(void);
 
-    /* TODO: setup execution environment */
-    f = to_function(argv[0]);
     /* '1' in LSB denotes thumb function call */
     compiled_func = (obj_t *(*)(void))((u8 *)f->code + 1);
     *ret = compiled_func();
-    return 0;
+    /* XXX: we should not always 'return' - this is for testing */
+    return COMPLETION_RETURN;
+}
+
+static int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc, 
+    obj_t *argv[])
+{
+    return js_eval_wrap_function_execution(ret, this_obj, argc, argv,
+        _call_compiled_function);
 }
 
 static void compiled_function_code_free(void *code)

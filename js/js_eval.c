@@ -109,11 +109,10 @@ void evaluated_function_code_free(void *code)
     js_scan_free(code);
 }
 
-int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
-    obj_t *argv[])
+int js_eval_wrap_function_execution(obj_t **ret, obj_t *this_obj, int argc, 
+    obj_t *argv[], int (*call)(obj_t **ret, function_t *f))
 {
     function_args_t args = { .argc = argc, .argv = argv}, saved_args;
-    scan_t *s;
     obj_t *saved_env;
     int rc;
     function_t *func = to_function(argv[0]);
@@ -122,20 +121,13 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
     cur_env = env_new(func->scope);
     function_args_bind(cur_env, func->formal_params, argc, argv);
 
-    /* Create a duplicate scan for function code so we don't 
-     * change the original scanner.
-     */
-    s = js_scan_save(func->code);
     if (this_obj)
         this = this_obj;
 
     saved_args = cur_function_args;
     cur_function_args = args;
 
-    if (CUR_TOK(s) == TOK_OPEN_SCOPE)
-        rc = eval_block(ret, s);
-    else
-        rc = eval_statement_list(ret, s);
+    rc = call(ret, func);
     
     cur_function_args = saved_args;
 
@@ -146,8 +138,33 @@ int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
     }
     obj_put(cur_env);
     cur_env = saved_env;
+    return rc;
+}
+
+static int _call_evaluated_function(obj_t **ret, function_t *func)
+{
+    scan_t *s;
+    int rc;
+
+    /* Create a duplicate scan for function code so we don't 
+     * change the original scanner.
+     */
+    s = js_scan_save(func->code);
+
+    if (CUR_TOK(s) == TOK_OPEN_SCOPE)
+        rc = eval_block(ret, s);
+    else
+        rc = eval_statement_list(ret, s);
+    
     js_scan_free(s);
     return rc;
+}
+
+int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc,
+    obj_t *argv[])
+{
+    return js_eval_wrap_function_execution(ret, this_obj, argc, argv,
+        _call_evaluated_function);
 }
 
 static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
