@@ -32,7 +32,7 @@
 #include "js/js_obj.h"
 #include "js/js_event.h"
 #include "js/js_builtins.h"
-#include "js/js_jit.h"
+#include "js/js_compiler.h"
 #ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio.h"
 #endif

@@ -28,7 +28,7 @@
 #include "js/js_scan.h"
 #include "js/js_types.h"
 #include "js/js_obj.h"
-#include "js/js_jit.h"
+#include "js/js_compiler.h"
 #include "js/js_utils.h"
 #include "js/js_builtins.h"
 

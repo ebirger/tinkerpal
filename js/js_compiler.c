@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "js/js_jit.h"
+#include "js/js_compiler.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"
 #include "mem/mem_cache.h"
