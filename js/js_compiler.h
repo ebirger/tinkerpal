@@ -27,15 +27,25 @@
 
 #ifdef CONFIG_JS_COMPILER
 
-#include <js/js_scan.h>
+#include <js/js_obj.h>
 
 void js_compiler_init(void);
 void js_compiler_uninit(void);
 
+int js_compile_function(obj_t **func);
+
 #else
+
+#include "js/js_utils.h"
 
 static inline void js_compiler_init(void) { }
 static inline void js_compiler_uninit(void) { }
+
+static inline int js_compile_function(obj_t **func)
+{
+    return throw_exception(func, &S("CONFIG_JS_COMPILER not enabled."
+        "Compilation not available")); 
+}
 
 #endif
 

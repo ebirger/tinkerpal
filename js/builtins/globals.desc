@@ -81,3 +81,12 @@ FUNCTION("describe", global_env, do_describe, {
     .return_value = "None",
     .example = "describe(describe);",
 })
+
+FUNCTION("compile", global_env, do_compile, {
+    .params = { 
+       { .name = "function", .description = "function_to_be_compiled" },
+     },
+    .description = "Compiles a function for faster execution",
+    .return_value = "The compiled function",
+    .example = "var f = compile(function() { return 1 + 1; });",
+})

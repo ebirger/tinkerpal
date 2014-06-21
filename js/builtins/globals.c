@@ -27,6 +27,7 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_eval.h"
+#include "js/js_compiler.h"
 #include "platform/platform.h"
 #include <math.h>
 
@@ -161,5 +162,19 @@ int do_describe(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     tp_out(("%D\n", argv[1]));
     *ret = UNDEF;
+    return 0;
+}
+
+int do_compile(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    int rc;
+
+    if (argc != 2 || !is_function(argv[1]))
+        return js_invalid_args(ret);
+
+    *ret = argv[1];
+    if ((rc = js_compile_function(ret)))
+        return rc;
+
     return 0;
 }

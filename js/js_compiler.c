@@ -449,6 +449,11 @@ Exit:
     return buffer;
 }
 
+int js_compile_function(obj_t **func)
+{
+    return 0;
+}
+
 void js_compiler_uninit(void)
 {
     mem_cache_destroy(jit_mem_cache);
