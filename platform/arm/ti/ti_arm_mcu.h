@@ -28,7 +28,9 @@
 #include "driverlib/gpio.h"
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
 #include "driverlib/sysctl.h"
+#endif
 
 typedef struct {
     unsigned long periph;
@@ -110,8 +112,30 @@ int ti_arm_mcu_serial_write(int u, char *buf, int size);
 
 static inline void ti_arm_mcu_periph_enable(unsigned long periph)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     MAP_SysCtlPeripheralEnable(periph);
     MAP_SysCtlPeripheralSleepEnable(periph);
+#elif defined(CONFIG_CC3200)
+    MAP_PRCMPeripheralClkEnable(periph, PRCM_RUN_MODE_CLK);
+#endif
+}
+
+static inline void ti_arm_mcu_periph_disable(unsigned long periph)
+{
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
+    MAP_SysCtlPeripheralDisable(periph);
+#elif defined(CONFIG_CC3200)
+    MAP_PRCMPeripheralClkDisable(periph, PRCM_RUN_MODE_CLK);
+#endif
+}
+
+static inline void ti_arm_mcu_sleep(void)
+{
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
+    MAP_SysCtlSleep();
+#elif defined(CONFIG_CC3200)
+    /* Not implemented yet */
+#endif
 }
 
 static inline unsigned long ti_arm_mcu_gpio_periph(int pin)
@@ -131,27 +155,43 @@ static inline unsigned long ti_arm_mcu_gpio_base(int pin)
 
 static inline void ti_arm_mcu_pin_mode_output(int pin)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     MAP_GPIOPinTypeGPIOOutput(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
+#elif defined(CONFIG_CC3200)
+    MAP_PinTypeGPIO(pin, PIN_MODE_0, false);
+    MAP_GPIODirModeSet(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin),
+        GPIO_DIR_MODE_OUT);
+#endif
 }
 
 static inline void ti_arm_mcu_pin_config(int pin, int mode)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     MAP_GPIOPadConfigSet(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
         GPIO_STRENGTH_8MA, mode);
+#elif defined(CONFIG_CC3200)
+    /* Not implemented */
+#endif
 }
 
 static inline int ti_arm_mcu_pin_mode_adc(int pin)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     if (ti_arm_mcu_gpio_pins[pin].adc_channel == -1)
         return -1;
 
     ti_arm_mcu_periph_enable(SYSCTL_PERIPH_ADC0);
     MAP_GPIOPinTypeADC(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     return 0;
+#elif defined(CONFIG_CC3200)
+    tp_crit(("%s not implemented yet\n", __FUNCTION__));
+    return -1;
+#endif
 }
 
 static inline void ti_arm_mcu_pin_mode_timer(int pin)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     int timer_function;
 
     MAP_GPIODirModeSet(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
@@ -160,6 +200,9 @@ static inline void ti_arm_mcu_pin_mode_timer(int pin)
     MAP_GPIOPinTypeTimer(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     if ((timer_function = ti_arm_mcu_gpio_pins[pin].timer_function) != -1)
         MAP_GPIOPinConfigure(timer_function);
+#elif defined(CONFIG_CC3200)
+    tp_crit(("%s not implemented yet\n", __FUNCTION__));
+#endif
 }
 
 #ifdef CONFIG_PLAT_HAS_PWM

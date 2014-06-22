@@ -91,12 +91,20 @@ void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec)
 
 unsigned long ti_arm_mcu_get_system_clock(void)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     return MAP_SysCtlClockGet();
+#elif defined(CONFIG_CC3200)
+    return 800000;
+#endif
 }
 
 void ti_arm_mcu_msleep(double ms)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     MAP_SysCtlDelay(SYSTEM_CLOCK() * ms / 4000);
+#elif defined(CONFIG_CC3200)
+    tp_crit(("%s not implemented yet\n", __FUNCTION__));
+#endif
 }
 
 void ti_arm_mcu_uart_isr(int u)
@@ -149,9 +157,13 @@ int ti_arm_mcu_serial_write(int u, char *buf, int size)
 static inline void ti_arm_mcu_pin_mode_uart(int pin, int uart_af)
 {
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     if (uart_af)
         MAP_GPIOPinConfigure(uart_af);
     MAP_GPIOPinTypeUART(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
+#elif defined(CONFIG_CC3200)
+    MAP_PinTypeUART(pin, PIN_MODE_3);
+#endif
 }
 
 int ti_arm_mcu_uart_enable(int u, int enabled)
@@ -163,7 +175,7 @@ int ti_arm_mcu_uart_enable(int u, int enabled)
         MAP_UARTDisable(uart->base);
         MAP_IntDisable(uart->irq);
         MAP_UARTIntDisable(uart->base, 0xFFFFFFFF);
-        MAP_SysCtlPeripheralDisable(uart->periph);
+        ti_arm_mcu_periph_disable(uart->periph);
         return 0;
     }
 
@@ -206,7 +218,7 @@ int ti_arm_mcu_select(int ms)
 #endif
         event |= buffered_serial_events_process();
 
-        MAP_SysCtlSleep();
+        ti_arm_mcu_sleep();
     }
 
     return event;
