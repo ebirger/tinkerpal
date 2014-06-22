@@ -18,7 +18,7 @@ get_libgcc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-libgcc-file-name))
 get_libc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-file-name=libc.a))
 
 # Build commands
-compile=$(CC) $(CFLAGS) $(MK_CFLAGS_$@) -c -o $@ $<
+compile=$(CC) $(CFLAGS) $(CFLAGS_$@) $(MK_CFLAGS_$@) -c -o $@ $<
 calc_deps=$(CC) $(CFLAGS) -MM  -MT $@ -MF $(@:.o=.d) $<
 include_deps=$(eval -include $(OBJS:.o=.d)) \
   $(if $(LINKER_SCRIPT),$(eval -include $(LINKER_SCRIPT:.ld=.ld.d)))
