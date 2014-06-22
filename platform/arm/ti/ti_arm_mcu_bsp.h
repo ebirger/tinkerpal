@@ -36,6 +36,13 @@
 
 #define TI_BSP_IFDEF(a, b) b
 
+#elif defined(CONFIG_CC3200)
+
+#include "inc/hw_types.h"
+#include "driverlib/rom_map.h"
+#include "driverlib/pin.h"
+#include "driverlib/prcm.h"
+
 #endif
 
 #endif
