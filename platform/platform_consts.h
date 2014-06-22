@@ -37,6 +37,8 @@
 #include "platform/arm/ti/tm4c123g/tm4c123g.h"
 #elif defined(CONFIG_TM4C1294)
 #include "platform/arm/ti/tm4c1294/tm4c1294.h"
+#elif defined(CONFIG_CC3200)
+#include "platform/arm/ti/cc3200/cc3200.h"
 #elif defined(CONFIG_STM32F103XX)
 #include "platform/arm/stm32/stm32f1xx/stm32f103xx.h"
 #elif defined(CONFIG_STM32F303XX)
