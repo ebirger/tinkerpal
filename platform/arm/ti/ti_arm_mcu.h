@@ -170,7 +170,7 @@ static inline void ti_arm_mcu_pin_config(int pin, int mode)
     MAP_GPIOPadConfigSet(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin), 
         GPIO_STRENGTH_8MA, mode);
 #elif defined(CONFIG_CC3200)
-    /* Not implemented */
+    MAP_PinConfigSet(pin, PIN_STRENGTH_6MA, mode);
 #endif
 }
 
