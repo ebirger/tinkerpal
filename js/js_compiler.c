@@ -227,7 +227,7 @@ static int arm_complete_statement(void)
     return 0;
 }
 
-static int jit_num_new(tnum_t num)
+static int compile_num_new(tnum_t num)
 {
     /* XXX: Support FP */
     if (NUMERIC_IS_FP(num))
@@ -237,7 +237,7 @@ static int jit_num_new(tnum_t num)
     return 0;
 }
 
-static int jit_string_new(tstr_t str)
+static int compile_string_new(tstr_t str)
 {
     u32 *s = (u32 *)&str;
 
@@ -250,7 +250,7 @@ static int jit_string_new(tstr_t str)
 
 static int compile_expression(scan_t *scan);
 
-static int jit_atom(scan_t *scan)
+static int compile_atom(scan_t *scan)
 {
     token_type_t tok = CUR_TOK(scan);
 
@@ -263,7 +263,7 @@ static int jit_atom(scan_t *scan)
             if (js_scan_get_num(scan, &num))
                 return -1;
 
-            if (jit_num_new(num))
+            if (compile_num_new(num))
                 return -1;
         }
         break;
@@ -274,7 +274,7 @@ static int jit_atom(scan_t *scan)
             if (js_scan_get_string(scan, &str))
                 return -1;
 
-            if (jit_string_new(str))
+            if (compile_string_new(str))
             {
                 tstr_free(&str);
                 return -1;
@@ -290,7 +290,7 @@ static int jit_atom(scan_t *scan)
             if (js_scan_get_identifier(scan, &id))
                 return -1;
 
-            if (jit_string_new(id))
+            if (compile_string_new(id))
             {
                 tstr_free(&id);
                 return -1;
@@ -316,7 +316,7 @@ static int jit_atom(scan_t *scan)
     return 0;
 }
 
-static obj_t *jit_get_property_helper(obj_t *property)
+static obj_t *get_property_helper(obj_t *property)
 {
     extern obj_t *cur_env;
     obj_t *o;
@@ -331,20 +331,20 @@ static obj_t *jit_get_property_helper(obj_t *property)
     return o ? o : UNDEF;
 }
 
-static int jit_member(scan_t *scan)
+static int compile_member(scan_t *scan)
 {
     token_type_t tok = CUR_TOK(scan);
 
-    if (jit_atom(scan))
+    if (compile_atom(scan))
         return -1;
 
     if (tok == TOK_ID)
-        JIT_FUNC_CALL1(jit_get_property_helper);
+        JIT_FUNC_CALL1(get_property_helper);
 
     return 0;
 }
 
-static obj_t *jit_function_call_helper(obj_t *func)
+static obj_t *function_call_helper(obj_t *func)
 {
     extern obj_t *global_env;
     function_args_t args;
@@ -364,7 +364,7 @@ static obj_t *jit_function_call_helper(obj_t *func)
     return ret;
 }
 
-static int jit_function_call(scan_t *scan)
+static int compile_function_call(scan_t *scan)
 {
     js_scan_match(scan, TOK_OPEN_PAREN);
     if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
@@ -372,24 +372,24 @@ static int jit_function_call(scan_t *scan)
 
     js_scan_match(scan, TOK_CLOSE_PAREN);
 
-    JIT_FUNC_CALL1(jit_function_call_helper);
+    JIT_FUNC_CALL1(function_call_helper);
     return 0;
 }
 
-static int jit_functions(scan_t *scan)
+static int compile_functions(scan_t *scan)
 {
-    if (jit_member(scan))
+    if (compile_member(scan))
         return -1;
     
     while (CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
-        if (jit_function_call(scan))
+        if (compile_function_call(scan))
             return -1;
     }
     return 0;
 }
 
-#define GEN_JIT(name, condition, lower) \
+#define GEN_COMPL(name, condition, lower) \
 static int name(scan_t *scan) \
 { \
     token_type_t tok; \
@@ -407,13 +407,13 @@ static int name(scan_t *scan) \
     return 0; \
 }
 
-GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
-    jit_functions)
-GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
+GEN_COMPL(compile_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
+    compile_functions)
+GEN_COMPL(compile_term, (tok == TOK_PLUS || tok == TOK_MINUS), compile_factor)
 
 static int compile_expression_ref(scan_t *scan, js_compiler_ref_t *ref)
 {
-    return jit_term(scan);
+    return compile_term(scan);
 }
 
 static int compile_expression(scan_t *scan)
