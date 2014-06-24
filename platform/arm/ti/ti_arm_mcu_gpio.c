@@ -26,7 +26,9 @@
 #include "inc/hw_memmap.h"
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
 #include "driverlib/sysctl.h"
+#endif
 #include "driverlib/adc.h"
 #ifdef CONFIG_PLAT_HAS_PWM
 #include "driverlib/pwm.h"
@@ -53,6 +55,7 @@ void ti_arm_mcu_gpio_isr(int port)
 
 void ti_arm_mcu_gpio_input(int pin)
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     unsigned long base = ti_arm_mcu_gpio_base(pin);
     int bit = GPIO_BIT(pin);
 
@@ -67,6 +70,9 @@ void ti_arm_mcu_gpio_input(int pin)
     MAP_GPIOIntTypeSet(base, bit, GPIO_BOTH_EDGES);
     GPIO_INT_ENABLE(base, bit);
     MAP_IntEnable(ti_arm_mcu_gpio_ports[GPIO_PORT(pin)].irq);
+#endif
+#elif defined(CONFIG_CC3200)
+    tp_crit(("GPIO input not implemented yet\n"));
 #endif
 }
 
@@ -138,6 +144,7 @@ int ti_arm_mcu_gpio_digital_read(int pin)
 
 double ti_arm_mcu_gpio_analog_read(int pin) 
 {
+#if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     int channel, value;
 
     channel = ti_arm_mcu_gpio_pins[pin].adc_channel;
@@ -155,6 +162,10 @@ double ti_arm_mcu_gpio_analog_read(int pin)
 
     MAP_ADCSequenceDataGet(ADC0_BASE, 0, (unsigned long *)&value);
     return (double)value / 4096;
+#elif defined(CONFIG_CC3200)
+    tp_crit(("GPIO input not implemented yet\n"));
+    return 0;
+#endif
 }
 
 void ti_arm_mcu_gpio_set_port_val(int port, unsigned short mask,
