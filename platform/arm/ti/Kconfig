@@ -29,6 +29,7 @@ config CC3200
 	select ARM
 	select TI
 	select PLAT_HAS_GCC
+	select PLAT_HAS_GPIO
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
 	select PLAT_HAS_MALLOC
