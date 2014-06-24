@@ -22,6 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "inc/hw_memmap.h"
+#include "inc/hw_ints.h"
 #include "util/debug.h"
 #include "drivers/gpio/gpio_platform.h"
 #include "drivers/serial/serial_platform.h"
@@ -31,6 +33,10 @@
 #include "platform/arm/ti/cc3200/cc3200.h"
 
 const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
+    [GPIO_PORT_A] = { PRCM_GPIOA0, GPIOA0_BASE, 0 },
+    [GPIO_PORT_B] = { PRCM_GPIOA1, GPIOA1_BASE, 0 },
+    [GPIO_PORT_C] = { PRCM_GPIOA2, GPIOA2_BASE, 0 },
+    [GPIO_PORT_D] = { PRCM_GPIOA3, GPIOA3_BASE, 0 },
 };
 
 const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
@@ -84,7 +90,6 @@ const platform_t platform = {
         .digital_write = ti_arm_mcu_gpio_digital_write,
         .digital_read = ti_arm_mcu_gpio_digital_read,
         .analog_read = ti_arm_mcu_gpio_analog_read,
-        .pwm_start = ti_arm_mcu_gpio_pwm_start,
         .set_pin_mode = cc3200_set_pin_mode,
         .set_port_val = ti_arm_mcu_gpio_set_port_val,
         .get_port_val = ti_arm_mcu_gpio_get_port_val,
