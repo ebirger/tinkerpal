@@ -33,6 +33,11 @@
 
 static mem_cache_t *js_compiler_mem_cache;
 
+typedef struct {
+    obj_t *field;
+    obj_t *base;
+} js_compiler_ref_t;
+
 #define ARM_THM_JIT_MAX_OPS_NUM 64
 #define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
 
@@ -406,9 +411,16 @@ GEN_JIT(jit_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
     jit_functions)
 GEN_JIT(jit_term, (tok == TOK_PLUS || tok == TOK_MINUS), jit_factor)
 
-static int compile_expression(scan_t *scan)
+static int compile_expression_ref(scan_t *scan, js_compiler_ref_t *ref)
 {
     return jit_term(scan);
+}
+
+static int compile_expression(scan_t *scan)
+{
+    js_compiler_ref_t ref = {};
+
+    return compile_expression_ref(scan, &ref);
 }
 
 static int compile_statement(scan_t *scan)
