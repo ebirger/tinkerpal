@@ -26,6 +26,9 @@
 #include "platform/platform.h"
 
 static const resource_t leds[] = {
+    GPIO_RES(PB1),
+    GPIO_RES(PB2),
+    GPIO_RES(PB3),
     0
 };
 
