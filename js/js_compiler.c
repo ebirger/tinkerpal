@@ -207,20 +207,12 @@ static int arm_function_prologue(void *buf)
 
 static int arm_function_return(int rc)
 {
-    ARM_THM_JIT_POP(0, (1<<R1));
     /* Fetch &ret from stack */
     ARM_THM_JIT_POP(0, (1<<R0));
     /* Store return value in *ret */
     ARM_THM_JIT_STR(R1, R0, 0);
     ARM_THM_JIT_REG_SET(R0, rc);
     ARM_THM_JIT_POP(1, (1<<R4));
-    return 0;
-}
-
-static int arm_complete_statement(void)
-{
-    /* Throw top of stack value away */
-    ARM_THM_JIT_POP(0, (1<<R0));
     return 0;
 }
 
@@ -409,7 +401,11 @@ GEN_COMPL(compile_term, (tok == TOK_PLUS || tok == TOK_MINUS), compile_factor)
 
 static int compile_expression(scan_t *scan)
 {
-    return compile_term(scan);
+    if (compile_term(scan))
+        return -1;
+
+    ARM_THM_JIT_POP(0, (1<<R1)); /* Expression returned value */
+    return 0;
 }
 
 static int compile_statement(scan_t *scan)
@@ -437,8 +433,6 @@ static int compile_statement(scan_t *scan)
 
         break;
     }
-    if (arm_complete_statement())
-        return -1;
     return 0;
 }
 
