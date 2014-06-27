@@ -70,6 +70,7 @@ static int jit_op32(u32 op)
 #define R2 2
 #define R3 3
 #define R4 4
+#define R5 5
 #define SP 13
 
 /* op: 0 - push, 1 - pop
@@ -201,7 +202,7 @@ static int arm_function_prologue(void *buf)
     cur_jit_buffer = buf;
     cur_jit_buffer_idx = 0;
     /* Store &ret (R0) in stack */
-    ARM_THM_JIT_PUSH(1, (1<<R0)|(1<<R4));
+    ARM_THM_JIT_PUSH(1, (1<<R0)|(1<<R4)|(1<<R5));
     return 0;
 }
 
@@ -212,7 +213,7 @@ static int arm_function_return(int rc)
     /* Store return value in *ret */
     ARM_THM_JIT_STR(R1, R0, 0);
     ARM_THM_JIT_REG_SET(R0, rc);
-    ARM_THM_JIT_POP(1, (1<<R4));
+    ARM_THM_JIT_POP(1, (1<<R4)|(1<<R5));
     return 0;
 }
 
