@@ -36,6 +36,8 @@ static mem_cache_t *js_compiler_mem_cache;
 #define ARM_THM_JIT_MAX_OPS_NUM 64
 #define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
 
+extern obj_t *cur_env;
+
 static u16 *cur_jit_buffer;
 static int cur_jit_buffer_idx;
 
@@ -313,7 +315,6 @@ static int compile_atom(scan_t *scan)
 
 static obj_t *get_property_helper(obj_t *property)
 {
-    extern obj_t *cur_env;
     obj_t *o;
     tstr_t prop_name;
 
