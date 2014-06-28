@@ -33,32 +33,50 @@
 
 static mem_cache_t *js_compiler_mem_cache;
 
-#define ARM_THM_JIT_MAX_OPS_NUM 512
-#define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
+#define ARM_THM_JIT_MAX_OPS_NUM 64
+#define JIT_MEM_CACHE_ITEM_SIZE ((ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16)) + 2)
 
 extern obj_t *cur_env;
 
 static u16 *cur_jit_buffer;
 static int cur_jit_buffer_idx;
 
-static int jit_op16(u16 op)
+static void code_block_chain(void);
+
+static u16 s11_to_u16(int s11)
+{
+    union {
+        int _11_bit : 11;
+        u16 _16_bit;
+    } val;
+
+    val._11_bit = s11;
+    return val._16_bit;
+}
+
+static void _jit_op16(u16 op)
 {
     tp_debug(("JIT: OP 0x%x\n", op));
 
     cur_jit_buffer[cur_jit_buffer_idx] = op;
     cur_jit_buffer_idx++;
-    if (cur_jit_buffer_idx == ARM_THM_JIT_MAX_OPS_NUM)
-    {
-        /* TODO: alloc next buffer, add jump instruction to it */
-        tp_err(("JIT: too many ops\n"));
-        return -1;
-    }
+}
 
+static int jit_op16(u16 op) __attribute__((noinline));
+static int jit_op16(u16 op)
+{
+    _jit_op16(op);
+    if (cur_jit_buffer_idx == ARM_THM_JIT_MAX_OPS_NUM - 2)
+        code_block_chain();
     return 0;
 }
 
+static int jit_op32(u32 op) __attribute__((noinline));
 static int jit_op32(u32 op)
 {
+    if (cur_jit_buffer_idx >= ARM_THM_JIT_MAX_OPS_NUM - 3)
+        code_block_chain();
+
     if (jit_op16(op >> 16))
         return -1;
 
@@ -149,6 +167,15 @@ static int jit_op32(u32 op)
         return -1; \
 } while(0)
 
+#define ARM_THM_JIT_B_PREFIX 0xe000
+#define ARM_THM_JIT_B_OP(offs) (ARM_THM_JIT_B_PREFIX | s11_to_u16(offs))
+
+#define ARM_THM_JIT_B(offs) do { \
+    tp_info(("JIT: b offs %d\n", offs)); \
+    if (jit_op16(ARM_THM_JIT_B_OP(offs))) \
+        return -1; \
+} while(0)
+
 #define ARM_THM_JIT_REG_SET(r, val) do { \
     tp_info(("JIT: reg set %d = %s:%x\n", r, #val, (u32)val)); \
     ARM_THM_JIT_MOVW(r, (val) & 0xffff); \
@@ -219,6 +246,43 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_PUSH(0, (1<<(reg))); \
     ARM_THM_JIT_MOV_REG(reg, SP); \
 } while(0)
+
+static u16 *code_block_alloc(u16 *cur)
+{
+    u16 *ret;
+
+    ret = mem_cache_alloc(js_compiler_mem_cache);
+    *ret = 0;
+    /* Store offset to new code block in first two bytes of old code block */
+    /* XXX: assuming 2 bytes is enough */
+    if (cur)
+    {
+        cur--;
+        *cur = ret - cur;
+    }
+
+    return ret + 1;
+}
+
+static void code_block_chain(void)
+{
+    u16 *cur_buf = cur_jit_buffer, *next_buf;
+    int delta;
+
+    next_buf = code_block_alloc(cur_buf);
+
+    /* XXX: make sure offset does not exceed available address space */
+
+    /* B instruction offset is instruction_address + 4 + offset * 2
+     * So if our pointers are u16 pointers, we need to subtract 2 to compensate
+     * for the + 4
+     */
+    delta = next_buf - (cur_buf + cur_jit_buffer_idx) - 2;
+
+    _jit_op16(ARM_THM_JIT_B_OP(delta));
+    cur_jit_buffer = next_buf;
+    cur_jit_buffer_idx = 0;
+}
 
 static int arm_function_prologue(void *buf)
 {
@@ -578,7 +642,18 @@ static int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc,
 
 static void compiled_function_code_free(void *code)
 {
-    mem_cache_free(js_compiler_mem_cache, code);
+    u16 *buffer = code;
+    int offset;
+
+    buffer--;
+
+    do
+    {
+        offset = (int)(s16)*buffer;
+
+        mem_cache_free(js_compiler_mem_cache, buffer);
+        buffer += offset;
+    } while (offset);
 }
 
 static int compile_function(function_t *f)
@@ -587,7 +662,7 @@ static int compile_function(function_t *f)
     void *buffer;
     int rc;
 
-    buffer = mem_cache_alloc(js_compiler_mem_cache);
+    buffer = code_block_alloc(NULL);
 
     code_copy = js_scan_save(f->code);
 
