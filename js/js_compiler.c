@@ -197,6 +197,14 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_POP(0, 1<<R1); \
 } while(0)
 
+/* Allocate a pointer on the stack (for 1 register)
+ * Used for return values in arguments (e.g. obj_t **ret)
+ */
+#define JIT_ALLOCA(reg) do { \
+    ARM_THM_JIT_PUSH(0, (1<<(reg))); \
+    ARM_THM_JIT_MOV_REG(reg, SP); \
+} while(0)
+
 static int arm_function_prologue(void *buf)
 {
     cur_jit_buffer = buf;
@@ -306,14 +314,14 @@ static int compile_atom(scan_t *scan)
     return 0;
 }
 
-static obj_t *get_property_helper(obj_t *property)
+static obj_t *get_property_helper(obj_t *property, obj_t ***lval)
 {
     obj_t *o;
     tstr_t prop_name;
 
     prop_name = to_string(property)->value;
 
-    o = obj_get_property(NULL, cur_env, &prop_name);
+    o = obj_get_property(lval, cur_env, &prop_name);
 
     /* XXX: 'property' should be stored when assignement is implemented */
     obj_put(property);
@@ -328,7 +336,10 @@ static int compile_member(scan_t *scan)
         return -1;
 
     if (tok == TOK_ID)
+    {
+        ARM_THM_JIT_MOV_REG(R1, R5); /* our lval pointer */
         JIT_FUNC_CALL1(get_property_helper);
+    }
 
     return 0;
 }
@@ -400,12 +411,43 @@ GEN_COMPL(compile_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
     compile_functions)
 GEN_COMPL(compile_term, (tok == TOK_PLUS || tok == TOK_MINUS), compile_factor)
 
+static void assignment_helper(obj_t **ret, obj_t *val, obj_t *orig_val,
+    obj_t **lval)
+{
+    obj_put(orig_val); /* Relese stored reference */
+    *ret = val;
+    *lval = obj_get(val);
+    obj_put(orig_val); /* Release the reference we got */
+}
+
 static int compile_expression(scan_t *scan)
 {
+    ARM_THM_JIT_PUSH(0, (1<<R5));
+    ARM_THM_JIT_REG_SET(R5, (u32)UNDEF);
+    JIT_ALLOCA(R5);
+
     if (compile_term(scan))
         return -1;
 
-    ARM_THM_JIT_POP(0, (1<<R1)); /* Expression returned value */
+    if (CUR_TOK(scan) == TOK_EQ)
+    {
+        js_scan_next_token(scan);
+        if (compile_expression(scan))
+            return -1;
+
+        ARM_THM_JIT_POP(0, (1<<R2)); /* compile_term() return value */
+        ARM_THM_JIT_POP(0, (1<<R3)); /* Fetch lval */
+        JIT_ALLOCA(R0);
+        ARM_THM_JIT_CALL(assignment_helper);
+        ARM_THM_JIT_POP(0, (1<<R1)); /* Returned value */
+    }
+    else
+    {
+        ARM_THM_JIT_POP(0, (1<<R1)); /* compile_term() return value */
+        ARM_THM_JIT_POP(0, (1<<R5)); /* Discard of lval */
+    }
+
+    ARM_THM_JIT_POP(0, (1<<R5));
     return 0;
 }
 
