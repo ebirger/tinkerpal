@@ -160,6 +160,12 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_BLX(R4); \
 } while(0)
 
+#define ARM_THM_JIT_ADD_SP(imm) do { \
+    tp_info(("JIT: add sp. imm %d\n", imm)); \
+    if (jit_op16(0xb000 | ((imm) & 0x7f))) \
+        return -1; \
+} while(0)
+
 /* API */
 #define JIT_FUNC_CALL0(func) do { \
     ARM_THM_JIT_CALL(func); \
@@ -359,17 +365,15 @@ static int compile_member(scan_t *scan)
     return 0;
 }
 
-static obj_t *function_call_helper(obj_t *func)
+static obj_t *function_call_helper(int argc, obj_t *argv[])
 {
     extern obj_t *global_env;
     function_args_t args;
-    obj_t *argv[1];
     obj_t *ret = UNDEF;
     int rc;
 
     /* XXX: assert is function */
-    argv[0] = func;
-    args.argc = 1;
+    args.argc = argc;
     args.argv = argv;
 
     rc = function_call(&ret, global_env, args.argc, args.argv);
@@ -381,13 +385,22 @@ static obj_t *function_call_helper(obj_t *func)
 
 static int compile_function_call(scan_t *scan)
 {
+    int argc = 1;
+
+    /* Push current SP - it will serve as our *argv[] */
+    ARM_THM_JIT_MOV_REG(R4, SP);
+    ARM_THM_JIT_PUSH(0, 1<<R4);
     js_scan_match(scan, TOK_OPEN_PAREN);
     if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
         return -1;
 
     js_scan_match(scan, TOK_CLOSE_PAREN);
 
-    JIT_FUNC_CALL1(function_call_helper);
+    ARM_THM_JIT_REG_SET(R0, argc);
+    ARM_THM_JIT_POP(0, 1<<R1); /* Fetch argv */
+    ARM_THM_JIT_CALL(function_call_helper);
+    ARM_THM_JIT_ADD_SP(argc); /* Unwind stack argv space */
+    ARM_THM_JIT_PUSH(0, 1<<R0); /* Store return value */
     return 0;
 }
 
