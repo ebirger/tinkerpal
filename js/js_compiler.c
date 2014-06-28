@@ -214,7 +214,7 @@ static int jit_op32(u32 op)
 } while(0)
 
 #define JIT_FUNC_CALL1_ARG(func, arg) do { \
-    ARM_THM_JIT_MOV(R0, arg); \
+    ARM_THM_JIT_REG_SET(R0, arg); \
     JIT_FUNC_CALL0(func); \
 } while(0)
 
