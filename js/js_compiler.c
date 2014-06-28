@@ -33,7 +33,7 @@
 
 static mem_cache_t *js_compiler_mem_cache;
 
-#define ARM_THM_JIT_MAX_OPS_NUM 64
+#define ARM_THM_JIT_MAX_OPS_NUM 512
 #define JIT_MEM_CACHE_ITEM_SIZE (ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16))
 
 extern obj_t *cur_env;
@@ -160,9 +160,18 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_BLX(R4); \
 } while(0)
 
-#define ARM_THM_JIT_ADD_SP(imm) do { \
-    tp_info(("JIT: add sp. imm %d\n", imm)); \
-    if (jit_op16(0xb000 | ((imm) & 0x7f))) \
+#define ARM_THM_JIT_ADD_SUB_SP(op, imm) do { \
+    tp_info(("JIT: %s sp. imm %d\n", op ? "sub" : "add", imm)); \
+    if (jit_op16(0xb000 | ((op)<<7) | ((imm) & 0x7f))) \
+        return -1; \
+} while(0)
+
+#define ARM_THM_JIT_ADD_SP(imm) ARM_THM_JIT_ADD_SUB_SP(0, imm)
+#define ARM_THM_JIT_SUB_SP(imm) ARM_THM_JIT_ADD_SUB_SP(1, imm)
+
+#define ARM_THM_JIT_ADD_IMM(ld, imm) do { \
+    tp_info(("JIT: add ld %d imm %d\n", ld, imm)); \
+    if (jit_op16(0x3000 | ((ld)<<8) | ((imm) & 0xff))) \
         return -1; \
 } while(0)
 
@@ -368,17 +377,9 @@ static int compile_member(scan_t *scan)
 static obj_t *function_call_helper(int argc, obj_t *argv[])
 {
     extern obj_t *global_env;
-    function_args_t args;
     obj_t *ret = UNDEF;
-    int rc;
 
-    /* XXX: assert is function */
-    args.argc = argc;
-    args.argv = argv;
-
-    rc = function_call(&ret, global_env, args.argc, args.argv);
-    if (rc == COMPLETION_RETURN)
-        rc = 0;
+    function_call(&ret, global_env, argc, argv);
 
     return ret;
 }
@@ -386,18 +387,60 @@ static obj_t *function_call_helper(int argc, obj_t *argv[])
 static int compile_function_call(scan_t *scan)
 {
     int argc = 1;
+    scan_t *start_args;
 
-    /* Push current SP - it will serve as our *argv[] */
-    ARM_THM_JIT_MOV_REG(R4, SP);
-    ARM_THM_JIT_PUSH(0, 1<<R4);
     js_scan_match(scan, TOK_OPEN_PAREN);
+
+    /* Count argc */
+    start_args = js_scan_save(scan);
+    while (CUR_TOK(scan) != TOK_CLOSE_PAREN)
+    {
+        skip_expression(scan);
+        if (CUR_TOK(scan) == TOK_COMMA)
+            js_scan_next_token(scan);
+        argc++;
+    }
+
+    js_scan_restore(scan, start_args);
+    js_scan_free(start_args);
+
+    /* keep function pointer */
+    ARM_THM_JIT_POP(0, (1<<R0));
+    /* Allocate argv */
+    ARM_THM_JIT_SUB_SP(argc - 1);
+    /* Store argv[0] */
+    ARM_THM_JIT_PUSH(0, (1<<R0));
+
+    if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
+    {
+        int n = 0;
+
+        if (compile_expression(scan))
+            return -1;
+
+        ARM_THM_JIT_ADD_SP(n + 2);
+        ARM_THM_JIT_PUSH(0, (1<<R1));
+        ARM_THM_JIT_SUB_SP(n + 1);
+        n++;
+        while (CUR_TOK(scan) == TOK_COMMA)
+        {
+            js_scan_next_token(scan);
+            if (compile_expression(scan))
+                return -1;
+
+            ARM_THM_JIT_ADD_SP(n + 2);
+            ARM_THM_JIT_PUSH(0, (1<<R1));
+            ARM_THM_JIT_SUB_SP(n + 1);
+            n++;
+        }
+    }
     if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
         return -1;
 
     js_scan_match(scan, TOK_CLOSE_PAREN);
 
     ARM_THM_JIT_REG_SET(R0, argc);
-    ARM_THM_JIT_POP(0, 1<<R1); /* Fetch argv */
+    ARM_THM_JIT_MOV_REG(R1, SP); /* argv */
     ARM_THM_JIT_CALL(function_call_helper);
     ARM_THM_JIT_ADD_SP(argc); /* Unwind stack argv space */
     ARM_THM_JIT_PUSH(0, 1<<R0); /* Store return value */
