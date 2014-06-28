@@ -304,14 +304,19 @@ static int arm_function_return(int rc)
     return 0;
 }
 
+static int compile_num_new_int(int num)
+{
+    JIT_FUNC_CALL1_ARG(num_new_int, num);
+    return 0;
+}
+
 static int compile_num_new(tnum_t num)
 {
     /* XXX: Support FP */
     if (NUMERIC_IS_FP(num))
        return -1;
 
-    JIT_FUNC_CALL1_ARG(num_new_int, NUMERIC_INT(num));
-    return 0;
+    return compile_num_new_int(NUMERIC_INT(num));
 }
 
 static int compile_string_new(tstr_t str)
@@ -358,6 +363,9 @@ static int compile_atom(scan_t *scan)
             if (compile_num_new(num))
                 return -1;
         }
+        break;
+    case TOK_CONSTANT:
+        compile_num_new_int(js_scan_get_constant(scan));
         break;
     case TOK_STRING:
         {
