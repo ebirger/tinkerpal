@@ -69,7 +69,6 @@ static int eval_while(obj_t **ret, scan_t *scan);
 static int eval_do_while(obj_t **ret, scan_t *scan);
 static int eval_for(obj_t **ret, scan_t *scan);
 static int skip_block(obj_t **ret, scan_t *scan);
-static void skip_expression(scan_t *scan);
 static int eval_function(obj_t **ret, scan_t *scan, int stmnt);
 static int eval_functions(obj_t **po, scan_t *scan, reference_t *ref);
 static int eval_statement_list(obj_t **ret, scan_t *scan);
@@ -1240,33 +1239,6 @@ static void skip_statement_list(scan_t *scan)
 {
     while (!is_statement_list_terminator(CUR_TOK(scan)))
         skip_statement(scan);
-}
-
-static void skip_expression(scan_t *scan)
-{
-    while (CUR_TOK(scan) != TOK_END_STATEMENT && 
-        CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_COMMA && 
-        CUR_TOK(scan) != TOK_COLON && CUR_TOK(scan) != TOK_EOF)
-    {
-        if (CUR_TOK(scan) == TOK_OPEN_PAREN)
-        {
-            js_scan_next_token(scan);
-            skip_expression(scan);
-            js_scan_match(scan, TOK_CLOSE_PAREN);
-            continue;
-        }
-
-        if (CUR_TOK(scan) == TOK_QUESTION)
-        {
-            js_scan_next_token(scan);
-            skip_expression(scan);
-            js_scan_match(scan, TOK_COLON);
-            skip_expression(scan);
-            continue;
-        }
-
-        js_scan_next_token(scan);
-    }
 }
 
 static int eval_condition(scan_t *scan)

@@ -37,4 +37,6 @@ static inline int is_statement_list_terminator(token_type_t tok)
 int js_eval_wrap_function_execution(obj_t **ret, obj_t *this_obj, int argc, 
     obj_t *argv[], int (*call)(obj_t **ret, function_t *f));
 
+void skip_expression(scan_t *scan);
+
 #endif
