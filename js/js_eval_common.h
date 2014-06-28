@@ -26,6 +26,7 @@
 #define __JS_EVAL_COMMON_H__
 
 #include "js/js_scan.h"
+#include "js/js_obj.h"
 
 static inline int is_statement_list_terminator(token_type_t tok)
 {
