@@ -247,6 +247,7 @@ static int compile_string_new(tstr_t str)
 }
 
 static int compile_expression(scan_t *scan);
+static int compile_functions(scan_t *scan);
 
 static int compile_atom(scan_t *scan)
 {
@@ -254,6 +255,20 @@ static int compile_atom(scan_t *scan)
 
     switch (tok)
     {
+    case TOK_NOT:
+    case TOK_TILDE:
+    case TOK_PLUS:
+    case TOK_MINUS:
+        js_scan_next_token(scan);
+
+        ARM_THM_JIT_REG_SET(R1, (u32)ZERO);
+        ARM_THM_JIT_PUSH(0, (1<<R1));
+
+        if (compile_functions(scan))
+            return -1;
+
+        JIT_FUNC_CALL2_ARG(obj_do_op, tok); \
+        break;
     case TOK_NUM:
         {
             tnum_t num;
