@@ -201,7 +201,7 @@ static void jit_op32_prep(void)
 #define JIT_FUNC_CALL2_ARG(func, arg) do { \
     ARM_THM_JIT_POP(1<<R2); \
     ARM_THM_JIT_POP(1<<R1); \
-    ARM_THM_JIT_MOV(R0, arg); \
+    ARM_THM_JIT_REG_SET(R0, arg); \
     JIT_FUNC_CALL0(func); \
 } while(0)
 
