@@ -54,23 +54,23 @@ static u16 s11_to_u16(int s11)
     return val._16_bit;
 }
 
-static void _jit_op16(u16 op)
+static void _op16(u16 op)
 {
     op_buf[op_buf_index] = op;
     op_buf_index++;
 }
 
-static int jit_op16(u16 op) __attribute__((noinline));
-static int jit_op16(u16 op)
+static int op16(u16 op) __attribute__((noinline));
+static int op16(u16 op)
 {
-    _jit_op16(op);
+    _op16(op);
     if (op_buf_index == ARM_THM_MAX_OPS_NUM - 2)
         code_block_chain();
     return 0;
 }
 
-static void jit_op32_prep(void) __attribute__((noinline));
-static void jit_op32_prep(void)
+static void op32_prep(void) __attribute__((noinline));
+static void op32_prep(void)
 {
     if (op_buf_index >= ARM_THM_MAX_OPS_NUM - 3)
         code_block_chain();
@@ -86,16 +86,16 @@ static void jit_op32_prep(void)
 
 #define OP16(val) do { \
     tp_debug(("%s:%d\t: %x : %s\n", __FUNCTION__, __LINE__, val, #val)); \
-    if (jit_op16(val)) \
+    if (op16(val)) \
         return -1; \
 } while (0)
 
 #define OP32(hi, lo) do { \
     tp_debug(("%s:%d\t: %x,%x\n", __FUNCTION__, __LINE__, hi, lo)); \
-    jit_op32_prep(); \
-    if (jit_op16(hi)) \
+    op32_prep(); \
+    if (op16(hi)) \
         return -1; \
-    if (jit_op16(lo)) \
+    if (op16(lo)) \
         return -1; \
 } while (0)
 
@@ -225,7 +225,7 @@ static void code_block_chain(void)
      */
     delta = next_buf - (cur_buf + op_buf_index) - 2;
 
-    _jit_op16(ARM_THM_B_VAL(delta));
+    _op16(ARM_THM_B_VAL(delta));
     op_buf = next_buf;
     op_buf_index = 0;
 }
