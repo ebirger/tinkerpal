@@ -154,7 +154,7 @@ static void jit_op32_prep(void)
 #define ARM_THM_JIT_MOVW(rd, imm16) do { \
     _ARM_THM_JIT_MOVW(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
         ((imm16) >> 8) & 0x7, rd, (imm16) & 0xff); \
-} while(0) 
+} while(0)
 
 #define ARM_THM_JIT_MOVT(rd, imm16) do { \
     _ARM_THM_JIT_MOVT(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
@@ -501,7 +501,7 @@ static int compile_functions(scan_t *scan)
 {
     if (compile_member(scan))
         return -1;
-    
+
     while (CUR_TOK(scan) == TOK_OPEN_PAREN)
     {
         if (compile_function_call(scan))
@@ -631,7 +631,7 @@ static int _call_compiled_function(obj_t **ret, function_t *f)
     return compiled_func(ret);
 }
 
-static int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc, 
+static int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc,
     obj_t *argv[])
 {
     return js_eval_wrap_function_execution(ret, this_obj, argc, argv,
