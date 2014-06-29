@@ -186,6 +186,11 @@ static void op32_prep(void)
 
 #define ARM_THM_ADD_IMM(ld, imm) OP16(ARM_THM_ADD_IMM_VAL(ld, imm))
 
+#define ARM_THM_PUSH_VAL(reg, val) do { \
+    ARM_THM_REG_SET(reg, val); \
+    ARM_THM_PUSH(1 << (reg)); \
+} while(0)
+
 #define ARM_THM_CALL_PUSH_RET(func) do { \
     ARM_THM_CALL(func); \
     ARM_THM_PUSH(1<<R0); \
@@ -352,6 +357,22 @@ static int compile_atom(scan_t *scan)
         break;
     case TOK_CONSTANT:
         compile_num_new_int(js_scan_get_constant(scan));
+        break;
+    case TOK_TRUE:
+        js_scan_next_token(scan);
+        ARM_THM_PUSH_VAL(R0, (u32)TRUE);
+        break;
+    case TOK_FALSE:
+        js_scan_next_token(scan);
+        ARM_THM_PUSH_VAL(R0, (u32)FALSE);
+        break;
+    case TOK_NULL:
+        js_scan_next_token(scan);
+        ARM_THM_PUSH_VAL(R0, (u32)NULL_OBJ);
+        break;
+    case TOK_UNDEFINED:
+        js_scan_next_token(scan);
+        ARM_THM_PUSH_VAL(R0, (u32)UNDEF);
         break;
     case TOK_STRING:
         {
