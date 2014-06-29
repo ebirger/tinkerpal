@@ -672,22 +672,15 @@ static int compile_function(function_t *f)
     js_scan_match(code_copy, TOK_OPEN_SCOPE);
 
     if ((rc = arm_function_prologue(buffer)))
-        goto Exit;
+        goto Error;
 
     if ((rc = compile_statement_list(code_copy)))
-        goto Exit;
+        goto Error;
 
     if ((rc = arm_function_return(COMPLETION_NORNAL)))
-        goto Exit;
+        goto Error;
 
-Exit:
     js_scan_free(code_copy);
-
-    if (rc)
-    {
-        compiled_function_code_free(buffer);
-        return rc;
-    }
 
     /* Destroy original code */
     f->code_free_cb(f->code);
@@ -699,6 +692,11 @@ Exit:
     tp_out(("ops %d, bytes %d, code blocks %d\n", total_ops,
         total_ops * sizeof(u16), total_blocks));
     return 0;
+
+Error:
+    js_scan_free(code_copy);
+    compiled_function_code_free(buffer);
+    return rc;
 }
 
 int js_compile(obj_t **po)
