@@ -34,7 +34,7 @@
 static mem_cache_t *js_compiler_mem_cache;
 
 #define ARM_THM_MAX_OPS_NUM 64
-#define JIT_MEM_CACHE_ITEM_SIZE ((ARM_THM_MAX_OPS_NUM * sizeof(u16)) + 2)
+#define MEM_CACHE_ITEM_SIZE ((ARM_THM_MAX_OPS_NUM * sizeof(u16)) + 2)
 
 extern obj_t *cur_env;
 
@@ -724,6 +724,6 @@ void js_compiler_uninit(void)
 
 void js_compiler_init(void)
 {
-    js_compiler_mem_cache = mem_cache_create(JIT_MEM_CACHE_ITEM_SIZE,
+    js_compiler_mem_cache = mem_cache_create(MEM_CACHE_ITEM_SIZE,
         "JS Compiler");
 }
