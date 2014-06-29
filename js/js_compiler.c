@@ -709,9 +709,9 @@ int js_compile(obj_t **po)
 
     f = to_function(*po);
 
-    if (!f->code)
+    if (!f->code || f->call == call_compiled_function)
     {
-        /* Built-in functions are already compiled. Nothing to do */
+        /* Already native or compiled. Nothing to do */
         return 0;
     }
 
