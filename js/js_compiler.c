@@ -242,7 +242,7 @@ static int compile_function_prologue(void)
     return 0;
 }
 
-static int arm_function_return(int rc)
+static int compile_function_return(int rc)
 {
     /* Fetch &ret from stack */
     ARM_THM_POP(1<<R0);
@@ -597,7 +597,7 @@ static int compile_statement(scan_t *scan)
             if (compile_expression(scan))
                 return -1;
         }
-        arm_function_return(COMPLETION_RETURN);
+        compile_function_return(COMPLETION_RETURN);
         return 0;
     default:
         if (compile_expression(scan))
@@ -676,7 +676,7 @@ static int compile_function(function_t *f)
     if ((rc = compile_statement_list(code_copy)))
         goto Error;
 
-    if ((rc = arm_function_return(COMPLETION_NORNAL)))
+    if ((rc = compile_function_return(COMPLETION_NORNAL)))
         goto Error;
 
     js_scan_free(code_copy);
