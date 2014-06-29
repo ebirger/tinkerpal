@@ -531,6 +531,17 @@ static int name(scan_t *scan) \
 GEN_COMPL(compile_factor, (tok == TOK_DIV || tok == TOK_MULT || tok == TOK_MOD),
     compile_functions)
 GEN_COMPL(compile_term, (tok == TOK_PLUS || tok == TOK_MINUS), compile_factor)
+GEN_COMPL(compile_shift, (tok == TOK_SHL || tok == TOK_SHR || tok == TOK_SHRZ),
+    compile_term)
+GEN_COMPL(compile_related,
+    (tok == TOK_IN || tok == TOK_GR || tok == TOK_GE || tok == TOK_LT ||
+    tok == TOK_LE), compile_shift)
+GEN_COMPL(compile_equalized,
+    ((tok & ~STRICT) == TOK_IS_EQ || (tok & ~STRICT) == TOK_NOT_EQ),
+    compile_related)
+GEN_COMPL(compile_anded, (tok == TOK_AND), compile_equalized)
+GEN_COMPL(compile_xored, (tok == TOK_XOR), compile_anded)
+GEN_COMPL(compile_ored, (tok == TOK_OR), compile_xored)
 
 static void assignment_helper(obj_t **ret, obj_t *val, obj_t *orig_val,
     obj_t **lval)
@@ -548,7 +559,7 @@ static int compile_expression(scan_t *scan)
     ARM_THM_JIT_PUSH(1<<R5);
     ARM_THM_JIT_MOV_REG(R5, SP);
 
-    if (compile_term(scan))
+    if (compile_ored(scan))
         return -1;
 
     if (CUR_TOK(scan) == TOK_EQ)
@@ -557,7 +568,7 @@ static int compile_expression(scan_t *scan)
         if (compile_expression(scan))
             return -1;
 
-        ARM_THM_JIT_POP(1<<R2); /* compile_term() return value */
+        ARM_THM_JIT_POP(1<<R2); /* compile_ored() return value */
         ARM_THM_JIT_POP(1<<R3); /* Fetch lval */
         ARM_THM_STACK_ALLOC(R0, 1);
         ARM_THM_JIT_CALL(assignment_helper);
@@ -565,7 +576,7 @@ static int compile_expression(scan_t *scan)
     }
     else
     {
-        ARM_THM_JIT_POP(1<<R1); /* compile_term() return value */
+        ARM_THM_JIT_POP(1<<R1); /* compile_ored() return value */
         ARM_THM_JIT_POP(1<<R5); /* Discard of lval */
     }
 
