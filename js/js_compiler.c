@@ -183,7 +183,7 @@ static void jit_op32_prep(void)
 
 #define ARM_THM_ADD_IMM(ld, imm) OP16(ARM_THM_ADD_IMM_VAL(ld, imm))
 
-#define JIT_FUNC_CALL0(func) do { \
+#define ARM_THM_CALL_PUSH_RET(func) do { \
     ARM_THM_CALL(func); \
     ARM_THM_PUSH(1<<R0); \
 } while(0)
@@ -253,7 +253,7 @@ static int arm_function_return(int rc)
 static int compile_num_new_int(int num)
 {
     ARM_THM_REG_SET(R0, num);
-    JIT_FUNC_CALL0(num_new_int);
+    ARM_THM_CALL_PUSH_RET(num_new_int);
     return 0;
 }
 
@@ -287,7 +287,7 @@ static int compile_call_obj_do_op(token_type_t tok)
     ARM_THM_REG_SET(R0, tok);
     ARM_THM_POP(1<<R2);
     ARM_THM_POP(1<<R1);
-    JIT_FUNC_CALL0(obj_do_op);
+    ARM_THM_CALL_PUSH_RET(obj_do_op);
     return 0;
 }
 
@@ -297,7 +297,7 @@ static int compile_string_new(tstr_t str)
     if (compile_call_tstr_dup(str))
         return -1;
 
-    JIT_FUNC_CALL0(string_new);
+    ARM_THM_CALL_PUSH_RET(string_new);
     return 0;
 }
 
@@ -413,7 +413,7 @@ static int compile_member(scan_t *scan)
     {
         ARM_THM_POP(1<<R0); /* compile_atom() return value */
         ARM_THM_MOV_REG(R1, R5); /* lval pointer */
-        JIT_FUNC_CALL0(get_property_helper);
+        ARM_THM_CALL_PUSH_RET(get_property_helper);
     }
 
     return 0;
