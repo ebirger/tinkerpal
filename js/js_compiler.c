@@ -188,12 +188,7 @@ static void jit_op32_prep(void)
     ARM_THM_JIT_PUSH(1<<R0); \
 } while(0)
 
-#define JIT_FUNC_CALL1(func) do { \
-    ARM_THM_JIT_POP(1<<R0); \
-    JIT_FUNC_CALL0(func); \
-} while(0)
-
-#define JIT_FUNC_CALL1_ARG(func, arg) do { \
+#define JIT_FUNC_CALL0_ARG(func, arg) do { \
     ARM_THM_JIT_REG_SET(R0, arg); \
     JIT_FUNC_CALL0(func); \
 } while(0)
@@ -201,8 +196,7 @@ static void jit_op32_prep(void)
 #define JIT_FUNC_CALL2_ARG(func, arg) do { \
     ARM_THM_JIT_POP(1<<R2); \
     ARM_THM_JIT_POP(1<<R1); \
-    ARM_THM_JIT_REG_SET(R0, arg); \
-    JIT_FUNC_CALL0(func); \
+    JIT_FUNC_CALL0_ARG(func, arg); \
 } while(0)
 
 #define ARM_THM_STACK_ALLOC(reg, sz) do { \
@@ -269,7 +263,7 @@ static int arm_function_return(int rc)
 
 static int compile_num_new_int(int num)
 {
-    JIT_FUNC_CALL1_ARG(num_new_int, num);
+    JIT_FUNC_CALL0_ARG(num_new_int, num);
     return 0;
 }
 
@@ -417,8 +411,9 @@ static int compile_member(scan_t *scan)
 
     if (tok == TOK_ID)
     {
-        ARM_THM_JIT_MOV_REG(R1, R5); /* our lval pointer */
-        JIT_FUNC_CALL1(get_property_helper);
+        ARM_THM_JIT_POP(1<<R0); /* compile_atom() return value */
+        ARM_THM_JIT_MOV_REG(R1, R5); /* lval pointer */
+        JIT_FUNC_CALL0(get_property_helper);
     }
 
     return 0;
