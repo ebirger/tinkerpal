@@ -40,6 +40,8 @@ extern obj_t *cur_env;
 
 static u16 *op_buf;
 static int op_buf_index;
+static int total_ops;
+static int total_blocks;
 
 static void code_block_chain(void);
 
@@ -58,6 +60,7 @@ static void _op16(u16 op)
 {
     op_buf[op_buf_index] = op;
     op_buf_index++;
+    total_ops++;
 }
 
 static int op16(u16 op) __attribute__((noinline));
@@ -196,6 +199,8 @@ static void op32_prep(void)
 static u16 *code_block_alloc(u16 *cur)
 {
     u16 *ret;
+
+    total_blocks++;
 
     ret = mem_cache_alloc(js_compiler_mem_cache);
     *ret = 0;
@@ -656,6 +661,9 @@ static int compile_function(function_t *f)
     void *buffer;
     int rc;
 
+    total_ops = 0;
+    total_blocks = 0;
+
     buffer = code_block_alloc(NULL);
 
     code_copy = js_scan_save(f->code);
@@ -687,6 +695,9 @@ Exit:
     f->code = buffer;
     f->code_free_cb = compiled_function_code_free;
     f->call = call_compiled_function;
+    tp_out(("Compilation status: Success\n"));
+    tp_out(("ops %d, bytes %d, code blocks %d\n", total_ops,
+        total_ops * sizeof(u16), total_blocks));
     return 0;
 }
 
