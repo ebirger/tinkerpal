@@ -152,15 +152,13 @@ static void jit_op32_prep(void)
 } while(0)
 
 #define ARM_THM_JIT_MOVW(rd, imm16) do { \
-    tp_info(("JIT: movw rd %d, imm16 %x\n", rd, imm16)); \
-    _ARM_THM_JIT_MOVW(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, ((imm16) >> 8) & 0x7, \
-        rd, (imm16) & 0xff); \
+    _ARM_THM_JIT_MOVW(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
+        ((imm16) >> 8) & 0x7, rd, (imm16) & 0xff); \
 } while(0) 
 
 #define ARM_THM_JIT_MOVT(rd, imm16) do { \
-    tp_info(("JIT: movt rd %d, imm16 %x\n", rd, imm16)); \
-    _ARM_THM_JIT_MOVT(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, ((imm16) >> 8) & 0x7, \
-        rd, (imm16) & 0xff); \
+    _ARM_THM_JIT_MOVT(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
+        ((imm16) >> 8) & 0x7, rd, (imm16) & 0xff); \
 } while(0)
 
 #define ARM_THM_JIT_BLX(rm) OP16(ARM_THM_BLX_VAL(rm))
@@ -168,7 +166,8 @@ static void jit_op32_prep(void)
 #define ARM_THM_JIT_B(offs) OP16(ARM_THM_B_VAL(offs))
 
 #define ARM_THM_JIT_REG_SET(r, val) do { \
-    tp_info(("JIT: reg set %d = %s:%x\n", r, #val, (u32)val)); \
+    tp_debug(("%s:%d\t: REG %d = %s : %x\n", __FUNCTION__, __LINE__, r, #val, \
+        (u32)val)); \
     ARM_THM_JIT_MOVW(r, (val) & 0xffff); \
     ARM_THM_JIT_MOVT(r, ((val)>>16) & 0xffff); \
 } while(0)
