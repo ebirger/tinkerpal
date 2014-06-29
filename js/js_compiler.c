@@ -212,8 +212,7 @@ static void jit_op32_prep(void)
     /* Make space for return value */ \
     ARM_THM_JIT_PUSH((1<<R1) | (1<<R2)); \
     ARM_THM_JIT_MOV_REG(R0, SP); /* values pointer */ \
-    JIT_FUNC_CALL0(func); \
-    ARM_THM_JIT_POP(1<<R0); /* Don't need the return value */ \
+    ARM_THM_JIT_CALL(func); \
     /* Fetch the dupped tstr from the stack */ \
     ARM_THM_JIT_POP(1<<R0); \
     ARM_THM_JIT_POP(1<<R1); \
