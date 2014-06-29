@@ -188,15 +188,11 @@ static void jit_op32_prep(void)
     ARM_THM_PUSH(1<<R0); \
 } while(0)
 
-#define JIT_FUNC_CALL0_ARG(func, arg) do { \
-    ARM_THM_REG_SET(R0, arg); \
-    JIT_FUNC_CALL0(func); \
-} while(0)
-
 #define JIT_FUNC_CALL2_ARG(func, arg) do { \
+    ARM_THM_REG_SET(R0, arg); \
     ARM_THM_POP(1<<R2); \
     ARM_THM_POP(1<<R1); \
-    JIT_FUNC_CALL0_ARG(func, arg); \
+    JIT_FUNC_CALL0(func); \
 } while(0)
 
 #define ARM_THM_STACK_ALLOC(reg, sz) do { \
@@ -263,7 +259,8 @@ static int arm_function_return(int rc)
 
 static int compile_num_new_int(int num)
 {
-    JIT_FUNC_CALL0_ARG(num_new_int, num);
+    ARM_THM_REG_SET(R0, num);
+    JIT_FUNC_CALL0(num_new_int);
     return 0;
 }
 
