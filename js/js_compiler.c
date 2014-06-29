@@ -56,8 +56,6 @@ static u16 s11_to_u16(int s11)
 
 static void _jit_op16(u16 op)
 {
-    tp_debug(("JIT: OP 0x%x\n", op));
-
     cur_jit_buffer[cur_jit_buffer_idx] = op;
     cur_jit_buffer_idx++;
 }
@@ -71,16 +69,11 @@ static int jit_op16(u16 op)
     return 0;
 }
 
-static int jit_op32(u32 op) __attribute__((noinline));
-static int jit_op32(u32 op)
+static void jit_op32_prep(void) __attribute__((noinline));
+static void jit_op32_prep(void)
 {
     if (cur_jit_buffer_idx >= ARM_THM_JIT_MAX_OPS_NUM - 3)
         code_block_chain();
-
-    if (jit_op16(op >> 16))
-        return -1;
-
-    return jit_op16(op & 0xffff);
 }
 
 #define R0 0
@@ -91,17 +84,48 @@ static int jit_op32(u32 op)
 #define R5 5
 #define SP 13
 
+#define OP16(val) do { \
+    tp_debug(("%s:%d\t: %x : %s\n", __FUNCTION__, __LINE__, val, #val)); \
+    if (jit_op16(val)) \
+        return -1; \
+} while (0)
+
+#define OP32(hi, lo) do { \
+    tp_debug(("%s:%d\t: %x,%x\n", __FUNCTION__, __LINE__, hi, lo)); \
+    jit_op32_prep(); \
+    if (jit_op16(hi)) \
+        return -1; \
+    if (jit_op16(lo)) \
+        return -1; \
+} while (0)
+
+/* ARM Thumb2 instructions encoding */
+
 /* op: 0 - push, 1 - pop
  * R: 1 - operate on lr too
  * register_list: bitmap of registers
  */
-#define ARM_THM_JIT_PUSH_POP(op, R, register_list) do { \
-    tp_info(("JIT: push_pop op %d, R %d, register_list %x\n", op, R, \
-        register_list)); \
-    if (jit_op16(0xb000 | ((op)<<11) | (1<<10) | ((R)<<8) | (register_list))) \
-        return -1; \
-} while(0)
+#define ARM_THM_PUSH_POP_VAL(op, R, register_list) \
+    (0xb000 | ((op)<<11) | (1<<10) | ((R)<<8) | (register_list))
+#define ARM_THM_MOV_VAL(ld, imm8) (0x2000 | ((ld)<<8) | (imm8))
+#define ARM_THM_STR_VAL(ld, ln, imm5) (0x6000 | ((ld) | (ln)<<3 | ((imm5)<<6)))
+#define ARM_THM_MOV_REG_VAL(rd, rm) (0x4600 | ((rm)<<3) | (rd))
+#define ARM_THM_BLX_VAL(rm) (0x4000 | (0xf<<7) | ((rm)<<3))
+#define ARM_THM_JIT_B_PREFIX 0xe000
+#define ARM_THM_B_VAL(offs) (ARM_THM_JIT_B_PREFIX | s11_to_u16(offs))
+#define ARM_THM_ADD_SUB_SP_VAL(op, imm) (0xb000 | ((op)<<7) | ((imm) & 0x7f))
+#define ARM_THM_ADD_IMM_VAL(ld, imm) (0x3000 | ((ld)<<8) | ((imm) & 0xff))
+#define ARM_THM_MOVW_HI(i, imm4, imm3, rd, imm8) \
+    (0xf000 | ((i)<<10) | (1<<9) | (1<<6) | (imm4))
+#define ARM_THM_MOVW_LO(i, imm4, imm3, rd, imm8) \
+    (((imm3)<<12) | ((rd)<<8) | (imm8))
+#define ARM_THM_MOVT_HI(i, imm4, imm3, rd, imm8) \
+    (0xf000 | ((i)<<10) | (1<<9) | (1<<7) | (1<<6) | (imm4))
+#define ARM_THM_MOVT_LO(i, imm4, imm3, rd, imm8) \
+    (((imm3)<<12) | ((rd)<<8) | (imm8))
 
+#define ARM_THM_JIT_PUSH_POP(op, R, register_list) \
+    OP16(ARM_THM_PUSH_POP_VAL(op, R, register_list))
 #define ARM_THM_JIT_PUSH(R, register_list) \
     ARM_THM_JIT_PUSH_POP(0, R, register_list)
 #define ARM_THM_JIT_POP(R, register_list) \
@@ -110,43 +134,21 @@ static int jit_op32(u32 op)
 #define ARM_THM_JIT_MOV(ld, imm8) do { \
     if (imm8 > 255) \
         return -1; \
-    tp_info(("JIT: mov ld %d, imm8 %x\n", ld, imm8)); \
-    if (jit_op16(0x2000 | ((ld)<<8) | (imm8))) \
-        return -1; \
+    OP16(ARM_THM_MOV_VAL(ld, imm8)); \
 } while(0)
 
-#define ARM_THM_JIT_STR(ld, ln, imm5) do { \
-    tp_info(("JIT: str ld %d, ln %d, imm5 %d\n", ld, ln, imm4)); \
-    if (jit_op16(0x6000 | ((ld) | (ln)<<3 | ((imm5)<<6)))) \
-        return -1; \
-} while(0)
+#define ARM_THM_JIT_STR(ld, ln, imm5) OP16(ARM_THM_STR_VAL(ld, ln, imm5))
 
-#define ARM_THM_JIT_MOV_REG(rd, rm) do { \
-    tp_info(("JIT: mov rd %d, rm %d\n", rd, rm)); \
-    if (jit_op16(0x4600 | ((rm)<<3) | (rd))) \
-        return -1; \
-} while(0)
+#define ARM_THM_JIT_MOV_REG(rd, rm) OP16(ARM_THM_MOV_REG_VAL(rd, rm))
 
 #define _ARM_THM_JIT_MOVW(i, imm4, imm3, rd, imm8) do { \
-    u32 op32; \
-    tp_info(("JIT: movw i %d, imm4 %x, imm3 %x, rd %d, imm8 %x\n", i, imm4, \
-        imm3, rd, imm8)); \
-    op32 = 0xf000 | ((i)<<10) | (1<<9) | (1<<6) | (imm4); \
-    op32 <<= 16; \
-    op32 |= ((imm3)<<12) | ((rd)<<8) | (imm8); \
-    if (jit_op32(op32)) \
-        return -1; \
+    OP32(ARM_THM_MOVW_HI(i, imm4, imm3, rd, imm8), \
+        ARM_THM_MOVW_LO(i, imm4, imm3, rd, imm8)); \
 } while(0)
 
 #define _ARM_THM_JIT_MOVT(i, imm4, imm3, rd, imm8) do { \
-    u32 op32; \
-    tp_info(("JIT: movt i %d, imm4 %x, imm3 %x, rd %d, imm8 %x\n", i, imm4, \
-        imm3, rd, imm8)); \
-    op32 = 0xf000 | ((i)<<10) | (1<<9) | (1<<7) | (1<<6) | (imm4); \
-    op32 <<= 16; \
-    op32 |= ((imm3)<<12) | ((rd)<<8) | (imm8); \
-    if (jit_op32(op32)) \
-        return -1; \
+    OP32(ARM_THM_MOVT_HI(i, imm4, imm3, rd, imm8), \
+        ARM_THM_MOVT_LO(i, imm4, imm3, rd, imm8)); \
 } while(0)
 
 #define ARM_THM_JIT_MOVW(rd, imm16) do { \
@@ -161,20 +163,9 @@ static int jit_op32(u32 op)
         rd, (imm16) & 0xff); \
 } while(0)
 
-#define ARM_THM_JIT_BLX(rm) do { \
-    tp_info(("JIT: blx rm %d\n", rm)); \
-    if (jit_op16(0x4000 | (0xf<<7) | ((rm)<<3))) \
-        return -1; \
-} while(0)
+#define ARM_THM_JIT_BLX(rm) OP16(ARM_THM_BLX_VAL(rm))
 
-#define ARM_THM_JIT_B_PREFIX 0xe000
-#define ARM_THM_JIT_B_OP(offs) (ARM_THM_JIT_B_PREFIX | s11_to_u16(offs))
-
-#define ARM_THM_JIT_B(offs) do { \
-    tp_info(("JIT: b offs %d\n", offs)); \
-    if (jit_op16(ARM_THM_JIT_B_OP(offs))) \
-        return -1; \
-} while(0)
+#define ARM_THM_JIT_B(offs) OP16(ARM_THM_B_VAL(offs))
 
 #define ARM_THM_JIT_REG_SET(r, val) do { \
     tp_info(("JIT: reg set %d = %s:%x\n", r, #val, (u32)val)); \
@@ -187,22 +178,12 @@ static int jit_op32(u32 op)
     ARM_THM_JIT_BLX(R4); \
 } while(0)
 
-#define ARM_THM_JIT_ADD_SUB_SP(op, imm) do { \
-    tp_info(("JIT: %s sp. imm %d\n", op ? "sub" : "add", imm)); \
-    if (jit_op16(0xb000 | ((op)<<7) | ((imm) & 0x7f))) \
-        return -1; \
-} while(0)
-
+#define ARM_THM_JIT_ADD_SUB_SP(op, imm) OP16(ARM_THM_ADD_SUB_SP_VAL(op, imm))
 #define ARM_THM_JIT_ADD_SP(imm) ARM_THM_JIT_ADD_SUB_SP(0, imm)
 #define ARM_THM_JIT_SUB_SP(imm) ARM_THM_JIT_ADD_SUB_SP(1, imm)
 
-#define ARM_THM_JIT_ADD_IMM(ld, imm) do { \
-    tp_info(("JIT: add ld %d imm %d\n", ld, imm)); \
-    if (jit_op16(0x3000 | ((ld)<<8) | ((imm) & 0xff))) \
-        return -1; \
-} while(0)
+#define ARM_THM_JIT_ADD_IMM(ld, imm) OP16(ARM_THM_ADD_IMM_VAL(ld, imm))
 
-/* API */
 #define JIT_FUNC_CALL0(func) do { \
     ARM_THM_JIT_CALL(func); \
     ARM_THM_JIT_PUSH(0, (1<<R0)); \
@@ -279,7 +260,7 @@ static void code_block_chain(void)
      */
     delta = next_buf - (cur_buf + cur_jit_buffer_idx) - 2;
 
-    _jit_op16(ARM_THM_JIT_B_OP(delta));
+    _jit_op16(ARM_THM_B_VAL(delta));
     cur_jit_buffer = next_buf;
     cur_jit_buffer_idx = 0;
 }
