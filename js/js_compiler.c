@@ -205,25 +205,21 @@ static void jit_op32_prep(void)
     JIT_FUNC_CALL0(func); \
 } while(0)
 
+#define ARM_THM_STACK_ALLOC(reg, sz) do { \
+    ARM_THM_JIT_SUB_SP(sz); \
+    ARM_THM_JIT_MOV_REG(reg, SP); \
+} while(0)
+
 /* Return value in <R0, R1> */
 #define JIT_FUNC_CALL2_RET(func, arg1, arg2) do { \
     ARM_THM_JIT_REG_SET(R1, arg1); \
     ARM_THM_JIT_REG_SET(R2, arg2); \
     /* Make space for return value */ \
-    ARM_THM_JIT_SUB_SP(2); \
-    ARM_THM_JIT_MOV_REG(R0, SP); /* values pointer */ \
+    ARM_THM_STACK_ALLOC(R0, 2); \
     ARM_THM_JIT_CALL(func); \
     /* Fetch the dupped tstr from the stack */ \
     ARM_THM_JIT_POP(1<<R0); \
     ARM_THM_JIT_POP(1<<R1); \
-} while(0)
-
-/* Allocate a pointer on the stack (for 1 register)
- * Used for return values in arguments (e.g. obj_t **ret)
- */
-#define JIT_ALLOCA(reg) do { \
-    ARM_THM_JIT_PUSH(1<<(reg)); \
-    ARM_THM_JIT_MOV_REG(reg, SP); \
 } while(0)
 
 static u16 *code_block_alloc(u16 *cur)
@@ -546,7 +542,8 @@ static int compile_expression(scan_t *scan)
 {
     ARM_THM_JIT_PUSH(1<<R5);
     ARM_THM_JIT_REG_SET(R5, (u32)UNDEF);
-    JIT_ALLOCA(R5);
+    ARM_THM_JIT_PUSH(1<<R5);
+    ARM_THM_JIT_MOV_REG(R5, SP);
 
     if (compile_term(scan))
         return -1;
@@ -559,7 +556,7 @@ static int compile_expression(scan_t *scan)
 
         ARM_THM_JIT_POP(1<<R2); /* compile_term() return value */
         ARM_THM_JIT_POP(1<<R3); /* Fetch lval */
-        JIT_ALLOCA(R0);
+        ARM_THM_STACK_ALLOC(R0, 1);
         ARM_THM_JIT_CALL(assignment_helper);
         ARM_THM_JIT_POP(1<<R1); /* Returned value */
     }
