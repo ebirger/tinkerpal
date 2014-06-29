@@ -235,10 +235,8 @@ static void code_block_chain(void)
     op_buf_index = 0;
 }
 
-static int arm_function_prologue(void *buf)
+static int compile_function_prologue(void)
 {
-    op_buf = buf;
-    op_buf_index = 0;
     /* Store &ret (R0) in stack */
     ARM_THM_PUSH_POP(0, 1, (1<<R0)|(1<<R4)|(1<<R5));
     return 0;
@@ -663,15 +661,16 @@ static int compile_function(function_t *f)
 
     total_ops = 0;
     total_blocks = 0;
+    op_buf_index = 0;
 
-    buffer = code_block_alloc(NULL);
+    op_buf = buffer = code_block_alloc(NULL);
 
     code_copy = js_scan_save(f->code);
 
     /* Skip opening bracket */
     js_scan_match(code_copy, TOK_OPEN_SCOPE);
 
-    if ((rc = arm_function_prologue(buffer)))
+    if ((rc = compile_function_prologue()))
         goto Error;
 
     if ((rc = compile_statement_list(code_copy)))
