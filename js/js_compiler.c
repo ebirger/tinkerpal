@@ -215,6 +215,17 @@ static u16 *code_block_alloc(u16 *cur)
     return ret + 1;
 }
 
+/* Return pointer to next code block */
+static u16 *code_block_free(u16 *block)
+{
+    int offset;
+
+    block--;
+    offset = (int)(s16)*block;
+    mem_cache_free(js_compiler_mem_cache, block);
+    return offset ? block + offset + 1 : NULL;
+}
+
 static void code_block_chain(void)
 {
     u16 *cur_buf = op_buf, *next_buf;
@@ -640,17 +651,8 @@ static int call_compiled_function(obj_t **ret, obj_t *this_obj, int argc,
 static void compiled_function_code_free(void *code)
 {
     u16 *buffer = code;
-    int offset;
 
-    buffer--;
-
-    do
-    {
-        offset = (int)(s16)*buffer;
-
-        mem_cache_free(js_compiler_mem_cache, buffer);
-        buffer += offset;
-    } while (offset);
+    while ((buffer = code_block_free(buffer)));
 }
 
 static int compile_function(function_t *f)
