@@ -188,13 +188,6 @@ static void jit_op32_prep(void)
     ARM_THM_PUSH(1<<R0); \
 } while(0)
 
-#define JIT_FUNC_CALL2_ARG(func, arg) do { \
-    ARM_THM_REG_SET(R0, arg); \
-    ARM_THM_POP(1<<R2); \
-    ARM_THM_POP(1<<R1); \
-    JIT_FUNC_CALL0(func); \
-} while(0)
-
 #define ARM_THM_STACK_ALLOC(reg, sz) do { \
     ARM_THM_SUB_SP(sz); \
     ARM_THM_MOV_REG(reg, SP); \
@@ -289,6 +282,15 @@ static int compile_call_tstr_dup(tstr_t str)
     return 0;
 }
 
+static int compile_call_obj_do_op(token_type_t tok)
+{
+    ARM_THM_REG_SET(R0, tok);
+    ARM_THM_POP(1<<R2);
+    ARM_THM_POP(1<<R1);
+    JIT_FUNC_CALL0(obj_do_op);
+    return 0;
+}
+
 static int compile_string_new(tstr_t str)
 {
     /* tstr_dup the value so it can be used more than once */
@@ -320,7 +322,8 @@ static int compile_atom(scan_t *scan)
         if (compile_functions(scan))
             return -1;
 
-        JIT_FUNC_CALL2_ARG(obj_do_op, tok); \
+        if (compile_call_obj_do_op(tok))
+            return -1;
         break;
     case TOK_NUM:
         {
@@ -514,7 +517,8 @@ static int name(scan_t *scan) \
         js_scan_next_token(scan); \
         if (lower(scan)) \
             return -1; \
-        JIT_FUNC_CALL2_ARG(obj_do_op, tok); \
+        if (compile_call_obj_do_op(tok)) \
+            return -1; \
         tok = CUR_TOK(scan); \
     } \
     return 0; \
