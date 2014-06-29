@@ -38,8 +38,8 @@ static mem_cache_t *js_compiler_mem_cache;
 
 extern obj_t *cur_env;
 
-static u16 *cur_jit_buffer;
-static int cur_jit_buffer_idx;
+static u16 *op_buf;
+static int op_buf_index;
 
 static void code_block_chain(void);
 
@@ -56,15 +56,15 @@ static u16 s11_to_u16(int s11)
 
 static void _jit_op16(u16 op)
 {
-    cur_jit_buffer[cur_jit_buffer_idx] = op;
-    cur_jit_buffer_idx++;
+    op_buf[op_buf_index] = op;
+    op_buf_index++;
 }
 
 static int jit_op16(u16 op) __attribute__((noinline));
 static int jit_op16(u16 op)
 {
     _jit_op16(op);
-    if (cur_jit_buffer_idx == ARM_THM_MAX_OPS_NUM - 2)
+    if (op_buf_index == ARM_THM_MAX_OPS_NUM - 2)
         code_block_chain();
     return 0;
 }
@@ -72,7 +72,7 @@ static int jit_op16(u16 op)
 static void jit_op32_prep(void) __attribute__((noinline));
 static void jit_op32_prep(void)
 {
-    if (cur_jit_buffer_idx >= ARM_THM_MAX_OPS_NUM - 3)
+    if (op_buf_index >= ARM_THM_MAX_OPS_NUM - 3)
         code_block_chain();
 }
 
@@ -212,7 +212,7 @@ static u16 *code_block_alloc(u16 *cur)
 
 static void code_block_chain(void)
 {
-    u16 *cur_buf = cur_jit_buffer, *next_buf;
+    u16 *cur_buf = op_buf, *next_buf;
     int delta;
 
     next_buf = code_block_alloc(cur_buf);
@@ -223,17 +223,17 @@ static void code_block_chain(void)
      * So if our pointers are u16 pointers, we need to subtract 2 to compensate
      * for the + 4
      */
-    delta = next_buf - (cur_buf + cur_jit_buffer_idx) - 2;
+    delta = next_buf - (cur_buf + op_buf_index) - 2;
 
     _jit_op16(ARM_THM_B_VAL(delta));
-    cur_jit_buffer = next_buf;
-    cur_jit_buffer_idx = 0;
+    op_buf = next_buf;
+    op_buf_index = 0;
 }
 
 static int arm_function_prologue(void *buf)
 {
-    cur_jit_buffer = buf;
-    cur_jit_buffer_idx = 0;
+    op_buf = buf;
+    op_buf_index = 0;
     /* Store &ret (R0) in stack */
     ARM_THM_PUSH_POP(0, 1, (1<<R0)|(1<<R4)|(1<<R5));
     return 0;
