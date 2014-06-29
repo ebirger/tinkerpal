@@ -33,8 +33,8 @@
 
 static mem_cache_t *js_compiler_mem_cache;
 
-#define ARM_THM_JIT_MAX_OPS_NUM 64
-#define JIT_MEM_CACHE_ITEM_SIZE ((ARM_THM_JIT_MAX_OPS_NUM * sizeof(u16)) + 2)
+#define ARM_THM_MAX_OPS_NUM 64
+#define JIT_MEM_CACHE_ITEM_SIZE ((ARM_THM_MAX_OPS_NUM * sizeof(u16)) + 2)
 
 extern obj_t *cur_env;
 
@@ -64,7 +64,7 @@ static int jit_op16(u16 op) __attribute__((noinline));
 static int jit_op16(u16 op)
 {
     _jit_op16(op);
-    if (cur_jit_buffer_idx == ARM_THM_JIT_MAX_OPS_NUM - 2)
+    if (cur_jit_buffer_idx == ARM_THM_MAX_OPS_NUM - 2)
         code_block_chain();
     return 0;
 }
@@ -72,7 +72,7 @@ static int jit_op16(u16 op)
 static void jit_op32_prep(void) __attribute__((noinline));
 static void jit_op32_prep(void)
 {
-    if (cur_jit_buffer_idx >= ARM_THM_JIT_MAX_OPS_NUM - 3)
+    if (cur_jit_buffer_idx >= ARM_THM_MAX_OPS_NUM - 3)
         code_block_chain();
 }
 
@@ -111,8 +111,8 @@ static void jit_op32_prep(void)
 #define ARM_THM_STR_VAL(ld, ln, imm5) (0x6000 | ((ld) | (ln)<<3 | ((imm5)<<6)))
 #define ARM_THM_MOV_REG_VAL(rd, rm) (0x4600 | ((rm)<<3) | (rd))
 #define ARM_THM_BLX_VAL(rm) (0x4000 | (0xf<<7) | ((rm)<<3))
-#define ARM_THM_JIT_B_PREFIX 0xe000
-#define ARM_THM_B_VAL(offs) (ARM_THM_JIT_B_PREFIX | s11_to_u16(offs))
+#define ARM_THM_B_PREFIX 0xe000
+#define ARM_THM_B_VAL(offs) (ARM_THM_B_PREFIX | s11_to_u16(offs))
 #define ARM_THM_ADD_SUB_SP_VAL(op, imm) (0xb000 | ((op)<<7) | ((imm) & 0x7f))
 #define ARM_THM_ADD_IMM_VAL(ld, imm) (0x3000 | ((ld)<<8) | ((imm) & 0xff))
 #define ARM_THM_MOVW_HI(i, imm4, imm3, rd, imm8) \
@@ -124,84 +124,84 @@ static void jit_op32_prep(void)
 #define ARM_THM_MOVT_LO(i, imm4, imm3, rd, imm8) \
     (((imm3)<<12) | ((rd)<<8) | (imm8))
 
-#define ARM_THM_JIT_PUSH_POP(op, R, register_list) \
+#define ARM_THM_PUSH_POP(op, R, register_list) \
     OP16(ARM_THM_PUSH_POP_VAL(op, R, register_list))
-#define ARM_THM_JIT_PUSH(register_list) \
-    ARM_THM_JIT_PUSH_POP(0, 0, register_list)
-#define ARM_THM_JIT_POP(register_list) \
-    ARM_THM_JIT_PUSH_POP(1, 0, register_list)
+#define ARM_THM_PUSH(register_list) \
+    ARM_THM_PUSH_POP(0, 0, register_list)
+#define ARM_THM_POP(register_list) \
+    ARM_THM_PUSH_POP(1, 0, register_list)
 
-#define ARM_THM_JIT_MOV(ld, imm8) do { \
+#define ARM_THM_MOV(ld, imm8) do { \
     if (imm8 > 255) \
         return -1; \
     OP16(ARM_THM_MOV_VAL(ld, imm8)); \
 } while(0)
 
-#define ARM_THM_JIT_STR(ld, ln, imm5) OP16(ARM_THM_STR_VAL(ld, ln, imm5))
+#define ARM_THM_STR(ld, ln, imm5) OP16(ARM_THM_STR_VAL(ld, ln, imm5))
 
-#define ARM_THM_JIT_MOV_REG(rd, rm) OP16(ARM_THM_MOV_REG_VAL(rd, rm))
+#define ARM_THM_MOV_REG(rd, rm) OP16(ARM_THM_MOV_REG_VAL(rd, rm))
 
-#define _ARM_THM_JIT_MOVW(i, imm4, imm3, rd, imm8) do { \
+#define _ARM_THM_MOVW(i, imm4, imm3, rd, imm8) do { \
     OP32(ARM_THM_MOVW_HI(i, imm4, imm3, rd, imm8), \
         ARM_THM_MOVW_LO(i, imm4, imm3, rd, imm8)); \
 } while(0)
 
-#define _ARM_THM_JIT_MOVT(i, imm4, imm3, rd, imm8) do { \
+#define _ARM_THM_MOVT(i, imm4, imm3, rd, imm8) do { \
     OP32(ARM_THM_MOVT_HI(i, imm4, imm3, rd, imm8), \
         ARM_THM_MOVT_LO(i, imm4, imm3, rd, imm8)); \
 } while(0)
 
-#define ARM_THM_JIT_MOVW(rd, imm16) do { \
-    _ARM_THM_JIT_MOVW(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
+#define ARM_THM_MOVW(rd, imm16) do { \
+    _ARM_THM_MOVW(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
         ((imm16) >> 8) & 0x7, rd, (imm16) & 0xff); \
 } while(0)
 
-#define ARM_THM_JIT_MOVT(rd, imm16) do { \
-    _ARM_THM_JIT_MOVT(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
+#define ARM_THM_MOVT(rd, imm16) do { \
+    _ARM_THM_MOVT(((imm16) >> 11) & 1, ((imm16)>>12) & 0xf, \
         ((imm16) >> 8) & 0x7, rd, (imm16) & 0xff); \
 } while(0)
 
-#define ARM_THM_JIT_BLX(rm) OP16(ARM_THM_BLX_VAL(rm))
+#define ARM_THM_BLX(rm) OP16(ARM_THM_BLX_VAL(rm))
 
-#define ARM_THM_JIT_B(offs) OP16(ARM_THM_B_VAL(offs))
+#define ARM_THM_B(offs) OP16(ARM_THM_B_VAL(offs))
 
-#define ARM_THM_JIT_REG_SET(r, val) do { \
+#define ARM_THM_REG_SET(r, val) do { \
     tp_debug(("%s:%d\t: REG %d = %s : %x\n", __FUNCTION__, __LINE__, r, #val, \
         (u32)val)); \
-    ARM_THM_JIT_MOVW(r, (val) & 0xffff); \
-    ARM_THM_JIT_MOVT(r, ((val)>>16) & 0xffff); \
+    ARM_THM_MOVW(r, (val) & 0xffff); \
+    ARM_THM_MOVT(r, ((val)>>16) & 0xffff); \
 } while(0)
 
-#define ARM_THM_JIT_CALL(addr) do { \
-    ARM_THM_JIT_REG_SET(R4, (u32)(addr) | 0x1); \
-    ARM_THM_JIT_BLX(R4); \
+#define ARM_THM_CALL(addr) do { \
+    ARM_THM_REG_SET(R4, (u32)(addr) | 0x1); \
+    ARM_THM_BLX(R4); \
 } while(0)
 
-#define ARM_THM_JIT_ADD_SUB_SP(op, imm) OP16(ARM_THM_ADD_SUB_SP_VAL(op, imm))
-#define ARM_THM_JIT_ADD_SP(imm) ARM_THM_JIT_ADD_SUB_SP(0, imm)
-#define ARM_THM_JIT_SUB_SP(imm) ARM_THM_JIT_ADD_SUB_SP(1, imm)
+#define ARM_THM_ADD_SUB_SP(op, imm) OP16(ARM_THM_ADD_SUB_SP_VAL(op, imm))
+#define ARM_THM_ADD_SP(imm) ARM_THM_ADD_SUB_SP(0, imm)
+#define ARM_THM_SUB_SP(imm) ARM_THM_ADD_SUB_SP(1, imm)
 
-#define ARM_THM_JIT_ADD_IMM(ld, imm) OP16(ARM_THM_ADD_IMM_VAL(ld, imm))
+#define ARM_THM_ADD_IMM(ld, imm) OP16(ARM_THM_ADD_IMM_VAL(ld, imm))
 
 #define JIT_FUNC_CALL0(func) do { \
-    ARM_THM_JIT_CALL(func); \
-    ARM_THM_JIT_PUSH(1<<R0); \
+    ARM_THM_CALL(func); \
+    ARM_THM_PUSH(1<<R0); \
 } while(0)
 
 #define JIT_FUNC_CALL0_ARG(func, arg) do { \
-    ARM_THM_JIT_REG_SET(R0, arg); \
+    ARM_THM_REG_SET(R0, arg); \
     JIT_FUNC_CALL0(func); \
 } while(0)
 
 #define JIT_FUNC_CALL2_ARG(func, arg) do { \
-    ARM_THM_JIT_POP(1<<R2); \
-    ARM_THM_JIT_POP(1<<R1); \
+    ARM_THM_POP(1<<R2); \
+    ARM_THM_POP(1<<R1); \
     JIT_FUNC_CALL0_ARG(func, arg); \
 } while(0)
 
 #define ARM_THM_STACK_ALLOC(reg, sz) do { \
-    ARM_THM_JIT_SUB_SP(sz); \
-    ARM_THM_JIT_MOV_REG(reg, SP); \
+    ARM_THM_SUB_SP(sz); \
+    ARM_THM_MOV_REG(reg, SP); \
 } while(0)
 
 static u16 *code_block_alloc(u16 *cur)
@@ -246,18 +246,18 @@ static int arm_function_prologue(void *buf)
     cur_jit_buffer = buf;
     cur_jit_buffer_idx = 0;
     /* Store &ret (R0) in stack */
-    ARM_THM_JIT_PUSH_POP(0, 1, (1<<R0)|(1<<R4)|(1<<R5));
+    ARM_THM_PUSH_POP(0, 1, (1<<R0)|(1<<R4)|(1<<R5));
     return 0;
 }
 
 static int arm_function_return(int rc)
 {
     /* Fetch &ret from stack */
-    ARM_THM_JIT_POP(1<<R0);
+    ARM_THM_POP(1<<R0);
     /* Store return value in *ret */
-    ARM_THM_JIT_STR(R1, R0, 0);
-    ARM_THM_JIT_REG_SET(R0, rc);
-    ARM_THM_JIT_PUSH_POP(1, 1, (1<<R4)|(1<<R5));
+    ARM_THM_STR(R1, R0, 0);
+    ARM_THM_REG_SET(R0, rc);
+    ARM_THM_PUSH_POP(1, 1, (1<<R4)|(1<<R5));
     return 0;
 }
 
@@ -281,14 +281,14 @@ static int compile_call_tstr_dup(tstr_t str)
     u32 *s = (u32 *)&str;
 
     ARM_THM_STACK_ALLOC(R0, 2);
-    ARM_THM_JIT_REG_SET(R1, s[0]);
-    ARM_THM_JIT_REG_SET(R2, s[1]);
+    ARM_THM_REG_SET(R1, s[0]);
+    ARM_THM_REG_SET(R2, s[1]);
 
-    ARM_THM_JIT_CALL(tstr_dup);
+    ARM_THM_CALL(tstr_dup);
 
     /* Fetch the dupped tstr from the stack */
-    ARM_THM_JIT_POP(1<<R0);
-    ARM_THM_JIT_POP(1<<R1);
+    ARM_THM_POP(1<<R0);
+    ARM_THM_POP(1<<R1);
     return 0;
 }
 
@@ -317,8 +317,8 @@ static int compile_atom(scan_t *scan)
     case TOK_MINUS:
         js_scan_next_token(scan);
 
-        ARM_THM_JIT_REG_SET(R1, (u32)ZERO);
-        ARM_THM_JIT_PUSH(1<<R1);
+        ARM_THM_REG_SET(R1, (u32)ZERO);
+        ARM_THM_PUSH(1<<R1);
 
         if (compile_functions(scan))
             return -1;
@@ -411,8 +411,8 @@ static int compile_member(scan_t *scan)
 
     if (tok == TOK_ID)
     {
-        ARM_THM_JIT_POP(1<<R0); /* compile_atom() return value */
-        ARM_THM_JIT_MOV_REG(R1, R5); /* lval pointer */
+        ARM_THM_POP(1<<R0); /* compile_atom() return value */
+        ARM_THM_MOV_REG(R1, R5); /* lval pointer */
         JIT_FUNC_CALL0(get_property_helper);
     }
 
@@ -450,11 +450,11 @@ static int compile_function_call(scan_t *scan)
     js_scan_free(start_args);
 
     /* keep function pointer */
-    ARM_THM_JIT_POP(1<<R0);
+    ARM_THM_POP(1<<R0);
     /* Allocate argv */
-    ARM_THM_JIT_SUB_SP(argc - 1);
+    ARM_THM_SUB_SP(argc - 1);
     /* Store argv[0] */
-    ARM_THM_JIT_PUSH(1<<R0);
+    ARM_THM_PUSH(1<<R0);
 
     if (CUR_TOK(scan) != TOK_CLOSE_PAREN)
     {
@@ -463,9 +463,9 @@ static int compile_function_call(scan_t *scan)
         if (compile_expression(scan))
             return -1;
 
-        ARM_THM_JIT_ADD_SP(n + 2);
-        ARM_THM_JIT_PUSH(1<<R1);
-        ARM_THM_JIT_SUB_SP(n + 1);
+        ARM_THM_ADD_SP(n + 2);
+        ARM_THM_PUSH(1<<R1);
+        ARM_THM_SUB_SP(n + 1);
         n++;
         while (CUR_TOK(scan) == TOK_COMMA)
         {
@@ -473,9 +473,9 @@ static int compile_function_call(scan_t *scan)
             if (compile_expression(scan))
                 return -1;
 
-            ARM_THM_JIT_ADD_SP(n + 2);
-            ARM_THM_JIT_PUSH(1<<R1);
-            ARM_THM_JIT_SUB_SP(n + 1);
+            ARM_THM_ADD_SP(n + 2);
+            ARM_THM_PUSH(1<<R1);
+            ARM_THM_SUB_SP(n + 1);
             n++;
         }
     }
@@ -484,11 +484,11 @@ static int compile_function_call(scan_t *scan)
 
     js_scan_match(scan, TOK_CLOSE_PAREN);
 
-    ARM_THM_JIT_REG_SET(R0, argc);
-    ARM_THM_JIT_MOV_REG(R1, SP); /* argv */
-    ARM_THM_JIT_CALL(function_call_helper);
-    ARM_THM_JIT_ADD_SP(argc); /* Unwind stack argv space */
-    ARM_THM_JIT_PUSH(1<<R0); /* Store return value */
+    ARM_THM_REG_SET(R0, argc);
+    ARM_THM_MOV_REG(R1, SP); /* argv */
+    ARM_THM_CALL(function_call_helper);
+    ARM_THM_ADD_SP(argc); /* Unwind stack argv space */
+    ARM_THM_PUSH(1<<R0); /* Store return value */
     return 0;
 }
 
@@ -549,10 +549,10 @@ static void assignment_helper(obj_t **ret, obj_t *val, obj_t *orig_val,
 
 static int compile_expression(scan_t *scan)
 {
-    ARM_THM_JIT_PUSH(1<<R5);
-    ARM_THM_JIT_REG_SET(R5, (u32)UNDEF);
-    ARM_THM_JIT_PUSH(1<<R5);
-    ARM_THM_JIT_MOV_REG(R5, SP);
+    ARM_THM_PUSH(1<<R5);
+    ARM_THM_REG_SET(R5, (u32)UNDEF);
+    ARM_THM_PUSH(1<<R5);
+    ARM_THM_MOV_REG(R5, SP);
 
     if (compile_ored(scan))
         return -1;
@@ -563,19 +563,19 @@ static int compile_expression(scan_t *scan)
         if (compile_expression(scan))
             return -1;
 
-        ARM_THM_JIT_POP(1<<R2); /* compile_ored() return value */
-        ARM_THM_JIT_POP(1<<R3); /* Fetch lval */
+        ARM_THM_POP(1<<R2); /* compile_ored() return value */
+        ARM_THM_POP(1<<R3); /* Fetch lval */
         ARM_THM_STACK_ALLOC(R0, 1);
-        ARM_THM_JIT_CALL(assignment_helper);
-        ARM_THM_JIT_POP(1<<R1); /* Returned value */
+        ARM_THM_CALL(assignment_helper);
+        ARM_THM_POP(1<<R1); /* Returned value */
     }
     else
     {
-        ARM_THM_JIT_POP(1<<R1); /* compile_ored() return value */
-        ARM_THM_JIT_POP(1<<R5); /* Discard of lval */
+        ARM_THM_POP(1<<R1); /* compile_ored() return value */
+        ARM_THM_POP(1<<R5); /* Discard of lval */
     }
 
-    ARM_THM_JIT_POP(1<<R5);
+    ARM_THM_POP(1<<R5);
     return 0;
 }
 
