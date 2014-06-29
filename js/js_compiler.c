@@ -210,18 +210,6 @@ static void jit_op32_prep(void)
     ARM_THM_JIT_MOV_REG(reg, SP); \
 } while(0)
 
-/* Return value in <R0, R1> */
-#define JIT_FUNC_CALL2_RET(func, arg1, arg2) do { \
-    ARM_THM_JIT_REG_SET(R1, arg1); \
-    ARM_THM_JIT_REG_SET(R2, arg2); \
-    /* Make space for return value */ \
-    ARM_THM_STACK_ALLOC(R0, 2); \
-    ARM_THM_JIT_CALL(func); \
-    /* Fetch the dupped tstr from the stack */ \
-    ARM_THM_JIT_POP(1<<R0); \
-    ARM_THM_JIT_POP(1<<R1); \
-} while(0)
-
 static u16 *code_block_alloc(u16 *cur)
 {
     u16 *ret;
@@ -294,12 +282,27 @@ static int compile_num_new(tnum_t num)
     return compile_num_new_int(NUMERIC_INT(num));
 }
 
-static int compile_string_new(tstr_t str)
+static int compile_call_tstr_dup(tstr_t str)
 {
     u32 *s = (u32 *)&str;
 
+    ARM_THM_STACK_ALLOC(R0, 2);
+    ARM_THM_JIT_REG_SET(R1, s[0]);
+    ARM_THM_JIT_REG_SET(R2, s[1]);
+
+    ARM_THM_JIT_CALL(tstr_dup);
+
+    /* Fetch the dupped tstr from the stack */
+    ARM_THM_JIT_POP(1<<R0);
+    ARM_THM_JIT_POP(1<<R1);
+    return 0;
+}
+
+static int compile_string_new(tstr_t str)
+{
     /* tstr_dup the value so it can be used more than once */
-    JIT_FUNC_CALL2_RET(tstr_dup, s[0], s[1]);
+    if (compile_call_tstr_dup(str))
+        return -1;
 
     JIT_FUNC_CALL0(string_new);
     return 0;
