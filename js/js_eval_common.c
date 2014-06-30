@@ -29,14 +29,33 @@
 void skip_expression(scan_t *scan)
 {
     while (CUR_TOK(scan) != TOK_END_STATEMENT && 
-        CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_COMMA && 
-        CUR_TOK(scan) != TOK_COLON && CUR_TOK(scan) != TOK_EOF)
+        CUR_TOK(scan) != TOK_CLOSE_PAREN && CUR_TOK(scan) != TOK_CLOSE_MEMBER &&
+        CUR_TOK(scan) != TOK_COMMA && CUR_TOK(scan) != TOK_COLON &&
+        CUR_TOK(scan) != TOK_EOF)
     {
         if (CUR_TOK(scan) == TOK_OPEN_PAREN)
         {
             js_scan_next_token(scan);
             skip_expression(scan);
+            while (CUR_TOK(scan) == TOK_COMMA)
+            {
+                js_scan_next_token(scan);
+                skip_expression(scan);
+            }
             js_scan_match(scan, TOK_CLOSE_PAREN);
+            continue;
+        }
+        
+        if (CUR_TOK(scan) == TOK_OPEN_MEMBER)
+        {
+            js_scan_next_token(scan);
+            skip_expression(scan);
+            while (CUR_TOK(scan) == TOK_COMMA)
+            {
+                js_scan_next_token(scan);
+                skip_expression(scan);
+            }
+            js_scan_match(scan, TOK_CLOSE_MEMBER);
             continue;
         }
 
