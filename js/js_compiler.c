@@ -44,6 +44,9 @@ static int total_ops;
 static int total_blocks;
 
 static void code_block_chain(void);
+static int compile_expression(scan_t *scan);
+static int compile_functions(scan_t *scan);
+
 
 typedef struct {
     obj_t **lval;
@@ -89,6 +92,7 @@ static void op32_prep(void)
 #define R3 3
 #define R4 4
 #define R5 5
+#define R6 6
 #define SP 13
 
 #define OP16(val) do { \
@@ -271,7 +275,7 @@ static void code_block_chain(void)
 static int compile_function_prologue(void)
 {
     /* Store &ret (R0) in stack */
-    ARM_THM_PUSH_POP(0, 1, (1<<R0)|(1<<R4)|(1<<R5));
+    ARM_THM_PUSH_POP(0, 1, (1<<R0)|(1<<R4)|(1<<R5)|(1<<R6));
     return 0;
 }
 
@@ -282,7 +286,41 @@ static int compile_function_return(int rc)
     /* Store return value in *ret */
     ARM_THM_STR(R1, R0, 0);
     ARM_THM_REG_SET(R0, rc);
-    ARM_THM_PUSH_POP(1, 1, (1<<R4)|(1<<R5));
+    ARM_THM_PUSH_POP(1, 1, (1<<R4)|(1<<R5)|(1<<R6));
+    return 0;
+}
+
+static int compile_array(scan_t *scan)
+{
+    ARM_THM_CALL(array_new);
+    ARM_THM_MOV_REG(R6, R0);
+
+    js_scan_match(scan, TOK_OPEN_MEMBER);
+    if (CUR_TOK(scan) == TOK_CLOSE_MEMBER)
+        goto Exit; /* Empty array */
+
+    ARM_THM_PUSH(1<<R6);
+    if (compile_expression(scan))
+        return -1;
+
+    ARM_THM_POP(1<<R6);
+    ARM_THM_MOV_REG(R0, R6);
+    ARM_THM_CALL(array_push);
+    while (CUR_TOK(scan) == TOK_COMMA)
+    {
+        js_scan_next_token(scan);
+        ARM_THM_PUSH(1<<R6);
+        if (compile_expression(scan))
+            return -1;
+
+        ARM_THM_POP(1<<R6);
+        ARM_THM_MOV_REG(R0, R6);
+        ARM_THM_CALL(array_push);
+    }
+
+Exit:
+    ARM_THM_PUSH(1<<R6);
+    js_scan_match(scan, TOK_CLOSE_MEMBER);
     return 0;
 }
 
@@ -336,9 +374,6 @@ static int compile_string_new(tstr_t str)
     ARM_THM_CALL_PUSH_RET(string_new);
     return 0;
 }
-
-static int compile_expression(scan_t *scan);
-static int compile_functions(scan_t *scan);
 
 static int compile_atom(scan_t *scan)
 {
@@ -434,6 +469,10 @@ static int compile_atom(scan_t *scan)
         if (_js_scan_match(scan, TOK_CLOSE_PAREN))
             return -1;
 
+        break;
+    case TOK_OPEN_MEMBER:
+        if (compile_array(scan))
+            return -1;
         break;
     default:
         return -1;
