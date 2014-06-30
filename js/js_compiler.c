@@ -47,7 +47,6 @@ static void code_block_chain(void);
 static int compile_expression(scan_t *scan);
 static int compile_functions(scan_t *scan);
 
-
 typedef struct {
     obj_t **lval;
 } js_compiler_ref_t;
