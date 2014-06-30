@@ -45,6 +45,10 @@ static int total_blocks;
 
 static void code_block_chain(void);
 
+typedef struct {
+    obj_t **lval;
+} js_compiler_ref_t;
+
 static u16 s11_to_u16(int s11)
 {
     union {
@@ -196,10 +200,23 @@ static void op32_prep(void)
     ARM_THM_PUSH(1<<R0); \
 } while(0)
 
+#define ALIGN4(x) (((x) + 3) & ~3)
+
 #define ARM_THM_STACK_ALLOC(reg, sz) do { \
     ARM_THM_SUB_SP(sz); \
     ARM_THM_MOV_REG(reg, SP); \
 } while(0)
+
+/* sz must be reg size aligned */
+#define ARM_THM_STACK_ZALLOC(reg, sz) do { \
+    int __n; \
+    ARM_THM_REG_SET(reg, 0); \
+    for (__n = 0; __n < (sz); __n += 4) \
+        ARM_THM_PUSH(1<<(reg)); \
+    ARM_THM_MOV_REG(reg, SP); \
+} while(0)
+
+#define ARM_THM_STACK_DEALLOC(sz) ARM_THM_ADD_SP((sz)>>2)
 
 static u16 *code_block_alloc(u16 *cur)
 {
@@ -423,14 +440,14 @@ static int compile_atom(scan_t *scan)
     return 0;
 }
 
-static obj_t *get_property_helper(obj_t *property, obj_t ***lval)
+static obj_t *get_property_helper(obj_t *property, js_compiler_ref_t *ref)
 {
     obj_t *o;
     tstr_t prop_name;
 
     prop_name = to_string(property)->value;
 
-    o = obj_get_property(lval, cur_env, &prop_name);
+    o = obj_get_property(&ref->lval, cur_env, &prop_name);
 
     /* XXX: 'property' should be stored when assignement is implemented */
     obj_put(property);
@@ -575,20 +592,29 @@ GEN_COMPL(compile_xored, (tok == TOK_XOR), compile_anded)
 GEN_COMPL(compile_ored, (tok == TOK_OR), compile_xored)
 
 static void assignment_helper(obj_t **ret, obj_t *val, obj_t *orig_val,
-    obj_t **lval)
+    js_compiler_ref_t *ref)
 {
+    if (!ref->lval)
+    {
+        /* XXX: this is not a 'real' exception as we currently always return
+         * success when running expression code.
+         */
+        throw_exception(ret, &S("Invalid left-hand value in assignment"));
+        goto Exit;
+    }
+
     obj_put(orig_val); /* Relese stored reference */
     *ret = val;
-    *lval = obj_get(val);
+    *ref->lval = obj_get(val);
+
+Exit:
     obj_put(orig_val); /* Release the reference we got */
 }
 
 static int compile_expression(scan_t *scan)
 {
     ARM_THM_PUSH(1<<R5);
-    ARM_THM_REG_SET(R5, (u32)UNDEF);
-    ARM_THM_PUSH(1<<R5);
-    ARM_THM_MOV_REG(R5, SP);
+    ARM_THM_STACK_ZALLOC(R5, ALIGN4(sizeof(js_compiler_ref_t)));
 
     if (compile_ored(scan))
         return -1;
@@ -600,17 +626,15 @@ static int compile_expression(scan_t *scan)
             return -1;
 
         ARM_THM_POP(1<<R2); /* compile_ored() return value */
-        ARM_THM_POP(1<<R3); /* Fetch lval */
+        ARM_THM_MOV_REG(R3, R5);
         ARM_THM_STACK_ALLOC(R0, 1);
         ARM_THM_CALL(assignment_helper);
         ARM_THM_POP(1<<R1); /* Returned value */
     }
     else
-    {
         ARM_THM_POP(1<<R1); /* compile_ored() return value */
-        ARM_THM_POP(1<<R5); /* Discard of lval */
-    }
 
+    ARM_THM_STACK_DEALLOC(ALIGN4(sizeof(js_compiler_ref_t)));
     ARM_THM_POP(1<<R5);
     return 0;
 }
