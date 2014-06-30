@@ -429,6 +429,8 @@ static int compile_atom(scan_t *scan)
         if (compile_expression(scan))
             return -1;
 
+        ARM_THM_PUSH(R1);
+
         if (_js_scan_match(scan, TOK_CLOSE_PAREN))
             return -1;
 
