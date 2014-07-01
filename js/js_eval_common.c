@@ -71,4 +71,3 @@ void skip_expression(scan_t *scan)
         js_scan_next_token(scan);
     }
 }
-
