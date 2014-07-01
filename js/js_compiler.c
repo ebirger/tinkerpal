@@ -37,6 +37,7 @@ static mem_cache_t *js_compiler_mem_cache;
 #define MEM_CACHE_ITEM_SIZE ((ARM_THM_MAX_OPS_NUM * sizeof(u16)) + 2)
 
 extern obj_t *cur_env;
+extern obj_t *this;
 
 static u16 *op_buf;
 static int op_buf_index;
@@ -375,6 +376,11 @@ static int compile_string_new(tstr_t str)
     return 0;
 }
 
+static obj_t *get_this_helper(void)
+{
+    return obj_get(this);
+}
+
 static int compile_atom(scan_t *scan)
 {
     token_type_t tok = CUR_TOK(scan);
@@ -406,6 +412,10 @@ static int compile_atom(scan_t *scan)
             if (compile_num_new(num))
                 return -1;
         }
+        break;
+    case TOK_THIS:
+        js_scan_next_token(scan);
+        ARM_THM_CALL_PUSH_RET(get_this_helper);
         break;
     case TOK_CONSTANT:
         compile_num_new_int(js_scan_get_constant(scan));

@@ -59,7 +59,7 @@ static volatile u32 g_flags;
 #define EXECUTION_STOPPED_RESET() g_flags &= ~JS_EVAL_FLAG_SIGNALLED
 
 obj_t *cur_env;
-static obj_t *this = NULL;
+obj_t *this = NULL;
 static function_args_t cur_function_args;
 
 static int eval_expression(obj_t **po, scan_t *scan);
