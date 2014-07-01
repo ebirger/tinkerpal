@@ -49,6 +49,7 @@ static int compile_functions(scan_t *scan);
 
 typedef struct {
     obj_t **lval;
+    obj_t *parent;
 } js_compiler_ref_t;
 
 static u16 s11_to_u16(int s11)
@@ -488,7 +489,12 @@ static obj_t *get_property_helper(obj_t *obj, obj_t *property,
 
     prop_name = to_string(property)->value;
 
-    if (!obj)
+    if (obj)
+    {
+        obj_put(ref->parent);
+        ref->parent = obj;
+    }
+    else
         obj = cur_env;
 
     o = obj_get_property(&ref->lval, obj, &prop_name);
@@ -547,12 +553,16 @@ static int compile_member(scan_t *scan)
     return 0;
 }
 
-static obj_t *function_call_helper(int argc, obj_t *argv[])
+static obj_t *function_call_helper(int argc, obj_t *argv[],
+    js_compiler_ref_t *ref)
 {
     extern obj_t *global_env;
     obj_t *ret = UNDEF;
+    obj_t *this_obj;
 
-    function_call(&ret, global_env, argc, argv);
+    this_obj = ref->parent ? : global_env;
+
+    function_call(&ret, this_obj, argc, argv);
 
     return ret;
 }
@@ -614,6 +624,7 @@ static int compile_function_call(scan_t *scan)
 
     ARM_THM_REG_SET(R0, argc);
     ARM_THM_MOV_REG(R1, SP); /* argv */
+    ARM_THM_MOV_REG(R2, R5); /* ref */
     ARM_THM_CALL(function_call_helper);
     ARM_THM_ADD_SP(argc); /* Unwind stack argv space */
     ARM_THM_PUSH(1<<R0); /* Store return value */
@@ -687,6 +698,11 @@ Exit:
     obj_put(orig_val); /* Release the reference we got */
 }
 
+static void ref_invalidate(js_compiler_ref_t *ref)
+{
+    obj_put(ref->parent);
+}
+
 static int compile_expression(scan_t *scan)
 {
     ARM_THM_PUSH(1<<R5);
@@ -710,6 +726,8 @@ static int compile_expression(scan_t *scan)
     else
         ARM_THM_POP(1<<R1); /* compile_ored() return value */
 
+    ARM_THM_MOV_REG(R0, R5);
+    ARM_THM_CALL(ref_invalidate);
     ARM_THM_STACK_DEALLOC(ALIGN4(sizeof(js_compiler_ref_t)));
     ARM_THM_POP(1<<R5);
     return 0;
