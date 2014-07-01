@@ -34,6 +34,11 @@ static inline int is_statement_list_terminator(token_type_t tok)
         tok == TOK_EOF;
 }
 
+static inline int is_member_tok(token_type_t tok)
+{
+    return tok == TOK_DOT || tok == TOK_OPEN_MEMBER;
+}
+
 int js_eval_wrap_function_execution(obj_t **ret, obj_t *this_obj, int argc, 
     obj_t *argv[], int (*call)(obj_t **ret, function_t *f));
 

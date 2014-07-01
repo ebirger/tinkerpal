@@ -513,6 +513,37 @@ static int compile_member(scan_t *scan)
         ARM_THM_CALL_PUSH_RET(get_property_helper);
     }
 
+    while (is_member_tok(CUR_TOK(scan)))
+    {
+        /* XXX: validate that returned obj is not undefined */
+        if (CUR_TOK(scan) == TOK_DOT)
+        {
+            token_type_t tok;
+
+            js_scan_next_token(scan);
+            tok = CUR_TOK(scan);
+            if (tok != TOK_ID)
+                return -1;
+
+            if (compile_atom(scan))
+                return -1;
+
+            ARM_THM_POP(1<<R1); /* compile_atom() return value */
+            ARM_THM_POP(1<<R0); /* parent */
+            ARM_THM_MOV_REG(R2, R5); /* lval pointer */
+            ARM_THM_CALL_PUSH_RET(get_property_helper);
+        }
+        else if (CUR_TOK(scan) == TOK_OPEN_MEMBER)
+        {
+            js_scan_next_token(scan);
+            compile_expression(scan);
+            js_scan_match(scan, TOK_CLOSE_MEMBER);
+            ARM_THM_POP(1<<R0); /* parent */
+            ARM_THM_MOV_REG(R2, R5); /* lval pointer */
+            ARM_THM_CALL_PUSH_RET(get_property_helper);
+        }
+    }
+
     return 0;
 }
 

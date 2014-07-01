@@ -291,11 +291,6 @@ static inline int is_assignment_tok(token_type_t tok)
         tok == TOK_SHR_EQ || tok == TOK_SHL_EQ || tok == TOK_SHRZ_EQ;
 }
 
-static inline int is_member_tok(token_type_t tok)
-{
-    return tok == TOK_DOT || tok == TOK_OPEN_MEMBER;
-}
-
 int parse_function_param_list(tstr_list_t **params, scan_t *scan)
 {
     tstr_t param;
