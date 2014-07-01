@@ -480,14 +480,18 @@ static int compile_atom(scan_t *scan)
     return 0;
 }
 
-static obj_t *get_property_helper(obj_t *property, js_compiler_ref_t *ref)
+static obj_t *get_property_helper(obj_t *obj, obj_t *property,
+    js_compiler_ref_t *ref)
 {
     obj_t *o;
     tstr_t prop_name;
 
     prop_name = to_string(property)->value;
 
-    o = obj_get_property(&ref->lval, cur_env, &prop_name);
+    if (!obj)
+        obj = cur_env;
+
+    o = obj_get_property(&ref->lval, obj, &prop_name);
 
     /* XXX: 'property' should be stored when assignement is implemented */
     obj_put(property);
@@ -503,8 +507,9 @@ static int compile_member(scan_t *scan)
 
     if (tok == TOK_ID)
     {
-        ARM_THM_POP(1<<R0); /* compile_atom() return value */
-        ARM_THM_MOV_REG(R1, R5); /* lval pointer */
+        ARM_THM_REG_SET(R0, 0);
+        ARM_THM_POP(1<<R1); /* compile_atom() return value */
+        ARM_THM_MOV_REG(R2, R5); /* lval pointer */
         ARM_THM_CALL_PUSH_RET(get_property_helper);
     }
 
