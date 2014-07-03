@@ -77,14 +77,14 @@ void ti_arm_mcu_gpio_input(int pin)
 }
 
 #ifdef CONFIG_PLAT_HAS_PWM
-void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle) 
+void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle)
 {
     const ti_arm_mcu_pwm_t *pwm = ti_arm_mcu_pin_pwm(pin);
     unsigned long period, width;
 
     if (!pwm->base)
         return;
-    
+   
     /* Compute the PWM period based on the system clock */
     MAP_SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
     period = platform.get_system_clock() / freq;
