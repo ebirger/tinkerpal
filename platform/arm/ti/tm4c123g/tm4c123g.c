@@ -36,6 +36,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "driverlib/adc.h"
+#include "driverlib/pwm.h"
 #include "driverlib/rom_map.h"
 #include "util/debug.h"
 #include "drivers/gpio/gpio_platform.h"
@@ -125,7 +126,7 @@ const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
 };
 
 /* Notes:
- * - PC4/5 can be used for either UART1 or UART4. Currently going for 4, 
+ * - PC4/5 can be used for either UART1 or UART4. Currently going for 4,
  * since PB0/1 can be used for UART1
  * - PF timers are shared with PB
  */
@@ -180,19 +181,49 @@ const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
     [ PF7 ] = {-1, 0, -1}
 };
 
+const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
+#define PWM_DEF(_pin, _base, _gen, _bit) \
+    { \
+        .periph = SYSCTL_PERIPH_PWM##_base, \
+        .base = PWM##_base##_BASE, \
+        .gen = PWM_GEN_##_gen, \
+        .out = PWM_OUT_##_bit, \
+        .out_bit = PWM_OUT_##_bit##_BIT, \
+        .pin = _pin, \
+        .af = GPIO_##_pin##_M##_base##PWM##_bit \
+    }
+    PWM_DEF(PB6, 0, 0, 0),
+    PWM_DEF(PB7, 0, 0, 1),
+    PWM_DEF(PB4, 0, 1, 2),
+    PWM_DEF(PB5, 0, 1, 3),
+    PWM_DEF(PE4, 0, 2, 4),
+    PWM_DEF(PE5, 0, 2, 5),
+    PWM_DEF(PC4, 0, 3, 6),
+    PWM_DEF(PC5, 0, 3, 7),
+    PWM_DEF(PD0, 1, 0, 0),
+    PWM_DEF(PD1, 1, 0, 1),
+    PWM_DEF(PA6, 1, 1, 2),
+    PWM_DEF(PA7, 1, 1, 3),
+    PWM_DEF(PF0, 1, 2, 4),
+    PWM_DEF(PF1, 1, 2, 5),
+    PWM_DEF(PF2, 1, 3, 6),
+    PWM_DEF(PF3, 1, 3, 7),
+    {}
+};
+
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */
 #define TIMER(p) (&ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[(p)].timer])
-#define TIMER_SET(p, t) ROM_TimerMatchSet(TIMER(p)->base, HALF_TIMER(p), t)
 
 #ifdef CONFIG_GPIO
 
-static void pinmode_pwm(int pin)
+static int pinmode_pwm_timer(int pin)
 {
     const ti_arm_mcu_timer_t *timer;
-    unsigned long half_timer;
+
+    if (ti_arm_mcu_gpio_pins[pin].timer == -1)
+        return -1;
 
     timer = TIMER(pin);
-    half_timer = HALF_TIMER(pin);
 
     ti_arm_mcu_periph_enable(timer->periph);
 
@@ -200,26 +231,23 @@ static void pinmode_pwm(int pin)
     ti_arm_mcu_pin_mode_timer(pin);
 
     /* Configure Timer */
-    ROM_TimerConfigure(timer->base, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM | 
+    ROM_TimerConfigure(timer->base, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM |
         TIMER_CFG_B_PWM));
-    ROM_TimerPrescaleSet(timer->base, half_timer, 0); // ~1230 Hz PWM
-    /* Timer will load this value on timeout */
-    ROM_TimerLoadSet(timer->base, half_timer, 65279);
-    /* Initial duty cycle of 0 */
-    TIMER_SET(pin, 65278);
-    /* PWM should not be inverted */
-    ROM_TimerControlLevel(timer->base, half_timer, 0);
-    
-    ROM_TimerEnable(timer->base, half_timer);
+    return 0;
+}
+
+static int tm4c123g_pin_mode_pwm(int pin)
+{
+    if (ti_arm_mcu_pin_pwm(pin)->base)
+        return ti_arm_mcu_pin_mode_pwm(pin);
+    else
+        return pinmode_pwm_timer(pin);
 }
 
 static int tm4c123g_set_pin_mode(int pin, gpio_pin_mode_t mode)
 {
     /* Anti-brick JTAG Protection */
-    if (pin >= PC0 && pin <= PC3) 
-        return -1;
-
-    if (mode == GPIO_PM_OUTPUT_ANALOG && ti_arm_mcu_gpio_pins[pin].timer == -1)
+    if (pin >= PC0 && pin <= PC3)
         return -1;
 
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
@@ -247,28 +275,37 @@ static int tm4c123g_set_pin_mode(int pin, gpio_pin_mode_t mode)
             return -1;
         break;
     case GPIO_PM_OUTPUT_ANALOG:
-        pinmode_pwm(pin);
-        break;
+        return tm4c123g_pin_mode_pwm(pin);
     }
     return 0;
 }
 
-static void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle) 
+static void ti_arm_mcu_gpio_pwm_timer_start(int pin, int freq, int duty_cycle)
 {
-    int int_val;
+    unsigned long half_timer, base;
+    int prescale = 0, load = 65279, match;
 
-    /* Ignoring freq for now */
-    int_val = 255 * duty_cycle / 100;
+    base = TIMER(pin)->base;
+    half_timer = HALF_TIMER(pin);
 
-    if (int_val > 255)
-        int_val = 255;
-    
-    if (int_val == 0)
-        int_val = 65278;
+    MAP_TimerDisable(base, half_timer);
+    match = load * (100 - duty_cycle) / 100;
+    tp_info(("freq %d, duty %d prescale %d load %d match %d\n", freq, duty_cycle,
+        prescale, load, match));
+    MAP_TimerPrescaleSet(base, half_timer, prescale);
+    MAP_TimerLoadSet(base, half_timer, load);
+    MAP_TimerMatchSet(base, half_timer, match);
+    /* PWM should not be inverted */
+    MAP_TimerControlLevel(base, half_timer, 0);
+    MAP_TimerEnable(base, half_timer);
+}
+
+void tm4c123g_gpio_pwm_start(int pin, int freq, int duty_cycle)
+{
+    if (ti_arm_mcu_pin_pwm(pin)->base)
+        ti_arm_mcu_gpio_pwm_start(pin, freq, duty_cycle);
     else
-        int_val = 65280 - (256 * int_val);
-
-    TIMER_SET(pin, int_val);
+        ti_arm_mcu_gpio_pwm_timer_start(pin, freq, duty_cycle);
 }
 
 #endif
@@ -284,7 +321,7 @@ static void tm4c123g_init(void)
     /* Set the clocking to run directly from the crystal at 80 MHz */
     ROM_SysCtlClockSet(SYSCTL_RCC2_DIV400 | SYSCTL_SYSDIV_2_5 |
         SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
-                       
+
     ti_arm_mcu_systick_init();
 }
 
@@ -299,7 +336,7 @@ const platform_t platform = {
     .gpio = {
         .digital_write = ti_arm_mcu_gpio_digital_write,
         .digital_read = ti_arm_mcu_gpio_digital_read,
-        .pwm_start = ti_arm_mcu_gpio_pwm_start,
+        .pwm_start = tm4c123g_gpio_pwm_start,
         .analog_read = ti_arm_mcu_gpio_analog_read,
         .set_pin_mode = tm4c123g_set_pin_mode,
         .set_port_val = ti_arm_mcu_gpio_set_port_val,
