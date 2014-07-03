@@ -44,6 +44,8 @@ FUNCTION("analogWrite", gpio, do_analog_write, {
     .params = { 
        { .name = "pin", .description = "GPIO pin ID" },
        { .name = "value", .description = "Floating point number with range [0-1]" },
+       { .name = "options (Optional)", .description =
+           "Object: { freq : <frequency> }" },
      },
     .description = "Set the analog value of a GPIO pin",
     .return_value = "None",

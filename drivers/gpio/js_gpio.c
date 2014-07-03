@@ -144,19 +144,29 @@ int do_analog_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     resource_t pin;
     double value;
+    int freq = 1846;
 
-    if (argc != 3)
+    if (argc != 3 && argc != 4)
         return js_invalid_args(ret);
+
+    if (argc == 4)
+    {
+	if (!obj_get_property_int(&freq, argv[3], &S("freq")))
+	{
+	    if (freq < 0)
+		return throw_exception(ret, &S("frequency must be positive"));
+	}
+    }
 
     pin = obj_get_int(argv[1]);
     value = obj_get_fp(argv[2]);
 
-    tp_info(("%s: pin %d value %lf\n", __FUNCTION__, pin, value));
+    tp_info(("%s: pin %d value %lf freq %d\n", __FUNCTION__, pin, value, freq));
 
     if (gpio_set_pin_mode(pin, GPIO_PM_OUTPUT_ANALOG))
         return throw_exception(ret, &Sexception_gpio_pin_mode_unavail);
 
-    gpio_pwm_start(pin, 1846, value * 100);
+    gpio_pwm_start(pin, freq, value * 100);
     *ret = UNDEF;
     return 0;
 }
