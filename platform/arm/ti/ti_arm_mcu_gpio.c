@@ -86,6 +86,7 @@ void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle)
         return;
     
     /* Compute the PWM period based on the system clock */
+    MAP_SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
     period = platform.get_system_clock() / freq;
 
     /* Set the PWM period  */
