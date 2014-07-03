@@ -206,6 +206,14 @@ static inline void ti_arm_mcu_pin_mode_timer(int pin)
 }
 
 #ifdef CONFIG_PLAT_HAS_PWM
+static inline const ti_arm_mcu_pwm_t *ti_arm_mcu_pin_pwm(int pin)
+{
+    const ti_arm_mcu_pwm_t *pwm;
+
+    for (pwm = ti_arm_mcu_pwms; pwm->base && pwm->pin != pin; pwm++);
+    return pwm;
+}
+
 int ti_arm_mcu_pin_mode_pwm(int pin);
 void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle);
 #endif

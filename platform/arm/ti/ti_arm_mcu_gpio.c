@@ -77,17 +77,9 @@ void ti_arm_mcu_gpio_input(int pin)
 }
 
 #ifdef CONFIG_PLAT_HAS_PWM
-static const ti_arm_mcu_pwm_t *pin_pwm(int pin)
-{
-    const ti_arm_mcu_pwm_t *pwm;
-
-    for (pwm = ti_arm_mcu_pwms; pwm->base && pwm->pin != pin; pwm++);
-    return pwm;
-}
-
 void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle) 
 {
-    const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
+    const ti_arm_mcu_pwm_t *pwm = ti_arm_mcu_pin_pwm(pin);
     unsigned long period, width;
 
     if (!pwm->base)
@@ -118,7 +110,7 @@ void ti_arm_mcu_gpio_pwm_start(int pin, int freq, int duty_cycle)
 
 int ti_arm_mcu_pin_mode_pwm(int pin)
 {
-    const ti_arm_mcu_pwm_t *pwm = pin_pwm(pin);
+    const ti_arm_mcu_pwm_t *pwm = ti_arm_mcu_pin_pwm(pin);
 
     if (!pwm->base)
         return -1;
