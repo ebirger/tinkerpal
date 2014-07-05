@@ -32,7 +32,7 @@
 #include "platform/platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 
-unsigned long ctrl_istat, endp_istat;
+static unsigned long ctrl_istat, endp_istat;
 
 int ti_arm_mcu_usbd_event_process(void)
 {
