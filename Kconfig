@@ -8,6 +8,7 @@ source "boards/Kconfig"
 source "apps/Kconfig"
 source "js/Kconfig"
 source "net/Kconfig"
+source "usb/Kconfig"
 
 config GRAPHICS
 	bool "Graphics support"

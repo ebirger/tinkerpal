@@ -28,6 +28,9 @@ config BUFFERED_SERIAL
 config PLAT_HAS_BLK
 	bool
 
+config PLAT_HAS_USB
+	bool
+
 config 16_BIT
 	bool
 

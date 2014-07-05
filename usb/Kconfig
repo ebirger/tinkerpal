@@ -1,0 +1,12 @@
+menuconfig USB
+	bool "USB Support"
+	default y
+        depends on PLAT_HAS_USB
+
+if USB
+
+config USB_DEVICE
+	bool
+	default y
+
+endif
