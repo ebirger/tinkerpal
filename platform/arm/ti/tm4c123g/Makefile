@@ -1,7 +1,7 @@
 MK_OBJS=tm4c123g.o interrupts.o
 
 ifneq ($(CONFIG_GCC),)
-  BSP_SRCS:=gpio.c
+  BSP_SRCS:=gpio.c $(if $(CONFIG_USB),usb.c)
   MK_LINKS:=$(addprefix $(TI_ARM_MCU_BSP_DIR)/driverlib/,$(BSP_SRCS))
   MK_OBJS+=entry_gcc.o $(BSP_SRCS:%.c=%.o)
 

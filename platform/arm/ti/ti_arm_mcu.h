@@ -91,6 +91,11 @@ typedef struct {
     int sda_af;
 } ti_arm_mcu_i2c_t;
 
+typedef struct {
+    int dp_pin;
+    int dm_pin;
+} ti_arm_mcu_usbd_params_t;
+
 /* Defined in each specific target board */
 extern const ti_arm_mcu_uart_t ti_arm_mcu_uarts[];
 extern const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[];
@@ -99,6 +104,7 @@ extern const ti_arm_mcu_timer_t ti_arm_mcu_timers[];
 extern const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[];
 extern const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[];
 extern const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[];
+extern const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params;
 
 void ti_arm_mcu_systick_init(void);
 void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec);
@@ -238,6 +244,9 @@ unsigned long ti_arm_mcu_spi_receive(int port);
 int ti_arm_mcu_i2c_init(int port);
 void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
     unsigned char *data, int len);
+#endif
+#ifdef CONFIG_USB_DEVICE
+int ti_arm_mcu_usb_init(void);
 #endif
 
 #endif

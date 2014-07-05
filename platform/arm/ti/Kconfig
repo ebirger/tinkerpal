@@ -72,6 +72,7 @@ config TM4C123G
 	select PLAT_HAS_I2C
 	select PLAT_HAS_GPIO_INTERRUPTS
 	select PLAT_HAS_PWM
+	select PLAT_HAS_USB
 
 config TM4C1294
 	bool

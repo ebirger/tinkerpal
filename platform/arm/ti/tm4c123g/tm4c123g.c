@@ -211,6 +211,11 @@ const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
     {}
 };
 
+const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params = {
+    .dp_pin = PD5,
+    .dm_pin = PD4,
+};
+
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */
 #define TIMER(p) (&ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[(p)].timer])
 
@@ -356,6 +361,11 @@ const platform_t platform = {
     .i2c = {
         .init = ti_arm_mcu_i2c_init,
         .reg_write = ti_arm_mcu_i2c_reg_write,
+    },
+#endif
+#ifdef CONFIG_USB_DEVICE
+    .usb = {
+        .init = ti_arm_mcu_usb_init,
     },
 #endif
     .init = tm4c123g_init,

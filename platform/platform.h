@@ -74,6 +74,9 @@ typedef struct {
         void (*reg_write)(int port, unsigned char addr, unsigned char reg,
             unsigned char *data, int len);
     } i2c;
+    struct {
+        int (*init)(void);
+    } usb;
     void (*init)(void);
     void (*meminfo)(void);
     void (*get_time_from_boot)(unsigned int *sec, unsigned int *usec);
