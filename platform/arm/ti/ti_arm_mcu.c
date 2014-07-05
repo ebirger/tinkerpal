@@ -216,6 +216,9 @@ int ti_arm_mcu_select(int ms)
 #ifdef CONFIG_TIVA_C_ETH
         event |= tiva_c_emac_event_process();
 #endif
+#ifdef CONFIG_USB_DEVICE
+        event |= ti_arm_mcu_usbd_event_process();
+#endif
         event |= buffered_serial_events_process();
 
         ti_arm_mcu_sleep();

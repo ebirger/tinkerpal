@@ -32,14 +32,29 @@
 #include "platform/platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 
+unsigned long ctrl_istat, endp_istat;
+
+int ti_arm_mcu_usbd_event_process(void)
+{
+    MAP_IntDisable(INT_USB0);
+    if (!ctrl_istat && !endp_istat)
+    {
+        MAP_IntEnable(INT_USB0);
+        return 0;
+    }
+
+    tp_out(("%s: called %x %x\n", __FUNCTION__, ctrl_istat, endp_istat));
+
+    ctrl_istat = endp_istat = 0;
+    MAP_IntEnable(INT_USB0);
+    return 0;
+}
+
 void ti_arm_mcu_usb_isr(void)
 {
-    unsigned long ctrl_istat, endp_istat;
-
-    ctrl_istat = MAP_USBIntStatusControl(USB0_BASE);
-    endp_istat = MAP_USBIntStatusEndpoint(USB0_BASE);
+    ctrl_istat |= MAP_USBIntStatusControl(USB0_BASE);
+    endp_istat |= MAP_USBIntStatusEndpoint(USB0_BASE);
     tp_out(("%s: called %x %x\n", __FUNCTION__, ctrl_istat, endp_istat));
-    MAP_IntDisable(INT_USB0);
 }
 
 static inline void ti_arm_mcu_pin_mode_usb(int pin)
