@@ -7,6 +7,6 @@ if USB
 
 config USB_DEVICE
 	bool
-	default y
+	default n
 
 endif
