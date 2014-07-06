@@ -6,7 +6,7 @@ menuconfig USB
 if USB
 
 config USB_DEVICE
-	bool
+	bool "USB Device Support"
 	default n
 
 endif
