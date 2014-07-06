@@ -29,7 +29,11 @@
 extern void reset_isr(void);
 extern void ti_arm_mcu_uart_isr(int u);
 extern void ti_arm_mcu_gpio_isr(int port);
+#ifdef CONFIG_USB
 extern void ti_arm_mcu_usb_isr(void);
+#else
+static void ti_arm_mcu_usb_isr(void) { }
+#endif
 extern void cortex_m_systick_isr(void);
 
 static void uart0_isr(void) { ti_arm_mcu_uart_isr(UART0); }
