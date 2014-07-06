@@ -366,6 +366,7 @@ const platform_t platform = {
 #ifdef CONFIG_USB_DEVICE
     .usb = {
         .init = ti_arm_mcu_usb_init,
+        .ep0_data_get = ti_arm_mcu_usb_ep0_data_get,
     },
 #endif
     .init = tm4c123g_init,

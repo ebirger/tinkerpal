@@ -34,6 +34,17 @@
 
 static unsigned long ctrl_istat, endp_istat;
 
+int ti_arm_mcu_usb_ep0_data_get(unsigned char *data, unsigned long len)
+{
+    int rc;
+
+    rc = MAP_USBEndpointDataGet(USB0_BASE, USB_EP_0, data, &len);
+    if (rc)
+        return -1;
+
+    return len;
+}
+
 int ti_arm_mcu_usbd_event_process(void)
 {
     MAP_IntDisable(INT_USB0);

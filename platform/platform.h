@@ -76,6 +76,7 @@ typedef struct {
     } i2c;
     struct {
         int (*init)(void);
+        int (*ep0_data_get)(unsigned char *data, unsigned long len);
     } usb;
     void (*init)(void);
     void (*meminfo)(void);

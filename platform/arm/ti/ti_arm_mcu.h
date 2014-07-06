@@ -246,6 +246,7 @@ void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
     unsigned char *data, int len);
 #endif
 #ifdef CONFIG_USB_DEVICE
+int ti_arm_mcu_usb_ep0_data_get(unsigned char *data, unsigned long len);
 int ti_arm_mcu_usbd_event_process(void);
 int ti_arm_mcu_usb_init(void);
 #endif
