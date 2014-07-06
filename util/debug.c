@@ -30,3 +30,13 @@ void debug_init(debugfn_t *fn)
 {
     debugfn = *fn;
 }
+
+void hexdump(unsigned char *buf, int len)
+{
+    int i;
+
+    for (i = 0; i < len; i++)
+        tp_out(("%2x%s", buf[i], (i + 1) % 16 ? " " : "\n"));
+    tp_out(("\n"));
+}
+
