@@ -367,6 +367,9 @@ const platform_t platform = {
     .usb = {
         .init = ti_arm_mcu_usb_init,
         .ep0_data_get = ti_arm_mcu_usb_ep0_data_get,
+        .ep0_data_send = ti_arm_mcu_usb_ep0_data_send,
+        .ep0_data_ack = ti_arm_mcu_usb_ep0_data_ack,
+        .set_addr = ti_arm_mcu_usb_set_addr,
     },
 #endif
     .init = tm4c123g_init,

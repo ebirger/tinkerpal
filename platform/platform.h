@@ -77,6 +77,9 @@ typedef struct {
     struct {
         int (*init)(void);
         int (*ep0_data_get)(unsigned char *data, unsigned long len);
+        int (*ep0_data_send)(unsigned char *data, unsigned long len, int last);
+        void (*ep0_data_ack)(int data_phase);
+        void (*set_addr)(unsigned short addr);
     } usb;
     void (*init)(void);
     void (*meminfo)(void);

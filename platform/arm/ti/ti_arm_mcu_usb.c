@@ -34,6 +34,30 @@
 
 static unsigned long ctrl_istat, endp_istat;
 
+void ti_arm_mcu_usb_set_addr(unsigned short addr)
+{
+    MAP_USBDevAddrSet(USB0_BASE, addr);
+}
+
+void ti_arm_mcu_usb_ep0_data_ack(int data_phase)
+{
+    USBDevEndpointDataAck(USB0_BASE, USB_EP_0, data_phase ? false : true);
+}
+
+int ti_arm_mcu_usb_ep0_data_send(unsigned char *data, unsigned long len,
+    int last)
+{
+    tp_out(("%s: len %d\n", __FUNCTION__, len));
+    if (len)
+    {
+        if (MAP_USBEndpointDataPut(USB0_BASE, USB_EP_0, data, len))
+            return -1;
+    }
+    
+    return MAP_USBEndpointDataSend(USB0_BASE, USB_EP_0, last ?
+        USB_TRANS_IN_LAST : USB_TRANS_IN);
+}
+
 int ti_arm_mcu_usb_ep0_data_get(unsigned char *data, unsigned long len)
 {
     int rc;
