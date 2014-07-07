@@ -31,6 +31,7 @@
 #include "driverlib/usb.h"
 #include "platform/platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
+#include "usb/usbd_core.h"
 
 static unsigned long ctrl_istat, endp_istat;
 
@@ -78,7 +79,18 @@ int ti_arm_mcu_usbd_event_process(void)
         return 0;
     }
 
-    tp_out(("%s: called %x %x\n", __FUNCTION__, ctrl_istat, endp_istat));
+    if (ctrl_istat & USB_INTCTRL_RESET)
+        usbd_event(USB_DEVICE_EVENT_RESET);
+    if (endp_istat & USB_INTEP_0)
+    {
+        if (MAP_USBEndpointStatus(USB0_BASE, USB_EP_0) & USB_DEV_EP0_OUT_PKTRDY)
+            usbd_event(USB_DEVICE_EVENT_EP0_DATA_READY);
+        else
+        {
+            /* XXX: endpoint may be at fault, need to check */
+            usbd_event(USB_DEVICE_EVENT_EP0_WRITE_ACK);
+        }
+    }
 
     ctrl_istat = endp_istat = 0;
     MAP_IntEnable(INT_USB0);
@@ -89,7 +101,6 @@ void ti_arm_mcu_usb_isr(void)
 {
     ctrl_istat |= MAP_USBIntStatusControl(USB0_BASE);
     endp_istat |= MAP_USBIntStatusEndpoint(USB0_BASE);
-    tp_out(("%s: called %x %x\n", __FUNCTION__, ctrl_istat, endp_istat));
 }
 
 static inline void ti_arm_mcu_pin_mode_usb(int pin)
