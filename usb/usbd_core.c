@@ -98,7 +98,6 @@ static void set_configuration_handler(usb_setup_t *setup)
 
 static void get_descriptor_handler(usb_setup_t *setup)
 {
-    u8 id;
     u16 len;
 
     if (setup->bmRequestType != 0x80)
@@ -106,25 +105,25 @@ static void get_descriptor_handler(usb_setup_t *setup)
 
     platform.usb.ep0_data_ack(1);
 
-    id = setup->wValue >> 8;
-    tp_out(("GET_DESCRIPTOR: %d\n", id));
-    switch (id)
+    switch (setup->wValue >> 8)
     {
     case USB_DESC_DEVICE:
+        tp_out(("GET_DESCRIPTOR: DEVICE\n"));
         len = MIN(setup->wLength, sizeof(usb_device_desc));
         ep0_send((u8 *)&usb_device_desc, len);
         break;
     case USB_DESC_CONFIGURATION:
+        tp_out(("GET_DESCRIPTOR: CONFIGURATION\n"));
         /* XXX: validate index, stall if necessary */
-        ep0_send((u8 *)&usb_full_cfg_desc, sizeof(usb_full_cfg_desc));
+        len = MIN(setup->wLength, sizeof(usb_full_cfg_desc));
+        ep0_send((u8 *)&usb_full_cfg_desc, len);
         break;
     case USB_DESC_STRING:
         {
-            int idx = setup->wValue & 0xff;
+            const u8 *str = usb_string_descs[setup->wValue & 0xff];
 
-            tp_out(("index: %d\n", idx));
-            len = usb_string_descs[idx][0];
-            ep0_send((u8 *)usb_string_descs[idx], len);
+            len = MIN(setup->wLength, str[0]);
+            ep0_send((u8 *)str, len);
         }
         break;
     }
