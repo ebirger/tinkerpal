@@ -145,6 +145,9 @@ static void set_addr_handler(usb_setup_t *setup)
     tp_out(("Set Address: %d\n", g_addr));
     platform.usb.ep0_data_ack(0);
     ep0_send(NULL, 0); /* Status ack */
+    /* USB spec mandates address can't be set before the end of the status
+     * stage.
+     */
     g_state = USBD_STATE_ADDR_PENDING;
 }
 
