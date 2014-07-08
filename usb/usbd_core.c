@@ -201,6 +201,7 @@ void usbd_event(usbd_event_t event)
     switch (event)
     {
     case USB_DEVICE_EVENT_RESET:
+        return;
     case USB_DEVICE_EVENT_EP0_WRITE_ACK:
         if (g_state == USBD_STATE_ADDR_PENDING)
         {
