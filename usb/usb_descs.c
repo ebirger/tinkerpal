@@ -151,7 +151,7 @@ static const struct __packed {
         .bNumInterfaces = 2,
         .bConfigurationValue = 1,
         .iConfiguration = 4,
-        .bmAttributes = (1<<6), /* Self powered */
+        .bmAttributes = (1<<7)|(1<<6), /* Self powered */
         .bMaxPower = 250
     },
     .ifc0 = { 
