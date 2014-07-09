@@ -31,7 +31,9 @@
 #define USB_DESC_OTHER_SPEED_CONFIGURATION 7
 #define USB_DESC_INTERFACE_POWER1 8
 
-typedef struct {
+#define __packed __attribute__((packed))
+
+typedef struct __packed {
     u8 bLength;
     u8 bDescriptorType;
     u16 bcdUSB;
@@ -48,7 +50,7 @@ typedef struct {
     u8 bNumConfigurations;
 } usb_device_desc_t;
 
-typedef struct {
+typedef struct __packed {
     u8 bLength;
     u8 bDescriptorType;
     u16 wTotalLength;
@@ -59,7 +61,7 @@ typedef struct {
     u8 bMaxPower;
 } usb_cfg_desc_t;
 
-typedef struct {
+typedef struct __packed {
     u8 bLength;
     u8 bDescriptorType;
     u8 bInterfaceNumber;
@@ -71,7 +73,7 @@ typedef struct {
     u8 iInterface;
 } usb_ifc_desc_t;
 
-typedef struct {
+typedef struct __packed {
     u8 bLength;
     u8 bDescriptorType;
     u8 bEndpointAddress;
@@ -82,21 +84,21 @@ typedef struct {
 
 #define CDC_ACM_CS_INTERFACE 0x24
 
-typedef struct {
+typedef struct __packed {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
     u16 bcdCDC;
 } usb_cdc_acm_header_func_desc_t;
 
-typedef struct {
+typedef struct __packed {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
     u8 bmCapabilities;
 } usb_cdc_acm_func_desc_t;
 
-typedef struct {
+typedef struct __packed {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
@@ -104,7 +106,7 @@ typedef struct {
     u8 bSlaveInterface0;
 } usb_cdc_acm_union_func_desc_t;
 
-typedef struct {
+typedef struct __packed {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
@@ -130,7 +132,7 @@ static const usb_device_desc_t usb_device_desc = {
 };
 
 /* Hard-coded CDC ACM for now */
-static const struct {
+static const struct __packed {
     usb_cfg_desc_t cfg;
     usb_ifc_desc_t ifc0;
     usb_cdc_acm_header_func_desc_t cdc_header;
