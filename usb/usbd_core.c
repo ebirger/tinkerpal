@@ -23,8 +23,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "usb/usbd_core_platform.h"
+#include "usb/usbd_core.h"
 #include "platform/platform.h"
-#include "util/tp_types.h"
 #include "util/tp_misc.h"
 #include "util/debug.h"
 
@@ -50,14 +50,6 @@
 #define USB_REQ_TYPE_CLASS 1
 #define USB_REQ_TYPE_VENDOR 2
 
-typedef struct {
-    u8 bmRequestType;
-    u8 bRequest;
-    u16 wValue;
-    u16 wIndex;
-    u16 wLength;
-} usb_setup_t;
-
 typedef enum {
     USBD_STATE_DEFAULT = 0,
     USBD_STATE_ADDR_PENDING = 1,
@@ -73,14 +65,12 @@ static u16 g_addr;
 static u8 *g_data;
 static u16 g_remaining;
 
-typedef void (*usb_req_handler_t)(usb_setup_t *setup);
-
 static void usb_req_def_handler(usb_setup_t *setup)
 {
     tp_out(("No handler for bRequest %d\n", setup->bRequest));
 }
 
-static int ep0_send(u8 *data, int len)
+int usbd_ep0_send(u8 *data, int len)
 {
     if (len < EP0_SIZE)
     {
@@ -99,7 +89,7 @@ static void set_configuration_handler(usb_setup_t *setup)
     tp_out(("SET_CONFIGURATION\n"));
     /* Just ack for now */
     platform.usb.ep0_data_ack(0);
-    ep0_send(NULL, 0); /* Status ack */
+    usbd_ep0_send(NULL, 0); /* Status ack */
 }
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -118,7 +108,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
     case USB_DESC_DEVICE:
         tp_out(("GET_DESCRIPTOR: DEVICE\n"));
         len = MIN(setup->wLength, sizeof(usb_device_desc));
-        ep0_send((u8 *)&usb_device_desc, len);
+        usbd_ep0_send((u8 *)&usb_device_desc, len);
         break;
     case USB_DESC_CONFIGURATION:
         {
@@ -130,7 +120,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
             tp_out(("---------------------------------\n"));
             hexdump((u8 *)&usb_full_cfg_desc, len);
             tp_out(("---------------------------------\n"));
-            ep0_send((u8 *)&usb_full_cfg_desc, len);
+            usbd_ep0_send((u8 *)&usb_full_cfg_desc, len);
         }
         break;
     case USB_DESC_STRING:
@@ -138,7 +128,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
             const u8 *str = usb_string_descs[setup->wValue & 0xff];
 
             len = MIN(setup->wLength, str[0]);
-            ep0_send((u8 *)str, len);
+            usbd_ep0_send((u8 *)str, len);
         }
         break;
     }
@@ -159,7 +149,7 @@ static void set_addr_handler(usb_setup_t *setup)
     g_addr = setup->wValue;
     tp_out(("Set Address: %d\n", g_addr));
     platform.usb.ep0_data_ack(0);
-    ep0_send(NULL, 0); /* Status ack */
+    usbd_ep0_send(NULL, 0); /* Status ack */
     /* USB spec mandates address can't be set before the end of the status
      * stage.
      */
@@ -240,7 +230,7 @@ void usbd_event(usbd_event_t event)
             g_state = USBD_STATE_ADDR;
         }
         if (g_remaining)
-            ep0_send(g_data, g_remaining);
+            usbd_ep0_send(g_data, g_remaining);
         return;
     case USB_DEVICE_EVENT_EP0_DATA_READY:
         handle_ep0_data();
