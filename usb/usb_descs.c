@@ -26,6 +26,36 @@
 
 #define CDC_ACM_CS_INTERFACE 0x24
 
+typedef struct __packed {
+    u8 bFunctionLength;
+    u8 bDescriptorType;
+    u8 bDescriptorSubtype;
+    u16 bcdCDC;
+} usb_cdc_acm_header_func_desc_t;
+
+typedef struct __packed {
+    u8 bFunctionLength;
+    u8 bDescriptorType;
+    u8 bDescriptorSubtype;
+    u8 bmCapabilities;
+} usb_cdc_acm_func_desc_t;
+
+typedef struct __packed {
+    u8 bFunctionLength;
+    u8 bDescriptorType;
+    u8 bDescriptorSubtype;
+    u8 bMasterInterface;
+    u8 bSlaveInterface0;
+} usb_cdc_acm_union_func_desc_t;
+
+typedef struct __packed {
+    u8 bFunctionLength;
+    u8 bDescriptorType;
+    u8 bDescriptorSubtype;
+    u8 bmCapabilities;
+    u8 bDataInterface;
+} usb_cdc_acm_call_mgmt_func_desc_t;
+
 static const usb_device_desc_t usb_device_desc = {
     .bLength = sizeof(usb_device_desc),
     .bDescriptorType = USB_DESC_DEVICE,
