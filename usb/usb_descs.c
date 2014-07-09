@@ -22,6 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "usb/usb_descs.h"
+
 #define USB_DESC_DEVICE 1
 #define USB_DESC_CONFIGURATION 2
 #define USB_DESC_STRING 3
@@ -31,88 +33,7 @@
 #define USB_DESC_OTHER_SPEED_CONFIGURATION 7
 #define USB_DESC_INTERFACE_POWER1 8
 
-#define __packed __attribute__((packed))
-
-typedef struct __packed {
-    u8 bLength;
-    u8 bDescriptorType;
-    u16 bcdUSB;
-    u8 bDeviceClass;
-    u8 bDeviceSubClass;
-    u8 bDeviceProtocol;
-    u8 bMaxPacketSize0;
-    u16 idVendor;
-    u16 idProduct;
-    u16 bcdDevice;
-    u8 iManufacturer;
-    u8 iProduct;
-    u8 iSerialNumber;
-    u8 bNumConfigurations;
-} usb_device_desc_t;
-
-typedef struct __packed {
-    u8 bLength;
-    u8 bDescriptorType;
-    u16 wTotalLength;
-    u8 bNumInterfaces;
-    u8 bConfigurationValue;
-    u8 iConfiguration;
-    u8 bmAttributes;
-    u8 bMaxPower;
-} usb_cfg_desc_t;
-
-typedef struct __packed {
-    u8 bLength;
-    u8 bDescriptorType;
-    u8 bInterfaceNumber;
-    u8 bAlternateSetting;
-    u8 bNumEndpoints;
-    u8 bInterfaceClass;
-    u8 bInterfaceSubClass;
-    u8 bInterfaceProtocol;
-    u8 iInterface;
-} usb_ifc_desc_t;
-
-typedef struct __packed {
-    u8 bLength;
-    u8 bDescriptorType;
-    u8 bEndpointAddress;
-    u8 bmAttributes;
-    u16 wMaxPacketSize;
-    u8 bInterval;
-} usb_endp_desc_t;
-
 #define CDC_ACM_CS_INTERFACE 0x24
-
-typedef struct __packed {
-    u8 bFunctionLength;
-    u8 bDescriptorType;
-    u8 bDescriptorSubtype;
-    u16 bcdCDC;
-} usb_cdc_acm_header_func_desc_t;
-
-typedef struct __packed {
-    u8 bFunctionLength;
-    u8 bDescriptorType;
-    u8 bDescriptorSubtype;
-    u8 bmCapabilities;
-} usb_cdc_acm_func_desc_t;
-
-typedef struct __packed {
-    u8 bFunctionLength;
-    u8 bDescriptorType;
-    u8 bDescriptorSubtype;
-    u8 bMasterInterface;
-    u8 bSlaveInterface0;
-} usb_cdc_acm_union_func_desc_t;
-
-typedef struct __packed {
-    u8 bFunctionLength;
-    u8 bDescriptorType;
-    u8 bDescriptorSubtype;
-    u8 bmCapabilities;
-    u8 bDataInterface;
-} usb_cdc_acm_call_mgmt_func_desc_t;
 
 static const usb_device_desc_t usb_device_desc = {
     .bLength = sizeof(usb_device_desc),
