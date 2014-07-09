@@ -42,6 +42,10 @@
 #define USB_REQ_SET_INTERFACE 11
 #define USB_REQ_SYNCH_FRAME 12
 
+#define USB_REQ_TYPE_STD 0
+#define USB_REQ_TYPE_CLASS 1
+#define USB_REQ_TYPE_VENDOR 2
+
 typedef struct {
     u8 bmRequestType;
     u8 bRequest;
@@ -154,7 +158,7 @@ static void set_addr_handler(usb_setup_t *setup)
     g_state = USBD_STATE_ADDR_PENDING;
 }
 
-static const usb_req_handler_t handlers[] = {
+static const usb_req_handler_t std_req_handlers[] = {
     [USB_REQ_GET_STATUS] = usb_req_def_handler,
     [USB_REQ_CLEAR_FEATURE] = usb_req_def_handler,
     [USB_REQ_SET_FEATURE] = usb_req_def_handler,
@@ -168,10 +172,21 @@ static const usb_req_handler_t handlers[] = {
     [USB_REQ_SYNCH_FRAME] = usb_req_def_handler,
 };
 
+static void dump_setup(usb_setup_t *setup)
+{
+#define P(field) tp_out(("%s = %x\n", #field, setup->field))
+    P(bmRequestType);
+    P(bRequest);
+    P(wValue);
+    P(wIndex);
+    P(wLength);
+}
+
 static void handle_ep0_data(void)
 {
     int len;
     usb_setup_t *setup;
+    int req_type;
 
     len = platform.usb.ep0_data_get(ep0_data, sizeof(ep0_data));
     if (len < 0)
@@ -181,21 +196,26 @@ static void handle_ep0_data(void)
     }
 
     setup = (usb_setup_t *)ep0_data;
-#define P(field) //tp_out(("%s = %x\n", #field, setup->field))
-    P(bmRequestType);
-    P(bRequest);
-    P(wValue);
-    P(wIndex);
-    P(wLength);
+    req_type = (setup->bmRequestType & ((1<<5)|(1<<6))) >> 5;
 
-    if (setup->bRequest > ARRAY_SIZE(handlers))
+    switch (req_type)
     {
-        /* XXX: stall */
-        tp_err(("Malformed setup packet\n"));
-        return;
+    case USB_REQ_TYPE_STD:
+        if (setup->bRequest > ARRAY_SIZE(std_req_handlers))
+            goto Error;
+
+        std_req_handlers[setup->bRequest](setup);
+        break;
+    default:
+        goto Error;
     }
 
-    handlers[setup->bRequest](setup);
+    return;
+
+Error:
+    /* XXX: stall EP0 */
+    tp_err(("Unsupported request:\n"));
+    dump_setup(setup);
 }
 
 void usbd_event(usbd_event_t event)
