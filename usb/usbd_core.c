@@ -117,13 +117,17 @@ static void get_descriptor_handler(usb_setup_t *setup)
         ep0_send((u8 *)&usb_device_desc, len);
         break;
     case USB_DESC_CONFIGURATION:
-        tp_out(("GET_DESCRIPTOR: CONFIGURATION\n"));
-        /* XXX: validate index, stall if necessary */
-        len = MIN(setup->wLength, sizeof(usb_full_cfg_desc));
-        tp_out(("---------------------------------\n"));
-        hexdump((u8 *)&usb_full_cfg_desc, len);
-        tp_out(("---------------------------------\n"));
-        ep0_send((u8 *)&usb_full_cfg_desc, len);
+        {
+            usb_cfg_desc_t *cfg_header = (usb_cfg_desc_t *)&usb_full_cfg_desc;
+
+            tp_out(("GET_DESCRIPTOR: CONFIGURATION\n"));
+            /* XXX: validate index, stall if necessary */
+            len = MIN(setup->wLength, cfg_header->wTotalLength);
+            tp_out(("---------------------------------\n"));
+            hexdump((u8 *)&usb_full_cfg_desc, len);
+            tp_out(("---------------------------------\n"));
+            ep0_send((u8 *)&usb_full_cfg_desc, len);
+        }
         break;
     case USB_DESC_STRING:
         {
