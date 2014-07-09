@@ -31,7 +31,7 @@
 #include "driverlib/usb.h"
 #include "platform/platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
-#include "usb/usbd_core.h"
+#include "usb/usbd_core_platform.h"
 
 static unsigned long ctrl_istat, endp_istat;
 
