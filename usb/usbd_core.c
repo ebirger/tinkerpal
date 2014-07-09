@@ -28,7 +28,11 @@
 #include "util/tp_misc.h"
 #include "util/debug.h"
 
-#include "usb/usb_descs.c"
+#ifdef CONFIG_USB_CDC_ACM
+#include "usb/cdc_acm_descs.c"
+#else
+#error No USB device class defined
+#endif
 
 #define USB_REQ_GET_STATUS 0
 #define USB_REQ_CLEAR_FEATURE 1

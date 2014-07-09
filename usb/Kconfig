@@ -9,4 +9,9 @@ config USB_DEVICE
 	bool "USB Device Support"
 	default n
 
+config USB_CDC_ACM
+	bool "USB CDC ACM Device Support"
+        depends on USB_DEVICE
+	default y
+
 endif
