@@ -24,15 +24,6 @@
  */
 #include "usb/usb_descs.h"
 
-#define USB_DESC_DEVICE 1
-#define USB_DESC_CONFIGURATION 2
-#define USB_DESC_STRING 3
-#define USB_DESC_INTERFACE 4
-#define USB_DESC_ENDPOINT 5
-#define USB_DESC_DEVICE_QUALIFIER 6
-#define USB_DESC_OTHER_SPEED_CONFIGURATION 7
-#define USB_DESC_INTERFACE_POWER1 8
-
 #define CDC_ACM_CS_INTERFACE 0x24
 
 static const usb_device_desc_t usb_device_desc = {
