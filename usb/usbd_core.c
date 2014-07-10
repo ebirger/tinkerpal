@@ -58,12 +58,19 @@ typedef enum {
 
 #define EP0_SIZE 64
 
+static void handle_setup(void);
+
 static u8 ep0_data[EP0_SIZE];
 static usbd_state_t g_state;
 static u16 g_addr;
 
-static u8 *g_data;
-static u16 g_remaining;
+static u8 *g_send_data;
+static u16 g_send_data_remaining;
+
+static u8 *g_recv_data = ep0_data;
+static u16 g_recv_data_remaining = sizeof(usb_setup_t);
+
+static data_ready_cb_t g_data_ready_cb = handle_setup;
 
 static void usb_req_def_handler(usb_setup_t *setup)
 {
@@ -74,14 +81,21 @@ int usbd_ep0_send(u8 *data, int len)
 {
     if (len < EP0_SIZE)
     {
-        g_remaining = 0;
-        g_data = NULL;
+        g_send_data_remaining = 0;
+        g_send_data = NULL;
         return platform.usb.ep0_data_send(data, len, 1);
     }
 
-    g_remaining = len - EP0_SIZE;
-    g_data = data + EP0_SIZE;
+    g_send_data_remaining = len - EP0_SIZE;
+    g_send_data = data + EP0_SIZE;
     return platform.usb.ep0_data_send(data, EP0_SIZE, 0);
+}
+
+void usbd_ep0_wait_for_data(u8 *data, int len, data_ready_cb_t cb)
+{
+    g_recv_data = data;
+    g_recv_data_remaining = len;
+    g_data_ready_cb = cb;
 }
 
 static void set_configuration_handler(usb_setup_t *setup)
@@ -180,18 +194,10 @@ void usbd_dump_setup(usb_setup_t *setup)
     P(wLength);
 }
 
-static void handle_ep0_data(void)
+static void handle_setup(void)
 {
-    int len;
     usb_setup_t *setup;
     int req_type;
-
-    len = platform.usb.ep0_data_get(ep0_data, sizeof(ep0_data));
-    if (len < 0)
-    {
-        tp_err(("Failed to fetch EP0 data\n"));
-        return;
-    }
 
     setup = (usb_setup_t *)ep0_data;
     req_type = (setup->bmRequestType & ((1<<5)|(1<<6))) >> 5;
@@ -230,11 +236,32 @@ void usbd_event(usbd_event_t event)
             platform.usb.set_addr(g_addr);
             g_state = USBD_STATE_ADDR;
         }
-        if (g_remaining)
-            usbd_ep0_send(g_data, g_remaining);
+        if (g_send_data_remaining)
+            usbd_ep0_send(g_send_data, g_send_data_remaining);
         return;
     case USB_DEVICE_EVENT_EP0_DATA_READY:
-        handle_ep0_data();
+        {
+            int len;
+
+            len = MIN(g_recv_data_remaining, EP0_SIZE);
+            len = platform.usb.ep0_data_get(g_recv_data, len);
+            if (len < 0)
+            {
+                /* XXX: stall, signal upper layer */
+                tp_err(("Failed to fetch EP0 data\n"));
+                return;
+            }
+            g_recv_data_remaining -= len;
+            if (g_recv_data_remaining == 0)
+            {
+                data_ready_cb_t cb = g_data_ready_cb;
+
+                /* Default waiting for setup packet */
+                usbd_ep0_wait_for_data(ep0_data, sizeof(usb_setup_t),
+                    handle_setup);
+                cb();
+            }
+        }
         break;
     }
 }

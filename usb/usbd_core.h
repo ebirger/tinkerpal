@@ -36,8 +36,10 @@ typedef struct {
 } usb_setup_t;
 
 typedef void (*usb_req_handler_t)(usb_setup_t *setup);
+typedef void (*data_ready_cb_t)(void);
 
 void usbd_dump_setup(usb_setup_t *setup);
 int usbd_ep0_send(u8 *data, int len);
+void usbd_ep0_wait_for_data(u8 *data, int len, data_ready_cb_t cb);
 
 #endif
