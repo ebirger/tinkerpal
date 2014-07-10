@@ -42,4 +42,7 @@ void usbd_dump_setup(usb_setup_t *setup);
 int usbd_ep0_send(u8 *data, int len);
 void usbd_ep0_wait_for_data(u8 *data, int len, data_ready_cb_t cb);
 
+/* Defined by USB classes */
+extern void usbd_class_req_do(usb_setup_t *setup);
+
 #endif

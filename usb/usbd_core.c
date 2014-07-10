@@ -210,6 +210,9 @@ static void handle_setup(void)
 
         std_req_handlers[setup->bRequest](setup);
         break;
+    case USB_REQ_TYPE_CLASS:
+        usbd_class_req_do(setup);
+        break;
     default:
         goto Error;
     }
