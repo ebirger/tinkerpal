@@ -37,6 +37,7 @@ typedef struct {
 
 typedef void (*usb_req_handler_t)(usb_setup_t *setup);
 
+void usbd_dump_setup(usb_setup_t *setup);
 int usbd_ep0_send(u8 *data, int len);
 
 #endif

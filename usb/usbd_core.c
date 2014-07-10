@@ -170,7 +170,7 @@ static const usb_req_handler_t std_req_handlers[] = {
     [USB_REQ_SYNCH_FRAME] = usb_req_def_handler,
 };
 
-static void dump_setup(usb_setup_t *setup)
+void usbd_dump_setup(usb_setup_t *setup)
 {
 #define P(field) tp_out(("%s = %x\n", #field, setup->field))
     P(bmRequestType);
@@ -213,7 +213,8 @@ static void handle_ep0_data(void)
 Error:
     /* XXX: stall EP0 */
     tp_err(("Unsupported request:\n"));
-    dump_setup(setup);
+    usbd_dump_setup(setup);
+    return;
 }
 
 void usbd_event(usbd_event_t event)
