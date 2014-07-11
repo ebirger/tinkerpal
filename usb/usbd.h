@@ -22,72 +22,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/event.h"
-#include "util/debug.h"
-#include "mem/tmalloc.h"
-#include "main/console.h"
-#include "util/tp_types.h"
-#include "platform/platform.h"
-#include "boards/board.h"
-#include "drivers/fs/vfs.h"
-#include "js/js.h"
-#include "net/net.h"
-#include "usb/usbd.h"
-#include "version.h"
+#ifndef __USBD_H__
+#define __USBD_H__
 
-extern void app_start(int argc, char *argv[]);
+static inline void usbd_uninit(void) {}
 
-static inline void tp_banner(void)
-{
-    console_printf("TinkerPal version %s\n", TINKERPAL_VERSION);
-    if (board.desc)
-        console_printf("Running on %s\n", board.desc);
-}
+#ifdef CONFIG_USB_DEVICE
 
-static void validate_types(void)
-{
-    tp_assert(sizeof(s8) == 1);
-    tp_assert(sizeof(u8) == 1);
-    tp_assert(sizeof(s16) == 2);
-    tp_assert(sizeof(u16) == 2);
-    tp_assert(sizeof(s32) == 4);
-    tp_assert(sizeof(u32) == 4);
-    tp_assert(sizeof(s64) == 8);
-    tp_assert(sizeof(u64) == 8);
-}
+void usbd_init(void);
 
-int tp_main(int argc, char *argv[])
-{
-    debugfn_t dbg = {};
+#else
 
-    platform_init();
-    tmalloc_init();
-    console_init();
-    validate_types();
-    tp_banner();
+static inline void usbd_init(void) {}
 
-    dbg.print = console_printf;
-    dbg.panic = platform.panic;
+#endif
 
-    debug_init(&dbg);
-
-    vfs_init();
-    js_init();
-    net_init();
-    usbd_init();
-
-    platform_meminfo();
-
-    app_start(argc, argv);
-    
-    event_loop();
-
-    usbd_uninit();
-    net_uninit();
-    js_uninit();
-    vfs_uninit();
-
-    tmalloc_uninit();
-    platform_uninit();
-    return 0;
-}
+#endif

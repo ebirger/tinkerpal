@@ -271,3 +271,8 @@ void usbd_event(usbd_event_t event)
         break;
     }
 }
+
+void usbd_init(void)
+{
+    platform.usb.init();
+}
