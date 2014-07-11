@@ -35,6 +35,19 @@
 
 static unsigned long ctrl_istat, endp_istat;
 
+static uint32_t ep_map(int ep)
+{
+    switch (ep)
+    {
+    case USBD_EP0: return USB_EP_0;
+    case USBD_EP1_IN: return USB_EP_1;
+    case USBD_EP1_OUT: return USB_EP_1;
+    case USBD_EP2_IN: return USB_EP_2;
+    case USBD_EP2_OUT: return USB_EP_2;
+    }
+    return 0;
+}
+
 void ti_arm_mcu_usb_set_addr(unsigned short addr)
 {
     MAP_USBDevAddrSet(USB0_BASE, addr);
@@ -48,14 +61,16 @@ void ti_arm_mcu_usb_ep0_data_ack(int data_phase)
 int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
     int last)
 {
+    uint32_t mapped_ep = ep_map(ep);
+
     tp_out(("%s: len %d\n", __FUNCTION__, len));
     if (len)
     {
-        if (MAP_USBEndpointDataPut(USB0_BASE, USB_EP_0, data, len))
+        if (MAP_USBEndpointDataPut(USB0_BASE, mapped_ep, data, len))
             return -1;
     }
     
-    return MAP_USBEndpointDataSend(USB0_BASE, USB_EP_0, last ?
+    return MAP_USBEndpointDataSend(USB0_BASE, mapped_ep, last ?
         USB_TRANS_IN_LAST : USB_TRANS_IN);
 }
 
