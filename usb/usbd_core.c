@@ -67,10 +67,10 @@ static u16 g_addr;
 static u8 *g_send_data;
 static u16 g_send_data_remaining;
 
-static u8 *g_recv_data = ep0_data;
-static u16 g_recv_data_remaining = sizeof(usb_setup_t);
+static u8 *g_recv_data;
+static u16 g_recv_data_remaining;
 
-static data_ready_cb_t g_data_ready_cb = handle_setup;
+static data_ready_cb_t g_data_ready_cb;
 
 static void usb_req_def_handler(usb_setup_t *setup)
 {
@@ -274,5 +274,6 @@ void usbd_event(usbd_event_t event)
 
 void usbd_init(void)
 {
+    usbd_ep0_wait_for_data(ep0_data, sizeof(usb_setup_t), handle_setup);
     platform.usb.init();
 }
