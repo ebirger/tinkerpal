@@ -25,6 +25,12 @@
 #ifndef __USBD_CORE_PLATFORM_H__
 #define __USBD_CORE_PLATFORM_H__
 
+#define USBD_EP0 0x00
+#define USBD_EP1_IN 0x81
+#define USBD_EP2_IN 0x82
+#define USBD_EP1_OUT 0x01
+#define USBD_EP2_OUT 0x02
+
 typedef enum {
     USB_DEVICE_EVENT_RESET,
     USB_DEVICE_EVENT_EP0_DATA_READY,

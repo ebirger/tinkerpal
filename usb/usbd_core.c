@@ -83,12 +83,12 @@ int usbd_ep0_send(u8 *data, int len)
     {
         g_send_data_remaining = 0;
         g_send_data = NULL;
-        return platform.usb.ep0_data_send(data, len, 1);
+        return platform.usb.ep_data_send(USBD_EP0, data, len, 1);
     }
 
     g_send_data_remaining = len - EP0_SIZE;
     g_send_data = data + EP0_SIZE;
-    return platform.usb.ep0_data_send(data, EP0_SIZE, 0);
+    return platform.usb.ep_data_send(USBD_EP0, data, EP0_SIZE, 0);
 }
 
 void usbd_ep0_wait_for_data(u8 *data, int len, data_ready_cb_t cb)

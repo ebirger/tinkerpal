@@ -45,7 +45,7 @@ void ti_arm_mcu_usb_ep0_data_ack(int data_phase)
     USBDevEndpointDataAck(USB0_BASE, USB_EP_0, data_phase ? false : true);
 }
 
-int ti_arm_mcu_usb_ep0_data_send(unsigned char *data, unsigned long len,
+int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
     int last)
 {
     tp_out(("%s: len %d\n", __FUNCTION__, len));
