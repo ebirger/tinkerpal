@@ -106,6 +106,10 @@ int ti_arm_mcu_usbd_event_process(void)
             usbd_event(USB_DEVICE_EVENT_EP0_WRITE_ACK);
         }
     }
+    if (endp_istat & USB_INTEP_DEV_OUT_1)
+        usbd_event(USB_DEVICE_EVENT_EP1_DATA_READY);
+    if (endp_istat & USB_INTEP_DEV_OUT_2)
+        usbd_event(USB_DEVICE_EVENT_EP2_DATA_READY);
 
     ctrl_istat = endp_istat = 0;
     MAP_IntEnable(INT_USB0);
@@ -147,7 +151,8 @@ int ti_arm_mcu_usb_init(void)
     MAP_USBIntStatusEndpoint(USB0_BASE);
 
     MAP_USBIntEnableControl(USB0_BASE, USB_INTCTRL_RESET);
-    MAP_USBIntEnableEndpoint(USB0_BASE, USB_INTEP_0);
+    MAP_USBIntEnableEndpoint(USB0_BASE, USB_INTEP_0 | USB_INTEP_DEV_OUT_1 |
+        USB_INTEP_DEV_OUT_2);
 
     MAP_USBDevConnect(USB0_BASE);
     MAP_IntEnable(INT_USB0);

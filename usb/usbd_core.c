@@ -266,5 +266,8 @@ void usbd_event(usbd_event_t event)
             }
         }
         break;
+    case USB_DEVICE_EVENT_EP1_DATA_READY:
+    case USB_DEVICE_EVENT_EP2_DATA_READY:
+        break;
     }
 }
