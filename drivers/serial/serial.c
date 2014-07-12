@@ -117,7 +117,9 @@ void serial_event_signal(int u)
 
 int serial_enable(resource_t id, int enabled)
 {
-    if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
+    const serial_driver_t *driver;
+
+    if (!(driver = get_serial_driver(id)))
         return -1;
 
 #ifdef CONFIG_BUFFERED_SERIAL
@@ -125,5 +127,5 @@ int serial_enable(resource_t id, int enabled)
         return -1;
 #endif
 
-    return platform.serial.enable(RES_MIN(id), enabled);
+    return driver->enable(RES_MIN(id), enabled);
 }

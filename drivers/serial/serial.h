@@ -31,20 +31,35 @@
 
 #define UART_RES(u) RES(SERIAL_RESOURCE_ID_BASE, 0, u)
 
-static inline int serial_read(resource_t id, char *buf, int size)
+static inline const serial_driver_t *get_serial_driver(resource_t id)
 {
     if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
+        return NULL;
+
+    if (RES_MAJ(id) == 0)
+        return &platform.serial;
+
+    return NULL;
+}
+
+static inline int serial_read(resource_t id, char *buf, int size)
+{
+    const serial_driver_t *driver;
+
+    if (!(driver = get_serial_driver(id)))
         return -1;
 
-    return platform.serial.read(RES_MIN(id), buf, size);
+    return driver->read(RES_MIN(id), buf, size);
 }
 
 static inline int serial_write(resource_t id, char *buf, int size)
 {
-    if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
+    const serial_driver_t *driver;
+
+    if (!(driver = get_serial_driver(id)))
         return -1;
-    
-    return platform.serial.write(RES_MIN(id), buf, size);
+
+    return driver->write(RES_MIN(id), buf, size);
 }
 
 int serial_enable(resource_t id, int enabled);
