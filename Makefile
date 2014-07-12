@@ -146,4 +146,12 @@ else
 	$(error burn command not available)
 endif
 
+simulate :
+ifneq ($(SIMULATE_CMD),)
+	$(if $(SIMULATE_NOTE),$(call note,$(SIMULATE_NOTE)))
+	@$(SIMULATE_CMD)
+else
+	$(error simulate command not available)
+endif
+
 .PHONY: build_dir _all docs burn
