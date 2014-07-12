@@ -52,16 +52,16 @@ int serial_enable(resource_t id, int enabled);
 /* XXX: should receive tstr */
 static inline int serial_get_constant(int *constant, char *buf, int len)
 {
-#define SERIAL_PREFIX "UART"
+#define UART_PREFIX "UART"
 
-    if (len < sizeof(SERIAL_PREFIX) - 1 ||
-        prefix_comp(sizeof(SERIAL_PREFIX) - 1, SERIAL_PREFIX, buf))
+    if (len < sizeof(UART_PREFIX) - 1 ||
+        prefix_comp(sizeof(UART_PREFIX) - 1, UART_PREFIX, buf))
     {
         return -1;
     }
 
-    buf += sizeof(SERIAL_PREFIX) - 1;
-    len -= sizeof(SERIAL_PREFIX) - 1;
+    buf += sizeof(UART_PREFIX) - 1;
+    len -= sizeof(UART_PREFIX) - 1;
 
     if (len != 1)
         return -1;
