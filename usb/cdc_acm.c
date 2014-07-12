@@ -27,6 +27,10 @@
 #include "usb/usb_descs.h"
 #include "util/debug.h"
 
+#define EP1_SIZE 0x40
+
+static u8 ep1_data[EP1_SIZE];
+
 #define CDC_ACM_REQ_SET_LINE_CODING 0x20
 #define CDC_ACM_REQ_GET_LINE_CODING 0x21
 #define CDC_ACM_REQ_SET_CONTROL_LINE_STATE 0x22
@@ -95,6 +99,12 @@ static void set_ctrl_line_state_handler(usb_setup_t *setup)
     /* Do nothing for now */
 }
 
+static void ep1_data_ready(void)
+{
+    usbd_ep_wait_for_data(USBD_EP1, ep1_data, EP1_SIZE, ep1_data_ready);
+    platform.usb.ep_data_ack(USBD_EP1, 0);
+}
+
 void usbd_class_req_do(usb_setup_t *setup)
 {
     switch (setup->bRequest)
@@ -117,6 +127,7 @@ void usbd_class_req_do(usb_setup_t *setup)
 
 void usbd_class_init(void)
 {
-    usbd_ep_cfg(USBD_EP1, 0x10);
+    usbd_ep_cfg(USBD_EP1, EP1_SIZE);
     usbd_ep_cfg(USBD_EP2, 0x40);
+    usbd_ep_wait_for_data(USBD_EP1, ep1_data, EP1_SIZE, ep1_data_ready);
 }
