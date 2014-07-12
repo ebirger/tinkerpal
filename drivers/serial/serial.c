@@ -117,7 +117,7 @@ void serial_event_signal(int u)
 
 int serial_enable(resource_t id, int enabled)
 {
-    if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
+    if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
         return -1;
 
 #ifdef CONFIG_BUFFERED_SERIAL

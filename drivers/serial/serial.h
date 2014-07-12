@@ -29,11 +29,11 @@
 #include "drivers/resources.h"
 #include "platform/platform.h"
 
-#define UART_RES(u) RES(UART_RESOURCE_ID_BASE, u, 0)
+#define UART_RES(u) RES(SERIAL_RESOURCE_ID_BASE, u, 0)
 
 static inline int serial_read(resource_t id, char *buf, int size)
 {
-    if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
+    if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
         return -1;
 
     return platform.serial.read(RES_MAJ(id), buf, size);
@@ -41,7 +41,7 @@ static inline int serial_read(resource_t id, char *buf, int size)
 
 static inline int serial_write(resource_t id, char *buf, int size)
 {
-    if (RES_BASE(id) != UART_RESOURCE_ID_BASE)
+    if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
         return -1;
     
     return platform.serial.write(RES_MAJ(id), buf, size);
@@ -66,7 +66,7 @@ static inline int serial_get_constant(int *constant, char *buf, int len)
     if (len != 1)
         return -1;
 
-    *constant = (int)RES(UART_RESOURCE_ID_BASE, buf[0] - '0', 0);
+    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, buf[0] - '0', 0);
     return 0;
 }
 
