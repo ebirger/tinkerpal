@@ -250,8 +250,15 @@ Error:
 static void ep_data_recv(int ep)
 {
     usbd_ep_t *uep = &usbd_eps[ep];
-    data_ready_cb_t cb;
+    data_ready_cb_t cb = uep->data_ready_cb;
     int len;
+
+    if (!uep->recv_data)
+    {
+        /* Data read will be done by upper layer */
+        cb(0);
+        return;
+    }
 
     len = MIN(uep->recv_data_remaining, uep->max_pkt_size_out);
     len = platform.usb.ep_data_get(ep, uep->recv_data, len);
@@ -268,7 +275,6 @@ static void ep_data_recv(int ep)
         return;
     }
 
-    cb = uep->data_ready_cb;
     if (ep == USBD_EP0)
     {
         /* On EP0 - default waiting for setup packet */
