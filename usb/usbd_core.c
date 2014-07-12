@@ -72,9 +72,9 @@ typedef struct {
     u8 *recv_data;
     u16 recv_data_remaining;
     data_ready_cb_t data_ready_cb;
-} ep_recv_t;
+} usbd_ep_t;
 
-static ep_recv_t ep_recv[NUM_EPS];
+static usbd_ep_t usbd_eps[NUM_EPS];
 
 static void usb_req_def_handler(usb_setup_t *setup)
 {
@@ -97,9 +97,9 @@ int usbd_ep0_send(u8 *data, int len)
 
 void usbd_ep0_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
 {
-    ep_recv[ep].recv_data = data;
-    ep_recv[ep].recv_data_remaining = len;
-    ep_recv[ep].data_ready_cb = cb;
+    usbd_eps[ep].recv_data = data;
+    usbd_eps[ep].recv_data_remaining = len;
+    usbd_eps[ep].data_ready_cb = cb;
 }
 
 static void set_configuration_handler(usb_setup_t *setup)
@@ -250,18 +250,19 @@ void usbd_event(usbd_event_t event)
         {
             int len;
 
-            len = MIN(ep_recv[0].recv_data_remaining, EP0_SIZE);
-            len = platform.usb.ep_data_get(USBD_EP0, ep_recv[0].recv_data, len);
+            len = MIN(usbd_eps[0].recv_data_remaining, EP0_SIZE);
+            len = platform.usb.ep_data_get(USBD_EP0, usbd_eps[0].recv_data,
+                len);
             if (len < 0)
             {
                 /* XXX: stall, signal upper layer */
                 tp_err(("Failed to fetch EP0 data\n"));
                 return;
             }
-            ep_recv[0].recv_data_remaining -= len;
-            if (ep_recv[0].recv_data_remaining == 0)
+            usbd_eps[0].recv_data_remaining -= len;
+            if (usbd_eps[0].recv_data_remaining == 0)
             {
-                data_ready_cb_t cb = ep_recv[0].data_ready_cb;
+                data_ready_cb_t cb = usbd_eps[0].data_ready_cb;
 
                 /* Default waiting for setup packet */
                 usbd_ep0_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
