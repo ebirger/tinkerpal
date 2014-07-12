@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "platform/platform.h"
+#include "usb/usbd_core_platform.h"
 #include "usb/usbd_core.h"
 #include "usb/usb_descs.h"
 #include "util/debug.h"
@@ -53,7 +54,7 @@ static void data_ready(void)
     PLE(bCharFormat);
     PLE(bParityType);
     PLE(bDataBits);
-    platform.usb.ep0_data_ack(0);
+    platform.usb.ep_data_ack(USBD_EP0, 0);
 }
 
 static void set_line_coding_handler(usb_setup_t *setup)
@@ -68,7 +69,7 @@ static void set_line_coding_handler(usb_setup_t *setup)
     }
 
     usbd_ep0_wait_for_data((u8 *)&g_line_coding, 7, data_ready);
-    platform.usb.ep0_data_ack(1);
+    platform.usb.ep_data_ack(USBD_EP0, 1);
 }
 
 static void get_line_coding_handler(usb_setup_t *setup)
@@ -79,11 +80,11 @@ static void get_line_coding_handler(usb_setup_t *setup)
     {
         /* XXX: stall */
         tp_err(("Malformed request\n"));
-        platform.usb.ep0_data_ack(0);
+        platform.usb.ep_data_ack(USBD_EP0, 0);
         return;
     }
 
-    platform.usb.ep0_data_ack(1);
+    platform.usb.ep_data_ack(USBD_EP0, 1);
     usbd_ep0_send((u8 *)&g_line_coding, 7);
 }
 
@@ -91,7 +92,7 @@ static void set_ctrl_line_state_handler(usb_setup_t *setup)
 {
     tp_out(("CDC ACM: SET_CONTROL_LINE_STATE\n"));
 
-    platform.usb.ep0_data_ack(0);
+    platform.usb.ep_data_ack(USBD_EP0, 0);
     /* Do nothing for now */
 }
 

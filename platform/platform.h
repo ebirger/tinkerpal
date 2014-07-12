@@ -76,7 +76,7 @@ typedef struct {
     } i2c;
     struct {
         int (*init)(void);
-        void (*ep0_data_ack)(int data_phase);
+        void (*ep_data_ack)(int ep, int data_phase);
         int (*ep_data_get)(int ep, unsigned char *data, unsigned long len);
         int (*ep_data_send)(int ep, unsigned char *data, unsigned long len,
             int last);

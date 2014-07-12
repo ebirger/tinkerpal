@@ -106,7 +106,7 @@ static void set_configuration_handler(usb_setup_t *setup)
 {
     tp_out(("SET_CONFIGURATION\n"));
     /* Just ack for now */
-    platform.usb.ep0_data_ack(0);
+    platform.usb.ep_data_ack(USBD_EP0, 0);
     usbd_ep0_send(NULL, 0); /* Status ack */
 }
 
@@ -119,7 +119,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
     if (setup->bmRequestType != 0x80)
         return;
 
-    platform.usb.ep0_data_ack(1);
+    platform.usb.ep_data_ack(USBD_EP0, 1);
 
     switch (setup->wValue >> 8)
     {
@@ -166,7 +166,7 @@ static void set_addr_handler(usb_setup_t *setup)
 
     g_addr = setup->wValue;
     tp_out(("Set Address: %d\n", g_addr));
-    platform.usb.ep0_data_ack(0);
+    platform.usb.ep_data_ack(USBD_EP0, 0);
     usbd_ep0_send(NULL, 0); /* Status ack */
     /* USB spec mandates address can't be set before the end of the status
      * stage.

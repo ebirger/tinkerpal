@@ -51,9 +51,9 @@ void ti_arm_mcu_usb_set_addr(unsigned short addr)
     MAP_USBDevAddrSet(USB0_BASE, addr);
 }
 
-void ti_arm_mcu_usb_ep0_data_ack(int data_phase)
+void ti_arm_mcu_usb_ep_data_ack(int ep, int data_phase)
 {
-    USBDevEndpointDataAck(USB0_BASE, USB_EP_0, data_phase ? false : true);
+    USBDevEndpointDataAck(USB0_BASE, ep_map(ep), data_phase ? false : true);
 }
 
 int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
