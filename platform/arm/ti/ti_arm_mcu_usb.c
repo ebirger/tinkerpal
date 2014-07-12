@@ -40,10 +40,8 @@ static uint32_t ep_map(int ep)
     switch (ep)
     {
     case USBD_EP0: return USB_EP_0;
-    case USBD_EP1_IN: return USB_EP_1;
-    case USBD_EP1_OUT: return USB_EP_1;
-    case USBD_EP2_IN: return USB_EP_2;
-    case USBD_EP2_OUT: return USB_EP_2;
+    case USBD_EP1: return USB_EP_1;
+    case USBD_EP2: return USB_EP_2;
     }
     return 0;
 }
