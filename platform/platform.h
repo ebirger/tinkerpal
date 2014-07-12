@@ -76,8 +76,8 @@ typedef struct {
     } i2c;
     struct {
         int (*init)(void);
-        int (*ep0_data_get)(unsigned char *data, unsigned long len);
         void (*ep0_data_ack)(int data_phase);
+        int (*ep_data_get)(int ep, unsigned char *data, unsigned long len);
         int (*ep_data_send)(int ep, unsigned char *data, unsigned long len,
             int last);
         void (*set_addr)(unsigned short addr);

@@ -72,12 +72,9 @@ int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
         USB_TRANS_IN_LAST : USB_TRANS_IN);
 }
 
-int ti_arm_mcu_usb_ep0_data_get(unsigned char *data, unsigned long len)
+int ti_arm_mcu_usb_ep_data_get(int ep, unsigned char *data, unsigned long len)
 {
-    int rc;
-
-    rc = MAP_USBEndpointDataGet(USB0_BASE, USB_EP_0, data, &len);
-    if (rc)
+    if (MAP_USBEndpointDataGet(USB0_BASE, ep_map(ep), data, &len))
         return -1;
 
     return len;

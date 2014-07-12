@@ -251,7 +251,7 @@ void usbd_event(usbd_event_t event)
             int len;
 
             len = MIN(ep_recv[0].recv_data_remaining, EP0_SIZE);
-            len = platform.usb.ep0_data_get(ep_recv[0].recv_data, len);
+            len = platform.usb.ep_data_get(USBD_EP0, ep_recv[0].recv_data, len);
             if (len < 0)
             {
                 /* XXX: stall, signal upper layer */
