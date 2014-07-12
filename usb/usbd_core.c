@@ -65,12 +65,13 @@ static u8 ep0_data[EP0_SIZE];
 static usbd_state_t g_state;
 static u16 g_addr;
 
-static u8 *g_send_data;
-static u16 g_send_data_remaining;
-
 typedef struct {
     int max_pkt_size_out;
     int max_pkt_size_in;
+
+    u8 *send_data;
+    u16 send_data_remaining;
+
     u8 *recv_data;
     u16 recv_data_remaining;
     data_ready_cb_t data_ready_cb;
@@ -89,18 +90,20 @@ void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out)
     usbd_eps[ep].max_pkt_size_in = max_pkt_size_in;
 }
 
-int usbd_ep0_send(u8 *data, int len)
+int usbd_ep_send(int ep, u8 *data, int len)
 {
-    if (len < EP0_SIZE)
+    usbd_ep_t *uep = &usbd_eps[ep];
+
+    if (len < uep->max_pkt_size_in)
     {
-        g_send_data_remaining = 0;
-        g_send_data = NULL;
-        return platform.usb.ep_data_send(USBD_EP0, data, len, 1);
+        uep->send_data_remaining = 0;
+        uep->send_data = NULL;
+        return platform.usb.ep_data_send(ep, data, len, 1);
     }
 
-    g_send_data_remaining = len - EP0_SIZE;
-    g_send_data = data + EP0_SIZE;
-    return platform.usb.ep_data_send(USBD_EP0, data, EP0_SIZE, 0);
+    uep->send_data_remaining = len - uep->max_pkt_size_in;
+    uep->send_data = data + uep->max_pkt_size_in;
+    return platform.usb.ep_data_send(ep, data, uep->max_pkt_size_in, 0);
 }
 
 void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
@@ -115,7 +118,7 @@ static void set_configuration_handler(usb_setup_t *setup)
     tp_out(("SET_CONFIGURATION\n"));
     /* Just ack for now */
     platform.usb.ep_data_ack(USBD_EP0, 0);
-    usbd_ep0_send(NULL, 0); /* Status ack */
+    usbd_ep_send(USBD_EP0, NULL, 0); /* Status ack */
 }
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -134,7 +137,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
     case USB_DESC_DEVICE:
         tp_out(("GET_DESCRIPTOR: DEVICE\n"));
         len = MIN(setup->wLength, sizeof(usb_device_desc));
-        usbd_ep0_send((u8 *)&usb_device_desc, len);
+        usbd_ep_send(USBD_EP0, (u8 *)&usb_device_desc, len);
         break;
     case USB_DESC_CONFIGURATION:
         {
@@ -146,7 +149,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
             tp_out(("---------------------------------\n"));
             hexdump((u8 *)&usb_full_cfg_desc, len);
             tp_out(("---------------------------------\n"));
-            usbd_ep0_send((u8 *)&usb_full_cfg_desc, len);
+            usbd_ep_send(USBD_EP0, (u8 *)&usb_full_cfg_desc, len);
         }
         break;
     case USB_DESC_STRING:
@@ -154,7 +157,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
             const u8 *str = usb_string_descs[setup->wValue & 0xff];
 
             len = MIN(setup->wLength, str[0]);
-            usbd_ep0_send((u8 *)str, len);
+            usbd_ep_send(USBD_EP0, (u8 *)str, len);
         }
         break;
     }
@@ -175,7 +178,7 @@ static void set_addr_handler(usb_setup_t *setup)
     g_addr = setup->wValue;
     tp_out(("Set Address: %d\n", g_addr));
     platform.usb.ep_data_ack(USBD_EP0, 0);
-    usbd_ep0_send(NULL, 0); /* Status ack */
+    usbd_ep_send(USBD_EP0, NULL, 0); /* Status ack */
     /* USB spec mandates address can't be set before the end of the status
      * stage.
      */
@@ -274,6 +277,19 @@ static void ep_data_recv(int ep)
     cb(len);
 }
 
+static void ep_write_ack(int ep)
+{
+    usbd_ep_t *uep = &usbd_eps[ep];
+
+    if (ep == USBD_EP0 && g_state == USBD_STATE_ADDR_PENDING)
+    {
+        platform.usb.set_addr(g_addr);
+        g_state = USBD_STATE_ADDR;
+    }
+    if (uep->send_data_remaining)
+        usbd_ep_send(ep, uep->send_data, uep->send_data_remaining);
+}
+
 void usbd_event(usbd_event_t event)
 {
     tp_out(("%s: event %d\n", __FUNCTION__, event));
@@ -282,13 +298,7 @@ void usbd_event(usbd_event_t event)
     case USB_DEVICE_EVENT_RESET:
         return;
     case USB_DEVICE_EVENT_EP0_WRITE_ACK:
-        if (g_state == USBD_STATE_ADDR_PENDING)
-        {
-            platform.usb.set_addr(g_addr);
-            g_state = USBD_STATE_ADDR;
-        }
-        if (g_send_data_remaining)
-            usbd_ep0_send(g_send_data, g_send_data_remaining);
+        ep_write_ack(USBD_EP0);
         return;
     case USB_DEVICE_EVENT_EP0_DATA_READY:
         ep_data_recv(USBD_EP0);

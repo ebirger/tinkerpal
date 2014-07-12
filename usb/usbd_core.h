@@ -42,7 +42,7 @@ typedef void (*data_ready_cb_t)(int data_len);
 void usbd_dump_setup(usb_setup_t *setup);
 
 void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out);
-int usbd_ep0_send(u8 *data, int len);
+int usbd_ep_send(int ep, u8 *data, int len);
 void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb);
 
 /* Defined by USB classes */

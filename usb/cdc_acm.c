@@ -89,7 +89,7 @@ static void get_line_coding_handler(usb_setup_t *setup)
     }
 
     platform.usb.ep_data_ack(USBD_EP0, 1);
-    usbd_ep0_send((u8 *)&g_line_coding, 7);
+    usbd_ep_send(USBD_EP0, (u8 *)&g_line_coding, 7);
 }
 
 static void set_ctrl_line_state_handler(usb_setup_t *setup)
