@@ -121,9 +121,9 @@ int serial_enable(resource_t id, int enabled)
         return -1;
 
 #ifdef CONFIG_BUFFERED_SERIAL
-    if (buffered_serial_enable(RES_MAJ(id), enabled))
+    if (buffered_serial_enable(RES_MIN(id), enabled))
         return -1;
 #endif
 
-    return platform.serial.enable(RES_MAJ(id), enabled);
+    return platform.serial.enable(RES_MIN(id), enabled);
 }
