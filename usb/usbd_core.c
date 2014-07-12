@@ -290,24 +290,18 @@ static void ep_write_ack(int ep)
         usbd_ep_send(ep, uep->send_data, uep->send_data_remaining);
 }
 
-void usbd_event(usbd_event_t event)
+void usbd_event(int ep, usbd_event_t event)
 {
     tp_out(("%s: event %d\n", __FUNCTION__, event));
     switch (event)
     {
     case USB_DEVICE_EVENT_RESET:
         return;
-    case USB_DEVICE_EVENT_EP0_WRITE_ACK:
-        ep_write_ack(USBD_EP0);
+    case USB_DEVICE_EVENT_EP_WRITE_ACK:
+        ep_write_ack(ep);
         return;
-    case USB_DEVICE_EVENT_EP0_DATA_READY:
-        ep_data_recv(USBD_EP0);
-        break;
-    case USB_DEVICE_EVENT_EP1_DATA_READY:
-        ep_data_recv(USBD_EP1);
-        break;
-    case USB_DEVICE_EVENT_EP2_DATA_READY:
-        ep_data_recv(USBD_EP2);
+    case USB_DEVICE_EVENT_EP_DATA_READY:
+        ep_data_recv(ep);
         break;
     }
 }

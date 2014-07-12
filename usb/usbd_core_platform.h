@@ -31,12 +31,10 @@
 
 typedef enum {
     USB_DEVICE_EVENT_RESET = 0,
-    USB_DEVICE_EVENT_EP0_DATA_READY = 1,
-    USB_DEVICE_EVENT_EP0_WRITE_ACK = 2,
-    USB_DEVICE_EVENT_EP1_DATA_READY = 3,
-    USB_DEVICE_EVENT_EP2_DATA_READY = 4,
+    USB_DEVICE_EVENT_EP_DATA_READY = 1,
+    USB_DEVICE_EVENT_EP_WRITE_ACK = 2,
 } usbd_event_t;
 
-void usbd_event(usbd_event_t event);
+void usbd_event(int ep, usbd_event_t event);
 
 #endif

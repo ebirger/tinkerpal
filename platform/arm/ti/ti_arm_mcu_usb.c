@@ -90,21 +90,25 @@ int ti_arm_mcu_usbd_event_process(void)
     }
 
     if (ctrl_istat & USB_INTCTRL_RESET)
-        usbd_event(USB_DEVICE_EVENT_RESET);
+        usbd_event(0, USB_DEVICE_EVENT_RESET);
     if (endp_istat & USB_INTEP_0)
     {
         if (MAP_USBEndpointStatus(USB0_BASE, USB_EP_0) & USB_DEV_EP0_OUT_PKTRDY)
-            usbd_event(USB_DEVICE_EVENT_EP0_DATA_READY);
+            usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_DATA_READY);
         else
         {
             /* XXX: endpoint may be at fault, need to check */
-            usbd_event(USB_DEVICE_EVENT_EP0_WRITE_ACK);
+            usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_WRITE_ACK);
         }
     }
     if (endp_istat & USB_INTEP_DEV_OUT_1)
-        usbd_event(USB_DEVICE_EVENT_EP1_DATA_READY);
+        usbd_event(USBD_EP1, USB_DEVICE_EVENT_EP_DATA_READY);
     if (endp_istat & USB_INTEP_DEV_OUT_2)
-        usbd_event(USB_DEVICE_EVENT_EP2_DATA_READY);
+        usbd_event(USBD_EP2, USB_DEVICE_EVENT_EP_DATA_READY);
+    if (endp_istat & USB_INTEP_DEV_IN_1)
+        usbd_event(USBD_EP1, USB_DEVICE_EVENT_EP_WRITE_ACK);
+    if (endp_istat & USB_INTEP_DEV_IN_2)
+        usbd_event(USBD_EP2, USB_DEVICE_EVENT_EP_WRITE_ACK);
 
     ctrl_istat = endp_istat = 0;
     MAP_IntEnable(INT_USB0);
