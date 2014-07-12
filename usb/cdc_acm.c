@@ -49,7 +49,7 @@ static cdc_acm_line_coding_t g_line_coding = {
     .bDataBits = 8
 };
 
-static void data_ready(void)
+static void set_line_coding_data_ready(int data_len)
 {
     tp_out(("Data ready\n"));
 #define PLE(field) tp_out(("%s = %d\n", #field, g_line_coding.field))
@@ -71,7 +71,8 @@ static void set_line_coding_handler(usb_setup_t *setup)
         return;
     }
 
-    usbd_ep_wait_for_data(USBD_EP0, (u8 *)&g_line_coding, 7, data_ready);
+    usbd_ep_wait_for_data(USBD_EP0, (u8 *)&g_line_coding, 7,
+        set_line_coding_data_ready);
     platform.usb.ep_data_ack(USBD_EP0, 1);
 }
 
@@ -99,7 +100,7 @@ static void set_ctrl_line_state_handler(usb_setup_t *setup)
     /* Do nothing for now */
 }
 
-static void ep1_data_ready(void)
+static void ep1_data_ready(int data_len)
 {
     usbd_ep_wait_for_data(USBD_EP1, ep1_data, EP1_SIZE, ep1_data_ready);
     platform.usb.ep_data_ack(USBD_EP1, 0);

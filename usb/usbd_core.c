@@ -59,7 +59,7 @@ typedef enum {
 #define EP0_SIZE 64
 #define NUM_EPS 3
 
-static void handle_setup(void);
+static void handle_setup(int data_len);
 
 static u8 ep0_data[EP0_SIZE];
 static usbd_state_t g_state;
@@ -204,10 +204,16 @@ void usbd_dump_setup(usb_setup_t *setup)
     P(wLength);
 }
 
-static void handle_setup(void)
+static void handle_setup(int data_len)
 {
     usb_setup_t *setup;
     int req_type;
+
+    if (data_len != sizeof(usb_setup_t))
+    {
+        tp_err(("Invalid setup packet of size %d\n", data_len));
+        return;
+    }
 
     setup = (usb_setup_t *)ep0_data;
     req_type = (setup->bmRequestType & ((1<<5)|(1<<6))) >> 5;
@@ -263,7 +269,7 @@ static void ep_data_recv(int ep)
         /* On EP0 - default waiting for setup packet */
         usbd_ep_wait_for_data(ep, ep0_data, sizeof(usb_setup_t), handle_setup);
     }
-    cb();
+    cb(len);
 }
 
 void usbd_event(usbd_event_t event)
