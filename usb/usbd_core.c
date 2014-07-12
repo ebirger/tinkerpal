@@ -298,7 +298,6 @@ static void ep_write_ack(int ep)
 
 void usbd_event(int ep, usbd_event_t event)
 {
-    tp_out(("%s: event %d\n", __FUNCTION__, event));
     switch (event)
     {
     case USB_DEVICE_EVENT_RESET:

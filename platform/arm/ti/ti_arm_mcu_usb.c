@@ -61,7 +61,6 @@ int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
 {
     uint32_t mapped_ep = ep_map(ep);
 
-    tp_out(("%s: len %d\n", __FUNCTION__, len));
     if (len)
     {
         if (MAP_USBEndpointDataPut(USB0_BASE, mapped_ep, data, len))
