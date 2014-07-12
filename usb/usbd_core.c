@@ -101,7 +101,7 @@ int usbd_ep0_send(u8 *data, int len)
     return platform.usb.ep_data_send(USBD_EP0, data, EP0_SIZE, 0);
 }
 
-void usbd_ep0_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
+void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
 {
     usbd_eps[ep].recv_data = data;
     usbd_eps[ep].recv_data_remaining = len;
@@ -236,6 +236,34 @@ Error:
     return;
 }
 
+static void ep_data_recv(int ep)
+{
+    usbd_ep_t *uep = &usbd_eps[ep];
+    int len;
+
+    len = MIN(uep->recv_data_remaining, uep->max_pkt_size);
+    len = platform.usb.ep_data_get(ep, uep->recv_data, len);
+    if (len < 0)
+    {
+        /* XXX: stall, signal upper layer */
+        tp_err(("Failed to fetch EP %d data\n", ep));
+        return;
+    }
+    uep->recv_data_remaining -= len;
+    if (uep->recv_data_remaining == 0)
+    {
+        data_ready_cb_t cb = uep->data_ready_cb;
+
+        if (ep == USBD_EP0)
+        {
+            /* Default waiting for setup packet */
+            usbd_ep_wait_for_data(ep, ep0_data, sizeof(usb_setup_t),
+                handle_setup);
+        }
+        cb();
+    }
+}
+
 void usbd_event(usbd_event_t event)
 {
     tp_out(("%s: event %d\n", __FUNCTION__, event));
@@ -253,33 +281,13 @@ void usbd_event(usbd_event_t event)
             usbd_ep0_send(g_send_data, g_send_data_remaining);
         return;
     case USB_DEVICE_EVENT_EP0_DATA_READY:
-        {
-            int len;
-
-            len = MIN(usbd_eps[0].recv_data_remaining,
-                usbd_eps[0].max_pkt_size);
-            len = platform.usb.ep_data_get(USBD_EP0, usbd_eps[0].recv_data,
-                len);
-            if (len < 0)
-            {
-                /* XXX: stall, signal upper layer */
-                tp_err(("Failed to fetch EP0 data\n"));
-                return;
-            }
-            usbd_eps[0].recv_data_remaining -= len;
-            if (usbd_eps[0].recv_data_remaining == 0)
-            {
-                data_ready_cb_t cb = usbd_eps[0].data_ready_cb;
-
-                /* Default waiting for setup packet */
-                usbd_ep0_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
-                    handle_setup);
-                cb();
-            }
-        }
+        ep_data_recv(USBD_EP0);
         break;
     case USB_DEVICE_EVENT_EP1_DATA_READY:
+        ep_data_recv(USBD_EP1);
+        break;
     case USB_DEVICE_EVENT_EP2_DATA_READY:
+        ep_data_recv(USBD_EP2);
         break;
     }
 }
@@ -287,7 +295,7 @@ void usbd_event(usbd_event_t event)
 void usbd_init(void)
 {
     usbd_ep_cfg(USBD_EP0, EP0_SIZE);
-    usbd_ep0_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
+    usbd_ep_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
         handle_setup);
     platform.usb.init();
 }
