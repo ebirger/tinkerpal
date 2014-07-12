@@ -43,6 +43,14 @@ static inline const serial_driver_t *get_serial_driver(resource_t id)
     if (RES_MAJ(id) == SERIAL_UART_MAJ)
         return &platform.serial;
 
+#ifdef CONFIG_USB_CDC_ACM
+    if (RES_MAJ(id) == SERIAL_USB_MAJ)
+    {
+        extern serial_driver_t cdc_acm_serial_driver;
+        return &cdc_acm_serial_driver;
+    }
+#endif
+
     return NULL;
 }
 
