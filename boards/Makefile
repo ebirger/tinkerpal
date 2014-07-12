@@ -37,3 +37,9 @@ ifneq ($(CONFIG_STM32_HY_24),)
   BURN_NOTE='You can set the port by running PORT=<your port> make burn'
   BURN_CMD=python $(BURNER) -p $(PORT) -evw $(IMAGE)
 endif
+
+# Simulation
+ifneq ($(CONFIG_EK_LM3S6965),)
+  SIMULATE_NOTE='Use CTRL-a-X to exit'
+  SIMULATE_CMD=qemu-system-arm -nographic -M lm3s6965evb -net none -kernel $(IMAGE)
+endif
