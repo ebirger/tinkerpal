@@ -23,7 +23,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "platform/platform.h"
-#include "usb/usbd_core_platform.h"
 #include "usb/usbd_core.h"
 #include "usb/usb_descs.h"
 #include "util/debug.h"
@@ -68,7 +67,7 @@ static void set_line_coding_handler(usb_setup_t *setup)
         return;
     }
 
-    usbd_ep0_wait_for_data((u8 *)&g_line_coding, 7, data_ready);
+    usbd_ep0_wait_for_data(USBD_EP0, (u8 *)&g_line_coding, 7, data_ready);
     platform.usb.ep_data_ack(USBD_EP0, 1);
 }
 

@@ -95,11 +95,11 @@ int usbd_ep0_send(u8 *data, int len)
     return platform.usb.ep_data_send(USBD_EP0, data, EP0_SIZE, 0);
 }
 
-void usbd_ep0_wait_for_data(u8 *data, int len, data_ready_cb_t cb)
+void usbd_ep0_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
 {
-    ep_recv[0].recv_data = data;
-    ep_recv[0].recv_data_remaining = len;
-    ep_recv[0].data_ready_cb = cb;
+    ep_recv[ep].recv_data = data;
+    ep_recv[ep].recv_data_remaining = len;
+    ep_recv[ep].data_ready_cb = cb;
 }
 
 static void set_configuration_handler(usb_setup_t *setup)
@@ -264,7 +264,7 @@ void usbd_event(usbd_event_t event)
                 data_ready_cb_t cb = ep_recv[0].data_ready_cb;
 
                 /* Default waiting for setup packet */
-                usbd_ep0_wait_for_data(ep0_data, sizeof(usb_setup_t),
+                usbd_ep0_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
                     handle_setup);
                 cb();
             }
@@ -278,6 +278,7 @@ void usbd_event(usbd_event_t event)
 
 void usbd_init(void)
 {
-    usbd_ep0_wait_for_data(ep0_data, sizeof(usb_setup_t), handle_setup);
+    usbd_ep0_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
+        handle_setup);
     platform.usb.init();
 }

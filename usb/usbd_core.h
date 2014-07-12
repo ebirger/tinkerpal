@@ -26,6 +26,7 @@
 #define __USBD_CORE_H__
 
 #include "util/tp_types.h"
+#include "usb/usbd_core_platform.h"
 
 typedef struct {
     u8 bmRequestType;
@@ -40,7 +41,7 @@ typedef void (*data_ready_cb_t)(void);
 
 void usbd_dump_setup(usb_setup_t *setup);
 int usbd_ep0_send(u8 *data, int len);
-void usbd_ep0_wait_for_data(u8 *data, int len, data_ready_cb_t cb);
+void usbd_ep0_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb);
 
 /* Defined by USB classes */
 extern void usbd_class_req_do(usb_setup_t *setup);
