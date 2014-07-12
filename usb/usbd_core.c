@@ -239,6 +239,7 @@ Error:
 static void ep_data_recv(int ep)
 {
     usbd_ep_t *uep = &usbd_eps[ep];
+    data_ready_cb_t cb;
     int len;
 
     len = MIN(uep->recv_data_remaining, uep->max_pkt_size);
@@ -250,18 +251,19 @@ static void ep_data_recv(int ep)
         return;
     }
     uep->recv_data_remaining -= len;
-    if (uep->recv_data_remaining == 0)
+    if (uep->recv_data_remaining < 0)
     {
-        data_ready_cb_t cb = uep->data_ready_cb;
-
-        if (ep == USBD_EP0)
-        {
-            /* Default waiting for setup packet */
-            usbd_ep_wait_for_data(ep, ep0_data, sizeof(usb_setup_t),
-                handle_setup);
-        }
-        cb();
+        tp_err(("Unexpected data on ep %d\n", ep));
+        return;
     }
+
+    cb = uep->data_ready_cb;
+    if (ep == USBD_EP0)
+    {
+        /* On EP0 - default waiting for setup packet */
+        usbd_ep_wait_for_data(ep, ep0_data, sizeof(usb_setup_t), handle_setup);
+    }
+    cb();
 }
 
 void usbd_event(usbd_event_t event)
