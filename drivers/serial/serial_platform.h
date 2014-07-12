@@ -25,7 +25,12 @@
 #ifndef __DRIVERS_SERIAL_PLATFORM_H__
 #define __DRIVERS_SERIAL_PLATFORM_H__
 
-#include "platform/platform.h"
+typedef struct {
+    int (*enable)(int u, int enabled);
+    int (*read)(int u, char *buf, int size);
+    int (*write)(int u, char *buf, int size);
+    void (*irq_enable)(int u, int enable);
+} serial_driver_t;
 
 /* Used by the platform to set/test serial events */
 void serial_event_trigger(int u);

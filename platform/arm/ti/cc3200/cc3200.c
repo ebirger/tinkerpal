@@ -26,7 +26,6 @@
 #include "inc/hw_ints.h"
 #include "util/debug.h"
 #include "drivers/gpio/gpio_platform.h"
-#include "drivers/serial/serial_platform.h"
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/ti/ti_arm_mcu.h"

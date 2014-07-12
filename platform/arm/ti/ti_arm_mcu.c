@@ -30,7 +30,7 @@
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
 #include "driverlib/uart.h"
-#include "drivers/serial/serial_platform.h"
+#include "platform/platform.h"
 #ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio_platform.h"
 #endif

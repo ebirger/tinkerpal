@@ -26,7 +26,6 @@
 #include "platform/arm/stm32/stm32.h"
 #include "platform/arm/stm32/stm32_common.h"
 #include "platform/arm/cortex-m.h"
-#include "drivers/serial/serial_platform.h"
 
 /* Define in each chip's system_xxx file */
 extern uint32_t SystemCoreClock;

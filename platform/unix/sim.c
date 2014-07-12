@@ -33,7 +33,6 @@
 #include <signal.h>
 #include "util/debug.h"
 #include "drivers/block/block.h"
-#include "drivers/serial/serial_platform.h"
 #include "platform/platform.h"
 #include "platform/unix/unix.h"
 

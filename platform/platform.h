@@ -26,6 +26,7 @@
 #define __PLATFORM_H__
 
 #include "util/debug.h"
+#include "drivers/serial/serial_platform.h"
 #include "platform/platform_consts.h"
 
 typedef enum {
@@ -38,12 +39,7 @@ typedef enum {
 } gpio_pin_mode_t;
 
 typedef struct {
-    struct {
-        int (*enable)(int u, int enabled);
-        int (*read)(int u, char *buf, int size);
-        int (*write)(int u, char *buf, int size);
-        void (*irq_enable)(int u, int enable);
-    } serial;
+    serial_driver_t serial;
     struct {
         int (*init)(void);
         int (*status)(void);

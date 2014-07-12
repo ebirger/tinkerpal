@@ -26,7 +26,6 @@
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/frdm/MKL25Z4.h"
-#include "drivers/serial/serial_platform.h"
 
 #define CORE_CLOCK 48000000 /* Core clock speed */
 

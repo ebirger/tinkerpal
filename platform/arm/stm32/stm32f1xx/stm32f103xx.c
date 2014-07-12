@@ -32,7 +32,6 @@
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32_spi.h"
 #include "platform/arm/stm32/stm32.h"
-#include "drivers/serial/serial_platform.h"
 
 const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_A] = { RCC_APB2Periph_GPIOA, GPIOA },

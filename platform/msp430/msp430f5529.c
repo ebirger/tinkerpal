@@ -26,7 +26,6 @@
 #include "platform/platform.h"
 #include "platform/msp430/msp430f5529_gpio.h"
 #include "platform/msp430/msp430f5529_usci.h"
-#include "drivers/serial/serial_platform.h"
 #include "drivers/gpio/gpio_platform.h"
 
 #define SYSCLK 12000000
