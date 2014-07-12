@@ -29,14 +29,18 @@
 #include "drivers/resources.h"
 #include "platform/platform.h"
 
-#define UART_RES(u) RES(SERIAL_RESOURCE_ID_BASE, 0, u)
+#define SERIAL_UART_MAJ 0
+#define SERIAL_USB_MAJ 1
+
+#define UART_RES(u) RES(SERIAL_RESOURCE_ID_BASE, SERIAL_UART_MAJ, u)
+#define USB_RES RES(SERIAL_RESOURCE_ID_BASE, SERIAL_USB_MAJ, 0)
 
 static inline const serial_driver_t *get_serial_driver(resource_t id)
 {
     if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
         return NULL;
 
-    if (RES_MAJ(id) == 0)
+    if (RES_MAJ(id) == SERIAL_UART_MAJ)
         return &platform.serial;
 
     return NULL;
@@ -65,24 +69,32 @@ static inline int serial_write(resource_t id, char *buf, int size)
 int serial_enable(resource_t id, int enabled);
 
 /* XXX: should receive tstr */
-static inline int serial_get_constant(int *constant, char *buf, int len)
+static inline int _serial_get_constant(char *prefix, int maj, int *constant,
+    char *buf, int len)
 {
-#define UART_PREFIX "UART"
+    int prefix_len = strlen(prefix);
 
-    if (len < sizeof(UART_PREFIX) - 1 ||
-        prefix_comp(sizeof(UART_PREFIX) - 1, UART_PREFIX, buf))
-    {
+    if (len < prefix_len || prefix_comp(prefix_len, prefix, buf))
         return -1;
-    }
 
-    buf += sizeof(UART_PREFIX) - 1;
-    len -= sizeof(UART_PREFIX) - 1;
+    buf += prefix_len;
+    len -= prefix_len;
 
     if (len != 1)
         return -1;
 
-    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, 0, buf[0] - '0');
+    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, maj, buf[0] - '0');
     return 0;
+}
+
+static inline int serial_get_constant(int *constant, char *buf,
+    int len)
+{
+    if (!_serial_get_constant("UART", SERIAL_UART_MAJ, constant, buf, len))
+        return 0;
+    if (!_serial_get_constant("USB", SERIAL_USB_MAJ, constant, buf, len))
+        return 0;
+    return -1;
 }
 
 #endif

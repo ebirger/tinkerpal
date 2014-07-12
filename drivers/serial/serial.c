@@ -124,8 +124,11 @@ int serial_enable(resource_t id, int enabled)
 
 #ifdef CONFIG_BUFFERED_SERIAL
     /* XXX: support other drivers for buffered serial */
-    if (RES_MAJ(id) == 0 && buffered_serial_enable(RES_MIN(id), enabled))
+    if (RES_MAJ(id) == SERIAL_UART_MAJ &&
+        buffered_serial_enable(RES_MIN(id), enabled))
+    {
         return -1;
+    }
 #endif
 
     return driver->enable(RES_MIN(id), enabled);
