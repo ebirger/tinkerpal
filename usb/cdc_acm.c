@@ -114,3 +114,9 @@ void usbd_class_req_do(usb_setup_t *setup)
         break;
     }
 }
+
+void usbd_class_init(void)
+{
+    usbd_ep_cfg(USBD_EP1, 0x10);
+    usbd_ep_cfg(USBD_EP2, 0x40);
+}
