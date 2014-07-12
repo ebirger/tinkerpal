@@ -69,6 +69,7 @@ static u8 *g_send_data;
 static u16 g_send_data_remaining;
 
 typedef struct {
+    int max_pkt_size;
     u8 *recv_data;
     u16 recv_data_remaining;
     data_ready_cb_t data_ready_cb;
@@ -79,6 +80,11 @@ static usbd_ep_t usbd_eps[NUM_EPS];
 static void usb_req_def_handler(usb_setup_t *setup)
 {
     tp_out(("No handler for bRequest %d\n", setup->bRequest));
+}
+
+void usbd_ep_cfg(int ep, int max_pkt_size)
+{
+    usbd_eps[ep].max_pkt_size = max_pkt_size;
 }
 
 int usbd_ep0_send(u8 *data, int len)
@@ -250,7 +256,8 @@ void usbd_event(usbd_event_t event)
         {
             int len;
 
-            len = MIN(usbd_eps[0].recv_data_remaining, EP0_SIZE);
+            len = MIN(usbd_eps[0].recv_data_remaining,
+                usbd_eps[0].max_pkt_size);
             len = platform.usb.ep_data_get(USBD_EP0, usbd_eps[0].recv_data,
                 len);
             if (len < 0)
@@ -279,6 +286,7 @@ void usbd_event(usbd_event_t event)
 
 void usbd_init(void)
 {
+    usbd_ep_cfg(USBD_EP0, EP0_SIZE);
     usbd_ep0_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
         handle_setup);
     platform.usb.init();
