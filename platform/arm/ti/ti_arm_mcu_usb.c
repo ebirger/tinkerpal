@@ -79,6 +79,32 @@ int ti_arm_mcu_usb_ep_data_get(int ep, unsigned char *data, unsigned long len)
     return len;
 }
 
+static uint32_t ep_mode_flag(usb_ep_type_t type)
+{
+    switch (type)
+    {
+    case USB_EP_TYPE_CTRL: return USB_EP_MODE_CTRL;
+    case USB_EP_TYPE_BULK: return USB_EP_MODE_BULK;
+    case USB_EP_TYPE_INTERRUPT: return USB_EP_MODE_INT;
+    case USB_EP_TYPE_ISOC: return USB_EP_MODE_ISOC;
+    }
+    return 0;
+}
+
+void ti_arm_mcu_usb_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
+    usb_ep_type_t type)
+{
+    uint32_t mode_flag = ep_mode_flag(type);
+
+    if (ep == USBD_EP0)
+        return;
+
+    MAP_USBDevEndpointConfigSet(USB0_BASE, ep_map(ep), max_pkt_size_in,
+        USB_EP_DEV_IN | mode_flag);
+    MAP_USBDevEndpointConfigSet(USB0_BASE, ep_map(ep), max_pkt_size_out,
+        mode_flag);
+}
+
 int ti_arm_mcu_usbd_event_process(void)
 {
     MAP_IntDisable(INT_USB0);

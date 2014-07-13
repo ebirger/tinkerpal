@@ -41,7 +41,8 @@ typedef void (*data_ready_cb_t)(int data_len);
 
 void usbd_dump_setup(usb_setup_t *setup);
 
-void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out);
+void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
+    usb_ep_type_t type);
 int usbd_ep_send(int ep, u8 *data, int len);
 void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb);
 

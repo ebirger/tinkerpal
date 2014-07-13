@@ -84,10 +84,12 @@ static void usb_req_def_handler(usb_setup_t *setup)
     tp_out(("No handler for bRequest %d\n", setup->bRequest));
 }
 
-void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out)
+void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
+    usb_ep_type_t type)
 {
     usbd_eps[ep].max_pkt_size_out = max_pkt_size_out;
     usbd_eps[ep].max_pkt_size_in = max_pkt_size_in;
+    platform.usb.ep_cfg(ep, max_pkt_size_in, max_pkt_size_out, type);
 }
 
 int usbd_ep_send(int ep, u8 *data, int len)
@@ -314,7 +316,7 @@ void usbd_event(int ep, usbd_event_t event)
 void usbd_init(void)
 {
     platform.usb.init();
-    usbd_ep_cfg(USBD_EP0, EP0_SIZE, EP0_SIZE);
+    usbd_ep_cfg(USBD_EP0, EP0_SIZE, EP0_SIZE, USB_EP_TYPE_CTRL);
     usbd_class_init();
     usbd_ep_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
         handle_setup);

@@ -30,6 +30,13 @@
 #define USBD_EP2 2
 
 typedef enum {
+    USB_EP_TYPE_CTRL = 0,
+    USB_EP_TYPE_BULK = 1,
+    USB_EP_TYPE_INTERRUPT = 2,
+    USB_EP_TYPE_ISOC = 3,
+} usb_ep_type_t;
+
+typedef enum {
     USB_DEVICE_EVENT_RESET = 0,
     USB_DEVICE_EVENT_EP_DATA_READY = 1,
     USB_DEVICE_EVENT_EP_WRITE_ACK = 2,

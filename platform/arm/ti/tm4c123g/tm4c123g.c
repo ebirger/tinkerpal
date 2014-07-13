@@ -366,6 +366,7 @@ const platform_t platform = {
     .usb = {
         .init = ti_arm_mcu_usb_init,
         .connect = ti_arm_mcu_usb_connect,
+        .ep_cfg = ti_arm_mcu_usb_ep_cfg,
         .ep_data_ack = ti_arm_mcu_usb_ep_data_ack,
         .ep_data_get = ti_arm_mcu_usb_ep_data_get,
         .ep_data_send = ti_arm_mcu_usb_ep_data_send,

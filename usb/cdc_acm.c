@@ -129,8 +129,8 @@ void usbd_class_req_do(usb_setup_t *setup)
 
 void usbd_class_init(void)
 {
-    usbd_ep_cfg(USBD_EP1, 0x10, EP1_SIZE);
-    usbd_ep_cfg(USBD_EP2, 0x40, 0);
+    usbd_ep_cfg(USBD_EP1, 0x10, EP1_SIZE, USB_EP_TYPE_BULK);
+    usbd_ep_cfg(USBD_EP2, 0x40, 0, USB_EP_TYPE_BULK);
     usbd_ep_wait_for_data(USBD_EP1, NULL, 0, ep1_data_ready);
 }
 

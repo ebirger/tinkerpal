@@ -27,6 +27,7 @@
 
 #include "util/debug.h"
 #include "drivers/serial/serial_platform.h"
+#include "usb/usbd_core_platform.h"
 #include "platform/platform_consts.h"
 
 typedef enum {
@@ -73,6 +74,8 @@ typedef struct {
     struct {
         int (*init)(void);
         void (*connect)(void);
+        void (*ep_cfg)(int ep, int max_pkt_size_in, int max_pkt_size_out,
+            usb_ep_type_t type);
         void (*ep_data_ack)(int ep, int data_phase);
         int (*ep_data_get)(int ep, unsigned char *data, unsigned long len);
         int (*ep_data_send)(int ep, unsigned char *data, unsigned long len,
