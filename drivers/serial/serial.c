@@ -115,6 +115,45 @@ void serial_event_signal(int u)
     event_watch_signal(UART_RES(u));
 }
 
+static const serial_driver_t *get_serial_driver(resource_t id)
+{
+    if (RES_BASE(id) != SERIAL_RESOURCE_ID_BASE)
+        return NULL;
+
+    if (RES_MAJ(id) == SERIAL_UART_MAJ)
+        return &platform.serial;
+
+#ifdef CONFIG_USB_CDC_ACM
+    if (RES_MAJ(id) == SERIAL_USB_MAJ)
+    {
+        extern serial_driver_t cdc_acm_serial_driver;
+        return &cdc_acm_serial_driver;
+    }
+#endif
+
+    return NULL;
+}
+
+int serial_read(resource_t id, char *buf, int size)
+{
+    const serial_driver_t *driver;
+
+    if (!(driver = get_serial_driver(id)))
+        return -1;
+
+    return driver->read(RES_MIN(id), buf, size);
+}
+
+int serial_write(resource_t id, char *buf, int size)
+{
+    const serial_driver_t *driver;
+
+    if (!(driver = get_serial_driver(id)))
+        return -1;
+
+    return driver->write(RES_MIN(id), buf, size);
+}
+
 int serial_enable(resource_t id, int enabled)
 {
     const serial_driver_t *driver;
@@ -132,4 +171,31 @@ int serial_enable(resource_t id, int enabled)
 #endif
 
     return driver->enable(RES_MIN(id), enabled);
+}
+
+static int _serial_get_constant(char *prefix, int maj, int *constant,
+    char *buf, int len)
+{
+    int prefix_len = strlen(prefix);
+
+    if (len < prefix_len || prefix_comp(prefix_len, prefix, buf))
+        return -1;
+
+    buf += prefix_len;
+    len -= prefix_len;
+
+    if (len != 1)
+        return -1;
+
+    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, maj, buf[0] - '0');
+    return 0;
+}
+
+int serial_get_constant(int *constant, char *buf, int len)
+{
+    if (!_serial_get_constant("UART", SERIAL_UART_MAJ, constant, buf, len))
+        return 0;
+    if (!_serial_get_constant("USB", SERIAL_USB_MAJ, constant, buf, len))
+        return 0;
+    return -1;
 }
