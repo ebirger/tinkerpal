@@ -313,9 +313,10 @@ void usbd_event(int ep, usbd_event_t event)
 
 void usbd_init(void)
 {
+    platform.usb.init();
     usbd_ep_cfg(USBD_EP0, EP0_SIZE, EP0_SIZE);
     usbd_class_init();
     usbd_ep_wait_for_data(USBD_EP0, ep0_data, sizeof(usb_setup_t),
         handle_setup);
-    platform.usb.init();
+    platform.usb.connect();
 }

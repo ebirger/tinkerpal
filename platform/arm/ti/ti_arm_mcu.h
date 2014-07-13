@@ -252,6 +252,7 @@ int ti_arm_mcu_usb_ep_data_get(int ep, unsigned char *data, unsigned long len);
 int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
     int last);
 int ti_arm_mcu_usbd_event_process(void);
+void ti_arm_mcu_usb_connect(void);
 int ti_arm_mcu_usb_init(void);
 #endif
 

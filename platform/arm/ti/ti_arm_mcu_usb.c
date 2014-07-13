@@ -125,6 +125,12 @@ static inline void ti_arm_mcu_pin_mode_usb(int pin)
     ti_arm_mcu_periph_enable(ti_arm_mcu_gpio_periph(pin));
     MAP_GPIOPinTypeUSBAnalog(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
 }
+
+void ti_arm_mcu_usb_connect(void)
+{
+    MAP_USBDevConnect(USB0_BASE);
+}
+
 int ti_arm_mcu_usb_init(void)
 {
     uint32_t speed;
@@ -152,7 +158,6 @@ int ti_arm_mcu_usb_init(void)
     MAP_USBIntEnableEndpoint(USB0_BASE, USB_INTEP_0 | USB_INTEP_DEV_OUT_1 |
         USB_INTEP_DEV_OUT_2);
 
-    MAP_USBDevConnect(USB0_BASE);
     MAP_IntEnable(INT_USB0);
     tp_out(("USB controller version 0x%x\n", USBControllerVersion(USB0_BASE)));
     tp_out(("Number of endpoints %d\n", USBNumEndpointsGet(USB0_BASE)));
