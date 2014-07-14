@@ -7,7 +7,7 @@ if USB
 
 config USB_DEVICE
 	bool "USB Device Support"
-	default n
+	default y
 
 config USB_CDC_ACM
 	bool "USB CDC ACM Device Support"
