@@ -325,7 +325,7 @@ void usbd_event(int ep, usbd_event_t event)
         return;
     case USB_DEVICE_EVENT_EP_DATA_READY:
         ep_data_recv(ep);
-        break;
+        return;
     }
 }
 
