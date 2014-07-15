@@ -34,7 +34,9 @@
 #define USB_DESC_OTHER_SPEED_CONFIGURATION 7
 #define USB_DESC_INTERFACE_POWER1 8
 
+#ifndef __packed
 #define __packed __attribute__((packed))
+#endif
 
 typedef struct __packed {
     u8 bLength;
