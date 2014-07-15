@@ -179,6 +179,11 @@ const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
     [ PF7 ] = {-1, 0, -1}
 };
 
+const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params = {
+    .dp_pin = PD5,
+    .dm_pin = PD4,
+};
+
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */
 #define TIMER(p) (&ti_arm_mcu_timers[ti_arm_mcu_gpio_pins[(p)].timer])
 #define TIMER_SET(p, t) ROM_TimerMatchSet(TIMER(p)->base, HALF_TIMER(p), t)
@@ -337,6 +342,17 @@ const platform_t platform = {
     .i2c = {
         .init = ti_arm_mcu_i2c_init,
         .reg_write = ti_arm_mcu_i2c_reg_write,
+    },
+#endif
+#ifdef CONFIG_USB_DEVICE
+    .usb = {
+        .init = ti_arm_mcu_usb_init,
+        .connect = ti_arm_mcu_usb_connect,
+        .ep_cfg = ti_arm_mcu_usb_ep_cfg,
+        .ep_data_ack = ti_arm_mcu_usb_ep_data_ack,
+        .ep_data_get = ti_arm_mcu_usb_ep_data_get,
+        .ep_data_send = ti_arm_mcu_usb_ep_data_send,
+        .set_addr = ti_arm_mcu_usb_set_addr,
     },
 #endif
     .init = lm4f120xl_init,

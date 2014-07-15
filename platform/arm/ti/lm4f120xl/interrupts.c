@@ -33,6 +33,11 @@ extern void ti_arm_mcu_gpio_isr(int port);
 #else
 void ti_arm_mcu_gpio_isr(int port) { }
 #endif
+#ifdef CONFIG_USB
+extern void ti_arm_mcu_usb_isr(void);
+#else
+static void ti_arm_mcu_usb_isr(void) { }
+#endif
 extern void ti_arm_mcu_systick_isr(void);
 
 static void uart0_isr(void) { ti_arm_mcu_uart_isr(UART0); }
@@ -144,7 +149,7 @@ void (*const g_pfnVectors[])(void) =
     default_isr,                      // CAN2
     default_isr,                      // Ethernet
     default_isr,                      // Hibernate
-    default_isr,                      // USB0
+    ti_arm_mcu_usb_isr,               // USB0
     default_isr,                      // PWM Generator 3
     default_isr,                      // uDMA Software Transfer
     default_isr,                      // uDMA Error
