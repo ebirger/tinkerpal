@@ -35,7 +35,7 @@
 
 static unsigned long ctrl_istat, endp_istat;
 
-static uint32_t ep_map(int ep)
+static unsigned int ep_map(int ep)
 {
     switch (ep)
     {
@@ -59,7 +59,7 @@ void ti_arm_mcu_usb_ep_data_ack(int ep, int data_phase)
 int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
     int last)
 {
-    uint32_t mapped_ep = ep_map(ep);
+    unsigned int mapped_ep = ep_map(ep);
 
     if (len)
     {
@@ -79,7 +79,7 @@ int ti_arm_mcu_usb_ep_data_get(int ep, unsigned char *data, unsigned long len)
     return len;
 }
 
-static uint32_t ep_mode_flag(usb_ep_type_t type)
+static unsigned int ep_mode_flag(usb_ep_type_t type)
 {
     switch (type)
     {
@@ -94,7 +94,7 @@ static uint32_t ep_mode_flag(usb_ep_type_t type)
 void ti_arm_mcu_usb_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
     usb_ep_type_t type)
 {
-    uint32_t mode_flag = ep_mode_flag(type);
+    unsigned int mode_flag = ep_mode_flag(type);
 
     if (ep == USBD_EP0)
         return;
@@ -159,22 +159,20 @@ void ti_arm_mcu_usb_connect(void)
 
 int ti_arm_mcu_usb_init(void)
 {
-    uint32_t speed;
-
     MAP_SysCtlPeripheralReset(SYSCTL_PERIPH_USB0);
     ti_arm_mcu_periph_enable(SYSCTL_PERIPH_USB0);
     ti_arm_mcu_pin_mode_usb(ti_arm_mcu_usbd_params.dp_pin);
     ti_arm_mcu_pin_mode_usb(ti_arm_mcu_usbd_params.dm_pin);
 
     MAP_SysCtlUSBPLLEnable();
-    MAP_USBClockEnable(USB0_BASE, 8, USB_CLOCK_INTERNAL);
 
-    MAP_USBULPIDisable(USB0_BASE);
+    TI_BSP_IFDEF(,MAP_USBClockEnable(USB0_BASE, 8, USB_CLOCK_INTERNAL));
+    TI_BSP_IFDEF(,MAP_USBULPIDisable(USB0_BASE));
 
     MAP_USBDevMode(USB0_BASE);
 
-    MAP_USBDevLPMDisable(USB0_BASE);
-    MAP_USBDevLPMConfig(USB0_BASE, USB_DEV_LPM_NONE);
+    TI_BSP_IFDEF(,MAP_USBDevLPMDisable(USB0_BASE));
+    TI_BSP_IFDEF(,MAP_USBDevLPMConfig(USB0_BASE, USB_DEV_LPM_NONE));
 
     /* Clear pending interrupts */
     MAP_USBIntStatusControl(USB0_BASE);
@@ -185,13 +183,5 @@ int ti_arm_mcu_usb_init(void)
         USB_INTEP_DEV_OUT_2);
 
     MAP_IntEnable(INT_USB0);
-    tp_out(("USB controller version 0x%x\n", USBControllerVersion(USB0_BASE)));
-    tp_out(("Number of endpoints %d\n", USBNumEndpointsGet(USB0_BASE)));
-    speed = USBDevSpeedGet(USB0_BASE);
-    tp_out(("USB %s speed\n",
-        speed == USB_HIGH_SPEED ? "high" :
-        speed == USB_FULL_SPEED ? "full" : 
-        speed == USB_LOW_SPEED ? "low" :
-        "unknown"));
     return 0;
 }
