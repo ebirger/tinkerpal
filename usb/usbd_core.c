@@ -69,6 +69,8 @@ typedef struct {
     int max_pkt_size_out;
     int max_pkt_size_in;
 
+    volatile int xfer_complete;
+
     u8 *send_data;
     u16 send_data_remaining;
 
@@ -92,7 +94,7 @@ void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
     platform.usb.ep_cfg(ep, max_pkt_size_in, max_pkt_size_out, type);
 }
 
-int usbd_ep_send(int ep, u8 *data, int len)
+static int _usbd_ep_send(int ep, u8 *data, int len)
 {
     usbd_ep_t *uep = &usbd_eps[ep];
 
@@ -106,6 +108,18 @@ int usbd_ep_send(int ep, u8 *data, int len)
     uep->send_data_remaining = len - uep->max_pkt_size_in;
     uep->send_data = data + uep->max_pkt_size_in;
     return platform.usb.ep_data_send(ep, data, uep->max_pkt_size_in, 0);
+}
+
+int usbd_ep_send(int ep, u8 *data, int len)
+{
+    usbd_ep_t *uep = &usbd_eps[ep];
+
+    uep->xfer_complete = 0;
+    if (_usbd_ep_send(ep, data, len))
+        return -1;
+
+    while (!uep->xfer_complete);
+    return 0;
 }
 
 void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
@@ -295,7 +309,9 @@ static void ep_write_ack(int ep)
         g_state = USBD_STATE_ADDR;
     }
     if (uep->send_data_remaining)
-        usbd_ep_send(ep, uep->send_data, uep->send_data_remaining);
+        _usbd_ep_send(ep, uep->send_data, uep->send_data_remaining);
+    else
+        uep->xfer_complete = 1;
 }
 
 void usbd_event(int ep, usbd_event_t event)
