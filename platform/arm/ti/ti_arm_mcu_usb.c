@@ -107,36 +107,25 @@ void ti_arm_mcu_usb_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
 
 int ti_arm_mcu_usbd_event_process(void)
 {
+    unsigned long ctrl, endp;
+
     MAP_IntDisable(INT_USB0);
-    if (!ctrl_istat && !endp_istat)
-    {
-        MAP_IntEnable(INT_USB0);
-        return 0;
-    }
-
-    if (ctrl_istat & USB_INTCTRL_RESET)
-        usbd_event(0, USB_DEVICE_EVENT_RESET);
-    if (endp_istat & USB_INTEP_0)
-    {
-        if (MAP_USBEndpointStatus(USB0_BASE, USB_EP_0) & USB_DEV_EP0_OUT_PKTRDY)
-            usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_DATA_READY);
-        else
-        {
-            /* XXX: endpoint may be at fault, need to check */
-            usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_WRITE_ACK);
-        }
-    }
-    if (endp_istat & USB_INTEP_DEV_OUT_1)
-        usbd_event(USBD_EP1, USB_DEVICE_EVENT_EP_DATA_READY);
-    if (endp_istat & USB_INTEP_DEV_OUT_2)
-        usbd_event(USBD_EP2, USB_DEVICE_EVENT_EP_DATA_READY);
-    if (endp_istat & USB_INTEP_DEV_IN_1)
-        usbd_event(USBD_EP1, USB_DEVICE_EVENT_EP_WRITE_ACK);
-    if (endp_istat & USB_INTEP_DEV_IN_2)
-        usbd_event(USBD_EP2, USB_DEVICE_EVENT_EP_WRITE_ACK);
-
+    ctrl = ctrl_istat;
+    endp = endp_istat;
     ctrl_istat = endp_istat = 0;
     MAP_IntEnable(INT_USB0);
+
+    if (!ctrl && !endp)
+        return 0;
+
+    if (ctrl & USB_INTCTRL_RESET)
+        usbd_event(0, USB_DEVICE_EVENT_RESET);
+    if (endp & USB_INTEP_0)
+        usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_DATA_READY);
+    if (endp & USB_INTEP_DEV_OUT_1)
+        usbd_event(USBD_EP1, USB_DEVICE_EVENT_EP_DATA_READY);
+    if (endp & USB_INTEP_DEV_OUT_2)
+        usbd_event(USBD_EP2, USB_DEVICE_EVENT_EP_DATA_READY);
     return 0;
 }
 
@@ -144,6 +133,17 @@ void ti_arm_mcu_usb_isr(void)
 {
     ctrl_istat |= MAP_USBIntStatusControl(USB0_BASE);
     endp_istat |= MAP_USBIntStatusEndpoint(USB0_BASE);
+    if (endp_istat & USB_INTEP_0 &&
+        !(MAP_USBEndpointStatus(USB0_BASE, USB_EP_0) & USB_DEV_EP0_OUT_PKTRDY))
+    {
+        usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_WRITE_ACK);
+        endp_istat &= ~USB_INTEP_0;
+    }
+    if (endp_istat & USB_INTEP_DEV_IN_1)
+        usbd_event(USBD_EP1, USB_DEVICE_EVENT_EP_WRITE_ACK);
+    if (endp_istat & USB_INTEP_DEV_IN_2)
+        usbd_event(USBD_EP2, USB_DEVICE_EVENT_EP_WRITE_ACK);
+    endp_istat &= ~USB_INTEP_DEV_IN;
 }
 
 static inline void ti_arm_mcu_pin_mode_usb(int pin)

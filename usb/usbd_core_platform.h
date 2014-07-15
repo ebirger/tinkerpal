@@ -39,7 +39,7 @@ typedef enum {
 typedef enum {
     USB_DEVICE_EVENT_RESET = 0,
     USB_DEVICE_EVENT_EP_DATA_READY = 1,
-    USB_DEVICE_EVENT_EP_WRITE_ACK = 2,
+    USB_DEVICE_EVENT_EP_WRITE_ACK = 2, /* Called from interrupt context */
 } usbd_event_t;
 
 void usbd_event(int ep, usbd_event_t event);
