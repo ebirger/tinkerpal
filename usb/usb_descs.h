@@ -38,7 +38,8 @@
 #define __packed __attribute__((packed))
 #endif
 
-typedef struct __packed {
+typedef struct usb_device_desc_t usb_device_desc_t;
+struct usb_device_desc_t {
     u8 bLength;
     u8 bDescriptorType;
     u16 bcdUSB;
@@ -53,9 +54,10 @@ typedef struct __packed {
     u8 iProduct;
     u8 iSerialNumber;
     u8 bNumConfigurations;
-} usb_device_desc_t;
+} __packed;
 
-typedef struct __packed {
+typedef struct usb_cfg_desc_t usb_cfg_desc_t;
+struct usb_cfg_desc_t {
     u8 bLength;
     u8 bDescriptorType;
     u16 wTotalLength;
@@ -64,9 +66,10 @@ typedef struct __packed {
     u8 iConfiguration;
     u8 bmAttributes;
     u8 bMaxPower;
-} usb_cfg_desc_t;
+} __packed;
 
-typedef struct __packed {
+typedef struct usb_ifc_desc_t usb_ifc_desc_t;
+struct usb_ifc_desc_t {
     u8 bLength;
     u8 bDescriptorType;
     u8 bInterfaceNumber;
@@ -76,15 +79,16 @@ typedef struct __packed {
     u8 bInterfaceSubClass;
     u8 bInterfaceProtocol;
     u8 iInterface;
-} usb_ifc_desc_t;
+} __packed;
 
-typedef struct __packed {
+typedef struct usb_endp_desc_t usb_endp_desc_t;
+struct usb_endp_desc_t {
     u8 bLength;
     u8 bDescriptorType;
     u8 bEndpointAddress;
     u8 bmAttributes;
     u16 wMaxPacketSize;
     u8 bInterval;
-} usb_endp_desc_t;
+} __packed;
 
 #endif

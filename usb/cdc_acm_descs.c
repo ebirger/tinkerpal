@@ -26,35 +26,35 @@
 
 #define CDC_ACM_CS_INTERFACE 0x24
 
-typedef struct __packed {
+struct usb_cdc_acm_header_func_desc_t {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
     u16 bcdCDC;
-} usb_cdc_acm_header_func_desc_t;
+} __packed;
 
-typedef struct __packed {
+struct usb_cdc_acm_func_desc_t {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
     u8 bmCapabilities;
-} usb_cdc_acm_func_desc_t;
+} __packed;
 
-typedef struct __packed {
+struct usb_cdc_acm_union_func_desc_t {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
     u8 bMasterInterface;
     u8 bSlaveInterface0;
-} usb_cdc_acm_union_func_desc_t;
+} __packed;
 
-typedef struct __packed {
+struct usb_cdc_acm_call_mgmt_func_desc_t {
     u8 bFunctionLength;
     u8 bDescriptorType;
     u8 bDescriptorSubtype;
     u8 bmCapabilities;
     u8 bDataInterface;
-} usb_cdc_acm_call_mgmt_func_desc_t;
+} __packed;
 
 static const usb_device_desc_t usb_device_desc = {
     .bLength = sizeof(usb_device_desc),
@@ -74,18 +74,20 @@ static const usb_device_desc_t usb_device_desc = {
 };
 
 /* Hard-coded CDC ACM for now */
-static const struct __packed {
+struct cdc_acm_cfg_desc {
     usb_cfg_desc_t cfg;
     usb_ifc_desc_t ifc0;
-    usb_cdc_acm_header_func_desc_t cdc_header;
-    usb_cdc_acm_func_desc_t cdc_acm;
-    usb_cdc_acm_union_func_desc_t cdc_union;
-    usb_cdc_acm_call_mgmt_func_desc_t cdc_call_mgmt;
+    struct usb_cdc_acm_header_func_desc_t cdc_header;
+    struct usb_cdc_acm_func_desc_t cdc_acm;
+    struct usb_cdc_acm_union_func_desc_t cdc_union;
+    struct usb_cdc_acm_call_mgmt_func_desc_t cdc_call_mgmt;
     usb_endp_desc_t ep1_in;
     usb_ifc_desc_t ifc1;
     usb_endp_desc_t ep2_in;
     usb_endp_desc_t ep1_out;
-} usb_full_cfg_desc = {
+} __packed;
+
+static const struct cdc_acm_cfg_desc usb_full_cfg_desc = {
     .cfg = {
         .bLength = sizeof(usb_cfg_desc_t),
         .bDescriptorType = USB_DESC_CONFIGURATION,
@@ -108,26 +110,26 @@ static const struct __packed {
         .iInterface = 0
     },
     .cdc_header = {
-        .bFunctionLength = sizeof(usb_cdc_acm_header_func_desc_t),
+        .bFunctionLength = sizeof(struct usb_cdc_acm_header_func_desc_t),
         .bDescriptorType = CDC_ACM_CS_INTERFACE,
         .bDescriptorSubtype = 0x00,
         .bcdCDC = 0x0110,
     },
     .cdc_acm = {
-        .bFunctionLength = sizeof(usb_cdc_acm_func_desc_t),
+        .bFunctionLength = sizeof(struct usb_cdc_acm_func_desc_t),
         .bDescriptorType = CDC_ACM_CS_INTERFACE,
         .bDescriptorSubtype = 0x02,
         .bmCapabilities = 0x06,
     },
     .cdc_union = {
-        .bFunctionLength = sizeof(usb_cdc_acm_union_func_desc_t),
+        .bFunctionLength = sizeof(struct usb_cdc_acm_union_func_desc_t),
         .bDescriptorType = CDC_ACM_CS_INTERFACE,
         .bDescriptorSubtype = 0x06,
         .bMasterInterface = 0,
         .bSlaveInterface0 = 1,
     },
     .cdc_call_mgmt = {
-        .bFunctionLength = sizeof(usb_cdc_acm_call_mgmt_func_desc_t),
+        .bFunctionLength = sizeof(struct usb_cdc_acm_call_mgmt_func_desc_t),
         .bDescriptorType = CDC_ACM_CS_INTERFACE,
         .bDescriptorSubtype = 0x01,
         .bmCapabilities = 0x01,

@@ -37,12 +37,13 @@
 #define CDC_ACM_REQ_GET_LINE_CODING 0x21
 #define CDC_ACM_REQ_SET_CONTROL_LINE_STATE 0x22
 
-typedef struct __packed {
+typedef struct cdc_acm_line_coding_t cdc_acm_line_coding_t;
+struct cdc_acm_line_coding_t {
     u32 dwDTERate;
     u8 bCharFormat;
     u8 bParityType;
     u8 bDataBits;
-} cdc_acm_line_coding_t;
+} __packed;
 
 static cdc_acm_line_coding_t g_line_coding = {
     .dwDTERate = 115200,
