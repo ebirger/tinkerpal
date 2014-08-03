@@ -94,6 +94,15 @@ int history_get(history_t *h, char *buf, int free_size)
     return size;
 }
 
+void history_dump(history_t *h)
+{
+    history_item_t *iter;
+    int i = 0;
+
+    for (iter = h->items; iter->next != iter; iter = iter->next)
+        tp_out(("%d: %S\n", i++, &iter->str));
+}
+
 static void history_item_free(history_item_t *i)
 {
     tstr_free(&i->str);

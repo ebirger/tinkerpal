@@ -31,6 +31,7 @@
 typedef struct history_t history_t;
 
 int history_get(history_t *h, char *buf, int free_size);
+void history_dump(history_t *h);
 
 void history_next(history_t *h);
 void history_prev(history_t *h);
