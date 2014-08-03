@@ -42,6 +42,10 @@ config APP_BLINKY
 	bool "Blink board LEDs"
 	depends on GPIO
 
+config APP_UNIT_TESTS
+	bool "Unit Tests"
+	select CLI
+
 config APP_DUMMY
 	bool "Dummy. Does nothing. Used for testing"
 

@@ -13,6 +13,7 @@ endif
 MK_OBJS+=$(if $(CONFIG_APP_FILE_LOADER),file_loader.o)
 MK_OBJS+=$(if $(CONFIG_CLI),cli.o history.o)
 MK_OBJS+=$(if $(CONFIG_APP_REPL),repl.o)
+MK_OBJS+=$(if $(CONFIG_APP_UNIT_TESTS),unit_tests.o)
 MK_OBJS+=$(if $(CONFIG_APP_ECHO_CONSOLE),echo_console.o)
 MK_OBJS+=$(if $(CONFIG_APP_NET_TEST),net_test.o)
 MK_OBJS+=$(if $(CONFIG_APP_GRAPHICS_TEST),graphics_test.o)
