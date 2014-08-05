@@ -24,11 +24,36 @@
  */
 #include "apps/history.h"
 #include "main/console.h"
+#include "util/tp_misc.h"
 
 static history_t *history;
+static char test_buf[CONFIG_CLI_BUFFER_SIZE];
 
-static void history_test(void)
+static int history_cur_cmp(const char *s)
 {
+    int hlen;
+
+    hlen = history_get(history, test_buf, sizeof(test_buf));
+    if (hlen != strlen(s) || memcmp(s, test_buf, hlen))
+    {
+        console_printf("(%d) %s != %s\n", hlen, s, test_buf);
+        return -1;
+    }
+    return 0;
+}
+
+static void history_commit_str(const char *s)
+{
+    tstr_t t;
+
+    tstr_cpy_str(&t, (char *)s);
+    history_commit(history, &t);
+    tstr_free(&t);
+}
+
+static int history_test(void)
+{
+    int rc = 0, rc2 = 0;
     const char *test_strings[] = {
         "Hello World",
         "What's up",
@@ -37,17 +62,32 @@ static void history_test(void)
     }, **s;
 
     console_printf("Starting History Unit Test\n");
+
+    /* Populate history */
     history = history_new();
     for (s = test_strings; *s; s++)
-    {
-        tstr_t t;
+        history_commit_str(*s);
+    history_dump(history);
 
-        tstr_cpy_str(&t, (char *)*s);
-        history_commit(history, &t);
-        tstr_free(&t);
-    }
+    console_printf("history_prev() test: ");
+    rc2 = 0;
+    for (history_prev(history), s = test_strings + ARRAY_SIZE(test_strings) - 2;
+        s >= test_strings && !(rc2 = history_cur_cmp(*s));
+        s--, history_prev(history));
+    console_printf("%s\n", rc2 ? "Fail" : "Pass");
+    rc |= rc2;
+
+    console_printf("history_next() test: ");
+    rc2 = 0;
+    for (s = test_strings;
+        *s && !(rc2 = history_cur_cmp(*s));
+        s++, history_next(history));
+    console_printf("%s\n", rc2 ? "Fail" : "Pass");
+    rc |= rc2;
+
     history_free(history);
-    console_printf("Completed History Unit Test\n");
+    console_printf("History Unit Test: %s\n", rc ? "Fail" : "Pass");
+    return rc;
 }
 
 void app_start(int argc, char *argv[])
