@@ -262,7 +262,7 @@ static void write_buf(void)
 
 static void on_event(event_t *e, u32 id, u64 timestamp)
 {
-    tstr_t quit_cmd = S("quit");
+    tstr_t *quit_cmd = &S("quit"), *history_cmd = &S("history");
 
     size = console_read(read_buf, free_size);
     /* Assumptions: 
@@ -292,7 +292,7 @@ static void on_event(event_t *e, u32 id, u64 timestamp)
         return;
     }
 
-    if (!tstr_cmp(&cur_line, &quit_cmd))
+    if (!tstr_cmp(&cur_line, quit_cmd))
     {
         app_quit();
         return;
@@ -300,7 +300,9 @@ static void on_event(event_t *e, u32 id, u64 timestamp)
 
     if (cur_line.len)
     {
-        if (g_client->process_line)
+        if (!tstr_cmp(&cur_line, history_cmd))
+            history_dump(history);
+        else if (g_client->process_line)
             g_client->process_line(&cur_line);
         history_commit(history, &cur_line);
         cur_line.len = cur_line_pos = 0;
