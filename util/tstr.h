@@ -54,7 +54,7 @@ typedef struct tstr_list_t {
     tstr_t str;
 } tstr_list_t;
 
-void tstr_cpy_str(tstr_t *t, char *s);
+void tstr_cpy_str(tstr_t *t, const char *s);
 
 /* Allocate the data within the tstr */
 void tstr_alloc(tstr_t *t, int len);
