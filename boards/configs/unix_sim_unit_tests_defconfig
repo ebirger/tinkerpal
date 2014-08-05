@@ -1,0 +1,65 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# TinkerPal Configuration
+#
+CONFIG_TINKERPAL=y
+CONFIG_PLATFORM_EMULATION=y
+# CONFIG_EK_LM4F120XL is not set
+# CONFIG_EK_LM3S6965 is not set
+# CONFIG_RDK_IDM is not set
+# CONFIG_EK_TM4C123GXL is not set
+# CONFIG_EK_TM4C1294XL is not set
+# CONFIG_CC3200_LAUNCHXL is not set
+# CONFIG_STM32F3DISCOVERY is not set
+# CONFIG_STM32F4DISCOVERY is not set
+# CONFIG_STM32F429IDISCOVERY is not set
+# CONFIG_STM32_ARMJISHU_28 is not set
+# CONFIG_STM32_HY_24 is not set
+# CONFIG_FRDM_KL25Z is not set
+# CONFIG_MSP430F5529_EXP is not set
+# CONFIG_MSP430F5529_LAUNCHPAD is not set
+
+#
+# Application
+#
+CONFIG_CLI=y
+# CONFIG_APP_ECHO_CONSOLE is not set
+CONFIG_APP_UNIT_TESTS=y
+# CONFIG_APP_DUMMY is not set
+CONFIG_CLI_BUFFER_SIZE=512
+CONFIG_CLI_SYNTAX_HIGHLIGHTING=y
+# CONFIG_JS is not set
+# CONFIG_NET is not set
+# CONFIG_GRAPHICS is not set
+
+#
+# Drivers
+#
+# CONFIG_VFS is not set
+# CONFIG_LCD is not set
+
+#
+# Platform
+#
+CONFIG_PLAT_HAS_SERIAL=y
+CONFIG_UNIX=y
+
+#
+# Platform Emulation Options
+#
+# CONFIG_PLATFORM_EMULATION_PTY_TERM is not set
+# CONFIG_PLATFORM_EMULATION_EXT_TTY is not set
+# CONFIG_PLATFORM_EMULATION_BLOCK_DISK is not set
+# CONFIG_LINUX_ETH is not set
+CONFIG_PLAT_HAS_GCC=y
+CONFIG_GCC=y
+# CONFIG_GCC_LTO is not set
+
+#
+# Memory Allocation Tuning
+#
+CONFIG_PLAT_HAS_MALLOC=y
+CONFIG_MALLOC=y
+# CONFIG_DLMALLOC is not set
+CONFIG_MEM_CACHE=y
+# CONFIG_MEM_PROFILING is not set

@@ -11,6 +11,7 @@ compiler:
   - gcc
 env:
   - DEFCONFIG=unix_sim_tests_defconfig
+  - DEFCONFIG=unix_sim_unit_tests_defconfig UNIT_TESTS=1
   - DEFCONFIG=frdm_kl25z_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=lm4f120xl_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=tm4c123g_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
