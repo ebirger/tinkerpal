@@ -173,13 +173,12 @@ static const struct cdc_acm_cfg_desc usb_full_cfg_desc = {
 };
 
 #define USB_U16(u16) (u16) & 0xff, (u16) >> 8
-#define _(c) c, 0
 static const u8 *usb_string_descs[] = {
     [0] = (u8 []){ 4, USB_DESC_STRING, USB_U16(0x0409) },
-#define STR_DESC(args...) (u8 []){ PP_NARG(args) + 2, USB_DESC_STRING, args }
-    STR_DESC(_('d'),_('e'),_('v')),
-    STR_DESC(_('T'),_('i'),_('n'),_('k'),_('e'),_('r'),_('P'),_('a'),_('l')),
-    STR_DESC(_('1'),_('2'),_('3'),_('4'),_('5')),
-    STR_DESC(_('c'),_('f'),_('g')),
+#define _STR_DESC(args...) (u8 []){ PP_NARG(args) + 2, USB_DESC_STRING, args }
+#define STR_DESC(args...) _STR_DESC(CHAR_TO_WCHAR(args))
+    STR_DESC('d','e','v'),
+    STR_DESC('T','i','n','k','e','r','P','a','l'),
+    STR_DESC('1','2','3','4','5'),
+    STR_DESC('c','f','g'),
 };
-#undef _
