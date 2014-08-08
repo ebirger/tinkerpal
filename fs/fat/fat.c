@@ -44,12 +44,12 @@ DSTATUS disk_status(BYTE pdrv)
     return block_status() ? STA_NOINIT : 0;
 }
 
-DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, BYTE count)
+DRESULT disk_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count)
 {
     return block_read(buff, sector, count) ? RES_ERROR : RES_OK;
 }
 
-DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, BYTE count)
+DRESULT disk_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count)
 {
     return block_write(buff, sector, count) ? RES_ERROR : RES_OK;
 }
@@ -199,12 +199,12 @@ int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 
 static void fat_init(void)
 {
-    f_mount(0, &g_fatfs);
+    f_mount(&g_fatfs, "0" , 1);
 }
 
 static void fat_uninit(void)
 {
-    f_mount(0, 0);
+    f_mount(NULL, "0", 1);
 }
 
 const fs_t fat_fs = {
