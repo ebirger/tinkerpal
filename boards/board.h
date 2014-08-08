@@ -37,15 +37,13 @@
 #ifdef CONFIG_I2C
 #include "drivers/i2c/i2c.h"
 #endif
-#ifdef CONFIG_ILI93XX
-#include "drivers/graphics/graphics_screens.h"
-#endif
 #ifdef CONFIG_MMC
 #include "drivers/mmc/mmc.h"
 #endif
 #ifdef CONFIG_ENC28J60
 #include "drivers/net/enc28j60.h"
 #endif
+#include "drivers/graphics/graphics_screens.h"
 
 typedef struct {
     char *desc;
