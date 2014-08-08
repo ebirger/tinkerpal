@@ -55,6 +55,9 @@
 #ifdef CONFIG_SSD1329
 #include "drivers/lcd/ssd1329.h"
 #endif
+#ifdef CONFIG_PCD8544
+#include "drivers/lcd/pcd8544.h"
+#endif
 #ifdef CONFIG_MMC
 #include "drivers/mmc/mmc.h"
 #endif
@@ -80,6 +83,9 @@ typedef struct {
 #endif
 #ifdef CONFIG_SSD1329
     ssd1329_params_t ssd1329_params;
+#endif
+#ifdef CONFIG_PCD8544
+    pcd8544_params_t pcd8544_params;
 #endif
 #ifdef CONFIG_MMC
     mmc_params_t mmc_params;

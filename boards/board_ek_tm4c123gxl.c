@@ -56,4 +56,13 @@ const board_t board = {
         .intr = GPIO_RES(PF4),
     },
 #endif
+#ifdef CONFIG_PCD8544
+    .pcd8544_params = {
+        .rst = GPIO_RES(PF3),
+        .cs = GPIO_RES(PB6),
+        .cd = GPIO_RES(PA6),
+        .spi_port = SPI_RES(SSI0),
+        .backlight = GPIO_RES(PF2),
+    },
+#endif
 };
