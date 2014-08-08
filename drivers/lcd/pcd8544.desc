@@ -1,0 +1,8 @@
+CONSTRUCTOR("PCD8544", canvas, do_pcd8544_constructor, {
+    .params = {
+    },
+    .description = "PCD8544 Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new PCD8544();\n"
+        "lcd.pixelDraw(10, 10, 1);",
+})
