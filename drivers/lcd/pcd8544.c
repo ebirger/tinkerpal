@@ -109,12 +109,6 @@ static void pcd8544_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     pcd8544_t *screen = container_of(c, pcd8544_t, canvas);
     u8 page, line_bit;
 
-    if (x > LCD_WIDTH)
-        x = LCD_WIDTH;
-
-    if (y > LCD_HEIGHT)
-        y = LCD_HEIGHT;
-
     page = y >> 3; /* Each 8 vertical lines are one byte */
     line_bit = 1 << (y & 0x07);
 

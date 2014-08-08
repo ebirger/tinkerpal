@@ -112,12 +112,6 @@ static void ssd1329_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     ssd1329_t *screen = container_of(c, ssd1329_t, canvas);
     u8 cell;
 
-    if (x > WIDTH - 1)
-        x = WIDTH - 1;
-
-    if (y > HEIGHT - 1)
-        y = HEIGHT -1;
-
     val &= 0xf;
 
     /* Set shadow */

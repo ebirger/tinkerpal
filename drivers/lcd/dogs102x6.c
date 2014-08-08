@@ -136,13 +136,7 @@ static void dogs102x6_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
     dogs102x6_t *screen = container_of(c, dogs102x6_t, canvas);
     u8 page, line_bit;
-
-    if (x > 101)
-        x = 101;
-
-    if (y > 63)
-        y = 63;
-
+    
     page = y >> 3; /* Each 8 vertical lines are one byte */
     line_bit = 0x80 >> (y & 0x07); /* Default to mirrored display */
 

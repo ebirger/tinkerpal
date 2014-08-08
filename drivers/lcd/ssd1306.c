@@ -125,12 +125,6 @@ static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
     u8 page, line_bit;
 
-    if (x > WIDTH - 1)
-        x = WIDTH - 1;
-
-    if (y > HEIGHT - 1)
-        y = HEIGHT -1;
-
     page = y >> 3; /* Each 8 vertical lines are one byte */
     line_bit = 1 << (y & 0x07);
 
