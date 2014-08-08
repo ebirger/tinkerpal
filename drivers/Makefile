@@ -1,7 +1,7 @@
 MK_SUBDIRS+=$(if $(CONFIG_ONE_WIRE),one_wire)
 MK_SUBDIRS+=$(if $(CONFIG_MMC),mmc)
 MK_SUBDIRS+=$(if $(CONFIG_GPIO),gpio)
-MK_SUBDIRS+=$(if $(CONFIG_LCD),graphics)
+MK_SUBDIRS+=$(if $(CONFIG_GRAPHICS_SCREENS),graphics)
 MK_SUBDIRS+=$(if $(CONFIG_PLAT_HAS_SERIAL),serial)
 MK_SUBDIRS+=$(if $(CONFIG_SPI),spi)
 MK_SUBDIRS+=$(if $(CONFIG_NET),net)

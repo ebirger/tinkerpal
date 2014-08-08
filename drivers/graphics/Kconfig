@@ -1,8 +1,8 @@
-menuconfig LCD
-	bool "LCD Drivers"
+menuconfig GRAPHICS_SCREENS
+	bool "Graphics Screens Drivers"
 	default y
 
-if LCD
+if GRAPHICS_SCREENS
 
 config TEXT_LCD
 	bool "Support for Hitachi HD44780 like text LCD screens over GPIO"

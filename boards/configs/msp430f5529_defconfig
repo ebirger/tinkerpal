@@ -96,7 +96,7 @@ CONFIG_SPI=y
 CONFIG_GPIO=y
 CONFIG_MMC=y
 # CONFIG_VFS is not set
-# CONFIG_LCD is not set
+# CONFIG_GRAPHICS_SCREENS is not set
 
 #
 # Networking

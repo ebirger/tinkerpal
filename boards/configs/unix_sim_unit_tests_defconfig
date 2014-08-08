@@ -36,7 +36,7 @@ CONFIG_CLI_SYNTAX_HIGHLIGHTING=y
 # Drivers
 #
 # CONFIG_VFS is not set
-# CONFIG_LCD is not set
+# CONFIG_GRAPHICS_SCREENS is not set
 
 #
 # Platform
