@@ -26,7 +26,7 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "drivers/resources.h"
-#include "drivers/graphics/pcd8544.h"
+#include "drivers/graphics/graphics_screens.h"
 #include "drivers/gpio/gpio.h"
 #include "drivers/spi/spi.h"
 #include "graphics/colors.h"

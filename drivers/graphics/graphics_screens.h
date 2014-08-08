@@ -22,20 +22,92 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __SSD1329_H__
-#define __SSD1329_H__
+#ifndef __GRAPHICS_SCREENS_H__
+#define __GRAPHICS_SCREENS_H__
 
 #include "util/tp_types.h"
 #include "graphics/canvas.h"
 #include "drivers/resources.h"
+#ifdef CONFIG_ILI93XX
+#include "drivers/graphics/ili93xx_transport.h"
+#endif
+#ifdef CONFIG_ILI93XX_BITBANG
+#include "drivers/graphics/ili93xx_bitbang.h"
+#endif
 
+#ifdef CONFIG_DOGS102X6
+typedef struct {
+    resource_t rst;
+    resource_t cs;
+    resource_t cd;
+    resource_t spi_port;
+    resource_t backlight;
+} dogs102x6_params_t;
+#endif
+
+#ifdef CONFIG_ILI93XX
+typedef struct {
+    resource_t rst;
+    resource_t backlight;
+    const ili93xx_db_transport_t *trns;
+} ili93xx_params_t;
+#endif
+
+#ifdef CONFIG_PCD8544
+typedef struct {
+    resource_t rst;
+    resource_t cs;
+    resource_t cd;
+    resource_t spi_port;
+    resource_t backlight;
+} pcd8544_params_t;
+#endif
+
+#ifdef CONFIG_SDL_SCREEN
+typedef struct {
+    u16 width;
+    u16 height;
+} sdl_screen_params_t;
+#endif
+
+#ifdef CONFIG_SSD1306
+typedef struct {
+    resource_t i2c_port;
+    resource_t i2c_addr;
+} ssd1306_params_t;
+#endif
+
+#ifdef CONFIG_SSD1329
 typedef struct {
     resource_t spi_port;
     resource_t pwr;
     resource_t cd;
     resource_t cs;
 } ssd1329_params_t;
+#endif
 
+#ifdef CONFIG_DOGS102X6
+canvas_t *dogs102x6_new(const dogs102x6_params_t *params);
+#endif
+
+#ifdef CONFIG_ILI93XX
+canvas_t *ili93xx_new(const ili93xx_params_t *params);
+#endif
+
+#ifdef CONFIG_PCD8544
+canvas_t *pcd8544_new(const pcd8544_params_t *params);
+#endif
+
+#ifdef CONFIG_SDL_SCREEN
+canvas_t *sdl_screen_new(const sdl_screen_params_t *params);
+#endif
+
+#ifdef CONFIG_SSD1306
+canvas_t *ssd1306_new(const ssd1306_params_t *params);
+#endif
+
+#ifdef CONFIG_SSD1329
 canvas_t *ssd1329_new(const ssd1329_params_t *params);
+#endif
 
 #endif

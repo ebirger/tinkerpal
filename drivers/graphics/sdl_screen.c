@@ -26,7 +26,7 @@
 #include "util/event.h"
 #include "util/debug.h"
 #include "drivers/resources.h"
-#include "drivers/graphics/sdl_screen.h"
+#include "drivers/graphics/graphics_screens.h"
 #include "graphics/colors.h"
 #include "SDL.h"
 
