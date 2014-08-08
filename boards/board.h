@@ -43,7 +43,9 @@
 #ifdef CONFIG_ENC28J60
 #include "drivers/net/enc28j60.h"
 #endif
+#ifdef CONFIG_GRAPHICS_SCREENS
 #include "drivers/graphics/graphics_screens.h"
+#endif
 
 typedef struct {
     char *desc;
