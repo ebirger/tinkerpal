@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "drivers/lcd/ili93xx_controllers.h"
+#include "drivers/graphics/ili93xx_controllers.h"
 
 #define ILI9328_DRIVER_OUTPUT 0x01
 #define ILI9328_LCD_DRIVING_CTRL 0x02

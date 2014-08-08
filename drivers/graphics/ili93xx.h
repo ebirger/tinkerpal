@@ -27,7 +27,7 @@
 
 #include "graphics/canvas.h"
 #include "drivers/resources.h"
-#include "drivers/lcd/ili93xx_transport.h"
+#include "drivers/graphics/ili93xx_transport.h"
 
 typedef struct {
     resource_t rst;

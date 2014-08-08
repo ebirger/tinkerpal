@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "drivers/lcd/ili93xx_controllers.h"
+#include "drivers/graphics/ili93xx_controllers.h"
 
 const ili93xx_cmd_t ili9325_4532_init_cmds[] = {
     REG_SET(0x00, 0x0001),

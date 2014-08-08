@@ -25,8 +25,8 @@
 #include "util/tp_misc.h"
 #include "drivers/resources.h"
 #include "drivers/gpio/gpio.h"
-#include "drivers/lcd/ili93xx.h"
-#include "drivers/lcd/ili93xx_bitbang.h"
+#include "drivers/graphics/ili93xx.h"
+#include "drivers/graphics/ili93xx_bitbang.h"
 
 #define RS(t) ((t)->params.rs)
 #define RD(t) ((t)->params.rd)

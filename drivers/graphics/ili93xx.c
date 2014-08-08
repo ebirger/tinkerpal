@@ -25,8 +25,8 @@
 #include "util/tp_misc.h"
 #include "drivers/resources.h"
 #include "drivers/gpio/gpio.h"
-#include "drivers/lcd/ili93xx.h"
-#include "drivers/lcd/ili93xx_controllers.h"
+#include "drivers/graphics/ili93xx.h"
+#include "drivers/graphics/ili93xx_controllers.h"
 
 #define RST(i) ((i)->params.rst)
 #define BL(i) ((i)->params.backlight)

@@ -21,7 +21,7 @@ config I2C
 	default y
 
 source "drivers/fs/Kconfig"
-source "drivers/lcd/Kconfig"
+source "drivers/graphics/Kconfig"
 
 if NET
 source "drivers/net/Kconfig"

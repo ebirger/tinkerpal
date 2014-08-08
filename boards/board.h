@@ -38,25 +38,25 @@
 #include "drivers/i2c/i2c.h"
 #endif
 #ifdef CONFIG_ILI93XX
-#include "drivers/lcd/ili93xx.h"
+#include "drivers/graphics/ili93xx.h"
 #endif
 #ifdef CONFIG_ILI93XX_BITBANG
-#include "drivers/lcd/ili93xx_bitbang.h"
+#include "drivers/graphics/ili93xx_bitbang.h"
 #endif
 #ifdef CONFIG_SDL_SCREEN
-#include "drivers/lcd/sdl_screen.h"
+#include "drivers/graphics/sdl_screen.h"
 #endif
 #ifdef CONFIG_DOGS102X6
-#include "drivers/lcd/dogs102x6.h"
+#include "drivers/graphics/dogs102x6.h"
 #endif
 #ifdef CONFIG_SSD1306
-#include "drivers/lcd/ssd1306.h"
+#include "drivers/graphics/ssd1306.h"
 #endif
 #ifdef CONFIG_SSD1329
-#include "drivers/lcd/ssd1329.h"
+#include "drivers/graphics/ssd1329.h"
 #endif
 #ifdef CONFIG_PCD8544
-#include "drivers/lcd/pcd8544.h"
+#include "drivers/graphics/pcd8544.h"
 #endif
 #ifdef CONFIG_MMC
 #include "drivers/mmc/mmc.h"
