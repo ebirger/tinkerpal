@@ -35,14 +35,21 @@
 #include "drivers/graphics/ili93xx_bitbang.h"
 #endif
 
-#ifdef CONFIG_DOGS102X6
+#ifdef CONFIG_SPI
 typedef struct {
     resource_t rst;
     resource_t cs;
     resource_t cd;
     resource_t spi_port;
     resource_t backlight;
-} dogs102x6_params_t;
+} spi_graphics_screen_params_t;
+#endif
+
+#ifdef CONFIG_DOGS102X6
+typedef spi_graphics_screen_params_t dogs102x6_params_t;
+#endif
+#ifdef CONFIG_PCD8544
+typedef spi_graphics_screen_params_t pcd8544_params_t;
 #endif
 
 #ifdef CONFIG_ILI93XX
@@ -51,16 +58,6 @@ typedef struct {
     resource_t backlight;
     const ili93xx_db_transport_t *trns;
 } ili93xx_params_t;
-#endif
-
-#ifdef CONFIG_PCD8544
-typedef struct {
-    resource_t rst;
-    resource_t cs;
-    resource_t cd;
-    resource_t spi_port;
-    resource_t backlight;
-} pcd8544_params_t;
 #endif
 
 #ifdef CONFIG_SDL_SCREEN
