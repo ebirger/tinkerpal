@@ -22,7 +22,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "drivers/gpio/gpio.h"
 #include "graphics/js_canvas.h"
 #include "boards/board.h"
 #include "js/js_obj.h"
