@@ -96,6 +96,8 @@ static void lcd_init(void)
     canvas = ssd1306_new(&board.ssd1306_params);
 #elif defined(CONFIG_SSD1329)
     canvas = ssd1329_new(&board.ssd1329_params);
+#elif defined(CONFIG_PCD8544)
+    canvas = pcd8544_new(&board.pcd8544_params);
 #else
 #error No LCD hookup information available
 #endif
