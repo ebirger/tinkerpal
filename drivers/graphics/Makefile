@@ -1,4 +1,4 @@
-MK_OBJS+=$(if $(CONFIG_JS),js_lcd.o)
+MK_OBJS+=$(if $(CONFIG_JS),js_graphics_screens.o)
 
 ifneq ($(CONFIG_ILI93XX),)
   MK_OBJS+=ili93xx.o
