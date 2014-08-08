@@ -33,7 +33,7 @@ const board_t board = {
         .spi_port = SPI_RES(SSI0),
 	.cs = GPIO_RES(PA3),
 	.cd = GPIO_RES(PC7),
-	.pwr = GPIO_RES(PC6),
+	.rst = GPIO_RES(PC6),
     },
 #endif
 #ifdef CONFIG_MMC
