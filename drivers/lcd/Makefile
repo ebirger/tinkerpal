@@ -34,5 +34,11 @@ ifneq ($(CONFIG_SSD1329),)
   MK_OBJS+=$(if $(CONFIG_JS),js_ssd1329.o)
 endif
 
+ifneq ($(CONFIG_PCD8544),)
+  MK_OBJS+=pcd8544.o
+#  MK_DESCS=pcd8544.desc
+#  MK_OBJS+=$(if $(CONFIG_JS),js_pcd8544.o)
+endif
+
 MODULES=$(if $(CONFIG_TEXT_LCD),text_lcd.js)
 MK_BUILTIN_FS_INTERNAL_FILES=$(MODULES)

@@ -53,6 +53,10 @@ config SSD1329
 	depends on GPIO && SPI && GRAPHICS
 	default y if EK_LM3S6965
 
+config PCD8544
+	bool "Support for the PCD8544 LCD controller used in Nokia 5110 screens"
+	depends on GPIO && SPI && GRAPHICS
+
 config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS
