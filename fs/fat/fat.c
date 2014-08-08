@@ -28,8 +28,8 @@
 #include "mem/tmalloc.h"
 #include "drivers/block/block.h"
 #include "fs/vfs.h"
-#include "fs/fat/FatFS/diskio.h"
-#include "fs/fat/FatFS/ff.h"
+#include "diskio.h"
+#include "ff.h"
 #include <string.h> /* memcpy */
 
 static FATFS g_fatfs;
