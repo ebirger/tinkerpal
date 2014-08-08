@@ -85,10 +85,10 @@ static void chip_init(ssd1329_t *screen)
 
     gpio_set_pin_mode(screen->params.cs, GPIO_PM_OUTPUT);
     gpio_set_pin_mode(screen->params.cd, GPIO_PM_OUTPUT);
-    gpio_set_pin_mode(screen->params.pwr, GPIO_PM_OUTPUT);
+    gpio_set_pin_mode(screen->params.rst, GPIO_PM_OUTPUT);
 
     /* Activate Screen */
-    gpio_digital_write(screen->params.pwr, 1);
+    gpio_digital_write(screen->params.rst, 1);
 
     /* Init SPI */
     gpio_digital_write(screen->params.cs, 0);

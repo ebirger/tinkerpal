@@ -51,6 +51,9 @@ typedef spi_graphics_screen_params_t dogs102x6_params_t;
 #ifdef CONFIG_PCD8544
 typedef spi_graphics_screen_params_t pcd8544_params_t;
 #endif
+#ifdef CONFIG_SSD1329
+typedef spi_graphics_screen_params_t ssd1329_params_t;
+#endif
 
 #ifdef CONFIG_ILI93XX
 typedef struct {
@@ -72,15 +75,6 @@ typedef struct {
     resource_t i2c_port;
     resource_t i2c_addr;
 } ssd1306_params_t;
-#endif
-
-#ifdef CONFIG_SSD1329
-typedef struct {
-    resource_t spi_port;
-    resource_t pwr;
-    resource_t cd;
-    resource_t cs;
-} ssd1329_params_t;
 #endif
 
 #ifdef CONFIG_DOGS102X6
