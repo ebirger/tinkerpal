@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "drivers/fs/vfs.h"
+#include "fs/vfs.h"
 
 #ifdef CONFIG_FAT_FS
 extern const fs_t fat_fs;

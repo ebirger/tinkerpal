@@ -26,7 +26,7 @@
 #include "platform/platform.h"
 #include "util/tstr.h"
 #include "mem/tmalloc.h"
-#include "drivers/fs/vfs.h"
+#include "fs/vfs.h"
 #include <stdio.h>
 
 static int local_file_read(tstr_t *content, tstr_t *file_name)

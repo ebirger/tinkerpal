@@ -27,9 +27,9 @@
 #include "util/tstr.h"
 #include "mem/tmalloc.h"
 #include "drivers/block/block.h"
-#include "drivers/fs/vfs.h"
-#include "drivers/fs/fat/FatFS/diskio.h"
-#include "drivers/fs/fat/FatFS/ff.h"
+#include "fs/vfs.h"
+#include "fs/fat/FatFS/diskio.h"
+#include "fs/fat/FatFS/ff.h"
 #include <string.h> /* memcpy */
 
 static FATFS g_fatfs;

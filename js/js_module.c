@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "drivers/fs/vfs.h"
+#include "fs/vfs.h"
 #include "mem/tmalloc.h"
 #include "js/js_obj.h"
 #include "js/js_module.h"

@@ -20,7 +20,6 @@ config I2C
 	depends on PLAT_HAS_I2C
 	default y
 
-source "drivers/fs/Kconfig"
 source "drivers/graphics/Kconfig"
 
 if NET

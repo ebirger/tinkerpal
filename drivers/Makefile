@@ -5,5 +5,3 @@ MK_SUBDIRS+=$(if $(CONFIG_GRAPHICS_SCREENS),graphics)
 MK_SUBDIRS+=$(if $(CONFIG_PLAT_HAS_SERIAL),serial)
 MK_SUBDIRS+=$(if $(CONFIG_SPI),spi)
 MK_SUBDIRS+=$(if $(CONFIG_NET),net)
-# fs must be last since builtin fs aggregates files from other drivers
-MK_SUBDIRS+=$(if $(CONFIG_VFS),fs)

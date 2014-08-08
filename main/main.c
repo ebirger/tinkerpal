@@ -29,7 +29,7 @@
 #include "util/tp_types.h"
 #include "platform/platform.h"
 #include "boards/board.h"
-#include "drivers/fs/vfs.h"
+#include "fs/vfs.h"
 #include "js/js.h"
 #include "net/net.h"
 #include "usb/usbd.h"

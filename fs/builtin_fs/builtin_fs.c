@@ -23,8 +23,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "drivers/fs/vfs.h"
-#include "drivers/fs/builtin_fs/builtin_fs.h"
+#include "fs/vfs.h"
+#include "fs/builtin_fs/builtin_fs.h"
 
 extern const builtin_fs_file_t builtin_fs_files[];
 

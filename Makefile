@@ -57,8 +57,9 @@ MK_SUBDIRS+=$(if $(CONFIG_JS),js)
 MK_SUBDIRS+=$(if $(CONFIG_NET),net)
 MK_SUBDIRS+=$(if $(CONFIG_USB),usb)
 MK_SUBDIRS+=$(if $(CONFIG_GRAPHICS),graphics)
-# XXX: drivers must be last for now, see drivers/Makefile
 MK_SUBDIRS+=drivers
+# vfs must be last since builtin fs aggregates files from other drivers
+MK_SUBDIRS+=$(if $(CONFIG_VFS),fs)
 
 include scripts/Rules.mk
 

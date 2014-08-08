@@ -26,7 +26,7 @@
 #include "util/tstr.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
-#include "drivers/fs/vfs.h"
+#include "fs/vfs.h"
 #include "drivers/mmc/mmc.h"
 #include "apps/cli.h"
 

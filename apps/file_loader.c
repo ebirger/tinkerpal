@@ -24,7 +24,7 @@
  */
 #include "util/tstr.h"
 #include "util/debug.h"
-#include "drivers/fs/vfs.h"
+#include "fs/vfs.h"
 #include "js/js_types.h"
 #include "js/js_eval.h"
 #include "js/js.h"

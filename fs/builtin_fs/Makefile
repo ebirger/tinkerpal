@@ -43,7 +43,7 @@ MK_OBJS+=builtin_fs.o $(FS_TARGET:%.c=%.o)
 $(FS_FILE): $(FILES) $(BUILD)/auto.conf
 	@echo GEN $@
 	$(Q)echo "/* Automatically generated file, DO NOT MANUALLY EDIT */" > $@
-	$(Q)echo "#include \"drivers/fs/builtin_fs/builtin_fs.h\"" >> $@
+	$(Q)echo "#include \"fs/builtin_fs/builtin_fs.h\"" >> $@
 	$(Q)$(foreach f,$(FILES),printf "extern char *$(call file_name,$f);\n" >> $@;)
 	$(Q)echo "const builtin_fs_file_t builtin_fs_files[] = {" >> $@
 	$(Q)$(foreach f,$(FILES),printf "$(call file_desc,$f),\n" >> $@;)

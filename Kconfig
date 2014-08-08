@@ -14,6 +14,7 @@ config GRAPHICS
 	bool "Graphics support"
 	default y
 
+source "fs/Kconfig"
 source "drivers/Kconfig"
 source "platform/Kconfig"
 source "mem/Kconfig"
