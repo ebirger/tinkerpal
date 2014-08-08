@@ -27,71 +27,35 @@
 #include "boards/board.h"
 #include "js/js_obj.h"
 
-#ifdef CONFIG_SSD1329
-int do_ssd1329_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    canvas_t *canvas;
-
-    /* TODO: allow providing pinout */
-    canvas = ssd1329_new(&board.ssd1329_params);
-    return canvas_obj_constructor(canvas, ret, this, argc, argv);
+#define LCD_CONSTRUCTOR(name) \
+int do_##name##_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
+{ \
+    canvas_t *canvas; \
+    /* TODO: allow providing pinout */ \
+    canvas = name##_new(&board.name##_params); \
+    return canvas_obj_constructor(canvas, ret, this, argc, argv); \
 }
+
+#ifdef CONFIG_SSD1329
+LCD_CONSTRUCTOR(ssd1329)
 #endif
 
 #ifdef CONFIG_SSD1306
-int do_ssd1306_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    canvas_t *canvas;
-
-    /* TODO: allow providing pinout */
-    canvas = ssd1306_new(&board.ssd1306_params);
-    return canvas_obj_constructor(canvas, ret, this, argc, argv);
-}
+LCD_CONSTRUCTOR(ssd1306)
 #endif
 
 #ifdef CONFIG_SDL_SCREEN
-int do_sdl_screen_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    canvas_t *canvas;
-
-    /* TODO: allow providing width/height */
-
-    canvas = sdl_screen_new(&board.sdl_screen_params);
-    return canvas_obj_constructor(canvas, ret, this, argc, argv);
-}
+LCD_CONSTRUCTOR(sdl_screen)
 #endif
 
 #ifdef CONFIG_PCD8544
-int do_pcd8544_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    canvas_t *canvas;
-
-    /* TODO: allow providing pinout */
-    canvas = pcd8544_new(&board.pcd8544_params);
-    return canvas_obj_constructor(canvas, ret, this, argc, argv);
-}
+LCD_CONSTRUCTOR(pcd8544)
 #endif
 
 #ifdef CONFIG_ILI93XX
-int do_ili93xx_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    canvas_t *canvas;
-
-    /* TODO: allow providing pinout */
-
-    canvas = ili93xx_new(&board.ili93xx_params);
-    return canvas_obj_constructor(canvas, ret, this, argc, argv);
-}
+LCD_CONSTRUCTOR(ili93xx)
 #endif
 
 #ifdef CONFIG_DOGS102X6
-int do_dogs102x6_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    canvas_t *canvas;
-
-    /* TODO: allow providing pinout */
-
-    canvas = dogs102x6_new(&board.dogs102x6_params);
-    return canvas_obj_constructor(canvas, ret, this, argc, argv);
-}
+LCD_CONSTRUCTOR(dogs102x6)
 #endif
