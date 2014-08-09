@@ -86,26 +86,30 @@ static void repl_process_line(tstr_t *line)
 {
     obj_t *o = UNDEF;
     int rc = 0, rank;
-    static tstr_t full_line;
+    static tstr_t multiline;
+    tstr_t *to_eval;
 
-    if (TPTR(&full_line))
+    if (TPTR(&multiline))
     {
-        tstr_t old = full_line;
+        tstr_t old = multiline;
 
-        tstr_cat(&full_line, &old, line);
+        tstr_cat(&multiline, &old, line);
         tstr_free(&old);
+        to_eval = &multiline;
     }
     else
-        full_line = tstr_dup(*line);
+        to_eval = line;
 
-    rank = js_eval_rank(full_line);
+    rank = js_eval_rank(*to_eval);
     if (rank > 0)
     {
+        if (!TPTR(&multiline))
+            multiline = tstr_dup(*line);
         cli_prompt_set(".", rank + 2);
         return;
     }
 
-    rc = js_eval(&o, &full_line);
+    rc = js_eval(&o, to_eval);
     if (rc)
     {
         COLOR(TERM_COLOR_RED);
@@ -120,8 +124,11 @@ static void repl_process_line(tstr_t *line)
     COLOR(TERM_COLOR_RESET);
     obj_put(o);
 
-    tstr_free(&full_line);
-    TPTR(&full_line) = NULL;
+    if (TPTR(&multiline))
+    {
+        tstr_free(&multiline);
+        TPTR(&multiline) = NULL;
+    }
     cli_prompt_set(NULL, 0);
 }
 
