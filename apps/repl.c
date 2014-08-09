@@ -84,10 +84,27 @@ static void repl_syntax_highlight(tstr_t *line)
 
 static void repl_process_line(tstr_t *line)
 {
-    obj_t *o;
-    int rc;
+    obj_t *o = UNDEF;
+    int rc = 0;
+    static tstr_t full_line;
 
-    rc = js_eval(&o, line);
+    if (TPTR(&full_line))
+    {
+        tstr_t old = full_line;
+
+        tstr_cat(&full_line, &old, line);
+        tstr_free(&old);
+    }
+    else
+        full_line = tstr_dup(*line);
+
+    if (js_eval_rank(full_line))
+    {
+        cli_prompt_set("... ");
+        return;
+    }
+
+    rc = js_eval(&o, &full_line);
     if (rc)
     {
         COLOR(TERM_COLOR_RED);
@@ -101,6 +118,10 @@ static void repl_process_line(tstr_t *line)
 
     COLOR(TERM_COLOR_RESET);
     obj_put(o);
+
+    tstr_free(&full_line);
+    TPTR(&full_line) = NULL;
+    cli_prompt_set(NULL);
 }
 
 static cli_client_t repl_cli_client = {
