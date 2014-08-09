@@ -1878,6 +1878,59 @@ int js_eval_obj(obj_t **ret, obj_t *obj)
     return rc;
 }
 
+static inline char open_char_recip(char c)
+{
+    switch (c)
+    {
+    case '{': return '}';
+    case '[': return ']';
+    case '(': return ')';
+    }
+    return '\0';
+}
+
+static inline int is_open_char(char c)
+{
+    return open_char_recip(c) != '\0';
+}
+
+static inline int is_close_char(char c)
+{
+    return c == '}' || c == ']' || c == ')';
+}
+
+int js_eval_rank(tstr_t code)
+{
+    char rank_stack[32], popped;
+    int sp = 0;
+
+#define PUSH(c) do { \
+    if (sp == sizeof(rank_stack)) \
+        return -1; \
+    rank_stack[sp++] = c; \
+} while(0)
+#define POP() do { \
+    if (sp == 0) \
+        return -1; \
+    sp--; \
+    popped = rank_stack[sp]; \
+} while(0)
+    while (code.len)
+    {
+        char c = *TPTR(&code);
+        if (is_open_char(c))
+            PUSH(open_char_recip(c));
+        if (is_close_char(c))
+        {
+            POP();
+            if (popped != c)
+                return -1;
+        }
+        tstr_advance(&code, 1);
+    }
+    return sp;
+}
+
 void js_eval_stop_execution(void)
 {
     EXECUTION_STOPPED_SET();
