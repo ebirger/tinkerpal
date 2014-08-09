@@ -85,7 +85,7 @@ static void repl_syntax_highlight(tstr_t *line)
 static void repl_process_line(tstr_t *line)
 {
     obj_t *o = UNDEF;
-    int rc = 0;
+    int rc = 0, rank;
     static tstr_t full_line;
 
     if (TPTR(&full_line))
@@ -98,9 +98,10 @@ static void repl_process_line(tstr_t *line)
     else
         full_line = tstr_dup(*line);
 
-    if (js_eval_rank(full_line))
+    rank = js_eval_rank(full_line);
+    if (rank > 0)
     {
-        cli_prompt_set("... ");
+        cli_prompt_set(".", rank + 2);
         return;
     }
 
@@ -121,7 +122,7 @@ static void repl_process_line(tstr_t *line)
 
     tstr_free(&full_line);
     TPTR(&full_line) = NULL;
-    cli_prompt_set(NULL);
+    cli_prompt_set(NULL, 0);
 }
 
 static cli_client_t repl_cli_client = {

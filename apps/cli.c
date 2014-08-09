@@ -42,8 +42,9 @@ static char SPACE[] = { ' ' };
 static char TERM_SAVE_CURSOR[] = { 0x1b, '[', 's' };
 static char TERM_RESTORE_CURSOR[] = { 0x1b, '[', 'u' };
 #endif
-static char def_prompt[] = "TinkerPal> ";
-static char *prompt = def_prompt;
+static char def_prompt[] = "TinkerPal>";
+static char *g_prompt = def_prompt;
+static int g_prompt_repetitions = 1;
 
 static char cli_buf[CONFIG_CLI_BUFFER_SIZE];
 static char *buf, *read_buf;
@@ -54,7 +55,11 @@ history_t *history;
 
 static void output_prompt(void)
 {
-    console_write(prompt, strlen(prompt));
+    int i, len = strlen(g_prompt);
+
+    for (i = 0; i < g_prompt_repetitions; i++)
+        console_write(g_prompt, len);
+    CTRL(SPACE);
 }
 
 static void reset_line(void)
@@ -329,9 +334,18 @@ static event_t cli_event = {
     .signal = on_signal,
 };
 
-void cli_prompt_set(char *p)
+void cli_prompt_set(char *p, int repetitions)
 {
-    prompt = p ? p : def_prompt;
+    if (p)
+    {
+        g_prompt = p;
+        g_prompt_repetitions = repetitions;
+    }
+    else
+    {
+        g_prompt = def_prompt;
+        g_prompt_repetitions = 1;
+    }
 }
 
 void cli_start(cli_client_t *client)

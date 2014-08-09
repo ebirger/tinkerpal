@@ -39,7 +39,7 @@ typedef struct {
 #endif
 } cli_client_t;
 
-void cli_prompt_set(char *p);
+void cli_prompt_set(char *p, int repetitions);
 void cli_start(cli_client_t *client);
 
 #endif
