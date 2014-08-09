@@ -42,7 +42,8 @@ static char SPACE[] = { ' ' };
 static char TERM_SAVE_CURSOR[] = { 0x1b, '[', 's' };
 static char TERM_RESTORE_CURSOR[] = { 0x1b, '[', 'u' };
 #endif
-static char prompt[] = { 'T','i','n','k','e','r','P','a','l','>',' ' };
+static char def_prompt[] = "TinkerPal> ";
+static char *prompt = def_prompt;
 
 static char cli_buf[CONFIG_CLI_BUFFER_SIZE];
 static char *buf, *read_buf;
@@ -50,6 +51,11 @@ static int free_size = sizeof(cli_buf), size, cur_line_pos;
 static tstr_t cur_line = {};
 static cli_client_t *g_client;
 history_t *history;
+
+static void output_prompt(void)
+{
+    console_write(prompt, strlen(prompt));
+}
 
 static void reset_line(void)
 {
@@ -309,7 +315,7 @@ static void on_event(event_t *e, u32 id, u64 timestamp)
         TPTR(&cur_line) = read_buf = buf = cli_buf;
     }
 
-    console_write(prompt, sizeof(prompt));
+    output_prompt();
 }
 
 static void on_signal(event_t *e, u32 id, u64 timestamp)
@@ -323,10 +329,15 @@ static event_t cli_event = {
     .signal = on_signal,
 };
 
+void cli_prompt_set(char *p)
+{
+    prompt = p ? p : def_prompt;
+}
+
 void cli_start(cli_client_t *client)
 {
     g_client = client;
-    console_write(prompt, sizeof(prompt));
+    output_prompt();
     read_buf = buf = TPTR(&cur_line) = cli_buf;
     history = history_new();
     TSTR_SET_ALLOCATED(&cur_line);
