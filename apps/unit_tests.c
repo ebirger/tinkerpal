@@ -22,8 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "apps/history.h"
 #include "main/console.h"
+#include "util/history.h"
 #include "util/tp_misc.h"
 
 static history_t *history;

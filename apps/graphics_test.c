@@ -23,9 +23,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
+#include "util/cli.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
-#include "apps/cli.h"
 #include "graphics/graphics.h"
 #include "graphics/colors.h"
 

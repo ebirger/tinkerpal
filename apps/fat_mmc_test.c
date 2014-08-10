@@ -24,11 +24,11 @@
  */
 #include "util/debug.h"
 #include "util/tstr.h"
+#include "util/cli.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
 #include "fs/vfs.h"
 #include "drivers/mmc/mmc.h"
-#include "apps/cli.h"
 
 static int fat_mmc_test_readdir_cb(tstr_t *file_name, void *ctx)
 {

@@ -25,9 +25,9 @@
 #include "util/tstr.h"
 #include "util/event.h"
 #include "util/debug.h"
+#include "util/history.h"
+#include "util/cli.h"
 #include "main/console.h"
-#include "apps/history.h"
-#include "apps/cli.h"
 #include <string.h> /* memcpy - can we avoid this? */
 
 /* VT 100 control codes.
