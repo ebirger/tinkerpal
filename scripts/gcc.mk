@@ -11,7 +11,9 @@ CPP=$(CROSS_COMPILE)cpp
 LINK_DEPS=$(LINKER_SCRIPT)
 
 CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h \
-  $(addprefix -include ,$(ADDITIONAL_INCLUDES)) -Wall -Werror -g -ansi \
+  $(addprefix -include ,$(ADDITIONAL_INCLUDES)) \
+  $(addprefix -I,$(ADDITIONAL_INCLUDE_PATHS)) \
+  -Wall -Werror -g -ansi \
   -std=gnu99 $(if $(CONFIG_GCC_LTO),-flto)
 LDFLAGS+=$(if $(CONFIG_GCC_LTO),-flto)
 get_libgcc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-libgcc-file-name))
