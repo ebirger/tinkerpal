@@ -113,7 +113,9 @@ $(BUILD)/version_data.h :
 $(BUILD)/descs.h: $(DESCS) $(BUILD)/autoconf.h
 	@echo "GEN $@"
 	@echo "/* Automatically generated file, DO NOT MANUALLY EDIT */" > $@
-	@cat $^ >> $@
+	@cat $(DESCS) >> $@
+
+AUTO_GEN_FILES+=$(BUILD)/descs.h
 
 $(BUILD)/%.o : %.c $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
 	@echo $($(quiet_)compile)
