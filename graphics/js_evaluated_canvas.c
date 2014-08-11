@@ -29,6 +29,7 @@
 
 #define SpixelDraw S(TpixelDraw)
 #define Sfill S(Tfill)
+#define Sflip S(Tflip)
 
 typedef struct {
     canvas_t canvas;
@@ -69,9 +70,22 @@ static void js_evaluated_canvas_fill(canvas_t *c, u16 val)
     obj_put(argv[1]);
 }
 
+static void js_evaluated_canvas_flip(canvas_t *c)
+{
+    js_evaluated_canvas_t *jscanvas = JS_CANVAS_FROM_CANVAS(c);
+    obj_t *argv[1];
+    obj_t *ret = UNDEF;
+
+    argv[0] = obj_get_property(NULL, jscanvas->obj, &Sflip);
+    function_call(&ret, jscanvas->obj, 1, argv);
+    obj_put(ret);
+    obj_put(argv[0]);
+}
+
 static const canvas_ops_t js_evaluated_canvas_ops = {
     .pixel_set = js_evaluated_canvas_pixel_set,
     .fill = js_evaluated_canvas_fill,
+    .flip = js_evaluated_canvas_flip,
 };
 
 canvas_t *js_evaluated_canvas_new(obj_t *o)

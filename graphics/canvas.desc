@@ -24,3 +24,13 @@ FUNCTION(Tfill, canvas, do_canvas_fill, {
     .example = "var l = new ILI93XX();\n"
         "l.fill(0xfe);",
 })
+
+FUNCTION(Tflip, canvas, do_canvas_flip, {
+    .params = {
+    },
+    .description = "Publishes stored buffer onto canvas",
+    .return_value = "None",
+    .example = "var l = new SSD1306();\n"
+        "l.pixelDraw(1, 1, 1);\n"
+        "l.flip();",
+})

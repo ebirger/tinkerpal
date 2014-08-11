@@ -3,5 +3,6 @@
 
 #define TpixelDraw "pixelDraw"
 #define Tfill "fill"
+#define Tflip "flip"
 
 #endif
