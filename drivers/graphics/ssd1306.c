@@ -92,10 +92,16 @@ static const u8 ssd1306_init_seq[] = {
 
 static ssd1306_t g_ssd1306_screen;
 
-static inline void ssd1306_write(ssd1306_t *screen, int is_cmd, u8 data)
+static inline void _ssd1306_write(ssd1306_t *screen, int is_cmd, u8 *data,
+    u8 len)
 {
     i2c_reg_write(screen->params.i2c_port, screen->params.i2c_addr,
-        is_cmd ? 0x0 : 0x40, &data, 1);
+        is_cmd ? 0x0 : 0x40, data, len);
+}
+
+static void ssd1306_write(ssd1306_t *screen, int is_cmd, u8 data)
+{
+    _ssd1306_write(screen, is_cmd, &data, 1);
 }
 
 static void chip_init(ssd1306_t *screen)
@@ -147,8 +153,8 @@ static void ssd1306_flip(canvas_t *c)
 
     ssd1306_set_address(screen, 0, (HEIGHT / 8) - 1, 0, WIDTH - 1);
     
-    for (i = 0; i < WIDTH * (HEIGHT / 8); i++)
-        ssd1306_write(screen, 0, *(screen->shadow + i));
+    for (i = 0; i < HEIGHT / 8; i++)
+        _ssd1306_write(screen, 0, screen->shadow + i * WIDTH, WIDTH);
 }
 
 static void ssd1306_fill(canvas_t *c, u16 val)
