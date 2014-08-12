@@ -117,12 +117,6 @@ static void pcd8544_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
         screen->shadow[page * LCD_WIDTH + x] |= line_bit;
     else
         screen->shadow[page * LCD_WIDTH + x] &= ~line_bit;
-
-    /* Set address */
-    pcd8544_set_address(screen, page, x);
-
-    /* Draw on screen */
-    pcd8544_write(screen, 0, screen->shadow + (page * LCD_WIDTH + x), 1);
 }
 
 static void pcd8544_flip(canvas_t *c)
@@ -141,12 +135,12 @@ static void pcd8544_fill(canvas_t *c, u16 val)
     pcd8544_t *screen = container_of(c, pcd8544_t, canvas);
 
     memset(screen->shadow, val ? 0xff : 0, sizeof(screen->shadow));
-    pcd8544_flip(c);
 }
 
 static const canvas_ops_t pcd8544_ops = {
     .pixel_set = pcd8544_pixel_set,
     .fill = pcd8544_fill,
+    .flip = pcd8544_flip,
 };
 
 canvas_t *pcd8544_new(const pcd8544_params_t *params)
