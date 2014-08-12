@@ -77,6 +77,7 @@ static void graphics_test_process_line(tstr_t *line)
             canvas->width / 2, canvas->height / 2, canvas->width / 10,
             ROUND_RECT_TYPE_CORNERS_IN, COLOR_WHITE);
     }
+    canvas_flip(canvas);
     console_printf("Ok\n");
 }
 
