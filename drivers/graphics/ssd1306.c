@@ -38,6 +38,10 @@ typedef struct {
     ssd1306_params_t params;
     canvas_t canvas;
     u8 shadow[WIDTH * (HEIGHT / 8)];
+    u8 min_ca;
+    u8 max_ca;
+    u8 min_pa;
+    u8 max_pa;
 } ssd1306_t;
 
 #define SSD1306_DISPLAY_OFF 0xae
@@ -108,6 +112,39 @@ static void chip_init(ssd1306_t *screen)
     ssd1306_write(screen, 1, ssd1306_init_seq, ARRAY_SIZE(ssd1306_init_seq));
 }
 
+static void ssd1306_window_set(ssd1306_t *screen)
+{
+    u8 cmd[6];
+
+    cmd[0] = SSD1306_SET_COL_ADDR;
+    cmd[1] = screen->min_ca;
+    cmd[2] = screen->max_ca;
+    cmd[3] = SSD1306_SET_PAGE_ADDR;
+    cmd[4] = screen->min_pa;
+    cmd[5] = screen->max_pa;
+    ssd1306_write(screen, 1, cmd, sizeof(cmd));
+}
+
+static void ssd1306_window_update(ssd1306_t *screen, u8 ca, u8 pa)
+{
+    if (ca < screen->min_ca)
+        screen->min_ca = ca;
+    if (ca > screen->max_ca)
+        screen->max_ca = ca;
+    if (pa < screen->min_pa)
+        screen->min_pa = pa;
+    if (pa > screen->max_pa)
+        screen->max_pa = pa;
+}
+
+static void ssd1306_window_reset(ssd1306_t *screen)
+{
+    screen->min_pa = HEIGHT >> 3;
+    screen->max_pa = 0;
+    screen->min_ca = WIDTH;
+    screen->max_ca = 0;
+}
+
 static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
     ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
@@ -116,6 +153,8 @@ static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     page = y >> 3; /* Each 8 vertical lines are one byte */
     line_bit = 1 << (y & 0x07);
 
+    ssd1306_window_update(screen, x, page);
+
     /* Set shadow */
     if (val)
         screen->shadow[page * WIDTH + x] |= line_bit;
@@ -123,13 +162,21 @@ static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
         screen->shadow[page * WIDTH + x] &= ~line_bit;
 }
 
+#define WIN_WIDTH(s) ((s)->max_ca - (s)->min_ca + 1)
+#define WIN_PAGE_HEIGHT(s) ((s)->max_pa - (s)->min_pa + 1)
+#define WIN_POS(s, pa) (((pa) + (s)->min_pa) * WIDTH + (s)->min_ca)
 static void ssd1306_flip(canvas_t *c)
 {
     ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
     int i;
 
-    for (i = 0; i < HEIGHT / 8; i++)
-        ssd1306_write(screen, 0, screen->shadow + i * WIDTH, WIDTH);
+    ssd1306_window_set(screen);
+    for (i = 0; i < WIN_PAGE_HEIGHT(screen); i++)
+    {
+        ssd1306_write(screen, 0, screen->shadow + WIN_POS(screen, i),
+            WIN_WIDTH(screen));
+    }
+    ssd1306_window_reset(screen);
 }
 
 static void ssd1306_fill(canvas_t *c, u16 val)
@@ -137,6 +184,10 @@ static void ssd1306_fill(canvas_t *c, u16 val)
     ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
 
     memset(screen->shadow, val ? 0xff : 0, sizeof(screen->shadow));
+    screen->min_pa = 0;
+    screen->max_pa = HEIGHT >> 3;
+    screen->min_ca = 0;
+    screen->max_ca = WIDTH;
 }
 
 static const canvas_ops_t ssd1306_ops = {
@@ -152,6 +203,8 @@ canvas_t *ssd1306_new(const ssd1306_params_t *params)
     screen->params = *params;
 
     chip_init(screen);
+
+    ssd1306_window_reset(screen);
 
     screen->canvas.width = WIDTH;
     screen->canvas.height = HEIGHT;
