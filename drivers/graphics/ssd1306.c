@@ -157,7 +157,6 @@ static void ssd1306_fill(canvas_t *c, u16 val)
     ssd1306_t *screen = container_of(c, ssd1306_t, canvas);
 
     memset(screen->shadow, val ? 0xff : 0, sizeof(screen->shadow));
-    ssd1306_flip(c);
 }
 
 static const canvas_ops_t ssd1306_ops = {
