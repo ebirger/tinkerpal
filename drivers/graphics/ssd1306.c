@@ -59,8 +59,6 @@ typedef struct {
 #define SSD1306_SET_COL_ADDR 0x21
 #define SSD1306_SET_PAGE_ADDR 0x22
 
-#define SSD1306_INIT_SEQ_END 0xff
-
 static const u8 ssd1306_init_seq[] = {
     SSD1306_DISPLAY_OFF,
     SSD1306_SET_MULTIPLEX_RATIO,
@@ -93,31 +91,21 @@ static const u8 ssd1306_init_seq[] = {
     0,
     HEIGHT / 8 - 1,
     SSD1306_DISPLAY_ON,
-    SSD1306_INIT_SEQ_END
 };
 
 static ssd1306_t g_ssd1306_screen;
 
-static inline void _ssd1306_write(ssd1306_t *screen, int is_cmd, u8 *data,
+static inline void ssd1306_write(ssd1306_t *screen, int is_cmd, const u8 *data,
     u8 len)
 {
     i2c_reg_write(screen->params.i2c_port, screen->params.i2c_addr,
-        is_cmd ? 0x0 : 0x40, data, len);
-}
-
-static void ssd1306_write(ssd1306_t *screen, int is_cmd, u8 data)
-{
-    _ssd1306_write(screen, is_cmd, &data, 1);
+        is_cmd ? 0x0 : 0x40, (u8 *)data, len);
 }
 
 static void chip_init(ssd1306_t *screen)
 {
-    const u8 *cmd;
-
     i2c_init(screen->params.i2c_port);
-    
-    for (cmd = ssd1306_init_seq; *cmd != SSD1306_INIT_SEQ_END; cmd++)
-        ssd1306_write(screen, 1, *cmd);
+    ssd1306_write(screen, 1, ssd1306_init_seq, ARRAY_SIZE(ssd1306_init_seq));
 }
 
 static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
@@ -141,7 +129,7 @@ static void ssd1306_flip(canvas_t *c)
     int i;
 
     for (i = 0; i < HEIGHT / 8; i++)
-        _ssd1306_write(screen, 0, screen->shadow + i * WIDTH, WIDTH);
+        ssd1306_write(screen, 0, screen->shadow + i * WIDTH, WIDTH);
 }
 
 static void ssd1306_fill(canvas_t *c, u16 val)
