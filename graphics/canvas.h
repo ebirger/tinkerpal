@@ -29,10 +29,7 @@
 
 typedef struct canvas_t canvas_t;
     
-typedef enum { DIRECT_ACCESS, DOUBLE_BUFFER } canvas_mode_t;
-
 typedef struct {
-    int (*mode_set)(canvas_t *c, canvas_mode_t mode);
     void (*pixel_set)(canvas_t *c, u16 x, u16 y, u16 val);
     void (*fill)(canvas_t *c, u16 val);
     void (*flip)(canvas_t *c);
@@ -53,11 +50,6 @@ static inline void canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
     if (y > c->height)
         y = c->height;
     c->ops->pixel_set(c, x, y, val);
-}
-
-static inline int canvas_mode_set(canvas_t *c, canvas_mode_t mode)
-{
-    return c->ops->mode_set ? c->ops->mode_set(c, mode) : -1;
 }
 
 static inline void canvas_flip(canvas_t *c)
