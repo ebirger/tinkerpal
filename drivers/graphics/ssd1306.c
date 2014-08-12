@@ -139,11 +139,6 @@ static void ssd1306_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
         screen->shadow[page * WIDTH + x] |= line_bit;
     else
         screen->shadow[page * WIDTH + x] &= ~line_bit;
-
-    ssd1306_set_address(screen, page, page, x, x);
-
-    /* Draw on screen */
-    ssd1306_write(screen, 0, *(screen->shadow + (page * WIDTH + x)));
 }
 
 static void ssd1306_flip(canvas_t *c)
@@ -168,6 +163,7 @@ static void ssd1306_fill(canvas_t *c, u16 val)
 static const canvas_ops_t ssd1306_ops = {
     .pixel_set = ssd1306_pixel_set,
     .fill = ssd1306_fill,
+    .flip = ssd1306_flip,
 };
 
 canvas_t *ssd1306_new(const ssd1306_params_t *params)
