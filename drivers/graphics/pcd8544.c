@@ -62,6 +62,8 @@ static u8 pcd8544_init_seq[] = {
     PCD8544_SET_TEMP | 0x02,
     PCD8544_FUNCTION_SET,
     PCD8544_DISPLAY_CONTROL | PCD8544_DISPLAY_NORMAL,
+    PCD8544_SET_Y_ADDR | 0,
+    PCD8544_SET_X_ADDR | 0
 };
 
 static void pcd8544_write(pcd8544_t *screen, int iscmd, u8 *data, int len)
@@ -95,15 +97,6 @@ static void chip_init(pcd8544_t *screen)
     pcd8544_write(screen, 1, pcd8544_init_seq, sizeof(pcd8544_init_seq));
 }
 
-static void pcd8544_set_address(pcd8544_t *screen, u8 pa, u8 ca)
-{
-    u8 cmd[2];
-
-    cmd[0] = PCD8544_SET_Y_ADDR | pa;
-    cmd[1] = PCD8544_SET_X_ADDR | ca;
-    pcd8544_write(screen, 1, cmd, sizeof(cmd));
-}
-
 static void pcd8544_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
     pcd8544_t *screen = container_of(c, pcd8544_t, canvas);
@@ -124,8 +117,6 @@ static void pcd8544_flip(canvas_t *c)
     pcd8544_t *screen = container_of(c, pcd8544_t, canvas);
     u8 page;
 
-    pcd8544_set_address(screen, 0, 0);
-    
     for (page = 0; page < (LCD_HEIGHT >> 3); page++)
         pcd8544_write(screen, 0, screen->shadow + page * LCD_WIDTH, LCD_WIDTH);
 }
