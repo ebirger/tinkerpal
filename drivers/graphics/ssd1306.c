@@ -185,9 +185,9 @@ static void ssd1306_fill(canvas_t *c, u16 val)
 
     memset(screen->shadow, val ? 0xff : 0, sizeof(screen->shadow));
     screen->min_pa = 0;
-    screen->max_pa = HEIGHT >> 3;
+    screen->max_pa = (HEIGHT >> 3) - 1;
     screen->min_ca = 0;
-    screen->max_ca = WIDTH;
+    screen->max_ca = WIDTH - 1;
 }
 
 static const canvas_ops_t ssd1306_ops = {
