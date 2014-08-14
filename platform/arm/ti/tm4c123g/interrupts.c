@@ -35,6 +35,7 @@ extern void ti_arm_mcu_usb_isr(void);
 static void ti_arm_mcu_usb_isr(void) { }
 #endif
 extern void cortex_m_systick_isr(void);
+extern void cortex_m_fault_isr(void);
 
 static void uart0_isr(void) { ti_arm_mcu_uart_isr(UART0); }
 static void uart1_isr(void) { ti_arm_mcu_uart_isr(UART1); }
@@ -53,12 +54,6 @@ static void gpio_port_e_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_E); }
 static void gpio_port_f_isr(void) { ti_arm_mcu_gpio_isr(GPIO_PORT_F); }
 
 static void nmi_isr(void)
-{
-    /* Hang in there doing nothing */
-    while(1);
-}
-
-static void fault_isr(void)
 {
     /* Hang in there doing nothing */
     while(1);
@@ -88,7 +83,7 @@ void (*const g_pfnVectors[])(void) =
     (void (*)(void))((unsigned long) &_stack_top), // The initial stack pointer
     reset_isr,                        // The reset handler
     nmi_isr,                          // The NMI handler
-    fault_isr,                        // The hard fault handler
+    cortex_m_fault_isr,               // The hard fault handler
     default_isr,                      // The MPU fault handler
     default_isr,                      // The bus fault handler
     default_isr,                      // The usage fault handler

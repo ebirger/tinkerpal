@@ -31,6 +31,7 @@ static unsigned int last_ticks, cm_time_sec, cm_time_msec;
 static char *heap_end = 0;
 extern unsigned long _heap_bottom;
 extern unsigned long _heap_top;
+extern unsigned long _stack_top;
 
 void *_sbrk(unsigned int incr)
 {
@@ -47,6 +48,53 @@ void *_sbrk(unsigned int incr)
     heap_end += incr;
 
     return (void *)prev_heap_end;
+}
+
+void cortex_m_fault_isr(void) __attribute__((naked));
+void cortex_m_fault_isr(void)
+{
+    __asm volatile
+    (
+        " mrs r0, msp\n"
+        " ldr r2, handler2_address_const\n"
+        " bx r2\n"
+        " handler2_address_const: .word cortex_m_oops\n"
+    );
+}
+
+void cortex_m_oops(unsigned char *fault_sp)
+{
+    struct regs {
+        unsigned int r0;
+        unsigned int r1;
+        unsigned int r2;
+        unsigned int r3;
+        unsigned int r12;
+        unsigned int lr;
+        unsigned int pc;
+        unsigned int psr;
+    } *regs = (struct regs *)fault_sp;
+    unsigned char *real_sp = (unsigned char *)(regs + 1);
+
+    tp_out(("Cortex-M Hard Fault\n"));
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define P(reg) tp_out(("%s = 0x%08x\n", #reg, regs->reg))
+    P(r0);
+    P(r1);
+    P(r2);
+    P(r3);
+    P(r12);
+    P(lr);
+    P(pc);
+    P(psr);
+    tp_out(("Stack:\n"));
+    hexdump(real_sp, MIN(256, (int)((unsigned char *)&_stack_top - real_sp)));
+    while(1);
+}
+#else
+void cortex_m_fault_isr(void)
+{
+    while(1);
 }
 #endif
 
