@@ -39,4 +39,3 @@ void hexdump(unsigned char *buf, int len)
         tp_out(("%2x%s", buf[i], (i + 1) % 16 ? " " : "\n"));
     tp_out(("\n"));
 }
-
