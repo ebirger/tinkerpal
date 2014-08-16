@@ -32,6 +32,7 @@
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32_spi.h"
 #include "platform/arm/stm32/stm32_i2c.h"
+#include "platform/arm/stm32/stm32_usb.h"
 #include "platform/arm/stm32/stm32.h"
 
 const stm32_gpio_port_t stm32_gpio_ports[] = {
@@ -190,6 +191,17 @@ const platform_t platform = {
     .i2c = {
         .init = stm32_i2c_init,
         .reg_write = stm32_i2c_reg_write,
+    },
+#endif
+#ifdef CONFIG_USB_DEVICE
+    .usb = {
+        .init = stm32_usb_init,
+        .connect = stm32_usb_connect,
+        .ep_cfg = stm32_usb_ep_cfg,
+        .ep_data_ack = stm32_usb_ep_data_ack,
+        .ep_data_get = stm32_usb_ep_data_get,
+        .ep_data_send = stm32_usb_ep_data_send,
+        .set_addr = stm32_usb_set_addr,
     },
 #endif
     .init = stm32_init,

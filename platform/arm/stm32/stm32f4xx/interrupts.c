@@ -27,6 +27,7 @@
 extern void reset_isr(void);
 extern void usart_isr(int u);
 extern void cortex_m_systick_isr(void);
+extern void stm32_usb_isr(void);
 
 static void usart1_isr(void) { usart_isr(USART_PORT1); }
 static void usart2_isr(void) { usart_isr(USART_PORT2); }
@@ -149,7 +150,7 @@ void (*const vector[])(void) =
     default_isr, /* Reserved */
     default_isr, /* Reserved */
     default_isr, /* Reserved */
-    default_isr, /* USB OTG FS */
+    stm32_usb_isr, /* USB OTG FS */
     default_isr, /* DMA2 Stream 5 */
     default_isr, /* DMA2 Stream 6 */
     default_isr, /* DMA2 Stream 7 */

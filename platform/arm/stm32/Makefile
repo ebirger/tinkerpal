@@ -8,6 +8,7 @@ MK_OBJS+=$(if $(CONFIG_GPIO),stm32_gpio.o)
 MK_OBJS+=$(if $(CONFIG_SPI),stm32_spi.o)
 MK_OBJS+=$(if $(CONFIG_I2C),stm32_i2c.o)
 MK_OBJS+=$(if $(CONFIG_STM32_FSMC_LCD),stm32_fsmc_lcd.o)
+MK_OBJS+=$(if $(CONFIG_USB),stm32_usb.o)
 
 ifneq ($(CONFIG_GCC),)
   ifeq ($(CROSS_COMPILE),)
