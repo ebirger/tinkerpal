@@ -54,7 +54,7 @@ static void usb_board_cfg(USB_OTG_CORE_HANDLE *pdev)
 {
     /* XXX: Hard coded for stm32f4 */
 
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA , ENABLE);  
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA , ENABLE);
     /* Configure SOF VBUS ID DM DP Pins */
     _stm32_gpio_set_pin_function(PA8, 0, GPIO_AF_OTG1_FS);
     _stm32_gpio_set_pin_function(PA9, 0, GPIO_AF_OTG1_FS);
@@ -64,21 +64,21 @@ static void usb_board_cfg(USB_OTG_CORE_HANDLE *pdev)
     _stm32_gpio_set_pin_function(PA10, 1, GPIO_AF_OTG1_FS);
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-    RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_OTG_FS, ENABLE) ; 
+    RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_OTG_FS, ENABLE);
 
-    RCC_APB1PeriphResetCmd(RCC_APB1Periph_PWR, ENABLE);   
+    RCC_APB1PeriphResetCmd(RCC_APB1Periph_PWR, ENABLE);
 }
 
 static void usb_int_enable(USB_OTG_CORE_HANDLE *pdev)
 {
-  NVIC_InitTypeDef NVIC_InitStructure; 
-  
-  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-  NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;  
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);  
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
 }
 
 int stm32_usb_init(void)
