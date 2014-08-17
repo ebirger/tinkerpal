@@ -89,7 +89,7 @@ void USB_OTG_BSP_uDelay(const unsigned int usec)
     while (count++ < utime);
 }
 
-void USB_OTG_BSP_mDelay (const uint32_t msec)
+void USB_OTG_BSP_mDelay(const unsigned int msec)
 {
     platform_msleep(msec);
 }
