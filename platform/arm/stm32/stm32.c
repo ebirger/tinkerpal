@@ -24,6 +24,7 @@
  */
 #include "platform/platform.h"
 #include "platform/arm/stm32/stm32.h"
+#include "platform/arm/stm32/stm32_usb.h"
 #include "platform/arm/stm32/stm32_common.h"
 #include "platform/arm/cortex-m.h"
 
@@ -37,7 +38,9 @@ int stm32_select(int ms)
     while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {
         event |= buffered_serial_events_process();
-
+#ifdef CONFIG_USB_DEVICE
+        event |= stm32_usb_event_process();
+#endif
         /* XXX: Sleep */
     }
 

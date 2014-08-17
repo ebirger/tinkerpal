@@ -31,10 +31,54 @@
 #include "util/debug.h"
 
 static USB_OTG_CORE_HANDLE dev;
+static USB_OTG_GINTSTS_TypeDef g_int_stat;
+
+static void usb_int_enable(USB_OTG_CORE_HANDLE *pdev, int enable)
+{
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = enable ? ENABLE : DISABLE;
+    NVIC_Init(&NVIC_InitStructure);
+}
+
+int stm32_usb_event_process(void)
+{
+    USB_OTG_GINTSTS_TypeDef int_stat;
+
+    usb_int_enable(&dev, 0);
+    int_stat = g_int_stat;
+    g_int_stat.d32 = 0;
+    usb_int_enable(&dev, 1);
+
+    if (!int_stat.d32)
+        return 0;
+
+    tp_out(("STM32 DSR int_stat %08x\n", int_stat.d32));
+    if (int_stat.b.usbreset)
+        usbd_event(0, USB_DEVICE_EVENT_RESET);
+    return 0;
+}
 
 void stm32_usb_isr(void)
 {
-    tp_out(("STM32 USB ISR\n"));
+    USB_OTG_GINTSTS_TypeDef int_stat;
+
+    if (!USB_OTG_IsDeviceMode(&dev))
+        return;
+
+    int_stat.d32 = USB_OTG_ReadCoreItr(&dev);
+    if (!int_stat.d32)
+        return;
+
+    /* Ack all interrupts */
+    USB_OTG_WRITE_REG32(&dev.regs.GREGS->GINTSTS, int_stat.d32);
+
+    /* Save int status for DSR */
+    g_int_stat.d32 |= int_stat.d32;
 }
 
 void USB_OTG_BSP_uDelay(const unsigned int usec)
@@ -69,24 +113,12 @@ static void usb_board_cfg(USB_OTG_CORE_HANDLE *pdev)
     RCC_APB1PeriphResetCmd(RCC_APB1Periph_PWR, ENABLE);
 }
 
-static void usb_int_enable(USB_OTG_CORE_HANDLE *pdev)
-{
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-    NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-}
-
 int stm32_usb_init(void)
 {
     tp_out(("STM32 USB Init\n"));
     usb_board_cfg(&dev);
     DCD_Init(&dev, USB_OTG_FS_CORE_ID);
-    usb_int_enable(&dev);
+    usb_int_enable(&dev, 1);
     return 0;
 }
 
