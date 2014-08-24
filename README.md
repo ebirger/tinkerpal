@@ -2,6 +2,9 @@ TinkerPal
 =========
 Lightweight JavaScript engine and ecosystem for embedded platforms
 
+[Roadmap](https://trello.com/b/NReiA47h)
+[![Build Status](https://travis-ci.org/ebirger/tinkerpal.png?branch=master)](https://travis-ci.org/ebirger/tinkerpal)
+
 Platforms
 ---------
 All supported platform provide a serial console, some provide GPIO and SPI support
