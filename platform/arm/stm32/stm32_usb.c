@@ -83,10 +83,9 @@ void stm32_usb_isr(void)
 
 void USB_OTG_BSP_uDelay(const unsigned int usec)
 {
-    volatile unsigned int count = 0;
-    const unsigned int utime = 120 * usec / 7;
+    volatile unsigned long wait = 120 * usec / 7;
 
-    while (count++ < utime);
+    while (wait--);
 }
 
 void USB_OTG_BSP_mDelay(const unsigned int msec)
