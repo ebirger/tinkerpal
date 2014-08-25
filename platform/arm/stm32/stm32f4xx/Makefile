@@ -39,7 +39,7 @@ endif
 ifneq ($(CONFIG_GCC),)
   ifneq ($(CONFIG_STM32F407XX),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f407xx.ld
-    CFLAGS+=-DSTM32F40_41xxx
+    CFLAGS:=$(CFLAGS) -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -I$(d)
   endif
   ifneq ($(CONFIG_STM32F429XX),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f429xx.ld
