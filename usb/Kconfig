@@ -14,4 +14,7 @@ config USB_CDC_ACM
         depends on USB_DEVICE
 	default y
 
+config USB_DEVICE_QUIRK_SET_ADDR_IMM
+        bool
+
 endif

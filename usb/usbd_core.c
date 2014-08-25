@@ -179,6 +179,12 @@ static void get_descriptor_handler(usb_setup_t *setup)
     }
 }
 
+static void usbd_set_addr(void)
+{
+    platform.usb.set_addr(g_addr);
+    g_state = USBD_STATE_ADDR;
+}
+
 static void set_addr_handler(usb_setup_t *setup)
 {
     if (setup->bmRequestType || setup->wIndex || setup->wLength)
@@ -194,11 +200,17 @@ static void set_addr_handler(usb_setup_t *setup)
     g_addr = setup->wValue;
     tp_out(("Set Address: %d\n", g_addr));
     platform.usb.ep_data_ack(USBD_EP0, 0);
-    usbd_ep_send(USBD_EP0, NULL, 0); /* Status ack */
+#ifdef CONFIG_USB_DEVICE_QUIRK_SET_ADDR_IMM
     /* USB spec mandates address can't be set before the end of the status
      * stage.
+     * However, some platforms (e.g. STM32) require address be set before
+     * completing the status stage.
      */
+    usbd_set_addr();
+#else
     g_state = USBD_STATE_ADDR_PENDING;
+#endif
+    usbd_ep_send(USBD_EP0, NULL, 0); /* Status ack */
 }
 
 static const usb_req_handler_t std_req_handlers[] = {
@@ -304,10 +316,7 @@ static void ep_write_ack(int ep)
     usbd_ep_t *uep = &usbd_eps[ep];
 
     if (ep == USBD_EP0 && g_state == USBD_STATE_ADDR_PENDING)
-    {
-        platform.usb.set_addr(g_addr);
-        g_state = USBD_STATE_ADDR;
-    }
+        usbd_set_addr();
     if (uep->send_data_remaining)
         _usbd_ep_send(ep, uep->send_data, uep->send_data_remaining);
     else

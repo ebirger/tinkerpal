@@ -59,6 +59,7 @@ config STM32F407XX
 	select STM32_HAS_FSMC_LCD
 	select PLAT_HAS_I2C
 	select PLAT_HAS_USB
+        select USB_DEVICE_QUIRK_SET_ADDR_IMM
 
 config STM32F429XX
 	bool
