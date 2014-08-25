@@ -79,13 +79,13 @@
 #define STM32_GPIO_PIN_TYPE_IN_PU(init_struct) do { \
     init_struct.GPIO_OType = GPIO_OType_PP; \
     init_struct.GPIO_Mode = GPIO_Mode_IN; \
-    init_struct.GPIO_PuPd = GPIO_PuPd_DOWN; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_UP; \
 } while (0)
 
 #define STM32_GPIO_PIN_TYPE_IN_PD(init_struct) do { \
     init_struct.GPIO_OType = GPIO_OType_PP; \
     init_struct.GPIO_Mode = GPIO_Mode_IN; \
-    init_struct.GPIO_PuPd = GPIO_PuPd_UP; \
+    init_struct.GPIO_PuPd = GPIO_PuPd_DOWN; \
 } while (0)
 
 #define STM32_GPIO_PIN_TYPE_OUT(init_struct) do { \
