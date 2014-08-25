@@ -113,11 +113,21 @@ static void usb_board_cfg(USB_OTG_CORE_HANDLE *pdev)
     RCC_APB1PeriphResetCmd(RCC_APB1Periph_PWR, ENABLE);
 }
 
+static void mask_sof_intr(void)
+{
+    USB_OTG_GINTMSK_TypeDef intmsk;
+
+    intmsk.d32 = 0;
+    intmsk.b.sofintr = 1;  
+    USB_OTG_MODIFY_REG32(&dev.regs.GREGS->GINTMSK, intmsk.d32, 0);
+}
+
 int stm32_usb_init(void)
 {
     tp_out(("STM32 USB Init\n"));
     usb_board_cfg(&dev);
     DCD_Init(&dev, USB_OTG_FS_CORE_ID);
+    mask_sof_intr();
     usb_int_enable(&dev, 1);
     return 0;
 }
