@@ -18,8 +18,9 @@ MK_OBJS+=$(BSP_SRCS:%.c=%.o)
 
 ifneq ($(CONFIG_USB_DEVICE),)
   BSP_USB_SRCS:=usbd_ioreq.c
-  BSP_USB_OTG_SRCS:=usb_dcd.c usb_core.c
+  BSP_USB_OTG_SRCS:=usb_dcd.c usb_core.c usb_dcd_int.c
   MK_CFLAGS_usb_core.o+=-fno-strict-aliasing
+  MK_CFLAGS_usb_dcd_int.o+=-fno-strict-aliasing
   INCS:=$(INCS) -I$(BSP_USBD_DRIVERS_DIR)/inc \
     -I$(BSP_USB_OTG_DRIVERS_DIR)/inc -I$(d)/usb_conf
   MK_LINKS:=$(MK_LINKS) \

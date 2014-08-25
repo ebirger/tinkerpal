@@ -25,13 +25,22 @@
 #include "usb_core.h"
 #include "usb_defines.h"
 #include "usb_dcd.h"
+#include "usb_dcd_int.h"
+#include "usbd_ioreq.h"
 #include "platform/arm/stm32/stm32_gpio.h"
 #include "platform/arm/stm32/stm32_usb.h"
 #include "platform/platform.h"
 #include "util/debug.h"
+#include <string.h> /* memcpy */
+
+#define STM32_USB_EVENT_RESET 0x01
+#define STM32_USB_EVENT_SETUP 0x02
+
+#define STM32_STATE_LAST_IN 0x01
 
 static USB_OTG_CORE_HANDLE dev;
-static USB_OTG_GINTSTS_TypeDef g_int_stat;
+static unsigned int g_events;
+static unsigned int g_state;
 
 static void usb_int_enable(USB_OTG_CORE_HANDLE *pdev, int enable)
 {
@@ -47,38 +56,119 @@ static void usb_int_enable(USB_OTG_CORE_HANDLE *pdev, int enable)
 
 int stm32_usb_event_process(void)
 {
-    USB_OTG_GINTSTS_TypeDef int_stat;
+    unsigned int events;
 
     usb_int_enable(&dev, 0);
-    int_stat = g_int_stat;
-    g_int_stat.d32 = 0;
+    events = g_events;
+    g_events = 0;
     usb_int_enable(&dev, 1);
 
-    if (!int_stat.d32)
+    if (!events)
         return 0;
 
-    tp_out(("STM32 DSR int_stat %08x\n", int_stat.d32));
-    if (int_stat.b.usbreset)
+    if (events & STM32_USB_EVENT_RESET)
         usbd_event(0, USB_DEVICE_EVENT_RESET);
-    return 0;
+    if (events & STM32_USB_EVENT_SETUP)
+        usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_DATA_READY);
+    return 1;
 }
+
+uint8_t stm32_DataOutStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+
+uint8_t stm32_DataInStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
+{
+    tp_out(("%s\n", __func__));
+    usbd_event(epnum, USB_DEVICE_EVENT_EP_WRITE_ACK);
+    if (epnum == 0 && g_state == STM32_STATE_LAST_IN)
+    {
+        USBD_CtlReceiveStatus(&dev);
+        g_state = 0;
+    }
+    return USBD_OK;
+}
+
+uint8_t stm32_SetupStage(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    g_events |= STM32_USB_EVENT_SETUP;
+    dev.dev.device_state = USB_OTG_EP0_SETUP;
+    return USBD_OK;
+}
+
+uint8_t stm32_SOF(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+
+uint8_t stm32_Reset(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    g_events |= STM32_USB_EVENT_RESET;
+    return USBD_OK;
+}
+
+uint8_t stm32_Suspend(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+
+uint8_t stm32_Resume(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+
+uint8_t stm32_IsoINIncomplete(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+
+uint8_t stm32_IsoOUTIncomplete(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+
+uint8_t stm32_DevConnected(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+
+uint8_t stm32_DevDisconnected(USB_OTG_CORE_HANDLE *pdev)
+{
+    tp_out(("%s\n", __func__));
+    return USBD_OK;
+}
+  
+USBD_DCD_INT_cb_TypeDef stm32_DCD_INT_cb = 
+{
+    .DataOutStage = stm32_DataOutStage,
+    .DataInStage = stm32_DataInStage,
+    .SetupStage = stm32_SetupStage,
+    .SOF = stm32_SOF,
+    .Reset = stm32_Reset,
+    .Suspend = stm32_Suspend,
+    .Resume = stm32_Resume,
+    .IsoINIncomplete = stm32_IsoINIncomplete,
+    .IsoOUTIncomplete = stm32_IsoOUTIncomplete,
+    .DevConnected = stm32_DevConnected,
+    .DevDisconnected = stm32_DevDisconnected,
+};
+
+USBD_DCD_INT_cb_TypeDef *USBD_DCD_INT_fops = &stm32_DCD_INT_cb;
 
 void stm32_usb_isr(void)
 {
-    USB_OTG_GINTSTS_TypeDef int_stat;
-
-    if (!USB_OTG_IsDeviceMode(&dev))
-        return;
-
-    int_stat.d32 = USB_OTG_ReadCoreItr(&dev);
-    if (!int_stat.d32)
-        return;
-
-    /* Ack all interrupts */
-    USB_OTG_WRITE_REG32(&dev.regs.GREGS->GINTSTS, int_stat.d32);
-
-    /* Save int status for DSR */
-    g_int_stat.d32 |= int_stat.d32;
+    USBD_OTG_ISR_Handler(&dev);
+    return;
 }
 
 void USB_OTG_BSP_uDelay(const unsigned int usec)
@@ -172,11 +262,26 @@ void stm32_usb_set_addr(unsigned short addr)
 
 int stm32_usb_ep_data_get(int ep, unsigned char *data, unsigned long len)
 {
-    return -1;
+    tp_out(("%s: len %d\n", __func__, len));
+    if (ep == USBD_EP0 && dev.dev.device_state == USB_OTG_EP0_SETUP)
+        memcpy(data, dev.dev.setup_packet, 8);
+    return len;
 }
 
 int stm32_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
     int last)
 {
-    return -1;
+    int rc = -1;
+
+    tp_out(("%s: buf %p len %d\n", __func__, data, len));
+    hexdump(data, len);
+    if (ep == USBD_EP0)
+    {
+        if (last)
+            g_state = STM32_STATE_LAST_IN;
+        if (!data)
+            rc = USBD_CtlSendStatus(&dev);
+        rc = USBD_CtlSendData(&dev, data, len);
+    }
+    return rc;
 }
