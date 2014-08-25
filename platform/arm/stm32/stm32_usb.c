@@ -98,12 +98,12 @@ static void usb_board_cfg(USB_OTG_CORE_HANDLE *pdev)
 {
     /* XXX: Hard coded for stm32f4 */
 
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA , ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
     /* Configure SOF VBUS ID DM DP Pins */
     _stm32_gpio_set_pin_function(PA8, 0, GPIO_AF_OTG1_FS);
-    _stm32_gpio_set_pin_function(PA9, 0, GPIO_AF_OTG1_FS);
     _stm32_gpio_set_pin_function(PA11, 0, GPIO_AF_OTG1_FS);
     _stm32_gpio_set_pin_function(PA12, 0, GPIO_AF_OTG1_FS);
+    stm32_gpio_set_pin_mode(PA9, GPIO_PM_INPUT_PULLUP); /* XXX: OD */
     /* this for ID line debug */
     _stm32_gpio_set_pin_function(PA10, 1, GPIO_AF_OTG1_FS);
 
