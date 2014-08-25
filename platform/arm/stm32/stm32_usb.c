@@ -137,9 +137,28 @@ void stm32_usb_connect(void)
     DCD_DevConnect(&dev);
 }
 
+static uint8_t usb_ep_type_to_stm32_ep_type(usb_ep_type_t type)
+{
+    switch (type)
+    {
+    case USB_EP_TYPE_CTRL: return EP_TYPE_CTRL;
+    case USB_EP_TYPE_BULK: return EP_TYPE_BULK;
+    case USB_EP_TYPE_INTERRUPT: return EP_TYPE_INTR;
+    case USB_EP_TYPE_ISOC: return EP_TYPE_ISOC;
+    }
+    return 0;
+}
+
 void stm32_usb_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
     usb_ep_type_t type)
 {
+    uint8_t ep_type;
+
+    tp_out(("STM32 Cfg EP %d\n", ep));
+
+    ep_type = usb_ep_type_to_stm32_ep_type(type);
+    DCD_EP_Open(&dev, ep, max_pkt_size_out, ep_type);
+    DCD_EP_Open(&dev, 0x80 | ep, max_pkt_size_in, ep_type);
 }
 
 void stm32_usb_ep_data_ack(int ep, int data_phase)
