@@ -21,8 +21,9 @@ ifneq ($(CONFIG_USB_DEVICE),)
   BSP_USB_OTG_SRCS:=usb_dcd.c usb_core.c usb_dcd_int.c
   MK_CFLAGS_usb_core.o+=-fno-strict-aliasing
   MK_CFLAGS_usb_dcd_int.o+=-fno-strict-aliasing
-  INCS:=$(INCS) -I$(BSP_USBD_DRIVERS_DIR)/inc \
-    -I$(BSP_USB_OTG_DRIVERS_DIR)/inc -I$(d)/usb_conf
+  INCS+=-I$(BSP_USBD_DRIVERS_DIR)/inc \
+    -I$(BSP_USB_OTG_DRIVERS_DIR)/inc
+  MK_ADDITIONAL_INCLUDE_PATHS+=usb_conf
   MK_LINKS:=$(MK_LINKS) \
     $(addprefix $(BSP_USBD_DRIVERS_DIR)/src/,$(BSP_USB_SRCS)) \
     $(addprefix $(BSP_USB_OTG_DRIVERS_DIR)/src/,$(BSP_USB_OTG_SRCS))
@@ -40,7 +41,8 @@ endif
 ifneq ($(CONFIG_GCC),)
   ifneq ($(CONFIG_STM32F407XX),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f407xx.ld
-    CFLAGS:=$(CFLAGS) -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -I$(d)
+    MK_ADDITIONAL_INCLUDE_PATHS+=./
+    CFLAGS+=-DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER
   endif
   ifneq ($(CONFIG_STM32F429XX),)
     LINKER_SCRIPT:=$(BUILD)/$(d)/stm32f429xx.ld
