@@ -255,8 +255,10 @@ void stm32_usb_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
     tp_out(("STM32 Cfg EP %d\n", ep));
 
     ep_type = usb_ep_type_to_stm32_ep_type(type);
-    DCD_EP_Open(&dev, ep, max_pkt_size_out, ep_type);
-    DCD_EP_Open(&dev, 0x80 | ep, max_pkt_size_in, ep_type);
+    if (max_pkt_size_out)
+        DCD_EP_Open(&dev, ep, max_pkt_size_out, ep_type);
+    if (max_pkt_size_in)
+        DCD_EP_Open(&dev, 0x80 | ep, max_pkt_size_in, ep_type);
 }
 
 void stm32_usb_ep_data_ack(int ep, int data_phase)
