@@ -15,5 +15,5 @@ ifneq ($(CONFIG_GCC),)
     $(error Please set CROSS_COMPILE environment variable)
   endif
   MK_OBJS+=stm32_entry_gcc.o
-  MK_ADDITIONAL_INCLUDES+=/stm32_conf.h
+  MK_ADDITIONAL_INCLUDES+=stm32_conf.h
 endif
