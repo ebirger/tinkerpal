@@ -77,6 +77,7 @@ typedef struct {
         void (*ep_cfg)(int ep, int max_pkt_size_in, int max_pkt_size_out,
             usb_ep_type_t type);
         void (*ep_data_ack)(int ep, int data_phase);
+        int (*ep_data_wait)(int ep, unsigned char *data, unsigned long len);
         int (*ep_data_get)(int ep, unsigned char *data, unsigned long len);
         int (*ep_data_send)(int ep, unsigned char *data, unsigned long len,
             int last);

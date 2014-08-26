@@ -127,6 +127,8 @@ void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
     usbd_eps[ep].recv_data = data;
     usbd_eps[ep].recv_data_remaining = len;
     usbd_eps[ep].data_ready_cb = cb;
+    if (platform.usb.ep_data_wait)
+        platform.usb.ep_data_wait(ep, data, len);
 }
 
 static void set_configuration_handler(usb_setup_t *setup)
