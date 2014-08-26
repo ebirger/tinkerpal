@@ -71,6 +71,7 @@ static void set_line_coding_handler(usb_setup_t *setup)
     {
         /* XXX: stall */
         tp_err(("Malformed request\n"));
+        usbd_dump_setup(setup);
         return;
     }
 
@@ -87,6 +88,7 @@ static void get_line_coding_handler(usb_setup_t *setup)
     {
         /* XXX: stall */
         tp_err(("Malformed request\n"));
+        usbd_dump_setup(setup);
         platform.usb.ep_data_ack(USBD_EP0, 0);
         return;
     }
