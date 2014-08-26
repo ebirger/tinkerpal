@@ -315,7 +315,8 @@ int stm32_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
             g_state = STM32_USB_STATE_STATUS;
         if (!data)
             rc = USBD_CtlSendStatus(&dev);
-        rc = USBD_CtlSendData(&dev, data, len);
+        else
+            rc = USBD_CtlSendData(&dev, data, len);
     }
     return rc;
 }
