@@ -199,6 +199,7 @@ const platform_t platform = {
         .connect = stm32_usb_connect,
         .ep_cfg = stm32_usb_ep_cfg,
         .ep_data_ack = stm32_usb_ep_data_ack,
+        .ep_data_wait = stm32_usb_ep_data_wait,
         .ep_data_get = stm32_usb_ep_data_get,
         .ep_data_send = stm32_usb_ep_data_send,
         .set_addr = stm32_usb_set_addr,

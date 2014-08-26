@@ -35,8 +35,11 @@
 
 #define STM32_USB_EVENT_RESET 0x01
 #define STM32_USB_EVENT_SETUP 0x02
+#define STM32_USB_EVENT_OUT 0x04
 
-#define STM32_STATE_LAST_IN 0x01
+#define STM32_USB_STATE_SETUP 0
+#define STM32_USB_STATE_DATA 1
+#define STM32_USB_STATE_STATUS 2
 
 static USB_OTG_CORE_HANDLE dev;
 static unsigned int g_events;
@@ -68,7 +71,7 @@ int stm32_usb_event_process(void)
 
     if (events & STM32_USB_EVENT_RESET)
         usbd_event(0, USB_DEVICE_EVENT_RESET);
-    if (events & STM32_USB_EVENT_SETUP)
+    if (events & STM32_USB_EVENT_SETUP || events & STM32_USB_EVENT_OUT) 
         usbd_event(USBD_EP0, USB_DEVICE_EVENT_EP_DATA_READY);
     return 1;
 }
@@ -76,6 +79,8 @@ int stm32_usb_event_process(void)
 uint8_t stm32_DataOutStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
 {
     tp_out(("%s\n", __func__));
+    if (dev.dev.device_state == USB_OTG_EP0_DATA_OUT)
+        g_events |= STM32_USB_EVENT_OUT;
     return USBD_OK;
 }
 
@@ -83,10 +88,13 @@ uint8_t stm32_DataInStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
 {
     tp_out(("%s\n", __func__));
     usbd_event(epnum, USB_DEVICE_EVENT_EP_WRITE_ACK);
-    if (epnum == 0 && g_state == STM32_STATE_LAST_IN)
+    if (epnum == 0)
     {
-        USBD_CtlReceiveStatus(&dev);
-        g_state = 0;
+       if (g_state == STM32_USB_STATE_STATUS)
+       {
+           USBD_CtlReceiveStatus(&dev);
+           g_state = STM32_USB_STATE_SETUP;
+       }
     }
     return USBD_OK;
 }
@@ -253,6 +261,13 @@ void stm32_usb_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
 
 void stm32_usb_ep_data_ack(int ep, int data_phase)
 {
+    if (ep == USBD_EP0)
+    {
+        if (data_phase)
+            g_state = STM32_USB_STATE_DATA;
+        else
+            g_state = STM32_USB_STATE_STATUS;
+    }
 }
 
 void stm32_usb_set_addr(unsigned short addr)
@@ -260,11 +275,28 @@ void stm32_usb_set_addr(unsigned short addr)
     DCD_EP_SetAddress(&dev, (uint8_t)addr);
 }
 
+int stm32_usb_ep_data_wait(int ep, unsigned char *data, unsigned long len)
+{
+    if (ep == USBD_EP0)
+    {
+        if (g_state == STM32_USB_STATE_DATA)
+            return USBD_CtlPrepareRx(&dev, data, len) ? -1 : 0;
+    }
+    return 0;
+}
+
 int stm32_usb_ep_data_get(int ep, unsigned char *data, unsigned long len)
 {
     tp_out(("%s: len %d\n", __func__, len));
     if (ep == USBD_EP0 && dev.dev.device_state == USB_OTG_EP0_SETUP)
+    {
         memcpy(data, dev.dev.setup_packet, 8);
+        dev.dev.device_state = USB_OTG_EP0_IDLE;
+        return 8;
+    }
+    /* Data is already in the buffer provided to stm32_usb_ep_data_wait
+     * XXX: need to get correct len
+     */
     return len;
 }
 
@@ -278,7 +310,7 @@ int stm32_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
     if (ep == USBD_EP0)
     {
         if (last)
-            g_state = STM32_STATE_LAST_IN;
+            g_state = STM32_USB_STATE_STATUS;
         if (!data)
             rc = USBD_CtlSendStatus(&dev);
         rc = USBD_CtlSendData(&dev, data, len);
