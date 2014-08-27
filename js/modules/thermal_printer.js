@@ -5,7 +5,7 @@
  * Connections: 1 VCC (5V), 4 TX, 5 GND
  * Usage:
  * var t = require('thermal_printer');
- * var p = new t.instance(UART1);
+ * var p = new t.instance(new Serial(UART1, { baud_rate : 9600 }));
  * p.serial.write('Hello World!\n');
  */
 
@@ -13,7 +13,7 @@ var mod = module.exports;
 
 mod.instance = function(serial_port)
 {
-    this.serial = new Serial(serial_port);
+    this.serial = serial_port;
     this.init();
 };
 
