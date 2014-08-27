@@ -4,6 +4,9 @@ PROTOTYPE("Serial", serial, {
 CONSTRUCTOR("Serial", serial, do_serial_constructor, {
     .params = {
        { .name = "UART", .description = "HW UART ID" },
+       { .name = "options", .description = "optional options object of type "
+           "{ baud_rate : int // Serial Baud Rate } "
+       },
     },
     .description = "Serial Constructor",
     .return_value = "Created object",

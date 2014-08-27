@@ -26,7 +26,12 @@
 #define __DRIVERS_SERIAL_PLATFORM_H__
 
 typedef struct {
+    int baud_rate;
+} serial_params_t;
+
+typedef struct {
     int (*enable)(int u, int enabled);
+    int (*set_params)(int u, const serial_params_t *params);
     int (*read)(int u, char *buf, int size);
     int (*write)(int u, char *buf, int size);
     void (*irq_enable)(int u, int enable);

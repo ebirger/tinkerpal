@@ -38,6 +38,7 @@
 int serial_read(resource_t id, char *buf, int size);
 int serial_write(resource_t id, char *buf, int size);
 int serial_enable(resource_t id, int enabled);
+int serial_set_params(resource_t id, const serial_params_t *params);
 int serial_get_constant(int *constant, char *buf, int len);
 
 #endif

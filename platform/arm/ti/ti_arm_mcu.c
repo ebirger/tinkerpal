@@ -201,6 +201,17 @@ int ti_arm_mcu_uart_enable(int u, int enabled)
     return 0;
 }
 
+int ti_arm_mcu_uart_set_params(int u, const serial_params_t *params)
+{
+    const ti_arm_mcu_uart_t *uart = &ti_arm_mcu_uarts[u];
+
+    MAP_UARTDisable(uart->base);
+    MAP_UARTConfigSetExpClk(uart->base, SYSTEM_CLOCK(), params->baud_rate, 
+        UART_CONFIG_PAR_NONE | UART_CONFIG_STOP_ONE | UART_CONFIG_WLEN_8);
+    MAP_UARTEnable(uart->base);
+    return 0;
+}
+
 int ti_arm_mcu_select(int ms)
 {
     int expire = platform_get_ticks_from_boot() + ms, event = 0;

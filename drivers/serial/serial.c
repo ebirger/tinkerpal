@@ -173,6 +173,19 @@ int serial_enable(resource_t id, int enabled)
     return driver->enable(RES_MIN(id), enabled);
 }
 
+int serial_set_params(resource_t id, const serial_params_t *params)
+{
+    const serial_driver_t *driver;
+
+    if (!(driver = get_serial_driver(id)))
+        return -1;
+
+    if (!driver->set_params)
+        return -1;
+
+    return driver->set_params(RES_MIN(id), params);
+}
+
 static int _serial_get_constant(char *prefix, int maj, int *constant,
     char *buf, int len)
 {

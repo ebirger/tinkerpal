@@ -332,6 +332,7 @@ static void tm4c123g_init(void)
 const platform_t platform = {
     .serial = {
         .enable = ti_arm_mcu_uart_enable,
+        .set_params = ti_arm_mcu_uart_set_params,
         .read = buffered_serial_read,
         .write = ti_arm_mcu_serial_write,
         .irq_enable = ti_arm_mcu_serial_irq_enable,

@@ -154,15 +154,30 @@ int do_serial_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_serial_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int id;
+    int id, params_set = 0;
+    serial_params_t params = { .baud_rate = 115200 };
 
-    if (argc != 2)
+    if (argc != 2 && argc != 3)
         return js_invalid_args(ret);
 
+    if (argc == 3)
+    {
+	obj_get_property_int(&params.baud_rate, argv[2], &S("baud_rate"));
+        params_set = 1;
+    }
+
     id = obj_get_int(argv[1]);
+    serial_enable(id, 1);
+    if (params_set)
+    {
+        if (serial_set_params(id, &params))
+        {
+            serial_enable(id, 0);
+            return throw_exception(ret, &S("Failed setting serial params"));
+        }
+    }
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
     obj_set_property_int(*ret, Sserial_id, id);
-    serial_enable(id, 1);
     return 0;
 }
