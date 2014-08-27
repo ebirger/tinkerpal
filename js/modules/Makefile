@@ -1,3 +1,4 @@
 # Builtin modules
 MODULES+=$(if $(CONFIG_MODULE_ASSERT),assert.js)
+MODULES+=$(if $(CONFIG_MODULE_THERMAL_PRINTER),thermal_printer.js)
 MK_BUILTIN_FS_INTERNAL_FILES=$(MODULES)

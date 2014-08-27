@@ -9,4 +9,10 @@ config MODULE_ASSERT
 	bool "Assert module"
 	default y
 
+config MODULE_THERMAL_PRINTER
+	bool "Thermal Printer module"
+	default y
+        help
+                Module for a mini thermal printer (e.g. https://learn.adafruit.com/mini-thermal-receipt-printer/)
+
 endif
