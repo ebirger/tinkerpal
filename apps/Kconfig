@@ -46,6 +46,10 @@ config APP_UNIT_TESTS
 	bool "Unit Tests"
 	select CLI
 
+config APP_USB_SERIAL_LOOPBACK
+	bool "USB Serial Loopback"
+        depends on USB_DEVICE
+
 config APP_DUMMY
 	bool "Dummy. Does nothing. Used for testing"
 
