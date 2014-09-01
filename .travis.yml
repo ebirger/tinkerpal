@@ -24,6 +24,6 @@ env:
   - DEFCONFIG=stm32f4discovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=stm32f429idiscovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=stm32_hy_24_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
-script: make $DEFCONFIG && make V=1 && cd tests && ./run_tests.sh && ./leak_check.sh
+script: make $DEFCONFIG && make V=1 && cd tests && ./run_tests.sh && ./leak_check.sh && cd ..
 after_success:
   - ./scripts/coveralls.sh
