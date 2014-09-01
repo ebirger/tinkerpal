@@ -164,6 +164,16 @@ console.log("++++++SHRZ +++++++++");
 debug.assert(-1 >> 16, -1);
 debug.assert(-1 >>> 16, 0xFFFF);
 
+var x = 1;
+x <<= 2;
+debug.assert(x, 4);
+
+x = -1;
+x >>= 1;
+debug.assert(x, -1);
+x >>>= 1;
+debug.assert(x, 2147483647);
+
 /* toInteger */
 debug.assert(toInteger(1), 1);
 debug.assert(toInteger("1"), 1);
