@@ -23,4 +23,7 @@ if GCC
 config GCC_LTO
 	bool "GCC Link Time Optimization"
 
+config GCC_GCOV
+	bool "GCC Coverage Data Generation"
+
 endif

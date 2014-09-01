@@ -13,9 +13,10 @@ LINK_DEPS=$(LINKER_SCRIPT)
 CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h \
   $(addprefix -include ,$(ADDITIONAL_INCLUDES)) \
   $(addprefix -I,$(ADDITIONAL_INCLUDE_PATHS)) \
-  -Wall -Werror -g -ansi \
-  -std=gnu99 $(if $(CONFIG_GCC_LTO),-flto)
-LDFLAGS+=$(if $(CONFIG_GCC_LTO),-flto)
+  -Wall -Werror -g -ansi -std=gnu99 $(if $(CONFIG_GCC_LTO),-flto) \
+  $(if $(CONFIG_GCC_GCOV),--coverage)
+LDFLAGS+=$(if $(CONFIG_GCC_LTO),-flto) $(if $(CONFIG_GCC_GCOV),--coverage)
+AUTO_GEN_FILES+=$(if $(CONFIG_GCC_GCOV),$(OBJS:.o=.gcno) $(OBJS:.o=.gcda))
 get_libgcc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-libgcc-file-name))
 get_libc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-file-name=libc.a))
 
