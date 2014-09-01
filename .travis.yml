@@ -5,6 +5,7 @@ before_install:
  - sudo apt-get install gperf
  - sudo apt-get install valgrind
  - sudo apt-get install gcc-arm-none-eabi
+  - sudo pip install cpp-coveralls
 before_script:
  - arm-none-eabi-gcc --version
 compiler:
@@ -24,3 +25,5 @@ env:
   - DEFCONFIG=stm32f429idiscovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
   - DEFCONFIG=stm32_hy_24_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
 script: make $DEFCONFIG && make V=1 && cd tests && ./run_tests.sh && ./leak_check.sh
+after_success:
+  - [ $DEFCONFIG == "unix_sim_tests_defconfig" ] && coveralls --exclude staging.Linux --exclude doc --exclude scripts --exclude tests --gcov-options '\-lp' -r . -b .
