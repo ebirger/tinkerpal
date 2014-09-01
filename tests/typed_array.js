@@ -95,3 +95,11 @@ debug.assert(a.length, 3);
 debug.assert(a[0], 1);
 debug.assert(a[1], 2);
 debug.assert(a[2], 3);
+
+var a = new Uint8Array([255]);
+debug.assert(a.length, 1);
+debug.assert(a[0], 255);
+
+var a = new Int8Array([255]);
+debug.assert(a.length, 1);
+debug.assert(a[0], -1);
