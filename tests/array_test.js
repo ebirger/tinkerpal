@@ -74,3 +74,13 @@ debug.assert([1,2,3].toString(), '1,2,3');
 debug.assert([1,2,3] + 50, '1,2,350');
 debug.assert([1,2,3] + 'test', '1,2,3test');
 debug.assert([1,2,3] + [4,5,6], '1,2,34,5,6');
+
+/* Slice */
+x = [ 1, 2, 3 ].slice(1);
+debug.assert(x[0], 2);
+debug.assert(x[1], 3);
+x = [ 1, 2, 3 ].slice(1, 2);
+debug.assert(x[0], 2);
+debug.assert(x[1], undefined);
+x = [ 1, 2, 3, 4, 5, 6 ].slice(2, 4);
+debug.assert(x.join(), "3,4");
