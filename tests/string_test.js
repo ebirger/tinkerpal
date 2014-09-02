@@ -54,3 +54,7 @@ debug.assert("" + undefined, "undefined");
 debug.assert("" + 3, "3");
 debug.assert(3 + "", "3");
 debug.assert(true + "", "true");
+
+/* charCodeAt() */
+debug.assert("a string".charCodeAt(0), 97);
+debug.assert("a string".charCodeAt(3), 116);
