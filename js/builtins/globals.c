@@ -117,16 +117,6 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
-int do_dump(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    tp_out(("%o\n", argv[1]));
-    *ret = UNDEF;
-    return 0;
-}
-
 int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     extern obj_t *global_env;

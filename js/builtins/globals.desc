@@ -49,15 +49,6 @@ FUNCTION("assert_cond", debug, do_assert_cond, {
     .example = "debug.assert_cond(1 == 1);",
 })
 
-FUNCTION("dump", debug, do_dump, {
-    .params = { 
-       { .name = "object", .description = "Object to display" },
-     },
-    .description = "Dump object to the console",
-    .return_value = "None",
-    .example = "debug.dump('Hello World');",
-})
-
 FUNCTION("dump_env", debug, do_dump_env, {
     .params = { 
      },
