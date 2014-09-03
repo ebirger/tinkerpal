@@ -236,3 +236,19 @@ debug.assert(1^1.9, 0);
 /* Expression skipping tests */
 debug.assert(true || x.y == 1, true);
 debug.assert(true || x['kuku'] == 3, true);
+
+/* FP operators */
+var f = 1.3;
+f++;
+debug.assert(f, 2.3);
+f++;
+f++;
+f--;
+debug.assert(f, 3.3);
+console.log(f);
+debug.assert(3.2/4, 0.8);
+debug.assert(3.2/4 > 1, false);
+debug.assert(3.2/4 < 1, true);
+debug.assert(3.2/3 >= 1, true);
+debug.assert(3.2/3 <= 1, false);
+debug.assert(3.2/3 != 1, true);
