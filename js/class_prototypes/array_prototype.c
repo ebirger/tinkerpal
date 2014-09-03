@@ -231,6 +231,9 @@ int do_array_prototype_slice(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     else if (end < 0)
         end += iter.len;
 
+    if (start > end)
+        goto Exit;
+
     while (array_iter_next(&iter))
     {
         if (iter.k < start)
