@@ -7,8 +7,8 @@ fs.writeFileSync('FAT/test.txt', s);
 var s2 = fs.readFileSync('FAT/test.txt');
 
 var dirs = fs.readdirSync('.');
-debug.dump(dirs);
+console.log(dirs);
 debug.assert(dirs[0], 'FAT');
 var files = fs.readdirSync('FAT/');
-debug.dump(files);
+console.log(files);
 debug.assert(files[0], 'TEST.TXT');
