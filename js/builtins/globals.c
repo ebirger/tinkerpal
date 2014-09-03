@@ -139,14 +139,6 @@ int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
-int do_apply(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    if (argc <= 1)
-        return js_invalid_args(ret);
-
-    return function_call(ret, this, argc - 1, argv + 1);
-}
-
 int do_meminfo(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tmalloc_stats();
