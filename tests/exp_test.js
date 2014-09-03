@@ -232,3 +232,7 @@ debug.assert(1&1.9, 1);
 debug.assert(1&0.9, 0);
 debug.assert(1^0.9, 1);
 debug.assert(1^1.9, 0);
+
+/* Expression skipping tests */
+debug.assert(true || x.y == 1, true);
+debug.assert(true || x['kuku'] == 3, true);
