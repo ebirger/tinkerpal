@@ -252,3 +252,9 @@ debug.assert(3.2/4 < 1, true);
 debug.assert(3.2/3 >= 1, true);
 debug.assert(3.2/3 <= 1, false);
 debug.assert(3.2/3 != 1, true);
+
+/* Binary operators */
+debug.assert(1|2, 3);
+debug.assert(1&3, 1);
+debug.assert(10000000|20000000, 28950400);
+debug.assert(1&3, 1);
