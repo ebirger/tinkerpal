@@ -379,6 +379,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     {
     case TOK_PROTOTYPE:
         js_scan_next_token(scan);
+        property = Sprototype;
         break;
     case TOK_ID:
         js_scan_get_identifier(scan, &property);
@@ -404,16 +405,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     if ((rc = eval_expression(po, scan)))
         return rc;
 
-    switch (tok)
-    {
-    case TOK_PROTOTYPE:
-        property = Sprototype;
-    case TOK_ID:
-    case TOK_STRING:
-    case TOK_NUM:
-        _obj_set_property(o, property, *po);
-        break;
-    }
+    _obj_set_property(o, property, *po);
     tstr_free(&property);
     return 0;
 }
