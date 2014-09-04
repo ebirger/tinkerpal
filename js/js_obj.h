@@ -405,10 +405,29 @@ static inline void obj_set_property(obj_t *o, tstr_t property, obj_t *value)
     _obj_set_property(o, property, obj_get(value));
 }
 
-void obj_set_property_str(obj_t *o, tstr_t property, tstr_t value);
-void obj_set_property_int(obj_t *o, tstr_t property, int value);
-void obj_set_property_fp(obj_t *o, tstr_t property, double value);
-void _obj_set_int_property(obj_t *o, int property, obj_t *value);
+static inline void obj_set_property_str(obj_t *o, tstr_t property, tstr_t value)
+{
+    _obj_set_property(o, property, string_new(value));
+}
+
+static inline void obj_set_property_int(obj_t *o, tstr_t property, int value)
+{
+    _obj_set_property(o, property, num_new_int(value));
+}
+
+static inline void obj_set_property_fp(obj_t *o, tstr_t property, double value)
+{
+    _obj_set_property(o, property, num_new_fp(value));
+}
+
+static inline void _obj_set_int_property(obj_t *o, int property, obj_t *value)
+{
+    tstr_t s = int_to_tstr(property);
+
+    _obj_set_property(o, s, value);
+    tstr_free(&s);
+}
+
 static inline void obj_set_int_property(obj_t *o, int property, obj_t *value)
 {
     _obj_set_int_property(o, property, obj_get(value));

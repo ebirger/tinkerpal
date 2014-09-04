@@ -359,29 +359,6 @@ void _obj_set_property(obj_t *o, tstr_t property, obj_t *value)
     *dst = value;
 }
 
-void obj_set_property_str(obj_t *o, tstr_t property, tstr_t value)
-{
-    _obj_set_property(o, property, string_new(value));
-}
-
-void obj_set_property_int(obj_t *o, tstr_t property, int value)
-{
-    _obj_set_property(o, property, num_new_int(value));
-}
-
-void obj_set_property_fp(obj_t *o, tstr_t property, double value)
-{
-    _obj_set_property(o, property, num_new_fp(value));
-}
-
-void _obj_set_int_property(obj_t *o, int property, obj_t *value)
-{
-    tstr_t s = int_to_tstr(property);
-
-    _obj_set_property(o, s, value);
-    tstr_free(&s);
-}
-
 int obj_get_int(obj_t *o)
 {
     int ret;
