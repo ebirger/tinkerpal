@@ -62,3 +62,7 @@ console.log("=====18====");
 function cons() { this.kuku = 3; }
 var x = new cons;
 debug.assert(x.kuku, 3);
+
+var y = { mumu : "pup" };
+var x = { prototype : y };
+debug.assert(x.prototype.mumu, "pup");
