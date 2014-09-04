@@ -58,3 +58,11 @@ debug.assert(true + "", "true");
 /* charCodeAt() */
 debug.assert("a string".charCodeAt(0), 97);
 debug.assert("a string".charCodeAt(3), 116);
+
+/* String unescaping */
+debug.assert("\r".charCodeAt(0),13);
+debug.assert("\t".charCodeAt(0),9);
+debug.assert("\\".charCodeAt(0),92);
+debug.assert("\0".charCodeAt(0),0);
+debug.assert("\'".charCodeAt(0),39);
+debug.assert("\"".charCodeAt(0),34);
