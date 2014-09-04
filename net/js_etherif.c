@@ -32,7 +32,7 @@ int etherif_obj_constructor(etherif_t *ethif, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
     *ret = object_new();
-    _obj_set_property(*ret, Sether_id, num_new_int(ethif->id));
+    obj_set_property_int(*ret, Sether_id, ethif->id);
     obj_inherit(*ret, argv[0]);
     return 0;
 }

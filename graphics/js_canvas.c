@@ -100,7 +100,7 @@ int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
     *ret = object_new();
-    _obj_set_property(*ret, Scanvas_id, num_new_int(canvas->id));
+    obj_set_property_int(*ret, Scanvas_id, canvas->id);
     obj_inherit(*ret, argv[0]);
     return 0;
 }
