@@ -236,6 +236,8 @@ debug.assert(1^1.9, 0);
 /* Expression skipping tests */
 debug.assert(true || x.y == 1, true);
 debug.assert(true || x['kuku'] == 3, true);
+debug.assert(true || dummy(arg1, arg2), true);
+debug.assert(true || [dummy1, dummy2], true);
 
 /* FP operators */
 var f = 1.3;
