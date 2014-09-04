@@ -63,3 +63,6 @@ debug.assert(oo.b.aa, 1);
 
 var string_prop = { "a" : 3 };
 debug.assert(string_prop.a, 3);
+
+var int_prop = { 3 : "a" };
+debug.assert(int_prop[3], "a");
