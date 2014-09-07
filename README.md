@@ -6,6 +6,7 @@ Lightweight JavaScript engine and ecosystem for embedded platforms
 
 [![Build Status](https://travis-ci.org/ebirger/tinkerpal.png?branch=master)](https://travis-ci.org/ebirger/tinkerpal)
 [![Coverage Status](https://coveralls.io/repos/ebirger/tinkerpal/badge.png?branch=master)](https://coveralls.io/r/ebirger/tinkerpal?branch=master)
+[![Coverity Scan Build](https://scan.coverity.com/projects/2946/badge.svg)](https://scan.coverity.com/projects/2946)
 
 Platforms
 ---------
