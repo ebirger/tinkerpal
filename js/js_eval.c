@@ -1615,14 +1615,8 @@ static int parse_for_in(scan_t *scan, scan_t **lhs, obj_t **rh_exp)
             continue;
         }
 
-        if ((in_found = CUR_TOK(scan) == TOK_IN))
+        if (last && (in_found = CUR_TOK(scan) == TOK_IN))
         {
-            if (!last)
-            {
-                /* XXX: throw exception */
-                break;
-            }
-
             *lhs = js_scan_slice(start, last);
             js_scan_match(scan, TOK_IN);
             eval_expression(rh_exp, scan);
