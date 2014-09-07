@@ -149,6 +149,7 @@ void tstr_free(tstr_t *s)
 
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b)
 {
+    dst->flags = 0;
     dst->len = a->len + b->len;
     TPTR(dst) = tmalloc(dst->len, "string");
     memcpy(TPTR(dst), TPTR(a), a->len);
