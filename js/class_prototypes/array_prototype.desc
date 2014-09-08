@@ -119,3 +119,13 @@ FUNCTION("slice", array_prototype, do_array_prototype_slice, {
     .return_value = "The constructed array",
     .example = "[ 1, 2, 3].slice(1); // [2, 3]"
 })
+
+FUNCTION("sort", array_prototype, do_array_prototype_sort, {
+    .params = {
+        {
+        },
+    },
+    .description = "Sorts the array elements",
+    .return_value = "The sorted array",
+    .example = "[ 3, 1, 2 ].sort(); // [1, 2, 3]"
+})

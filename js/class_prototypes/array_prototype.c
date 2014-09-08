@@ -249,6 +249,55 @@ Exit:
     return rc;
 }
 
+int do_array_prototype_sort(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    int i, len;
+
+    /* XXX: support comparefn */
+    if (argc > 1)
+        return js_invalid_args(ret);
+
+    *ret = obj_get(this);
+
+    if (!(len = array_length_get(this)))
+        return 0;
+
+    /* Insertion Sort */
+    for (i = 1; i < len; i++)
+    {
+        obj_t *x;
+        int j;
+
+        x = array_lookup(this, i);
+        if (!x)
+            continue;
+
+        j = i;
+        while (j > 0)
+        {
+            obj_t *min1;
+
+            min1 = array_lookup(this, j - 1);
+            if (!min1)
+                continue;
+
+            /* XXX: ECMA-262 requires string comparison. However >= is not yet 
+             * implemented for strings
+             */
+            if (obj_true(obj_do_op(TOK_GE, obj_get(x), obj_get(min1))))
+            {
+                obj_put(min1);
+                break;
+            }
+
+            _array_set_item(this, j, min1);
+            j--;
+        }
+        _array_set_item(this, j, x);
+    }
+    return 0;
+}
+
 int do_array_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *a;

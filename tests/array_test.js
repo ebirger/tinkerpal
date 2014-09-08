@@ -90,3 +90,7 @@ x = [ 1, 2, 3, 4, 5, 6 ].slice(-5, -3);
 debug.assert(x.join(), "2,3");
 x = [ 1, 2, 3, 4, 5, 6 ].slice(-3, -5);
 debug.assert(x.join(), "");
+
+/* Sort */
+x = [3, 1, 2].sort().join();
+debug.assert(x, "1,2,3");
