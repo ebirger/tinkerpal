@@ -930,7 +930,6 @@ obj_t *object_new(void)
 /*** "array" Class ***/
 
 static obj_t **_array_length_get(int *length, obj_t *arr);
-static obj_t *array_lookup(obj_t *arr, int index);
 
 static void array_dump(printer_t *printer, obj_t *o)
 {
@@ -1093,7 +1092,7 @@ obj_t *array_pop(obj_t *arr)
     return ret;
 }
 
-static obj_t *array_lookup(obj_t *arr, int index)
+obj_t *array_lookup(obj_t *arr, int index)
 {
     tstr_t lookup_id;
     obj_t *ret;
