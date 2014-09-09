@@ -1018,6 +1018,7 @@ static obj_t **_array_length_get(int *length, obj_t *arr)
 {
     obj_t **ret;
 
+    tp_assert(is_array(arr));
     ret = var_get(arr->properties, &Slength);
     *length = NUM_INT(to_num(*ret));
     obj_put(*ret);
@@ -1026,9 +1027,12 @@ static obj_t **_array_length_get(int *length, obj_t *arr)
 
 int array_length_get(obj_t *arr)
 {
-    int ret;
+    int ret = 0;
 
-    _array_length_get(&ret, arr);
+    /* Intentionally fetch 'length' property not assuming this is an obj
+     * of the 'array class'.
+     */
+    obj_get_property_int(&ret, arr, &Slength);
     return ret;
 }
 
@@ -1123,7 +1127,7 @@ void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
 {
     int len = 0;
 
-    obj_get_property_int(&len, arr, &Slength);
+    len = array_length_get(arr);
     iter->len = len;
     iter->reverse = reverse;
     iter->k = reverse ? iter->len : -1;
