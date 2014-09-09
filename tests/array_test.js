@@ -94,3 +94,23 @@ debug.assert(x.join(), "");
 /* Sort */
 x = [3, 1, 2].sort().join();
 debug.assert(x, "1,2,3");
+x = [3, 1, 2].sort(function(x, y) { return x > y ? -1 : 1; }).join();
+debug.assert(x, "3,2,1");
+x = [3, 1, 2].sort(function(x, y) { console.log(x + ":" + y); }).join();
+debug.assert(x, "3,1,2");
+var y = 0;
+try {
+    [3, 1, 2].sort(function(x, y) { throw 1; });
+    y = 2;
+} catch(one) {
+    debug.assert(one, 1);
+}
+debug.assert(y, 0);
+x = [3,undefined,1].sort().join();
+debug.assert(x, "1,3,undefined");
+x = [];
+x[3] = 5;
+x.sort();
+debug.assert(x.length, 4);
+debug.assert(x[0], 5);
+debug.assert(x[3], undefined);

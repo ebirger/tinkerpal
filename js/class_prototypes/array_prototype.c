@@ -249,13 +249,50 @@ Exit:
     return rc;
 }
 
+static int array_sort_compare(obj_t **err, int *ge, obj_t *comparefn, obj_t *x,
+    obj_t *y)
+{
+    extern obj_t *global_env;
+
+    if (comparefn)
+    {
+        obj_t *argv[3], *retval = UNDEF;
+        int rc;
+
+        argv[0] = comparefn;
+        argv[1] = x;
+        argv[2] = y;
+        rc = function_call(&retval, global_env, 3, argv);
+        if (rc == COMPLETION_THROW)
+        {
+            *err = retval;
+            return rc;
+        }
+        *ge = obj_get_int(retval) >= 0;
+        obj_put(retval);
+    }
+    else
+    {
+        /* XXX: ECMA-262 requires string comparison. However >= is not
+         * yet implemented for strings
+         */
+        *ge = obj_true(obj_do_op(TOK_GE, obj_get(x), obj_get(y)));
+        *err = NULL;
+    }
+    return 0;
+}
+
 int do_array_prototype_sort(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     int i, len;
+    obj_t *comparefn = NULL;
+    int rc = 0;
 
-    /* XXX: support comparefn */
-    if (argc > 1)
+    if (argc > 2)
         return js_invalid_args(ret);
+
+    if (argc == 2 && argv[1] != UNDEF)
+        comparefn = argv[1];
 
     *ret = obj_get(this);
 
@@ -270,24 +307,37 @@ int do_array_prototype_sort(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
         x = array_lookup(this, i);
         if (!x)
-            continue;
+            x = UNDEF;
 
         j = i;
         while (j > 0)
         {
-            obj_t *min1;
+            obj_t *min1, *excp = UNDEF;
+            int ge;
 
             min1 = array_lookup(this, j - 1);
-            if (!min1)
-                continue;
-
-            /* XXX: ECMA-262 requires string comparison. However >= is not yet 
-             * implemented for strings
+            /* non-existent properties are greater than undefined properties.
+             * undefined properties are greater than any other value
              */
-            if (obj_true(obj_do_op(TOK_GE, obj_get(x), obj_get(min1))))
+            if (!min1)
+                min1 = UNDEF;
+            if (min1 != UNDEF)
             {
-                obj_put(min1);
-                break;
+                rc = array_sort_compare(&excp, &ge, comparefn, x, min1);
+                if (rc == COMPLETION_THROW)
+                {
+                    obj_put(min1);
+                    obj_put(x);
+                    obj_put(*ret);
+                    *ret = excp;
+                    goto Exit;
+                }
+
+                if (ge > 0)
+                {
+                    obj_put(min1);
+                    break;
+                }
             }
 
             _array_set_item(this, j, min1);
@@ -295,7 +345,8 @@ int do_array_prototype_sort(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         }
         _array_set_item(this, j, x);
     }
-    return 0;
+Exit:
+    return rc;
 }
 
 int do_array_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
