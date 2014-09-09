@@ -304,6 +304,22 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         obj_to_num(&oa);
         obj_to_num(&ob);
         goto do_op;
+    case TOK_GR:
+    case TOK_GE:
+        if (oa == UNDEF)
+        {
+            ret = TRUE;
+            break;
+        }
+        goto do_op;
+    case TOK_LT:
+    case TOK_LE:
+        if (ob == UNDEF)
+        {
+            ret = TRUE;
+            break;
+        }
+        goto do_op;
     case TOK_NOT_EQ_STRICT:
     case TOK_IS_EQ_STRICT:
         if (CLASS(oa) != CLASS(ob))
