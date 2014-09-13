@@ -1250,23 +1250,33 @@ static void string_free(obj_t *o)
     tstr_free(&s->value);
 }
 
+static inline int is_string_comparison_op(token_type_t op)
+{
+    return op == TOK_IS_EQ || op == TOK_NOT_EQ || op == TOK_GR ||
+        op == TOK_LT || op == TOK_GE || op == TOK_LE;
+}
+
 static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
     obj_t *ret = NULL;
     string_t *a, *b;
+    int diff;
 
     a = to_string(oa);
     ob = CLASS(ob)->cast(ob, STRING_CLASS);
     b = to_string(ob);
 
+    if (is_string_comparison_op(op))
+        diff = tstr_cmp(&a->value, &b->value);
+
     switch (op)
     {
-    case TOK_NOT_EQ: 
-        ret = tstr_cmp(&a->value, &b->value) ? TRUE : FALSE;
-        break;
-    case TOK_IS_EQ: 
-        ret = !tstr_cmp(&a->value, &b->value) ? TRUE : FALSE;
-        break;
+    case TOK_NOT_EQ: ret = diff ? TRUE : FALSE; break;
+    case TOK_IS_EQ: ret = !diff ? TRUE : FALSE; break;
+    case TOK_GR: ret = diff > 0 ? TRUE : FALSE; break;
+    case TOK_LT: ret = diff < 0 ? TRUE : FALSE; break;
+    case TOK_GE: ret = diff >= 0 ? TRUE : FALSE; break;
+    case TOK_LE: ret = diff <= 0 ? TRUE : FALSE; break;
     case TOK_PLUS:
         {
             tstr_t s;
