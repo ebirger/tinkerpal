@@ -45,7 +45,12 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
     }
 
     fseek(fp, 0L, SEEK_END);
-    fsize = ftell(fp);
+    if ((fsize = ftell(fp)) < 0)
+    {
+        tp_err(("Failed ftell() on file %s\n", file_n));
+        goto Exit;
+    }
+
     rewind(fp);
 
     tstr_alloc(content, fsize);
