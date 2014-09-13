@@ -1009,9 +1009,9 @@ static obj_t *array_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_PLUS:
         return obj_do_op(op, obj_cast(oa, STRING_CLASS), obj_get(ob));
     default:
-        return object_do_op(op, oa, ob);
+        break;
     }
-    return UNDEF;
+    return object_do_op(op, oa, ob);
 }
 
 static obj_t **_array_length_get(int *length, obj_t *arr)

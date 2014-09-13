@@ -213,7 +213,12 @@ int sim_unix_block_disk_read(unsigned char *buf, int sector, int count)
 {
     int n;
 
-    fseek(block_disk, sector * SEC_SIZE, SEEK_SET);
+    if (fseek(block_disk, sector * SEC_SIZE, SEEK_SET) < 0)
+    {
+        tp_err(("failed seek @ %d\n", sector * SEC_SIZE));
+        return -1;
+    }
+
     n = fread(buf, count, SEC_SIZE, block_disk);
     if (n != count * SEC_SIZE)
     {
@@ -228,7 +233,12 @@ int sim_unix_block_disk_write(const unsigned char *buf, int sector, int count)
 {
     int n;
 
-    fseek(block_disk, sector * SEC_SIZE, SEEK_SET);
+    if (fseek(block_disk, sector * SEC_SIZE, SEEK_SET))
+    {
+        tp_err(("failed seek @ %d\n", sector * SEC_SIZE));
+        return -1;
+    }
+
     n = fwrite(buf, count, SEC_SIZE, block_disk);
     if (n != count * SEC_SIZE)
     {
