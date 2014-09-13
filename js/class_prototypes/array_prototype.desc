@@ -123,6 +123,9 @@ FUNCTION("slice", array_prototype, do_array_prototype_slice, {
 FUNCTION("sort", array_prototype, do_array_prototype_sort, {
     .params = {
         {
+            .name = "comparefn",
+            .description = "Function receiving (x, y) and returns a negative "
+                "value if x < y, zero if x = y or a positive value if x > y",
         },
     },
     .description = "Sorts the array elements",
