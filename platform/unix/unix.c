@@ -157,8 +157,18 @@ void unix_set_nonblock(int fd)
     int flags;
 
     flags = fcntl(fd, F_GETFL, 0);
+    if (flags < 0)
+    {
+        perror("Failed getting fd flags\n");
+        return;
+    }
+
     flags |= O_NONBLOCK;
-    fcntl(fd, F_SETFL, flags);
+    if (fcntl(fd, F_SETFL, flags))
+    {
+        perror("Failed setting fd flags");
+        return;
+    }
 }
 
 void unix_init(void)
