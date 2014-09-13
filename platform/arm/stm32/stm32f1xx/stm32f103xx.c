@@ -23,7 +23,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-#include "util/tstr.h"
 #include "platform/platform.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stm32/stm32f1xx/stm32f1xx_common.h"
