@@ -249,6 +249,106 @@ Exit:
     return rc;
 }
 
+static int array_sort_compare(obj_t **err, int *ge, obj_t *comparefn, obj_t *x,
+    obj_t *y)
+{
+    extern obj_t *global_env;
+
+    if (comparefn)
+    {
+        obj_t *argv[3], *retval = UNDEF;
+        int rc;
+
+        argv[0] = comparefn;
+        argv[1] = x;
+        argv[2] = y;
+        rc = function_call(&retval, global_env, 3, argv);
+        if (rc == COMPLETION_THROW)
+        {
+            *err = retval;
+            return rc;
+        }
+        *ge = obj_get_int(retval) >= 0;
+        obj_put(retval);
+    }
+    else
+    {
+        obj_t *strx = obj_cast(x, STRING_CLASS);
+        obj_t *stry = obj_cast(y, STRING_CLASS);
+
+        *ge = obj_true(obj_do_op(TOK_GE, strx, stry));
+        *err = NULL;
+    }
+    return 0;
+}
+
+int do_array_prototype_sort(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    int i, len;
+    obj_t *comparefn = NULL;
+    int rc = 0;
+
+    if (argc > 2)
+        return js_invalid_args(ret);
+
+    if (argc == 2 && argv[1] != UNDEF)
+        comparefn = argv[1];
+
+    *ret = obj_get(this);
+
+    if (!(len = array_length_get(this)))
+        return 0;
+
+    /* Insertion Sort */
+    for (i = 1; i < len; i++)
+    {
+        obj_t *x;
+        int j;
+
+        x = array_lookup(this, i);
+        if (!x)
+            x = UNDEF;
+
+        j = i;
+        while (j > 0)
+        {
+            obj_t *min1, *excp = UNDEF;
+            int ge;
+
+            min1 = array_lookup(this, j - 1);
+            /* non-existent properties are greater than undefined properties.
+             * undefined properties are greater than any other value
+             */
+            if (!min1)
+                min1 = UNDEF;
+            if (min1 != UNDEF)
+            {
+                rc = array_sort_compare(&excp, &ge, comparefn, x, min1);
+                if (rc == COMPLETION_THROW)
+                {
+                    obj_put(min1);
+                    obj_put(x);
+                    obj_put(*ret);
+                    *ret = excp;
+                    goto Exit;
+                }
+
+                if (ge > 0)
+                {
+                    obj_put(min1);
+                    break;
+                }
+            }
+
+            _array_set_item(this, j, min1);
+            j--;
+        }
+        _array_set_item(this, j, x);
+    }
+Exit:
+    return rc;
+}
+
 int do_array_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *a;

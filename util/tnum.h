@@ -40,8 +40,6 @@ typedef struct {
 #define NUMERIC_INT(x) ((x).value.i)
 #define NUMERIC_FP(x) ((x).value.fp)
 
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
-
 /* Returns 10^exp */
 int exp_power(int exp);
 

@@ -321,7 +321,8 @@ obj_t *array_new(void);
 obj_t *array_push(obj_t *arr, obj_t *item);
 obj_t *array_pop(obj_t *arr);
 void array_length_set(obj_t *arr, int length);
-int array_length_get(obj_t *arr);
+int array_length_get(obj_t *arr); /* Works on abstract arrays as well */
+obj_t *array_lookup(obj_t *arr, int index);
 #define _array_set_item(arr, idx, item) _obj_set_int_property(arr, idx, item)
 
 static inline int is_array(obj_t *o)

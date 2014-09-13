@@ -25,6 +25,7 @@
 #ifndef __TSTR_H__
 #define __TSTR_H__
 
+#include "util/tp_misc.h"
 #include <string.h> /* memcmp */
 
 typedef struct {
@@ -67,8 +68,18 @@ void tstr_list_free(tstr_list_t **l);
 
 static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
 {
-    return a->len != b->len || (b->len && (*TPTR(a) != *TPTR(b))) ||
-        memcmp(TPTR(a), TPTR(b), b->len);
+    int common_len, diff;
+    char first_char_diff;
+
+    if (!a->len && !b->len)
+        return 0;
+
+    if ((first_char_diff = *TPTR(a) - *TPTR(b)))
+        return first_char_diff;
+
+    common_len = MIN(a->len, b->len);
+    diff = memcmp(TPTR(a), TPTR(b), common_len);
+    return diff ? : a->len - b->len;
 }
 
 static inline int _tstr_cmp_str(const tstr_t *a, const char *b,

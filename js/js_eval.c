@@ -448,11 +448,19 @@ static int eval_array(obj_t **po, scan_t *scan)
     if (CUR_TOK(scan) == TOK_CLOSE_MEMBER)
         goto Exit; /* Empty array */
 
-    eval_expression(&val, scan);
+    if (CUR_TOK(scan) == TOK_COMMA)
+        val = UNDEF;
+    else
+        eval_expression(&val, scan);
     array_push(o, val);
     while (CUR_TOK(scan) == TOK_COMMA)
     {
         js_scan_next_token(scan);
+        if (CUR_TOK(scan) == TOK_COMMA || CUR_TOK(scan) == TOK_CLOSE_MEMBER)
+        {
+            array_push(o, UNDEF);
+            continue;
+        }
         eval_expression(&val, scan);
         array_push(o, val);
     }

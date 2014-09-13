@@ -304,6 +304,22 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         obj_to_num(&oa);
         obj_to_num(&ob);
         goto do_op;
+    case TOK_GR:
+    case TOK_GE:
+        if (oa == UNDEF)
+        {
+            ret = TRUE;
+            break;
+        }
+        goto do_op;
+    case TOK_LT:
+    case TOK_LE:
+        if (ob == UNDEF)
+        {
+            ret = TRUE;
+            break;
+        }
+        goto do_op;
     case TOK_NOT_EQ_STRICT:
     case TOK_IS_EQ_STRICT:
         if (CLASS(oa) != CLASS(ob))
@@ -930,7 +946,6 @@ obj_t *object_new(void)
 /*** "array" Class ***/
 
 static obj_t **_array_length_get(int *length, obj_t *arr);
-static obj_t *array_lookup(obj_t *arr, int index);
 
 static void array_dump(printer_t *printer, obj_t *o)
 {
@@ -1003,6 +1018,7 @@ static obj_t **_array_length_get(int *length, obj_t *arr)
 {
     obj_t **ret;
 
+    tp_assert(is_array(arr));
     ret = var_get(arr->properties, &Slength);
     *length = NUM_INT(to_num(*ret));
     obj_put(*ret);
@@ -1011,9 +1027,12 @@ static obj_t **_array_length_get(int *length, obj_t *arr)
 
 int array_length_get(obj_t *arr)
 {
-    int ret;
+    int ret = 0;
 
-    _array_length_get(&ret, arr);
+    /* Intentionally fetch 'length' property not assuming this is an obj
+     * of the 'array class'.
+     */
+    obj_get_property_int(&ret, arr, &Slength);
     return ret;
 }
 
@@ -1093,7 +1112,7 @@ obj_t *array_pop(obj_t *arr)
     return ret;
 }
 
-static obj_t *array_lookup(obj_t *arr, int index)
+obj_t *array_lookup(obj_t *arr, int index)
 {
     tstr_t lookup_id;
     obj_t *ret;
@@ -1108,7 +1127,7 @@ void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
 {
     int len = 0;
 
-    obj_get_property_int(&len, arr, &Slength);
+    len = array_length_get(arr);
     iter->len = len;
     iter->reverse = reverse;
     iter->k = reverse ? iter->len : -1;
@@ -1242,12 +1261,17 @@ static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 
     switch (op)
     {
-    case TOK_NOT_EQ: 
-        ret = tstr_cmp(&a->value, &b->value) ? TRUE : FALSE;
-        break;
-    case TOK_IS_EQ: 
-        ret = !tstr_cmp(&a->value, &b->value) ? TRUE : FALSE;
-        break;
+#define COMPARE(op, cond) \
+    case op: {\
+        int diff = tstr_cmp(&a->value, &b->value); \
+        ret = cond ? TRUE : FALSE; \
+    } break
+    COMPARE(TOK_NOT_EQ, diff != 0);
+    COMPARE(TOK_IS_EQ, diff == 0);
+    COMPARE(TOK_GR, diff > 0);
+    COMPARE(TOK_LT, diff < 0);
+    COMPARE(TOK_GE, diff >= 0);
+    COMPARE(TOK_LE, diff <= 0);
     case TOK_PLUS:
         {
             tstr_t s;

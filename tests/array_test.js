@@ -75,6 +75,12 @@ debug.assert([1,2,3] + 50, '1,2,350');
 debug.assert([1,2,3] + 'test', '1,2,3test');
 debug.assert([1,2,3] + [4,5,6], '1,2,34,5,6');
 
+debug.assert([,].join(), "undefined,undefined");
+debug.assert([1,].join(), "1,undefined");
+debug.assert([,3].join(), "undefined,3");
+debug.assert([1,,3].join(), "1,undefined,3");
+debug.assert([1,,,3].join(), "1,undefined,undefined,3");
+
 /* Slice */
 x = [ 1, 2, 3 ].slice(1);
 debug.assert(x[0], 2);
@@ -90,3 +96,32 @@ x = [ 1, 2, 3, 4, 5, 6 ].slice(-5, -3);
 debug.assert(x.join(), "2,3");
 x = [ 1, 2, 3, 4, 5, 6 ].slice(-3, -5);
 debug.assert(x.join(), "");
+
+/* Sort */
+x = [3, 1, 2].sort().join();
+debug.assert(x, "1,2,3");
+x = [3, 1, 2].sort(function(x, y) { return x > y ? -1 : 1; }).join();
+debug.assert(x, "3,2,1");
+x = [3, 1, 2].sort(function(x, y) { console.log(x + ":" + y); }).join();
+debug.assert(x, "3,1,2");
+var y = 0;
+try {
+    [3, 1, 2].sort(function(x, y) { throw 1; });
+    y = 2;
+} catch(one) {
+    debug.assert(one, 1);
+}
+debug.assert(y, 0);
+x = [3,undefined,1].sort().join();
+debug.assert(x, "1,3,undefined");
+x = [];
+x[3] = 5;
+x.sort();
+debug.assert(x.length, 4);
+debug.assert(x[0], 5);
+debug.assert(x[3], undefined);
+
+x = [1, 10, 3].sort().join();
+debug.assert(x, "1,10,3");
+x = [1, 10, 3].sort(function(x, y) { return x - y; }).join();
+debug.assert(x, "1,3,10");
