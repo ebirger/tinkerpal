@@ -120,3 +120,8 @@ x.sort();
 debug.assert(x.length, 4);
 debug.assert(x[0], 5);
 debug.assert(x[3], undefined);
+
+x = [1, 10, 3].sort().join();
+debug.assert(x, "1,10,3");
+x = [1, 10, 3].sort(function(x, y) { return x - y; }).join();
+debug.assert(x, "1,3,10");

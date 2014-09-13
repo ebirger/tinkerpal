@@ -273,10 +273,10 @@ static int array_sort_compare(obj_t **err, int *ge, obj_t *comparefn, obj_t *x,
     }
     else
     {
-        /* XXX: ECMA-262 requires string comparison. However >= is not
-         * yet implemented for strings
-         */
-        *ge = obj_true(obj_do_op(TOK_GE, obj_get(x), obj_get(y)));
+        obj_t *strx = obj_cast(x, STRING_CLASS);
+        obj_t *stry = obj_cast(y, STRING_CLASS);
+
+        *ge = obj_true(obj_do_op(TOK_GE, strx, stry));
         *err = NULL;
     }
     return 0;
