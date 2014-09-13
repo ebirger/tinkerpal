@@ -32,7 +32,8 @@
 static int local_file_read(tstr_t *content, tstr_t *file_name)
 {
     FILE *fp;
-    size_t fsize, nread;
+    size_t nread;
+    long fsize;
     char *file_n = NULL;
     int rc = -1;
 
