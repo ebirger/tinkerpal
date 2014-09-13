@@ -36,6 +36,8 @@
 
 #define ARRAY_SIZE(a) ((sizeof(a)) / sizeof((a)[0]))
 
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+
 /* The PP_NARG macro returns the number of arguments that have been
   * passed to it.
   * found at: https://groups.google.com/forum/#!topic/comp.std.c/d-6Mj5Lko_s

@@ -139,8 +139,6 @@ static void set_configuration_handler(usb_setup_t *setup)
     usbd_ep_send(USBD_EP0, NULL, 0); /* Status ack */
 }
 
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
-
 static void get_descriptor_handler(usb_setup_t *setup)
 {
     u16 len;
