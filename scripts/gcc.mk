@@ -7,6 +7,7 @@ CC=$(CROSS_COMPILE)gcc
 LD=$(if $(CONFIG_UNIX)$(CONFIG_MSP430),$(CC),$(CROSS_COMPILE)ld)
 OBJCOPY=$(CROSS_COMPILE)objcopy
 CPP=$(CROSS_COMPILE)cpp
+AS=$(CROSS_COMPILE)as
 #LDFLAGS+=$(if $(CONFIG_UNIX),-Wl,)-Map=$@.map
 LINK_DEPS=$(LINKER_SCRIPT)
 
@@ -22,6 +23,7 @@ get_libc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-file-name=libc.a))
 
 # Build commands
 compile=$(CC) $(CFLAGS) $(CFLAGS_$@) $(MK_CFLAGS_$@) -c -o $@ $<
+asm=$(AS) -o $@ $<
 calc_deps=$(CC) $(CFLAGS) -MM  -MT $@ -MF $(@:.o=.d) $<
 include_deps=$(eval -include $(OBJS:.o=.d)) \
   $(if $(LINKER_SCRIPT),$(eval -include $(LINKER_SCRIPT:.ld=.ld.d)))

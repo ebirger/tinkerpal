@@ -96,6 +96,7 @@ docs:
 .SECONDARY:
 
 quiet_compile= CC $@
+quiet_asm= AS $@
 quiet_link= LD $@
 quiet_obj_to_bin= GEN $@
 
@@ -126,6 +127,10 @@ $(BUILD)/%.o : $(BUILD)/%.c $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)
 	@echo $($(quiet_)compile)
 	@$(call compile)
 	@$(call calc_deps)
+
+$(BUILD)/%.o : %.s $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+	@echo $($(quiet_)asm)
+	@$(call asm)
 
 $(TARGET) : $(OBJS) $(LINK_DEPS)
 	@echo $($(quiet_)link)
