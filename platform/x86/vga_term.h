@@ -22,38 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __PLATFORM_CONSTS_H__
-#define __PLATFORM_CONSTS_H__
+#ifndef __VGA_TERM_H__
+#define __VGA_TERM_H__
 
-#ifdef CONFIG_PLATFORM_EMULATION
-#include "platform/unix/sim.h"
-#elif defined(CONFIG_LM4F120XL)
-#include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
-#elif defined(CONFIG_LM3S6965)
-#include "platform/arm/ti/lm3s6965/lm3s6965.h"
-#elif defined(CONFIG_LM3S6918)
-#include "platform/arm/ti/lm3s6918/lm3s6918.h"
-#elif defined(CONFIG_TM4C123G)
-#include "platform/arm/ti/tm4c123g/tm4c123g.h"
-#elif defined(CONFIG_TM4C1294)
-#include "platform/arm/ti/tm4c1294/tm4c1294.h"
-#elif defined(CONFIG_CC3200)
-#include "platform/arm/ti/cc3200/cc3200.h"
-#elif defined(CONFIG_STM32F103XX)
-#include "platform/arm/stm32/stm32f1xx/stm32f103xx.h"
-#elif defined(CONFIG_STM32F303XX)
-#include "platform/arm/stm32/stm32f3xx/stm32f303xx.h"
-#elif defined(CONFIG_STM32F407XX)
-#include "platform/arm/stm32/stm32f4xx/stm32f407xx.h"
-#elif defined(CONFIG_STM32F429XX)
-#include "platform/arm/stm32/stm32f4xx/stm32f429xx.h"
-#elif defined(CONFIG_FRDM_KL25Z)
-#include "platform/arm/frdm/kl25z.h"
-#elif defined(CONFIG_MSP430F5529)
-#include "platform/msp430/msp430f5529.h"
-#elif defined(CONFIG_X86_PLATFORM_EMULATION)
-#else
-#error Platform constants not defined
-#endif
+void vga_term_init(void);
+void vga_term_putchar(char c);
 
 #endif

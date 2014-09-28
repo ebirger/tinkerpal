@@ -1,0 +1,4 @@
+config X86
+	bool
+	select PLAT_HAS_MALLOC
+	select PLAT_HAS_GCC

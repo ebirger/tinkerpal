@@ -57,3 +57,10 @@ STM32LOADER_BURNER=$(STM32LOADER)/stm32loader.py
 $(STM32LOADER_BURNER) :
 	@echo Fetching stm32loader
 	git clone git://github.com/jsnyder/stm32loader.git $(STM32LOADER)
+
+# x86 Platform Emulation
+X86_BURNER=true && mkdir -p $(BUILD)/isodir/boot && \
+  mkdir -p $(BUILD)/isodir/boot/grub && \
+  cp $(TARGET) $(BUILD)/isodir/boot/tp.bin && \
+  echo "menuentry 'TinkerPal' { multiboot /boot/tp.bin ) }" > $(BUILD)/isodir/boot/grub/grub.cfg && \
+  grub-mkrescue -o $(IMAGE:.bin=.iso) $(BUILD)/isodir

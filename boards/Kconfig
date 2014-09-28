@@ -67,4 +67,11 @@ config MSP430F5529_LAUNCHPAD
 	bool "TI MSP430F5529 Launchpad"
 	select MSP430F5529
 
+config X86_PLATFORM_EMULATION
+	bool "X86 Platform Emulation"
+	select X86
+	select PLAT_HAS_SERIAL
+	help
+		Bare metal x86
+
 endchoice

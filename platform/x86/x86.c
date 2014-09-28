@@ -22,38 +22,67 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __PLATFORM_CONSTS_H__
-#define __PLATFORM_CONSTS_H__
+#include "platform/platform.h"
+#include "platform/x86/vga_term.h"
 
-#ifdef CONFIG_PLATFORM_EMULATION
-#include "platform/unix/sim.h"
-#elif defined(CONFIG_LM4F120XL)
-#include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
-#elif defined(CONFIG_LM3S6965)
-#include "platform/arm/ti/lm3s6965/lm3s6965.h"
-#elif defined(CONFIG_LM3S6918)
-#include "platform/arm/ti/lm3s6918/lm3s6918.h"
-#elif defined(CONFIG_TM4C123G)
-#include "platform/arm/ti/tm4c123g/tm4c123g.h"
-#elif defined(CONFIG_TM4C1294)
-#include "platform/arm/ti/tm4c1294/tm4c1294.h"
-#elif defined(CONFIG_CC3200)
-#include "platform/arm/ti/cc3200/cc3200.h"
-#elif defined(CONFIG_STM32F103XX)
-#include "platform/arm/stm32/stm32f1xx/stm32f103xx.h"
-#elif defined(CONFIG_STM32F303XX)
-#include "platform/arm/stm32/stm32f3xx/stm32f303xx.h"
-#elif defined(CONFIG_STM32F407XX)
-#include "platform/arm/stm32/stm32f4xx/stm32f407xx.h"
-#elif defined(CONFIG_STM32F429XX)
-#include "platform/arm/stm32/stm32f4xx/stm32f429xx.h"
-#elif defined(CONFIG_FRDM_KL25Z)
-#include "platform/arm/frdm/kl25z.h"
-#elif defined(CONFIG_MSP430F5529)
-#include "platform/msp430/msp430f5529.h"
-#elif defined(CONFIG_X86_PLATFORM_EMULATION)
-#else
-#error Platform constants not defined
-#endif
+static char *heap_end = 0;
+extern unsigned long _heap_bottom;
+extern unsigned long _heap_top;
 
-#endif
+static int x86_serial_enable(int u, int enabled)
+{
+    return 0;
+}
+
+static int x86_serial_write(int u, char *buf, int size)
+{
+    while (size--)
+        vga_term_putchar(*buf++);
+    return 0;
+}
+
+static void x86_meminfo(void)
+{
+    tp_out(("Heap: Total %d Allocated %d Remaining %d\n", 
+        (&_heap_top - &_heap_bottom) * 4,
+        ((unsigned long *)heap_end - &_heap_bottom) * 4,
+        (&_heap_top - (unsigned long *)heap_end) * 4));
+}
+
+static void x86_init(void)
+{
+    vga_term_init();
+}
+
+void *sbrk(unsigned int incr)
+{
+    static char *prev_heap_end;
+
+    if (heap_end == 0)
+        heap_end = (void *)&_heap_bottom;
+
+    prev_heap_end = heap_end;
+
+    if (heap_end + incr > (char *)&_heap_top) 
+        return (void *)0;
+
+    heap_end += incr;
+
+    return (void *)prev_heap_end;
+}
+
+const platform_t platform = {
+    .serial = {
+        .enable = x86_serial_enable,
+        .write = x86_serial_write,
+    },
+    .init = x86_init,
+    .meminfo = x86_meminfo,
+};
+
+void kernel_main(int argc, char *argv[])
+{
+    extern int tp_main(int argc, char *argv[]);
+
+    tp_main(argc, argv);
+}
