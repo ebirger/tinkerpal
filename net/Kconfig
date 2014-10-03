@@ -6,6 +6,7 @@ if NET
 
 config ETHERIF
 	bool
+	select ETHERNET
 	default n
 
 config PACKET
@@ -14,7 +15,6 @@ config PACKET
 
 config ETHERNET
 	bool "Ethernet"
-	depends on ETHERIF
 	select PACKET
 	default y
 	help

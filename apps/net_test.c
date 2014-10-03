@@ -44,7 +44,6 @@ static etherif_t *ethif;
 static void net_test_quit(void)
 {
     dhcpc_stop(ethif);
-    ethernet_detach_etherif(ethif);
     etherif_free(ethif);
 }
 
@@ -100,8 +99,6 @@ void app_start(int argc, char *argv[])
 #endif
 
     tp_assert(ethif);
-
-    ethernet_attach_etherif(ethif);
 
     etherif_mac_addr_get(ethif, &mac);
     tp_out(("Interface MAC address: %s\n", eth_mac_serialize(&mac)));

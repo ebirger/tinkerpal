@@ -25,6 +25,7 @@
 #include <stdio.h> /* NULL */
 #include "util/debug.h"
 #include "net/etherif.h"
+#include "net/ether.h"
 
 static etherif_t *etherifs;
 static int etherifs_last_id;
@@ -55,6 +56,9 @@ void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
     /* Link to list */
     ethif->next = etherifs;
     etherifs = ethif;
+
+    /* Register with protocol layer */
+    ethernet_attach_etherif(ethif);
 }
 
 etherif_t *etherif_get_by_id(int id)
