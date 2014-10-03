@@ -29,13 +29,23 @@
 
 typedef struct netif_t netif_t;
 
+typedef struct {
+    void (*mac_addr_get)(netif_t *netif, eth_mac_t *mac);
+} netif_ops_t;
+
 struct netif_t {
     netif_t *next;
     int id;
+    const netif_ops_t *ops;
 };
 
+static inline void netif_mac_addr_get(netif_t *netif, eth_mac_t *mac)
+{
+    netif->ops->mac_addr_get(netif, mac);
+}
+
 netif_t *netif_get_by_id(int id);
-void netif_register(netif_t *netif);
+void netif_register(netif_t *netif, const netif_ops_t *ops);
 void netif_unregister(netif_t *netif);
 
 #endif

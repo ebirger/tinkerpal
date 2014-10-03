@@ -25,6 +25,7 @@
 #include "util/debug.h"
 #include "util/cli.h"
 #include "net/net.h"
+#include "net/netif.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
 #if defined(CONFIG_LINUX_ETH)
@@ -100,7 +101,7 @@ void app_start(int argc, char *argv[])
 
     tp_assert(ethif);
 
-    etherif_mac_addr_get(ethif, &mac);
+    netif_mac_addr_get(&ethif->netif, &mac);
     tp_out(("Interface MAC address: %s\n", eth_mac_serialize(&mac)));
     cli_start(&net_test_cli_client);
 }

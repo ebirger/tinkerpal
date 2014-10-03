@@ -33,6 +33,15 @@ etherif_t *etherif_get_by_id(int id)
     return (etherif_t *)netif_get_by_id(id);
 }
 
+static void etherif_netif_mac_addr_get(netif_t *netif, eth_mac_t *mac)
+{
+    etherif_mac_addr_get((etherif_t *)netif, mac);
+}
+
+static const netif_ops_t etherif_netif_ops = {
+    .mac_addr_get = etherif_netif_mac_addr_get,
+};
+
 void etherif_destruct(etherif_t *ethif)
 {
     etherif_event_t event;
@@ -52,5 +61,5 @@ void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
     ethif->udp = NULL;
 
     ethernet_attach_etherif(ethif);
-    netif_register(&ethif->netif);
+    netif_register(&ethif->netif, &etherif_netif_ops);
 }

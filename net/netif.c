@@ -46,8 +46,9 @@ void netif_unregister(netif_t *netif)
     *iter = (*iter)->next;
 }
 
-void netif_register(netif_t *netif)
+void netif_register(netif_t *netif, const netif_ops_t *ops)
 {
+    netif->ops = ops;
     netif->id = netifs_last_id++;
     netif->next = netifs;
     netifs = netif;
