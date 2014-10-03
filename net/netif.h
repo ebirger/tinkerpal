@@ -22,35 +22,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdio.h> /* NULL */
-#include "util/debug.h"
-#include "net/etherif.h"
-#include "net/netif.h"
-#include "net/ether.h"
+#ifndef __NETIF_H__
+#define __NETIF_H__
 
-etherif_t *etherif_get_by_id(int id)
-{
-    return (etherif_t *)netif_get_by_id(id);
-}
+#include "net/net_types.h"
 
-void etherif_destruct(etherif_t *ethif)
-{
-    etherif_event_t event;
+typedef struct netif_t netif_t;
 
-    netif_unregister(&ethif->netif);
+struct netif_t {
+    netif_t *next;
+    int id;
+};
 
-    /* Remove events */
-    for (event = ETHERIF_EVENT_FIRST; event < ETHERIF_EVENT_COUNT; event++)
-        event_watch_del_by_resource(ETHERIF_RES(ethif, event));
-}
+netif_t *netif_get_by_id(int id);
+void netif_register(netif_t *netif);
+void netif_unregister(netif_t *netif);
 
-void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
-{
-    ethif->ops = ops;
-    ethif->ipv4_info = NULL;
-    ethif->dhcpc = NULL;
-    ethif->udp = NULL;
-
-    ethernet_attach_etherif(ethif);
-    netif_register(&ethif->netif);
-}
+#endif

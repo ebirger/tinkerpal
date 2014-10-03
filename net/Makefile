@@ -1,4 +1,4 @@
-MK_OBJS+=net.o
+MK_OBJS+=net.o netif.o
 MK_OBJS+=$(if $(CONFIG_PACKET),packet.o)
 MK_OBJS+=$(if $(CONFIG_ETHERNET),ether.o)
 MK_OBJS+=$(if $(CONFIG_ARP),arp.o)

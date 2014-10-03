@@ -26,6 +26,7 @@
 #define __ETHERIF_H__
 
 #include "net/net_types.h"
+#include "net/netif.h"
 #include "util/event.h"
 #include "util/tp_types.h"
 #include "drivers/resources.h"
@@ -40,7 +41,7 @@ typedef enum {
 } etherif_event_t;
 
 #define ETHERIF_RES(ethif, event) \
-    RES(NETIF_RESOURCE_ID_BASE, (ethif)->id, event)
+    RES(NETIF_RESOURCE_ID_BASE, (ethif)->netif.id, event)
 
 typedef struct etherif_t etherif_t;
 
@@ -53,8 +54,7 @@ typedef struct {
 } etherif_ops_t;
 
 struct etherif_t {
-    etherif_t *next;
-    int id;
+    netif_t netif;
     const etherif_ops_t *ops;
     void *ipv4_info;
     void *udp;

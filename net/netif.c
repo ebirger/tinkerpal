@@ -22,35 +22,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdio.h> /* NULL */
-#include "util/debug.h"
-#include "net/etherif.h"
 #include "net/netif.h"
-#include "net/ether.h"
+#include "util/debug.h"
 
-etherif_t *etherif_get_by_id(int id)
+static netif_t *netifs;
+static int netifs_last_id;
+
+netif_t *netif_get_by_id(int id)
 {
-    return (etherif_t *)netif_get_by_id(id);
+    netif_t *ret;
+
+    for (ret = netifs; ret && ret->id != id; ret = ret->next);
+    tp_assert(ret);
+    return ret;
 }
 
-void etherif_destruct(etherif_t *ethif)
+void netif_unregister(netif_t *netif)
 {
-    etherif_event_t event;
+    netif_t **iter;
 
-    netif_unregister(&ethif->netif);
-
-    /* Remove events */
-    for (event = ETHERIF_EVENT_FIRST; event < ETHERIF_EVENT_COUNT; event++)
-        event_watch_del_by_resource(ETHERIF_RES(ethif, event));
+    for (iter = &netifs; *iter && *iter != netif; iter = &(*iter)->next);
+    tp_assert(*iter);
+    *iter = (*iter)->next;
 }
 
-void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
+void netif_register(netif_t *netif)
 {
-    ethif->ops = ops;
-    ethif->ipv4_info = NULL;
-    ethif->dhcpc = NULL;
-    ethif->udp = NULL;
-
-    ethernet_attach_etherif(ethif);
-    netif_register(&ethif->netif);
+    netif->id = netifs_last_id++;
+    netif->next = netifs;
+    netifs = netif;
 }
