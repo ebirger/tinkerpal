@@ -40,7 +40,7 @@ typedef enum {
 } etherif_event_t;
 
 #define ETHERIF_RES(ethif, event) \
-    RES(ETHERIF_RESOURCE_ID_BASE, (ethif)->id, event)
+    RES(NETIF_RESOURCE_ID_BASE, (ethif)->id, event)
 
 typedef struct etherif_t etherif_t;
 
