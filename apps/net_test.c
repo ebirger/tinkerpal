@@ -27,8 +27,8 @@
 #include "net/net.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
-#if defined(CONFIG_LINUX_PACKET_ETH)
-#include "drivers/net/linux_packet_eth.h"
+#if defined(CONFIG_LINUX_ETH)
+#include "platform/unix/linux_eth.h"
 #elif defined(CONFIG_STELLARIS_ETH)
 #include "platform/arm/ti/stellaris_eth.h"
 #elif defined(CONFIG_TIVA_C_EMAC)
@@ -86,11 +86,11 @@ void app_start(int argc, char *argv[])
 
     tp_out(("TinkerPal Application - Net Test\n"));
 
-#if defined(CONFIG_LINUX_PACKET_ETH)
+#if defined(CONFIG_LINUX_ETH)
     if (argc != 2)
         tp_crit(("Usage: %s <network interface>\n", argv[0]));
 
-    ethif = linux_packet_eth_new(argv[1]);
+    ethif = linux_eth_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)
     ethif = stellaris_eth_new();
 #elif defined(CONFIG_TIVA_C_EMAC)
