@@ -45,7 +45,7 @@ static etherif_t *ethif;
 static void net_test_quit(void)
 {
     dhcpc_stop(ethif);
-    etherif_free(ethif);
+    netif_free(&ethif->netif);
 }
 
 #ifdef CONFIG_DHCP_CLIENT

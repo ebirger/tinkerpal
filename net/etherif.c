@@ -38,8 +38,14 @@ static void etherif_netif_mac_addr_get(netif_t *netif, eth_mac_t *mac)
     etherif_mac_addr_get((etherif_t *)netif, mac);
 }
 
+static void etherif_netif_free(netif_t *netif)
+{
+    etherif_free((etherif_t *)netif);
+}
+
 static const netif_ops_t etherif_netif_ops = {
     .mac_addr_get = etherif_netif_mac_addr_get,
+    .free = etherif_netif_free,
 };
 
 void etherif_destruct(etherif_t *ethif)

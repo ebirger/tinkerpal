@@ -31,6 +31,7 @@ typedef struct netif_t netif_t;
 
 typedef struct {
     void (*mac_addr_get)(netif_t *netif, eth_mac_t *mac);
+    void (*free)(netif_t *netif);
 } netif_ops_t;
 
 struct netif_t {
@@ -42,6 +43,11 @@ struct netif_t {
 static inline void netif_mac_addr_get(netif_t *netif, eth_mac_t *mac)
 {
     netif->ops->mac_addr_get(netif, mac);
+}
+
+static inline void netif_free(netif_t *netif)
+{
+    netif->ops->free(netif);
 }
 
 netif_t *netif_get_by_id(int id);
