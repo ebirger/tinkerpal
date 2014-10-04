@@ -44,7 +44,7 @@ static etherif_t *ethif;
 
 static void net_test_quit(void)
 {
-    dhcpc_stop(ethif);
+    netif_ip_disconnect(&ethif->netif);
     netif_free(&ethif->netif);
 }
 
@@ -66,7 +66,7 @@ static void net_test_process_line(tstr_t *line)
     if (!tstr_cmp(line, &S("dhcp")))
     {
         etherif_on_event_set(ethif, ETHERIF_EVENT_IPV4_INFO_SET, &got_ip_event);
-        dhcpc_start(ethif);
+        netif_ip_connect(&ethif->netif);
     }
 #endif
     if (!tstr_cmp(line, &S("link")))

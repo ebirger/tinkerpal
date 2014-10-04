@@ -24,9 +24,8 @@
  */
 #include <stdio.h> /* NULL */
 #include "util/debug.h"
-#include "net/etherif.h"
 #include "net/netif.h"
-#include "net/ether.h"
+#include "net/net.h"
 
 etherif_t *etherif_get_by_id(int id)
 {
@@ -43,6 +42,16 @@ static int etherif_netif_link_status(netif_t *netif)
     return etherif_link_status((etherif_t *)netif);
 }
 
+static int etherif_netif_ip_connect(netif_t *netif)
+{
+    return dhcpc_start((etherif_t *)netif);
+}
+
+static void etherif_netif_ip_disconnect(netif_t *netif)
+{
+    dhcpc_stop((etherif_t *)netif);
+}
+
 static void etherif_netif_free(netif_t *netif)
 {
     etherif_free((etherif_t *)netif);
@@ -51,6 +60,8 @@ static void etherif_netif_free(netif_t *netif)
 static const netif_ops_t etherif_netif_ops = {
     .mac_addr_get = etherif_netif_mac_addr_get,
     .link_status = etherif_netif_link_status,
+    .ip_connect = etherif_netif_ip_connect,
+    .ip_disconnect = etherif_netif_ip_disconnect,
     .free = etherif_netif_free,
 };
 
