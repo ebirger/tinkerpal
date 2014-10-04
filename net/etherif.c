@@ -67,13 +67,7 @@ static const netif_ops_t etherif_netif_ops = {
 
 void etherif_destruct(etherif_t *ethif)
 {
-    etherif_event_t event;
-
     netif_unregister(&ethif->netif);
-
-    /* Remove events */
-    for (event = ETHERIF_EVENT_FIRST; event < ETHERIF_EVENT_COUNT; event++)
-        event_watch_del_by_resource(ETHERIF_RES(ethif, event));
 }
 
 void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)

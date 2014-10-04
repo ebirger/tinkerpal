@@ -25,23 +25,8 @@
 #ifndef __ETHERIF_H__
 #define __ETHERIF_H__
 
-#include "net/net_types.h"
 #include "net/netif.h"
-#include "util/event.h"
 #include "util/tp_types.h"
-#include "drivers/resources.h"
-
-typedef enum {
-    ETHERIF_EVENT_FIRST = 0,
-    ETHERIF_EVENT_PORT_CHANGE = 0,
-    ETHERIF_EVENT_PACKET_RECEIVED = 1,
-    ETHERIF_EVENT_PACKET_XMITTED = 2,
-    ETHERIF_EVENT_IPV4_INFO_SET = 3,
-    ETHERIF_EVENT_COUNT
-} etherif_event_t;
-
-#define ETHERIF_RES(ethif, event) \
-    RES(NETIF_RESOURCE_ID_BASE, (ethif)->netif.id, event)
 
 typedef struct etherif_t etherif_t;
 
@@ -91,49 +76,31 @@ static inline void etherif_free(etherif_t *ethif)
     ethif->ops->free(ethif);
 }
 
-static inline void etherif_on_event_set(etherif_t *ethif, etherif_event_t event,
-    event_t *ev)
-{
-    event_watch_set(ETHERIF_RES(ethif, event), ev);
-}
-
-static inline void etherif_on_event_clear(etherif_t *ethif,
-    etherif_event_t event)
-{
-    event_watch_del_by_resource(ETHERIF_RES(ethif, event));
-}
-
-static inline void etherif_event_trigger(etherif_t *ethif,
-    etherif_event_t event)
-{
-    event_watch_trigger(ETHERIF_RES(ethif, event));
-}
-
 static inline void etherif_ipv4_info_set(etherif_t *ethif, void *ipv4_info)
 {
     ethif->ipv4_info = ipv4_info;
-    etherif_event_trigger(ethif, ETHERIF_EVENT_IPV4_INFO_SET);
+    netif_event_trigger(&ethif->netif, NETIF_EVENT_IPV4_CONNECTED);
 }
 
 #define etherif_on_port_change_event_set(ethif, ev) \
-    etherif_on_event_set(ethif, ETHERIF_EVENT_PORT_CHANGE, ev)
+    netif_on_event_set(&(ethif)->netif, NETIF_EVENT_PORT_CHANGE, ev)
 #define etherif_on_port_change_event_clear(ethif) \
-    etherif_on_event_clear(ethif, ETHERIF_EVENT_PORT_CHANGE)
+    netif_on_event_clear(&(ethif)->netif, NETIF_EVENT_PORT_CHANGE)
 #define etherif_port_changed(ethif) \
-    etherif_event_trigger(ethif, ETHERIF_EVENT_PORT_CHANGE)
+    netif_event_trigger(&(ethif)->netif, NETIF_EVENT_PORT_CHANGE)
 
 #define etherif_on_packet_received_event_set(ethif, ev) \
-    etherif_on_event_set(ethif, ETHERIF_EVENT_PACKET_RECEIVED, ev)
+    netif_on_event_set(&(ethif)->netif, NETIF_EVENT_PACKET_RECEIVED, ev)
 #define etherif_on_packet_received_event_clear(ethif) \
-    etherif_on_event_clear(ethif, ETHERIF_EVENT_PACKET_RECEIVED)
+    netif_on_event_clear(&(ethif)->netif, NETIF_EVENT_PACKET_RECEIVED)
 #define etherif_packet_received(ethif) \
-    etherif_event_trigger(ethif, ETHERIF_EVENT_PACKET_RECEIVED)
+    netif_event_trigger(&(ethif)->netif, NETIF_EVENT_PACKET_RECEIVED)
 
 #define etherif_on_packet_xmit_event_set(ethif, ev) \
-    etherif_on_event_set(ethif, ETHERIF_EVENT_PACKET_XMITTED, ev)
+    netif_on_event_set(&(ethif)->netif, NETIF_EVENT_PACKET_XMITTED, ev)
 #define etherif_on_packet_xmit_event_clear(ethif) \
-    etherif_on_event_clear(ethif, ETHERIF_EVENT_PACKET_XMITTED)
+    netif_on_event_clear(&(ethif)->netif, NETIF_EVENT_PACKET_XMITTED)
 #define etherif_packet_xmitted(ethif) \
-    etherif_event_trigger(ethif, ETHERIF_EVENT_PACKET_XMITTED)
+    netif_event_trigger(&(ethif)->netif, NETIF_EVENT_PACKET_XMITTED)
 
 #endif

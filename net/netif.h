@@ -25,7 +25,22 @@
 #ifndef __NETIF_H__
 #define __NETIF_H__
 
+#include "util/event.h"
 #include "net/net_types.h"
+#include "drivers/resources.h"
+
+
+typedef enum {
+    NETIF_EVENT_FIRST = 0,
+    NETIF_EVENT_PORT_CHANGE = 0,
+    NETIF_EVENT_PACKET_RECEIVED = 1,
+    NETIF_EVENT_PACKET_XMITTED = 2,
+    NETIF_EVENT_IPV4_CONNECTED = 3,
+    NETIF_EVENT_COUNT
+} netif_event_t;
+
+#define NETIF_RES(netif, event) \
+    RES(NETIF_RESOURCE_ID_BASE, (netif)->id, event)
 
 typedef struct netif_t netif_t;
 
@@ -66,6 +81,22 @@ static inline void netif_ip_disconnect(netif_t *netif)
 static inline void netif_free(netif_t *netif)
 {
     netif->ops->free(netif);
+}
+
+static inline void netif_on_event_set(netif_t *netif, netif_event_t event,
+    event_t *ev)
+{
+    event_watch_set(NETIF_RES(netif, event), ev);
+}
+
+static inline void netif_on_event_clear(netif_t *netif, netif_event_t event)
+{
+    event_watch_del_by_resource(NETIF_RES(netif, event));
+}
+
+static inline void netif_event_trigger(netif_t *netif, netif_event_t event)
+{
+    event_watch_trigger(NETIF_RES(netif, event));
 }
 
 netif_t *netif_get_by_id(int id);

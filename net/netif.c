@@ -39,11 +39,16 @@ netif_t *netif_get_by_id(int id)
 
 void netif_unregister(netif_t *netif)
 {
+    netif_event_t event;
     netif_t **iter;
 
     for (iter = &netifs; *iter && *iter != netif; iter = &(*iter)->next);
     tp_assert(*iter);
     *iter = (*iter)->next;
+    
+    /* Remove events */
+    for (event = NETIF_EVENT_FIRST; event < NETIF_EVENT_COUNT; event++)
+        event_watch_del_by_resource(NETIF_RES(netif, event));
 }
 
 void netif_register(netif_t *netif, const netif_ops_t *ops)

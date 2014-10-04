@@ -52,7 +52,7 @@ static void net_test_quit(void)
 void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 {
     tp_out(("DHCP: IP address aquired\n"));
-    etherif_on_event_clear(ethif, ETHERIF_EVENT_IPV4_INFO_SET);
+    netif_on_event_clear(&ethif->netif, NETIF_EVENT_IPV4_CONNECTED);
 }
 
 static event_t got_ip_event = {
@@ -65,7 +65,8 @@ static void net_test_process_line(tstr_t *line)
 #ifdef CONFIG_DHCP_CLIENT
     if (!tstr_cmp(line, &S("dhcp")))
     {
-        etherif_on_event_set(ethif, ETHERIF_EVENT_IPV4_INFO_SET, &got_ip_event);
+        netif_on_event_set(&ethif->netif, NETIF_EVENT_IPV4_CONNECTED,
+            &got_ip_event);
         netif_ip_connect(&ethif->netif);
     }
 #endif
