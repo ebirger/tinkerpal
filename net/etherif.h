@@ -50,6 +50,7 @@ void etherif_destruct(etherif_t *ethif);
 void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops);
 
 etherif_t *etherif_get_by_id(int id);
+etherif_t *netif_to_etherif(netif_t *netif);
 
 static inline int etherif_link_status(etherif_t *ethif)
 {

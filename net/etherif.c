@@ -29,23 +29,23 @@
 
 etherif_t *etherif_get_by_id(int id)
 {
-    return (etherif_t *)netif_get_by_id(id);
+    return netif_to_etherif(netif_get_by_id(id));
 }
 
 static void etherif_netif_mac_addr_get(netif_t *netif, eth_mac_t *mac)
 {
-    etherif_mac_addr_get((etherif_t *)netif, mac);
+    etherif_mac_addr_get(netif_to_etherif(netif), mac);
 }
 
 static int etherif_netif_link_status(netif_t *netif)
 {
-    return etherif_link_status((etherif_t *)netif);
+    return etherif_link_status(netif_to_etherif(netif));
 }
 
 static int etherif_netif_ip_connect(netif_t *netif)
 {
 #ifdef CONFIG_DHCP_CLIENT
-    return dhcpc_start((etherif_t *)netif);
+    return dhcpc_start(netif_to_etherif(netif));
 #else
     tp_warn(("etherif: no connect method available\n"));
     return 0;
@@ -55,18 +55,18 @@ static int etherif_netif_ip_connect(netif_t *netif)
 static void etherif_netif_ip_disconnect(netif_t *netif)
 {
 #ifdef CONFIG_DHCP_CLIENT
-    dhcpc_stop((etherif_t *)netif);
+    dhcpc_stop(netif_to_etherif(netif));
 #endif
 }
 
 static u32 etherif_netif_ip_addr_get(netif_t *netif)
 {
-    return ipv4_addr((etherif_t *)netif);
+    return ipv4_addr(netif_to_etherif(netif));
 }
 
 static void etherif_netif_free(netif_t *netif)
 {
-    etherif_free((etherif_t *)netif);
+    etherif_free(netif_to_etherif(netif));
 }
 
 static const netif_ops_t etherif_netif_ops = {
@@ -77,6 +77,12 @@ static const netif_ops_t etherif_netif_ops = {
     .ip_addr_get = etherif_netif_ip_addr_get,
     .free = etherif_netif_free,
 };
+
+etherif_t *netif_to_etherif(netif_t *netif)
+{
+    tp_assert(netif->ops == &etherif_netif_ops);
+    return (etherif_t *)netif;
+}
 
 void etherif_destruct(etherif_t *ethif)
 {
