@@ -48,7 +48,6 @@ static void net_test_quit(void)
     netif_free(netif);
 }
 
-#ifdef CONFIG_DHCP_CLIENT
 void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 {
     tp_out(("DHCP: IP address aquired\n"));
@@ -58,18 +57,15 @@ void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 static event_t got_ip_event = {
     .trigger = got_ip
 };
-#endif
 
 static void net_test_process_line(tstr_t *line)
 {
-#ifdef CONFIG_DHCP_CLIENT
-    if (!tstr_cmp(line, &S("dhcp")))
+    if (!tstr_cmp(line, &S("connect")))
     {
         netif_on_event_set(netif, NETIF_EVENT_IPV4_CONNECTED,
             &got_ip_event);
         netif_ip_connect(netif);
     }
-#endif
     if (!tstr_cmp(line, &S("link")))
         console_printf("Link status: %d\n", netif_link_status(netif));
 
