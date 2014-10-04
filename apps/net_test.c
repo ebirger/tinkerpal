@@ -24,7 +24,7 @@
  */
 #include "util/debug.h"
 #include "util/cli.h"
-#include "net/net.h"
+#include "net/net_debug.h"
 #include "net/netif.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
