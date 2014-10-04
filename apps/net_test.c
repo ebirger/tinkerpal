@@ -86,7 +86,6 @@ static cli_client_t net_test_cli_client = {
 void app_start(int argc, char *argv[])
 {
     eth_mac_t mac;
-    etherif_t *ethif;
 
     tp_out(("TinkerPal Application - Net Test\n"));
 
@@ -94,18 +93,16 @@ void app_start(int argc, char *argv[])
     if (argc != 2)
         tp_crit(("Usage: %s <network interface>\n", argv[0]));
 
-    ethif = linux_eth_new(argv[1]);
+    netif = linux_eth_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)
-    ethif = stellaris_eth_new();
+    netif = stellaris_eth_new();
 #elif defined(CONFIG_TIVA_C_EMAC)
-    ethif = tiva_c_emac_new();
+    netif = tiva_c_emac_new();
 #elif defined(CONFIG_ENC28J60)
-    ethif = enc28j60_new(&board.enc28j60_params);
+    netif = enc28j60_new(&board.enc28j60_params);
 #endif
 
-    tp_assert(ethif);
-
-    netif = &ethif->netif;
+    tp_assert(netif);
 
     netif_mac_addr_get(netif, &mac);
     tp_out(("Interface MAC address: %s\n", eth_mac_serialize(&mac)));

@@ -47,6 +47,6 @@ int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         params.intr = obj_get_int(argv[3]);
     }
 
-    ethif = enc28j60_new(p);
-    return etherif_obj_constructor(ethif, ret, this, argc, argv);
+    ethif = netif_to_etherif(enc28j60_new(p));
+    return etherif_obj_constructor((ethif, ret, this, argc, argv);
 }

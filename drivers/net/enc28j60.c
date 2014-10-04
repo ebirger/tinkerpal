@@ -30,6 +30,7 @@
 #include "mem/tmalloc.h"
 #include "drivers/spi/spi.h"
 #include "drivers/gpio/gpio.h"
+#include "net/etherif.h"
 
 /* ENC28J60 Control Registers */
 /* Use bits on the register addresses for meta data */
@@ -700,7 +701,7 @@ static const etherif_ops_t enc28j60_etherif_ops = {
     .free = enc28j60_free,
 };
 
-etherif_t *enc28j60_new(const enc28j60_params_t *params)
+netif_t *enc28j60_new(const enc28j60_params_t *params)
 {
     enc28j60_t *e = tmalloc_type(enc28j60_t);
 
@@ -721,5 +722,5 @@ etherif_t *enc28j60_new(const enc28j60_params_t *params)
     e->irq_event_id = event_watch_set(e->intr, &e->irq_event);
 
     chip_init(e);
-    return &e->ethif;
+    return &e->ethif.netif;
 }

@@ -29,6 +29,7 @@
 #include "util/debug.h"
 #include "util/event.h"
 #include "mem/tmalloc.h"
+#include "net/etherif.h"
 #include <driverlib/rom_map.h>
 #include <driverlib/emac.h>
 #include <driverlib/sysctl.h>
@@ -170,7 +171,7 @@ static void hw_init(void)
     MAP_IntEnable(INT_EMAC0);
 }
 
-etherif_t *tiva_c_emac_new(void)
+netif_t *tiva_c_emac_new(void)
 {
     g_eth.istat = 0;
     etherif_construct(&g_eth.ethif, &tiva_c_emac_etherif_ops);
@@ -179,5 +180,5 @@ etherif_t *tiva_c_emac_new(void)
     phy_cfg();
     phy_info();
 
-    return &g_eth.ethif;
+    return &g_eth.ethif.netif;
 }

@@ -25,9 +25,7 @@
 #ifndef __ENC28J60_H__
 #define __ENC28J60_H__
 
-#include "util/event.h"
-#include "util/tp_types.h"
-#include "net/etherif.h"
+#include "net/netif.h"
 
 typedef struct {
     resource_t spi_port;
@@ -35,6 +33,6 @@ typedef struct {
     resource_t intr;
 } enc28j60_params_t;
 
-etherif_t *enc28j60_new(const enc28j60_params_t *params);
+netif_t *enc28j60_new(const enc28j60_params_t *params);
 
 #endif

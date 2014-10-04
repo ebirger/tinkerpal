@@ -29,6 +29,7 @@
 #include "util/debug.h"
 #include "util/event.h"
 #include "mem/tmalloc.h"
+#include "net/etherif.h"
 #include "inc/hw_types.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_ints.h"
@@ -192,7 +193,7 @@ static void hw_init(void)
     MAP_EthernetIntEnable(ETH_BASE, ETH_INT_PHY | ETH_INT_RX | ETH_INT_TX);
 }
 
-etherif_t *stellaris_eth_new(void)
+netif_t *stellaris_eth_new(void)
 {
     g_eth.istat = 0;
     etherif_construct(&g_eth.ethif, &stellaris_eth_etherif_ops);
@@ -201,5 +202,5 @@ etherif_t *stellaris_eth_new(void)
     phy_cfg();
     phy_info();
 
-    return &g_eth.ethif;
+    return &g_eth.ethif.netif;
 }

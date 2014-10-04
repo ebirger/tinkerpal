@@ -32,6 +32,7 @@
 #include "drivers/serial/serial.h"
 #include "platform/unix/linux_eth.h"
 #include "platform/unix/sim.h"
+#include "net/etherif.h"
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -183,7 +184,7 @@ static int linux_eth_sock_init(linux_eth_t *eth)
     return 0;
 }
 
-etherif_t *linux_eth_new(char *dev_name)
+netif_t *linux_eth_new(char *dev_name)
 {
     linux_eth_t *eth = &g_eth;
 
@@ -206,5 +207,5 @@ etherif_t *linux_eth_new(char *dev_name)
 
     printf("Created Linux Packet Ethernet Interface. fd %d\n",
         eth->packet_socket);
-    return &eth->ethif;
+    return &eth->ethif.netif;
 }
