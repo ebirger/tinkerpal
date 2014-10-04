@@ -44,12 +44,19 @@ static int etherif_netif_link_status(netif_t *netif)
 
 static int etherif_netif_ip_connect(netif_t *netif)
 {
+#ifdef CONFIG_DHCP_CLIENT
     return dhcpc_start((etherif_t *)netif);
+#else
+    tp_warn(("etherif: no connect method available\n"));
+    return 0;
+#endif
 }
 
 static void etherif_netif_ip_disconnect(netif_t *netif)
 {
+#ifdef CONFIG_DHCP_CLIENT
     dhcpc_stop((etherif_t *)netif);
+#endif
 }
 
 static void etherif_netif_free(netif_t *netif)
