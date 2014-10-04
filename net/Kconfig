@@ -16,6 +16,7 @@ config PACKET
 config ETHERNET
 	bool "Ethernet"
 	select PACKET
+        depends on ETHERIF
 	default y
 	help
 		Support for Ethernet protocols handling
