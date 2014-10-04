@@ -70,7 +70,7 @@ static void net_test_process_line(tstr_t *line)
     }
 #endif
     if (!tstr_cmp(line, &S("link")))
-        console_printf("Link status: %d\n", etherif_link_status(ethif));
+        console_printf("Link status: %d\n", netif_link_status(&ethif->netif));
 
     console_printf("Ok\n");
 }
