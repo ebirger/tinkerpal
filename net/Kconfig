@@ -59,6 +59,6 @@ config DHCP_CLIENT
 
 config NET_DEBUG
 	bool "Network Debugging"
-	default n
+	default y
 
 endif
