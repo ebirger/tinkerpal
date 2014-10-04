@@ -59,6 +59,11 @@ static void etherif_netif_ip_disconnect(netif_t *netif)
 #endif
 }
 
+static u32 etherif_netif_ip_addr_get(netif_t *netif)
+{
+    return ipv4_addr((etherif_t *)netif);
+}
+
 static void etherif_netif_free(netif_t *netif)
 {
     etherif_free((etherif_t *)netif);
@@ -69,6 +74,7 @@ static const netif_ops_t etherif_netif_ops = {
     .link_status = etherif_netif_link_status,
     .ip_connect = etherif_netif_ip_connect,
     .ip_disconnect = etherif_netif_ip_disconnect,
+    .ip_addr_get = etherif_netif_ip_addr_get,
     .free = etherif_netif_free,
 };
 

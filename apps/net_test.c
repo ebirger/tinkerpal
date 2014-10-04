@@ -66,6 +66,12 @@ static void net_test_process_line(tstr_t *line)
             &got_ip_event);
         netif_ip_connect(netif);
     }
+    if (!tstr_cmp(line, &S("ip")))
+    {
+        u32 addr = ntohl(netif_ip_addr_get(netif));
+
+        console_printf("IP address: %s\n", ip_addr_serialize(addr));
+    }
     if (!tstr_cmp(line, &S("link")))
         console_printf("Link status: %d\n", netif_link_status(netif));
 

@@ -49,6 +49,7 @@ typedef struct {
     int (*link_status)(netif_t *netif);
     int (*ip_connect)(netif_t *netif);
     void (*ip_disconnect)(netif_t *netif);
+    u32 (*ip_addr_get)(netif_t *netif);
     void (*free)(netif_t *netif);
 } netif_ops_t;
 
@@ -76,6 +77,11 @@ static inline int netif_ip_connect(netif_t *netif)
 static inline void netif_ip_disconnect(netif_t *netif)
 {
     netif->ops->ip_disconnect(netif);
+}
+
+static inline u32 netif_ip_addr_get(netif_t *netif)
+{
+    return netif->ops->ip_addr_get(netif);
 }
 
 static inline void netif_free(netif_t *netif)
