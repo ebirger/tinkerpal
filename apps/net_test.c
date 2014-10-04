@@ -40,19 +40,19 @@
 #error No Network device available
 #endif
 
-static etherif_t *ethif;
+static netif_t *netif;
 
 static void net_test_quit(void)
 {
-    netif_ip_disconnect(&ethif->netif);
-    netif_free(&ethif->netif);
+    netif_ip_disconnect(netif);
+    netif_free(netif);
 }
 
 #ifdef CONFIG_DHCP_CLIENT
 void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 {
     tp_out(("DHCP: IP address aquired\n"));
-    netif_on_event_clear(&ethif->netif, NETIF_EVENT_IPV4_CONNECTED);
+    netif_on_event_clear(netif, NETIF_EVENT_IPV4_CONNECTED);
 }
 
 static event_t got_ip_event = {
@@ -65,13 +65,13 @@ static void net_test_process_line(tstr_t *line)
 #ifdef CONFIG_DHCP_CLIENT
     if (!tstr_cmp(line, &S("dhcp")))
     {
-        netif_on_event_set(&ethif->netif, NETIF_EVENT_IPV4_CONNECTED,
+        netif_on_event_set(netif, NETIF_EVENT_IPV4_CONNECTED,
             &got_ip_event);
-        netif_ip_connect(&ethif->netif);
+        netif_ip_connect(netif);
     }
 #endif
     if (!tstr_cmp(line, &S("link")))
-        console_printf("Link status: %d\n", netif_link_status(&ethif->netif));
+        console_printf("Link status: %d\n", netif_link_status(netif));
 
     console_printf("Ok\n");
 }
@@ -84,6 +84,7 @@ static cli_client_t net_test_cli_client = {
 void app_start(int argc, char *argv[])
 {
     eth_mac_t mac;
+    etherif_t *ethif;
 
     tp_out(("TinkerPal Application - Net Test\n"));
 
@@ -102,7 +103,9 @@ void app_start(int argc, char *argv[])
 
     tp_assert(ethif);
 
-    netif_mac_addr_get(&ethif->netif, &mac);
+    netif = &ethif->netif;
+
+    netif_mac_addr_get(netif, &mac);
     tp_out(("Interface MAC address: %s\n", eth_mac_serialize(&mac)));
     cli_start(&net_test_cli_client);
 }
