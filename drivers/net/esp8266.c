@@ -82,7 +82,7 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
 
 /* Helper functions */
 static inline void esp8266_serial_in_watch_set(esp8266_t *e,
-    void (*cb)(esp8266_t *e))
+    void (*cb)(event_t *evt, u32 id, u64 timestamp))
 {
     e->serial_in_evt = (event_t){ .trigger = cb };
     event_watch_set(e->params.serial_port, &e->serial_in_evt);
