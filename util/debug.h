@@ -37,6 +37,7 @@
 
 typedef struct {
     void (*print)(char *fmt, ...);
+    int (*write)(char *buf, int len);
     void (*panic)(void);
 } debugfn_t;
 
@@ -44,6 +45,7 @@ extern debugfn_t debugfn;
 
 void debug_init(debugfn_t *fn);
 
+#define tp_out_bin(buf, len) debugfn.write(buf, len)
 #define tp_out(x) debugfn.print x
 
 #define tp_log(level, x) do { \

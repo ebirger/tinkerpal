@@ -67,6 +67,7 @@ int tp_main(int argc, char *argv[])
     tp_banner();
 
     dbg.print = console_printf;
+    dbg.write = console_write;
     dbg.panic = platform.panic;
 
     debug_init(&dbg);
