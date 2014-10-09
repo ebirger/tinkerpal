@@ -52,7 +52,7 @@ static void net_test_quit(void)
 
 void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 {
-    tp_out(("DHCP: IP address aquired\n"));
+    tp_out(("IP address aquired\n"));
     netif_on_event_clear(netif, NETIF_EVENT_IPV4_CONNECTED);
 }
 
