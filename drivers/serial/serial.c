@@ -25,6 +25,7 @@
 #include "drivers/serial/serial.h"
 #include "drivers/serial/serial_platform.h"
 #include "util/event.h"
+#include "util/tprintf.h"
 #include "mem/tmalloc.h"
 #include <string.h> /* memcpy */
 
@@ -152,6 +153,33 @@ int serial_write(resource_t id, char *buf, int size)
         return -1;
 
     return driver->write(RES_MIN(id), buf, size);
+}
+
+typedef struct {
+    printer_t printer;
+    resource_t id;
+} serial_printf_printer_t;
+
+static int serial_printf_print(struct printer_t *printer, char *buf, int size)
+{
+    serial_printf_printer_t *spp = container_of(printer,
+        serial_printf_printer_t, printer);
+
+    serial_write(spp->id, buf, size);
+    return 0;
+}
+
+void serial_printf(resource_t id, char *fmt, ...)
+{
+    va_list ap;
+    serial_printf_printer_t spp;
+
+    spp.printer.print = serial_printf_print;
+    spp.id = id;
+
+    va_start(ap, fmt);
+    vtprintf(&spp.printer, fmt, ap);
+    va_end(ap);
 }
 
 int serial_enable(resource_t id, int enabled)
