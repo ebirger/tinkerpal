@@ -22,53 +22,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
+#ifndef __ESP8266_H__
+#define __ESP8266_H__
 
-static const resource_t leds[] = {
-    GPIO_RES(PF1),
-    GPIO_RES(PF2),
-    GPIO_RES(PF3),
-    0
-};
+#include "net/netif.h"
 
-const board_t board = {
-    .desc = "EK TM4C123GXL (Tiva C Launchpad)",
-    .default_console_id = UART_RES(UART0),
-    .leds = leds,
-#ifdef CONFIG_SSD1306
-    .ssd1306_params = {
-        .i2c_port = I2C_RES(I2C1),
-	.i2c_addr = 0x78,
-    },
+typedef struct {
+    resource_t serial_port;
+    int echo_on;
+} esp8266_params_t;
+
+netif_t *esp8266_new(const esp8266_params_t *params);
+
 #endif
-#ifdef CONFIG_MMC
-    .mmc_params = {
-        .spi_port = SPI_RES(SSI0),
-        .mosi = GPIO_RES(PA5),
-        .cs = GPIO_RES(PB6),
-    },
-#endif
-#ifdef CONFIG_ENC28J60
-    .enc28j60_params = {
-        .spi_port = SPI_RES(SSI1),
-        .cs = GPIO_RES(PE3),
-        .intr = GPIO_RES(PF4),
-    },
-#endif
-#ifdef CONFIG_ESP8266
-    .esp8266_params = {
-        .serial_port = UART_RES(UART4),
-        .echo_on = 1,
-    },
-#endif
-#ifdef CONFIG_PCD8544
-    .pcd8544_params = {
-        .rst = GPIO_RES(PF3),
-        .cs = GPIO_RES(PB6),
-        .cd = GPIO_RES(PB4),
-        .spi_port = SPI_RES(SSI0),
-        .backlight = GPIO_RES(PF2),
-    },
-#endif
-};
