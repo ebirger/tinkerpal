@@ -66,7 +66,8 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
     return; \
     case __LINE__: \
     esp8266_timeout_del(e)
-#define sm_uninit(e) } (e)->state = 0
+#define sm_reset(e) (e)->state = 0
+#define sm_uninit(e) } sm_reset(e)
 
 /* AT commands related macros */
 #define AT_PRINTF(e, fmt, args...) \
@@ -103,7 +104,7 @@ static void esp8266_timeout_trigger(event_t *evt, u32 id, u64 timestamp)
 
     tp_err(("esp8266: timed out on %s. state %d\n", e->func_name, e->state));
     esp8266_serial_in_watch_del(e);
-    e->state = 0;
+    sm_reset(e);
 }
 
 static inline void esp8266_timeout_set(esp8266_t *e, int timeout)
@@ -204,7 +205,10 @@ static void esp8266_netif_mac_addr_get(netif_t *netif, eth_mac_t *mac)
 
 static int esp8266_netif_ip_connect(netif_t *netif)
 {
-    esp8266_connect(netif_to_esp8266(netif));
+    esp8266_t *e = netif_to_esp8266(netif);
+
+    sm_reset(e);
+    esp8266_connect(e);
     return 0;
 }
 
@@ -238,13 +242,17 @@ static int esp8266_netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
 
     e->ip = ip;
     e->port = port;
+    sm_reset(e);
     esp8266_tcp_connect(e);
     return 0;
 }
 
 static int esp8266_netif_tcp_disconnect(netif_t *netif)
 {
-    esp8266_tcp_disconnect(netif_to_esp8266(netif));
+    esp8266_t *e = netif_to_esp8266(netif);
+
+    sm_reset(e);
+    esp8266_tcp_disconnect(e);
     return 0;
 }
 
@@ -270,7 +278,7 @@ netif_t *esp8266_new(const esp8266_params_t *params)
     esp8266_t *e = tmalloc_type(esp8266_t);
 
     e->params = *params;
-    e->state = 0;
+    sm_reset(e);
     netif_register(&e->netif, &esp8266_netif_ops);
     esp8266_init(e);
     return &e->netif;
