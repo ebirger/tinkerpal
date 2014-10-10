@@ -75,15 +75,16 @@ int buffered_serial_events_process(void)
 
 int buffered_serial_read(int u, char *buf, int size)
 {
-    int ret;
+    int len;
 
     platform.serial.irq_enable(u, 0);
-    ret = uart_bufs[u]->len;
-    /* XXX: no more than "size */
-    memcpy(buf, uart_bufs[u]->buf, uart_bufs[u]->len);
-    uart_bufs[u]->len = 0;
+    len = MIN(uart_bufs[u]->len, size);
+    memcpy(buf, uart_bufs[u]->buf, len);
+    uart_bufs[u]->len -= len;
+    if (uart_bufs[u]->len)
+        memmove(uart_bufs[u]->buf, uart_bufs[u]->buf + len, uart_bufs[u]->len);
     platform.serial.irq_enable(u, 1);
-    return ret;
+    return len;
 }
 
 int buffered_serial_enable(int u, int enabled)
