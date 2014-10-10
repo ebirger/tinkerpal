@@ -49,6 +49,7 @@ struct esp8266_t {
     const char *cur_str;
     const char *cur_str_ptr;
     int cur_str_len;
+    int match_read_size;
 };
 
 esp8266_t *netif_to_esp8266(netif_t *netif);
@@ -73,12 +74,14 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
 #define AT_PRINTF(e, fmt, args...) \
     serial_printf((e)->params.serial_port, fmt "\r", args)
 #define AT(e, cmd) serial_write((e)->params.serial_port, cmd "\r", sizeof(cmd))
-#define MATCH(e, ret) do { \
+#define _MATCH(e, ret, match_size) do { \
     esp8266_serial_in_watch_set(e, esp8266_match_trigger); \
     (e)->cur_str = (e)->cur_str_ptr = ret; \
     (e)->cur_str_len = sizeof(ret) - 1; \
+    (e)->match_read_size = match_size; \
     tp_assert((e)->cur_str_len); \
 } while(0)
+#define MATCH(e, ret) _MATCH(e, ret, 0)
 #define AT_MATCH(e, cmd, ret) do { \
     AT(e, cmd); \
     MATCH(e, ret); \
@@ -135,7 +138,10 @@ static void esp8266_match_trigger(event_t *evt, u32 id, u64 timestamp)
     char buf[30];
     int len, i;
 
-    len = esp8266_read(e, buf, sizeof(buf));
+    len = sizeof(buf);
+    if (e->match_read_size && e->match_read_size < len)
+        len = e->match_read_size;
+    len = esp8266_read(e, buf, len);
     for (i = 0; i < len; i++)
     {
 retry:
