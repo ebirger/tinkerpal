@@ -64,8 +64,7 @@ static void net_test_process_line(tstr_t *line)
 {
     if (!tstr_cmp(line, &S("connect")))
     {
-        netif_on_event_set(netif, NETIF_EVENT_IPV4_CONNECTED,
-            &got_ip_event);
+        netif_on_event_set(netif, NETIF_EVENT_IPV4_CONNECTED, &got_ip_event);
         netif_ip_connect(netif);
     }
     if (!tstr_cmp(line, &S("ip")))
