@@ -98,7 +98,7 @@ static void esp8266_timeout_trigger(event_t *evt, u32 id, u64 timestamp)
 {
     esp8266_t *e = container_of(evt, esp8266_t, timeout_evt);
 
-    tp_out(("esp8266: timed out on %s. state %d\n", e->func_name, e->state));
+    tp_err(("esp8266: timed out on %s. state %d\n", e->func_name, e->state));
     esp8266_serial_in_watch_del(e);
     e->state = 0;
 }
@@ -178,7 +178,6 @@ static void esp8266_connect(esp8266_t *e)
     AT_MATCH(e, "AT+CIPMUX=0", "OK");
     sm_wait(e, 100);
     /* XXX: must read IP address to validate actual connectivity */
-    tp_out(("%s\n", __func__));
     netif_event_trigger(&e->netif, NETIF_EVENT_IPV4_CONNECTED);
     sm_uninit(e);
 }
