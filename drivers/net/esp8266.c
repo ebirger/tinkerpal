@@ -137,13 +137,17 @@ static void esp8266_match_trigger(event_t *evt, u32 id, u64 timestamp)
     len = esp8266_read(e, buf, sizeof(buf));
     for (i = 0; i < len; i++)
     {
+retry:
         if (buf[i] == *e->cur_str_ptr)
             e->cur_str_ptr++;
         else
         {
+            if (e->cur_str_ptr == e->cur_str)
+                continue;
+
             /* No match. Start over */
             e->cur_str_ptr = e->cur_str;
-            continue;
+            goto retry;
         }
         if (e->cur_str_ptr - e->cur_str == e->cur_str_len)
         {
