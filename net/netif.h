@@ -36,6 +36,7 @@ typedef enum {
     NETIF_EVENT_PACKET_RECEIVED = 1,
     NETIF_EVENT_PACKET_XMITTED = 2,
     NETIF_EVENT_IPV4_CONNECTED = 3,
+    NETIF_EVENT_TCP_CONNECTED = 4,
     NETIF_EVENT_COUNT
 } netif_event_t;
 
@@ -49,6 +50,9 @@ typedef struct {
     int (*link_status)(netif_t *netif);
     int (*ip_connect)(netif_t *netif);
     void (*ip_disconnect)(netif_t *netif);
+    /* Addresses in host order */
+    int (*tcp_connect)(netif_t *netif, u32 ip, u16 port);
+    int (*tcp_disconnect)(netif_t *netif);
     u32 (*ip_addr_get)(netif_t *netif);
     void (*free)(netif_t *netif);
 } netif_ops_t;
@@ -77,6 +81,16 @@ static inline int netif_ip_connect(netif_t *netif)
 static inline void netif_ip_disconnect(netif_t *netif)
 {
     netif->ops->ip_disconnect(netif);
+}
+
+static inline int netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
+{
+    return netif->ops->tcp_connect(netif, ip, port);
+}
+
+static inline int netif_tcp_disconnect(netif_t *netif)
+{
+    return netif->ops->tcp_disconnect(netif);
 }
 
 static inline u32 netif_ip_addr_get(netif_t *netif)

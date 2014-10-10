@@ -38,6 +38,9 @@ struct esp8266_t {
     int state;
     void (*func)(esp8266_t *e);
     const char *func_name;
+    /* Socket */
+    u32 ip; /* IP in host order */
+    u16 port;
     /* Events */
     event_t timeout_evt;
     int timeout_evt_id;
@@ -152,6 +155,14 @@ static void esp8266_match_trigger(event_t *evt, u32 id, u64 timestamp)
     }
 }
 
+static void esp8266_gen_read_trigger(event_t *evt, u32 id, u64 timestamp)
+{
+    esp8266_t *e = container_of(evt, esp8266_t, serial_in_evt);
+    char buf[30];
+
+    esp8266_read(e, buf, sizeof(buf));
+}
+
 /* Actual driver code */
 static void esp8266_init(esp8266_t *e)
 {
@@ -193,11 +204,53 @@ static int esp8266_netif_ip_connect(netif_t *netif)
     return 0;
 }
 
+static void esp8266_tcp_connect(esp8266_t *e)
+{
+    u8 *p = (u8 *)&e->ip;
+
+    sm_init(e, esp8266_tcp_connect);
+    /* XXX: use common IP serialization function */
+    AT_PRINTF(e, "AT+CIPSTART=\"TCP\",\"%u.%u.%u.%u\",%d", p[0], p[1], p[2],
+        p[3], e->port);
+    MATCH(e, "Linked");
+    sm_wait(e, 5000);
+    esp8266_serial_in_watch_set(e, esp8266_gen_read_trigger);
+    netif_event_trigger(&e->netif, NETIF_EVENT_TCP_CONNECTED);
+    sm_uninit(e);
+}
+
+static void esp8266_tcp_disconnect(esp8266_t *e)
+{
+    sm_init(e, esp8266_tcp_disconnect);
+    AT_MATCH(e, "AT+CIPCLOSE", "OK");
+    sm_wait(e, 5000);
+    tp_out(("Disconnected\n"));
+    sm_uninit(e);
+}
+
+static int esp8266_netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
+{
+    esp8266_t *e = netif_to_esp8266(netif);
+
+    e->ip = ip;
+    e->port = port;
+    esp8266_tcp_connect(e);
+    return 0;
+}
+
+static int esp8266_netif_tcp_disconnect(netif_t *netif)
+{
+    esp8266_tcp_disconnect(netif_to_esp8266(netif));
+    return 0;
+}
+
 static const netif_ops_t esp8266_netif_ops = {
     .mac_addr_get = esp8266_netif_mac_addr_get,
     .link_status = NULL,
     .ip_connect = esp8266_netif_ip_connect,
     .ip_disconnect = NULL,
+    .tcp_connect = esp8266_netif_tcp_connect,
+    .tcp_disconnect = esp8266_netif_tcp_disconnect,
     .ip_addr_get = NULL,
     .free = NULL,
 };
