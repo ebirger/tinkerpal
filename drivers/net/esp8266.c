@@ -359,6 +359,14 @@ static int esp8266_netif_tcp_disconnect(netif_t *netif)
     return 0;
 }
 
+static void esp8266_netif_free(netif_t *netif)
+{
+    esp8266_t *e = netif_to_esp8266(netif);
+
+    netif_unregister(netif);
+    tfree(e);
+}
+
 static const netif_ops_t esp8266_netif_ops = {
     .mac_addr_get = esp8266_netif_mac_addr_get,
     .link_status = NULL,
@@ -369,7 +377,7 @@ static const netif_ops_t esp8266_netif_ops = {
     .tcp_write = esp8266_netif_tcp_write,
     .tcp_disconnect = esp8266_netif_tcp_disconnect,
     .ip_addr_get = NULL,
-    .free = NULL,
+    .free = esp8266_netif_free,
 };
 
 esp8266_t *netif_to_esp8266(netif_t *netif)
