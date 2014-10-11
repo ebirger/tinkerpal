@@ -112,12 +112,20 @@ static void esp8266_timeout_trigger(event_t *evt, u32 id, u64 timestamp)
 
 static inline void esp8266_timeout_set(esp8266_t *e, int timeout)
 {
+    if (!timeout)
+    {
+        e->timeout_evt_id = -1;
+        return;
+    }
     e->timeout_evt = (event_t){ .trigger = esp8266_timeout_trigger };
     e->timeout_evt_id = event_timer_set(timeout, &e->timeout_evt);
 }
 
 static inline void esp8266_timeout_del(esp8266_t *e)
 {
+    if (e->timeout_evt_id == -1)
+        return;
+
     event_timer_del(e->timeout_evt_id);
     e->timeout_evt_id = -1;
 }
