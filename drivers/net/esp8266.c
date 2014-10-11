@@ -41,6 +41,8 @@ struct esp8266_t {
     /* Socket */
     u32 ip; /* IP in host order */
     u16 port;
+    int data_ready_count_tmp;
+    int data_ready_count;
     /* Events */
     event_t timeout_evt;
     int timeout_evt_id;
@@ -88,6 +90,8 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
 } while(0)
 
 /* Helper functions */
+static void esp8266_wait_for_data(esp8266_t *e);
+
 static inline void esp8266_serial_in_watch_set(esp8266_t *e,
     void (*cb)(event_t *evt, u32 id, u64 timestamp))
 {
@@ -174,12 +178,11 @@ retry:
     }
 }
 
-static void esp8266_gen_read_trigger(event_t *evt, u32 id, u64 timestamp)
+static void esp8266_gen_trigger(event_t *evt, u32 id, u64 timestamp)
 {
     esp8266_t *e = container_of(evt, esp8266_t, serial_in_evt);
-    char buf[30];
 
-    esp8266_read(e, buf, sizeof(buf));
+    e->func(e);
 }
 
 /* Actual driver code */
@@ -226,6 +229,52 @@ static int esp8266_netif_ip_connect(netif_t *netif)
     return 0;
 }
 
+static void _esp8266_wait_for_data(esp8266_t *e)
+{
+    sm_init(e, _esp8266_wait_for_data);
+    _MATCH(e, "+IPD,", 1);
+    sm_wait(e, 0);
+    esp8266_serial_in_watch_set(e, esp8266_gen_trigger);
+    while(1)
+    {
+        char c;
+
+        sm_wait(e, 0);
+        if (e->data_ready_count)
+        {
+            netif_event_trigger(&e->netif, NETIF_EVENT_TCP_DATA_AVAIL);
+            continue;
+        }
+
+        /* Parse available data count */
+        if ((esp8266_read(e, &c, 1)) != 1)
+            continue;
+
+        if (c == ':')
+        {
+            e->data_ready_count = e->data_ready_count_tmp;
+            e->data_ready_count_tmp = 0;
+            continue;
+        }
+
+        if (c < '0' || c > '9')
+        {
+            tp_err(("esp8266: malformed IPD header\n"));
+            esp8266_wait_for_data(e);
+            return;
+        }
+
+        e->data_ready_count_tmp = e->data_ready_count_tmp * 10 + c - '0';
+    }
+    sm_uninit(e);
+}
+
+static void esp8266_wait_for_data(esp8266_t *e)
+{
+    sm_reset(e);
+    _esp8266_wait_for_data(e);
+}
+
 static void esp8266_tcp_connect(esp8266_t *e)
 {
     u8 *p = (u8 *)&e->ip;
@@ -236,8 +285,8 @@ static void esp8266_tcp_connect(esp8266_t *e)
         p[3], e->port);
     MATCH(e, "Linked");
     sm_wait(e, 5000);
-    esp8266_serial_in_watch_set(e, esp8266_gen_read_trigger);
     netif_event_trigger(&e->netif, NETIF_EVENT_TCP_CONNECTED);
+    esp8266_wait_for_data(e);
     sm_uninit(e);
 }
 
@@ -261,6 +310,22 @@ static int esp8266_netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
     return 0;
 }
 
+static int esp8266_netif_tcp_read(netif_t *netif, char *buf, int size)
+{
+    esp8266_t *e = netif_to_esp8266(netif);
+    int len;
+
+    if (!e->data_ready_count)
+        return 0;
+
+    len = MIN(size, e->data_ready_count);
+    len = esp8266_read(e, buf, len);
+    e->data_ready_count -= len;
+    if (!e->data_ready_count)
+        esp8266_wait_for_data(e);
+    return len;
+}
+
 static int esp8266_netif_tcp_disconnect(netif_t *netif)
 {
     esp8266_t *e = netif_to_esp8266(netif);
@@ -276,6 +341,7 @@ static const netif_ops_t esp8266_netif_ops = {
     .ip_connect = esp8266_netif_ip_connect,
     .ip_disconnect = NULL,
     .tcp_connect = esp8266_netif_tcp_connect,
+    .tcp_read = esp8266_netif_tcp_read,
     .tcp_disconnect = esp8266_netif_tcp_disconnect,
     .ip_addr_get = NULL,
     .free = NULL,
@@ -293,6 +359,7 @@ netif_t *esp8266_new(const esp8266_params_t *params)
 
     e->params = *params;
     sm_reset(e);
+    e->data_ready_count = e->data_ready_count_tmp = 0;
     netif_register(&e->netif, &esp8266_netif_ops);
     esp8266_init(e);
     return &e->netif;
