@@ -53,6 +53,7 @@ typedef struct {
     /* Addresses in host order */
     int (*tcp_connect)(netif_t *netif, u32 ip, u16 port);
     int (*tcp_read)(netif_t *netif, char *buf, int size);
+    int (*tcp_write)(netif_t *netif, char *buf, int size);
     int (*tcp_disconnect)(netif_t *netif);
     u32 (*ip_addr_get)(netif_t *netif);
     void (*free)(netif_t *netif);
@@ -92,6 +93,11 @@ static inline int netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
 static inline int netif_tcp_read(netif_t *netif, char *buf, int size)
 {
     return netif->ops->tcp_read(netif, buf, size);
+}
+
+static inline int netif_tcp_write(netif_t *netif, char *buf, int size)
+{
+    return netif->ops->tcp_write(netif, buf, size);
 }
 
 static inline int netif_tcp_disconnect(netif_t *netif)

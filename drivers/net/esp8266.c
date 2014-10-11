@@ -43,6 +43,8 @@ struct esp8266_t {
     u16 port;
     int data_ready_count_tmp;
     int data_ready_count;
+    int write_count;
+    char *write_buf;
     /* Events */
     event_t timeout_evt;
     int timeout_evt_id;
@@ -326,6 +328,28 @@ static int esp8266_netif_tcp_read(netif_t *netif, char *buf, int size)
     return len;
 }
 
+static void esp8266_tcp_write(esp8266_t *e)
+{
+    sm_init(e, esp8266_tcp_write);
+    AT_PRINTF(e, "AT+CIPSEND=%d", e->write_count);
+    MATCH(e, ">");
+    sm_wait(e, 1000);
+    serial_write(e->params.serial_port, e->write_buf, e->write_count);
+    esp8266_wait_for_data(e);
+    sm_uninit(e);
+}
+
+static int esp8266_netif_tcp_write(netif_t *netif, char *buf, int size)
+{
+    esp8266_t *e = netif_to_esp8266(netif);
+
+    e->write_buf = buf;
+    e->write_count = size;
+    sm_reset(e);
+    esp8266_tcp_write(e);
+    return 0;
+}
+
 static int esp8266_netif_tcp_disconnect(netif_t *netif)
 {
     esp8266_t *e = netif_to_esp8266(netif);
@@ -342,6 +366,7 @@ static const netif_ops_t esp8266_netif_ops = {
     .ip_disconnect = NULL,
     .tcp_connect = esp8266_netif_tcp_connect,
     .tcp_read = esp8266_netif_tcp_read,
+    .tcp_write = esp8266_netif_tcp_write,
     .tcp_disconnect = esp8266_netif_tcp_disconnect,
     .ip_addr_get = NULL,
     .free = NULL,
