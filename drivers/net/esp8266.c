@@ -68,7 +68,7 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
     case __LINE__: \
     esp8266_timeout_del(e)
 #define sm_reset(e) (e)->state = 0
-#define sm_uninit(e) } sm_reset(e)
+#define sm_uninit(e) }
 
 /* AT commands related macros */
 #define AT_PRINTF(e, fmt, args...) \
