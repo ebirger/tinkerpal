@@ -30,6 +30,7 @@
 #include "util/event.h"
 #include "mem/tmalloc.h"
 #include "net/netif.h"
+#include "net/net_utils.h"
 
 typedef struct esp8266_t esp8266_t;
 struct esp8266_t {
@@ -38,6 +39,7 @@ struct esp8266_t {
     int state;
     void (*func)(esp8266_t *e);
     const char *func_name;
+    u32 our_ip;
     /* Socket */
     u32 ip; /* IP in host order */
     u16 port;
@@ -54,6 +56,10 @@ struct esp8266_t {
     const char *cur_str_ptr;
     int cur_str_len;
     int match_read_size;
+    /* Read line context */
+    char line_buf[32];
+    int line_buf_count;
+    int read_line_status;
 };
 
 esp8266_t *netif_to_esp8266(netif_t *netif);
@@ -187,6 +193,35 @@ static void esp8266_gen_trigger(event_t *evt, u32 id, u64 timestamp)
     e->func(e);
 }
 
+static void esp8266_read_line_trigger(event_t *evt, u32 id, u64 timestamp)
+{
+    esp8266_t *e = container_of(evt, esp8266_t, serial_in_evt);
+    int remaining = sizeof(e->line_buf) - e->line_buf_count;
+
+    if (!remaining)
+    {
+        tp_err(("esp8266: read line buffer full\n"));
+        e->read_line_status = -1;
+        e->func(e);
+        return;
+    }
+    e->line_buf_count += esp8266_read(e, e->line_buf + e->line_buf_count,
+        remaining);
+    if (!strstr(e->line_buf, "\r\n"))
+        return; /* Incomplete */
+
+    e->read_line_status = 0;
+    esp8266_serial_in_watch_del(e);
+    e->func(e);
+}
+
+static void esp8266_get_line(esp8266_t *e)
+{
+    memset(e->line_buf, 0, sizeof(e->line_buf));
+    e->line_buf_count = 0;
+    esp8266_serial_in_watch_set(e, esp8266_read_line_trigger);
+}
+
 /* Actual driver code */
 static void esp8266_init(esp8266_t *e)
 {
@@ -212,7 +247,19 @@ static void esp8266_connect(esp8266_t *e)
     sm_wait(e, 2000);
     AT_MATCH(e, "AT+CIPMUX=0", "OK");
     sm_wait(e, 100);
-    /* XXX: must read IP address to validate actual connectivity */
+    AT(e, "AT+CIFSR");
+    _MATCH(e, "AT+CIFSR\r\r\n", 1);
+    sm_wait(e, 100);
+    /* Get IP address */
+    esp8266_get_line(e);
+    sm_wait(e, 100);
+    if (e->read_line_status || strstr(e->line_buf, "ERROR"))
+    {
+        tp_err(("esp8266: failed to aquire IP address\n"));
+        return;
+    }
+    tp_debug(("Got IP [%d] %s", e->line_buf_count, e->line_buf));
+    e->our_ip = ip_addr_parse(e->line_buf, e->line_buf_count - 2);
     netif_event_trigger(&e->netif, NETIF_EVENT_IPV4_CONNECTED);
     sm_uninit(e);
 }
@@ -359,6 +406,13 @@ static int esp8266_netif_tcp_disconnect(netif_t *netif)
     return 0;
 }
 
+static u32 esp8266_netif_ip_addr_get(netif_t *netif)
+{
+    esp8266_t *e = netif_to_esp8266(netif);
+
+    return htonl(e->our_ip);
+}
+
 static void esp8266_netif_free(netif_t *netif)
 {
     esp8266_t *e = netif_to_esp8266(netif);
@@ -376,7 +430,7 @@ static const netif_ops_t esp8266_netif_ops = {
     .tcp_read = esp8266_netif_tcp_read,
     .tcp_write = esp8266_netif_tcp_write,
     .tcp_disconnect = esp8266_netif_tcp_disconnect,
-    .ip_addr_get = NULL,
+    .ip_addr_get = esp8266_netif_ip_addr_get,
     .free = esp8266_netif_free,
 };
 
