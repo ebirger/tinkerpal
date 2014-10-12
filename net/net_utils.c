@@ -22,47 +22,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __NET_H__
-#define __NET_H__
-
-#ifdef CONFIG_NET
-
-#include "net/net_debug.h"
 #include "net/net_utils.h"
 
-#ifdef CONFIG_ETHERIF
-#include "net/etherif.h"
-#endif
-#ifdef CONFIG_PACKET
-#include "net/packet.h"
-#endif
-#ifdef CONFIG_ETHERNET
-#include "net/ether.h"
-#endif
-#ifdef CONFIG_ARP
-#include "net/arp.h"
-#endif
-#ifdef CONFIG_IPV4
-#include "net/ipv4.h"
-#endif
-#ifdef CONFIG_ICMP
-#include "net/icmp.h"
-#endif
-#ifdef CONFIG_UDP
-#include "net/udp.h"
-#endif
-#ifdef CONFIG_DHCP_CLIENT
-#include "net/dhcpc.h"
-#endif
+u16 net_csum(u16 *addr, u16 byte_len)
+{
+    u32 sum = 0;
 
-void net_uninit(void);
-void net_init(void);
+    for (; byte_len > 1; byte_len -= 2)
+        sum += *addr++;
 
-#else
+    if (byte_len)
+        sum += *(u8 *)addr;
+    while (sum >> 16)
+        sum = (sum & 0xffff) + (sum >> 16);
 
-static inline void net_uninit(void) { }
-static inline void net_init(void) { }
+    return (u16)~sum;
+}
 
-#endif
+u32 ip_addr_parse(char *buf, int len)
+{
+    u32 ret = 0;
+    u8 *ptr = (u8 *)&ret;
 
-#endif
+    while (len)
+    {
+        char c = *buf;
+
+        buf++;
+        len--;
+        if (c == '.')
+        {
+            if (ptr - (u8 *)&ret == 3)
+                goto Exit;
+
+            ptr++;
+        }
+        else if (c >= '0' && c <= '9')
+            *ptr = *ptr * 10 + c - '0';
+        else
+            break;
+    }
+
+Exit:
+    if (ptr - (u8 *)&ret != 3)
+        return 0;
+
+    return ret;
+}
+
