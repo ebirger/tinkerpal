@@ -35,6 +35,11 @@ config PLATFORM_EMULATION_BLOCK_DISK_NUM_SECTORS
 	depends on PLATFORM_EMULATION_BLOCK_DISK
 	default 2048
 
+config NETIF_INET
+	bool "Network Interface Using INET Sockets"
+	depends on PLATFORM_EMULATION
+	default y
+
 config LINUX_ETH
 	bool "Linux User Mode Ethernet using Packet Socket"
 	depends on PLATFORM_EMULATION

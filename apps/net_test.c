@@ -30,6 +30,8 @@
 #include "boards/board.h"
 #if defined(CONFIG_LINUX_ETH)
 #include "platform/unix/linux_eth.h"
+#elif defined(CONFIG_NETIF_INET)
+#include "platform/unix/netif_inet.h"
 #elif defined(CONFIG_STELLARIS_ETH)
 #include "platform/arm/ti/stellaris_eth.h"
 #elif defined(CONFIG_TIVA_C_EMAC)
@@ -95,6 +97,11 @@ void app_start(int argc, char *argv[])
         tp_crit(("Usage: %s <network interface>\n", argv[0]));
 
     netif = linux_eth_new(argv[1]);
+#elif defined(CONFIG_NETIF_INET)
+    if (argc != 2)
+        tp_crit(("Usage: %s <network interface>\n", argv[0]));
+
+    netif = netif_inet_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)
     netif = stellaris_eth_new();
 #elif defined(CONFIG_TIVA_C_EMAC)
