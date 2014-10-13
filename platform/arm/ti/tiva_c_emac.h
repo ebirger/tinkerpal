@@ -25,12 +25,10 @@
 #ifndef __TIVA_C_EMAC_H__
 #define __TIVA_C_EMAC_H__
 
-#include "util/event.h"
-#include "util/tp_types.h"
-#include "net/etherif.h"
+#include "net/netif.h"
 
 int tiva_c_emac_event_process(void);
 
-etherif_t *tiva_c_emac_new(void);
+netif_t *tiva_c_emac_new(void);
 
 #endif

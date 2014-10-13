@@ -24,44 +24,78 @@
  */
 #include <stdio.h> /* NULL */
 #include "util/debug.h"
-#include "net/etherif.h"
+#include "net/netif.h"
+#include "net/net.h"
 
-static etherif_t *etherifs;
-static int etherifs_last_id;
+etherif_t *etherif_get_by_id(int id)
+{
+    return netif_to_etherif(netif_get_by_id(id));
+}
+
+static void etherif_netif_mac_addr_get(netif_t *netif, eth_mac_t *mac)
+{
+    etherif_mac_addr_get(netif_to_etherif(netif), mac);
+}
+
+static int etherif_netif_link_status(netif_t *netif)
+{
+    return etherif_link_status(netif_to_etherif(netif));
+}
+
+static int etherif_netif_ip_connect(netif_t *netif)
+{
+#ifdef CONFIG_DHCP_CLIENT
+    return dhcpc_start(netif_to_etherif(netif));
+#else
+    tp_warn(("etherif: no connect method available\n"));
+    return 0;
+#endif
+}
+
+static void etherif_netif_ip_disconnect(netif_t *netif)
+{
+#ifdef CONFIG_DHCP_CLIENT
+    dhcpc_stop(netif_to_etherif(netif));
+#endif
+}
+
+static u32 etherif_netif_ip_addr_get(netif_t *netif)
+{
+    return ipv4_addr(netif_to_etherif(netif));
+}
+
+static void etherif_netif_free(netif_t *netif)
+{
+    etherif_free(netif_to_etherif(netif));
+}
+
+static const netif_ops_t etherif_netif_ops = {
+    .mac_addr_get = etherif_netif_mac_addr_get,
+    .link_status = etherif_netif_link_status,
+    .ip_connect = etherif_netif_ip_connect,
+    .ip_disconnect = etherif_netif_ip_disconnect,
+    .ip_addr_get = etherif_netif_ip_addr_get,
+    .free = etherif_netif_free,
+};
+
+etherif_t *netif_to_etherif(netif_t *netif)
+{
+    tp_assert(netif->ops == &etherif_netif_ops);
+    return (etherif_t *)netif;
+}
 
 void etherif_destruct(etherif_t *ethif)
 {
-    etherif_event_t event;
-    etherif_t **iter;
-
-    /* Unlink from list */
-    for (iter = &etherifs; *iter && *iter != ethif; iter = &(*iter)->next);
-    tp_assert(*iter);
-    *iter = (*iter)->next;
-
-    /* Remove events */
-    for (event = ETHERIF_EVENT_FIRST; event < ETHERIF_EVENT_COUNT; event++)
-        event_watch_del_by_resource(ETHERIF_RES(ethif, event));
+    netif_unregister(&ethif->netif);
 }
 
 void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
 {
     ethif->ops = ops;
-    ethif->id = etherifs_last_id++;
     ethif->ipv4_info = NULL;
     ethif->dhcpc = NULL;
     ethif->udp = NULL;
 
-    /* Link to list */
-    ethif->next = etherifs;
-    etherifs = ethif;
-}
-
-etherif_t *etherif_get_by_id(int id)
-{
-    etherif_t *ret;
-
-    for (ret = etherifs; ret && ret->id != id; ret = ret->next);
-    tp_assert(ret);
-    return ret;
+    ethernet_attach_etherif(ethif);
+    netif_register(&ethif->netif, &etherif_netif_ops);
 }

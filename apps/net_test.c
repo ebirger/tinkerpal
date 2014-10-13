@@ -24,53 +24,59 @@
  */
 #include "util/debug.h"
 #include "util/cli.h"
-#include "net/net.h"
+#include "net/net_debug.h"
+#include "net/netif.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
-#if defined(CONFIG_LINUX_PACKET_ETH)
-#include "drivers/net/linux_packet_eth.h"
+#if defined(CONFIG_LINUX_ETH)
+#include "platform/unix/linux_eth.h"
+#elif defined(CONFIG_NETIF_INET)
+#include "platform/unix/netif_inet.h"
 #elif defined(CONFIG_STELLARIS_ETH)
 #include "platform/arm/ti/stellaris_eth.h"
 #elif defined(CONFIG_TIVA_C_EMAC)
 #include "platform/arm/ti/tiva_c_emac.h"
 #elif defined(CONFIG_ENC28J60)
 #include "drivers/net/enc28j60.h"
+#elif defined(CONFIG_ESP8266)
+#include "drivers/net/esp8266.h"
 #else
 #error No Network device available
 #endif
 
-static etherif_t *ethif;
+static netif_t *netif;
 
 static void net_test_quit(void)
 {
-    dhcpc_stop(ethif);
-    ethernet_detach_etherif(ethif);
-    etherif_free(ethif);
+    netif_ip_disconnect(netif);
+    netif_free(netif);
 }
 
-#ifdef CONFIG_DHCP_CLIENT
 void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 {
-    tp_out(("DHCP: IP address aquired\n"));
-    etherif_on_event_clear(ethif, ETHERIF_EVENT_IPV4_INFO_SET);
+    tp_out(("IP address aquired\n"));
+    netif_on_event_clear(netif, NETIF_EVENT_IPV4_CONNECTED);
 }
 
 static event_t got_ip_event = {
     .trigger = got_ip
 };
-#endif
 
 static void net_test_process_line(tstr_t *line)
 {
-#ifdef CONFIG_DHCP_CLIENT
-    if (!tstr_cmp(line, &S("dhcp")))
+    if (!tstr_cmp(line, &S("connect")))
     {
-        etherif_on_event_set(ethif, ETHERIF_EVENT_IPV4_INFO_SET, &got_ip_event);
-        dhcpc_start(ethif);
+        netif_on_event_set(netif, NETIF_EVENT_IPV4_CONNECTED, &got_ip_event);
+        netif_ip_connect(netif);
     }
-#endif
+    if (!tstr_cmp(line, &S("ip")))
+    {
+        u32 addr = ntohl(netif_ip_addr_get(netif));
+
+        console_printf("IP address: %s\n", ip_addr_serialize(addr));
+    }
     if (!tstr_cmp(line, &S("link")))
-        console_printf("Link status: %d\n", etherif_link_status(ethif));
+        console_printf("Link status: %d\n", netif_link_status(netif));
 
     console_printf("Ok\n");
 }
@@ -86,24 +92,29 @@ void app_start(int argc, char *argv[])
 
     tp_out(("TinkerPal Application - Net Test\n"));
 
-#if defined(CONFIG_LINUX_PACKET_ETH)
+#if defined(CONFIG_LINUX_ETH)
     if (argc != 2)
         tp_crit(("Usage: %s <network interface>\n", argv[0]));
 
-    ethif = linux_packet_eth_new(argv[1]);
+    netif = linux_eth_new(argv[1]);
+#elif defined(CONFIG_NETIF_INET)
+    if (argc != 2)
+        tp_crit(("Usage: %s <network interface>\n", argv[0]));
+
+    netif = netif_inet_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)
-    ethif = stellaris_eth_new();
+    netif = stellaris_eth_new();
 #elif defined(CONFIG_TIVA_C_EMAC)
-    ethif = tiva_c_emac_new();
+    netif = tiva_c_emac_new();
 #elif defined(CONFIG_ENC28J60)
-    ethif = enc28j60_new(&board.enc28j60_params);
+    netif = enc28j60_new(&board.enc28j60_params);
+#elif defined(CONFIG_ESP8266)
+    netif = esp8266_new(&board.esp8266_params);
 #endif
 
-    tp_assert(ethif);
+    tp_assert(netif);
 
-    ethernet_attach_etherif(ethif);
-
-    etherif_mac_addr_get(ethif, &mac);
+    netif_mac_addr_get(netif, &mac);
     tp_out(("Interface MAC address: %s\n", eth_mac_serialize(&mac)));
     cli_start(&net_test_cli_client);
 }

@@ -22,17 +22,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ENC28J60_H__
-#define __ENC28J60_H__
-
 #include "net/netif.h"
+#include "util/debug.h"
 
-typedef struct {
-    resource_t spi_port;
-    resource_t cs;
-    resource_t intr;
-} enc28j60_params_t;
+static netif_t *netifs;
+static int netifs_last_id;
 
-netif_t *enc28j60_new(const enc28j60_params_t *params);
+netif_t *netif_get_by_id(int id)
+{
+    netif_t *ret;
 
-#endif
+    for (ret = netifs; ret && ret->id != id; ret = ret->next);
+    tp_assert(ret);
+    return ret;
+}
+
+void netif_unregister(netif_t *netif)
+{
+    netif_event_t event;
+    netif_t **iter;
+
+    for (iter = &netifs; *iter && *iter != netif; iter = &(*iter)->next);
+    tp_assert(*iter);
+    *iter = (*iter)->next;
+    
+    /* Remove events */
+    for (event = NETIF_EVENT_FIRST; event < NETIF_EVENT_COUNT; event++)
+        event_watch_del_by_resource(NETIF_RES(netif, event));
+}
+
+void netif_register(netif_t *netif, const netif_ops_t *ops)
+{
+    netif->ops = ops;
+    netif->id = netifs_last_id++;
+    netif->next = netifs;
+    netifs = netif;
+}

@@ -96,6 +96,7 @@ docs:
 .SECONDARY:
 
 quiet_compile= CC $@
+quiet_asm= AS $@
 quiet_link= LD $@
 quiet_obj_to_bin= GEN $@
 
@@ -127,6 +128,10 @@ $(BUILD)/%.o : $(BUILD)/%.c $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)
 	@$(call compile)
 	@$(call calc_deps)
 
+$(BUILD)/%.o : %.s $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+	@echo $($(quiet_)asm)
+	@$(call asm)
+
 $(TARGET) : $(OBJS) $(LINK_DEPS)
 	@echo $($(quiet_)link)
 	@$(call link)
@@ -134,6 +139,29 @@ $(TARGET) : $(OBJS) $(LINK_DEPS)
 $(IMAGE) : $(TARGET)
 	@echo $($(quiet_)obj_to_bin)
 	@$(call obj_to_bin)
+
+help:
+	@echo 'Cleaning targets:'
+	@echo '  clean           - Remove most generated files but keep the config'
+	@echo '  distclean       - Remove build directory'
+	@echo ''
+	@echo 'Configuration targets:'
+	@echo '  config	  - Update current config utilising a line-oriented program'
+	@echo '  menuconfig	  - Update current config utilising a menu based program'
+	@echo ''
+	@echo 'Documentation targets:'
+	@echo '  docs            - Generate API documentation'
+	@echo ''
+	@echo 'Execution targets:'
+	@echo '  burn            - Burn image to target platform'
+	@echo '  simulate        - Execute emulator for current target'
+	@echo ''
+	@echo 'Generic options:'
+	@echo '  make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
+	@echo ''
+	@echo 'Target Boards:'
+	@$(foreach b,$(shell ls boards/configs), \
+            printf "  %-24s\\n" $(b);)
 
 define note
 	@printf *********************************************************\\n
@@ -157,4 +185,4 @@ else
 	$(error simulate command not available)
 endif
 
-.PHONY: build_dir _all docs burn
+.PHONY: build_dir _all docs burn help

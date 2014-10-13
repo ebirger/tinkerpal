@@ -22,17 +22,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ENC28J60_H__
-#define __ENC28J60_H__
+#ifndef __ESP8266_H__
+#define __ESP8266_H__
 
 #include "net/netif.h"
 
 typedef struct {
-    resource_t spi_port;
-    resource_t cs;
-    resource_t intr;
-} enc28j60_params_t;
+    resource_t serial_port;
+    int echo_on;
+} esp8266_params_t;
 
-netif_t *enc28j60_new(const enc28j60_params_t *params);
+netif_t *esp8266_new(const esp8266_params_t *params);
 
 #endif

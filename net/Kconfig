@@ -6,6 +6,7 @@ if NET
 
 config ETHERIF
 	bool
+	select ETHERNET
 	default n
 
 config PACKET
@@ -14,8 +15,8 @@ config PACKET
 
 config ETHERNET
 	bool "Ethernet"
-	depends on ETHERIF
 	select PACKET
+        depends on ETHERIF
 	default y
 	help
 		Support for Ethernet protocols handling
@@ -58,6 +59,6 @@ config DHCP_CLIENT
 
 config NET_DEBUG
 	bool "Network Debugging"
-	default n
+	default y
 
 endif

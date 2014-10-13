@@ -51,6 +51,7 @@
 #include "platform/arm/frdm/kl25z.h"
 #elif defined(CONFIG_MSP430F5529)
 #include "platform/msp430/msp430f5529.h"
+#elif defined(CONFIG_X86_PLATFORM_EMULATION)
 #else
 #error Platform constants not defined
 #endif

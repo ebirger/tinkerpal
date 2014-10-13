@@ -28,6 +28,7 @@
 #ifdef CONFIG_NET
 
 #include "net/net_debug.h"
+#include "net/net_utils.h"
 
 #ifdef CONFIG_ETHERIF
 #include "net/etherif.h"
@@ -53,8 +54,6 @@
 #ifdef CONFIG_DHCP_CLIENT
 #include "net/dhcpc.h"
 #endif
-
-u16 net_csum(u16 *addr, u16 byte_len);
 
 void net_uninit(void);
 void net_init(void);

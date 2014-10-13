@@ -13,6 +13,7 @@ MK_OBJS+=$(if $(CONFIG_FRDM_KL25Z),board_frdm_kl25z.o)
 MK_OBJS+=$(if $(CONFIG_MSP430F5529_EXP),board_msp430f5529.o)
 MK_OBJS+=$(if $(CONFIG_MSP430F5529_LAUNCHPAD),board_msp430f5529.o)
 MK_OBJS+=$(if $(CONFIG_PLATFORM_EMULATION),board_unix_sim.o)
+MK_OBJS+=$(if $(CONFIG_X86_PLATFORM_EMULATION),board_x86_sim.o)
 
 include boards/burners.mk
 
@@ -38,8 +39,16 @@ ifneq ($(CONFIG_STM32_HY_24),)
   BURN_CMD=python $(BURNER) -p $(PORT) -evw $(IMAGE)
 endif
 
+ifneq ($(CONFIG_X86_PLATFORM_EMULATION),)
+  BURN_CMD=$(X86_BURNER)
+endif
+
 # Simulation
 ifneq ($(CONFIG_EK_LM3S6965),)
   SIMULATE_NOTE='Use CTRL-a-X to exit'
-  SIMULATE_CMD=qemu-system-arm -nographic -M lm3s6965evb -net none -kernel $(IMAGE)
+  SIMULATE_CMD=qemu-system-arm -M lm3s6965evb -net none -kernel $(IMAGE)
+endif
+
+ifneq ($(CONFIG_X86_PLATFORM_EMULATION),)
+  SIMULATE_CMD=qemu-system-i386 -cdrom $(IMAGE:.bin=.iso)
 endif

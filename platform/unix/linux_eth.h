@@ -25,8 +25,8 @@
 #ifndef __LINUX_PACKET_ETH_H__
 #define __LINUX_PACKET_ETH_H__
 
-#include "net/etherif.h"
+#include "net/netif.h"
 
-etherif_t *linux_eth_new(char *dev_name);
+netif_t *linux_eth_new(char *dev_name);
 
 #endif

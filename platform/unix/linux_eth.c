@@ -32,6 +32,7 @@
 #include "drivers/serial/serial.h"
 #include "platform/unix/linux_eth.h"
 #include "platform/unix/sim.h"
+#include "net/etherif.h"
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -86,11 +87,9 @@ static int linux_eth_link_status(etherif_t *ethif)
 
 static void linux_eth_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
 {
-    linux_eth_t *eth = ETHIF_TO_PACKET_ETH(ethif);
-    struct ifreq ifr;
+    static u8 test_mac[] = { 0, 1, 2, 3, 4, 5 };
 
-    ifr = linux_eth_ioctl(eth, SIOCGIFHWADDR);
-    memcpy(mac->mac, ifr.ifr_hwaddr.sa_data, 6);
+    memcpy(mac->mac, test_mac, 6);
 }
 
 static int linux_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
@@ -185,7 +184,7 @@ static int linux_eth_sock_init(linux_eth_t *eth)
     return 0;
 }
 
-etherif_t *linux_eth_new(char *dev_name)
+netif_t *linux_eth_new(char *dev_name)
 {
     linux_eth_t *eth = &g_eth;
 
@@ -208,5 +207,5 @@ etherif_t *linux_eth_new(char *dev_name)
 
     printf("Created Linux Packet Ethernet Interface. fd %d\n",
         eth->packet_socket);
-    return &eth->ethif;
+    return &eth->ethif.netif;
 }

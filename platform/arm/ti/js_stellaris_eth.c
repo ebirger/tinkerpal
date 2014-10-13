@@ -36,7 +36,7 @@ int do_stellaris_eth_constructor(obj_t **ret, obj_t *this, int argc,
     if (argc != 1)
         return js_invalid_args(ret);
 
-    ethif = stellaris_eth_new();
+    ethif = netif_to_etherif(stellaris_eth_new());
 
     if (!ethif)
         return throw_exception(ret, &S("Exception: can't create device"));

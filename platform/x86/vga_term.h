@@ -22,17 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ENC28J60_H__
-#define __ENC28J60_H__
+#ifndef __VGA_TERM_H__
+#define __VGA_TERM_H__
 
-#include "net/netif.h"
-
-typedef struct {
-    resource_t spi_port;
-    resource_t cs;
-    resource_t intr;
-} enc28j60_params_t;
-
-netif_t *enc28j60_new(const enc28j60_params_t *params);
+void vga_term_init(void);
+void vga_term_putchar(char c);
 
 #endif

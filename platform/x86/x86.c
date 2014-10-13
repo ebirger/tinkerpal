@@ -22,17 +22,67 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ENC28J60_H__
-#define __ENC28J60_H__
+#include "platform/platform.h"
+#include "platform/x86/vga_term.h"
 
-#include "net/netif.h"
+static char *heap_end = 0;
+extern unsigned long _heap_bottom;
+extern unsigned long _heap_top;
 
-typedef struct {
-    resource_t spi_port;
-    resource_t cs;
-    resource_t intr;
-} enc28j60_params_t;
+static int x86_serial_enable(int u, int enabled)
+{
+    return 0;
+}
 
-netif_t *enc28j60_new(const enc28j60_params_t *params);
+static int x86_serial_write(int u, char *buf, int size)
+{
+    while (size--)
+        vga_term_putchar(*buf++);
+    return 0;
+}
 
-#endif
+static void x86_meminfo(void)
+{
+    tp_out(("Heap: Total %d Allocated %d Remaining %d\n", 
+        (&_heap_top - &_heap_bottom) * 4,
+        ((unsigned long *)heap_end - &_heap_bottom) * 4,
+        (&_heap_top - (unsigned long *)heap_end) * 4));
+}
+
+static void x86_init(void)
+{
+    vga_term_init();
+}
+
+void *sbrk(unsigned int incr)
+{
+    static char *prev_heap_end;
+
+    if (heap_end == 0)
+        heap_end = (void *)&_heap_bottom;
+
+    prev_heap_end = heap_end;
+
+    if (heap_end + incr > (char *)&_heap_top) 
+        return (void *)0;
+
+    heap_end += incr;
+
+    return (void *)prev_heap_end;
+}
+
+const platform_t platform = {
+    .serial = {
+        .enable = x86_serial_enable,
+        .write = x86_serial_write,
+    },
+    .init = x86_init,
+    .meminfo = x86_meminfo,
+};
+
+void kernel_main(int argc, char *argv[])
+{
+    extern int tp_main(int argc, char *argv[]);
+
+    tp_main(argc, argv);
+}

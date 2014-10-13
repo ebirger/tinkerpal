@@ -72,7 +72,6 @@ CONFIG_MODULES=y
 # Modules
 #
 CONFIG_MODULE_ASSERT=y
-CONFIG_NET=n
 
 #
 # Graphics

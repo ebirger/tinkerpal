@@ -22,17 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ENC28J60_H__
-#define __ENC28J60_H__
+#include "boards/board.h"
+#include "platform/platform.h"
 
-#include "net/netif.h"
-
-typedef struct {
-    resource_t spi_port;
-    resource_t cs;
-    resource_t intr;
-} enc28j60_params_t;
-
-netif_t *enc28j60_new(const enc28j60_params_t *params);
-
-#endif
+const board_t board = {
+    .desc = "X86 based simulator",
+    .default_console_id = UART_RES(0),
+};

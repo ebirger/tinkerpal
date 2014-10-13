@@ -22,17 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ENC28J60_H__
-#define __ENC28J60_H__
+#ifndef __NET_UTILS_H__
+#define __NET_UTILS_H__
 
-#include "net/netif.h"
+#include "net/net_types.h"
 
-typedef struct {
-    resource_t spi_port;
-    resource_t cs;
-    resource_t intr;
-} enc28j60_params_t;
-
-netif_t *enc28j60_new(const enc28j60_params_t *params);
+u16 net_csum(u16 *addr, u16 byte_len);
+u32 ip_addr_parse(char *buf, int len);
 
 #endif

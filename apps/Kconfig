@@ -25,7 +25,7 @@ config APP_STATIC_FILE
 
 config APP_NET_TEST
 	bool "Net test"
-	depends on ETHERNET
+	depends on NET
 	select CLI
 
 config APP_GRAPHICS_TEST

@@ -25,12 +25,10 @@
 #ifndef __STELLARIS_ETH_H__
 #define __STELLARIS_ETH_H__
 
-#include "util/event.h"
-#include "util/tp_types.h"
-#include "net/etherif.h"
+#include "net/netif.h"
 
 int stellaris_eth_event_process(void);
 
-etherif_t *stellaris_eth_new(void);
+netif_t *stellaris_eth_new(void);
 
 #endif

@@ -22,17 +22,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __ENC28J60_H__
-#define __ENC28J60_H__
+#include "net/net_utils.h"
 
-#include "net/netif.h"
+u16 net_csum(u16 *addr, u16 byte_len)
+{
+    u32 sum = 0;
 
-typedef struct {
-    resource_t spi_port;
-    resource_t cs;
-    resource_t intr;
-} enc28j60_params_t;
+    for (; byte_len > 1; byte_len -= 2)
+        sum += *addr++;
 
-netif_t *enc28j60_new(const enc28j60_params_t *params);
+    if (byte_len)
+        sum += *(u8 *)addr;
+    while (sum >> 16)
+        sum = (sum & 0xffff) + (sum >> 16);
 
-#endif
+    return (u16)~sum;
+}
+
+u32 ip_addr_parse(char *buf, int len)
+{
+    u32 ret = 0;
+    u8 *ptr = (u8 *)&ret;
+
+    while (len)
+    {
+        char c = *buf;
+
+        buf++;
+        len--;
+        if (c == '.')
+        {
+            if (ptr - (u8 *)&ret == 3)
+                goto Exit;
+
+            ptr++;
+        }
+        else if (c >= '0' && c <= '9')
+            *ptr = *ptr * 10 + c - '0';
+        else
+            break;
+    }
+
+Exit:
+    if (ptr - (u8 *)&ret != 3)
+        return 0;
+
+    return ret;
+}
+
