@@ -1,7 +1,7 @@
-PROTOTYPE("Etherif", etherif, {
+PROTOTYPE("Netif", netif, {
 })
 
-FUNCTION("linkStatus", etherif, do_etherif_link_status, {
+FUNCTION("linkStatus", netif, do_netif_link_status, {
     .params = {
     },
     .description = "Get link status",
@@ -11,7 +11,7 @@ FUNCTION("linkStatus", etherif, do_etherif_link_status, {
 	"e.linkStatus ? 'connected' : 'disconnected')\n",
 })
 
-FUNCTION("MACAddrGet", etherif, do_etherif_mac_addr_get, {
+FUNCTION("MACAddrGet", netif, do_netif_mac_addr_get, {
     .params = {
     },
     .description = "Get Interface MAC Address",
@@ -20,7 +20,7 @@ FUNCTION("MACAddrGet", etherif, do_etherif_mac_addr_get, {
         "console.log(e.MACAddrGet());\n",
 })
 
-FUNCTION("onPortChange", etherif, do_etherif_on_port_change, {
+FUNCTION("onPortChange", netif, do_netif_on_port_change, {
     .params = {
         { 
 	    .name = "cb", 

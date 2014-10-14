@@ -26,29 +26,28 @@
 #include "js/js_utils.h"
 #include "js/js_event.h"
 
-#define Sether_id S("ether_id")
+#define Snetif_id S("netif_id")
 
-int etherif_obj_constructor(etherif_t *ethif, obj_t **ret, obj_t *this,
+int netif_obj_constructor(netif_t *netif, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
     *ret = object_new();
-    obj_set_property_int(*ret, Sether_id, ethif->netif.id);
+    obj_set_property_int(*ret, Snetif_id, netif->id);
     obj_inherit(*ret, argv[0]);
     return 0;
 }
 
-etherif_t *etherif_obj_get_etherif(obj_t *o)
+netif_t *netif_obj_get_netif(obj_t *o)
 {
     int id = -1;
     
-    tp_assert(!obj_get_property_int(&id, o, &Sether_id));
-    return etherif_get_by_id(id);
+    tp_assert(!obj_get_property_int(&id, o, &Snetif_id));
+    return netif_get_by_id(id);
 }
 
-int do_etherif_on_port_change(obj_t **ret, obj_t *this, int argc,
-    obj_t *argv[])
+int do_netif_on_port_change(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    etherif_t *ethif = etherif_obj_get_etherif(this);
+    netif_t *netif = netif_obj_get_netif(this);
     event_t *e;
 
     if (argc != 2)
@@ -56,30 +55,30 @@ int do_etherif_on_port_change(obj_t **ret, obj_t *this, int argc,
 
     e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-    etherif_on_port_change_event_set(ethif, e);
+    netif_on_event_set(netif, NETIF_EVENT_PORT_CHANGE, e);
     *ret = UNDEF;
     return 0;
 }
 
-int do_etherif_mac_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+int do_netif_mac_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    etherif_t *ethif = etherif_obj_get_etherif(this);
+    netif_t *netif = netif_obj_get_netif(this);
     obj_t *array_buffer;
     eth_mac_t *mac;
 
     array_buffer = array_buffer_new(sizeof(*mac));
     mac = array_buffer_ptr(array_buffer);
-    etherif_mac_addr_get(ethif, mac);
+    netif_mac_addr_get(netif, mac);
     *ret = array_buffer_view_new(array_buffer,
         ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, sizeof(*mac));
     obj_put(array_buffer);
     return 0;
 }
 
-int do_etherif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+int do_netif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    etherif_t *ethif = etherif_obj_get_etherif(this);
+    netif_t *netif = netif_obj_get_netif(this);
 
-    *ret = etherif_link_status(ethif) ? TRUE : FALSE;
+    *ret = netif_link_status(netif) ? TRUE : FALSE;
     return 0;
 }

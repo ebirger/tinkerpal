@@ -22,14 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __JS_ETHERIF_H__
-#define __JS_ETHERIF_H__
+#ifndef __JS_NETIF_H__
+#define __JS_NETIF_H__
 
 #include "js/js_obj.h"
-#include "net/etherif.h"
+#include "net/netif.h"
 
-int etherif_obj_constructor(etherif_t *ethif, obj_t **ret, obj_t *this,
+int netif_obj_constructor(netif_t *netif, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[]);
-etherif_t *etherif_obj_get_etherif(obj_t *o);
+netif_t *netif_obj_get_netif(obj_t *o);
 
 #endif
