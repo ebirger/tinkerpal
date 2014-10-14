@@ -25,7 +25,7 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
-#include "net/js_etherif.h"
+#include "net/js_netif.h"
 #include "platform/unix/linux_eth.h"
 
 int do_linux_eth_constructor(obj_t **ret, obj_t *this, int argc,
@@ -33,19 +33,19 @@ int do_linux_eth_constructor(obj_t **ret, obj_t *this, int argc,
 {
     tstr_t dev_name_tstr;
     char *dev_name;
-    etherif_t *ethif;
+    netif_t *netif;
 
     if (argc != 2)
         return js_invalid_args(ret);
 
     dev_name_tstr = obj_get_str(argv[1]);
     dev_name = tstr_to_strz(&dev_name_tstr);
-    ethif = netif_to_etherif(linux_eth_new(dev_name));
+    netif = linux_eth_new(dev_name);
     tstr_free(&dev_name_tstr);
     tfree(dev_name);
 
-    if (!ethif)
+    if (!netif)
         return throw_exception(ret, &S("Exception: can't create device"));
 
-    return etherif_obj_constructor(ethif, ret, this, argc, argv);
+    return netif_obj_constructor(netif, ret, this, argc, argv);
 }
