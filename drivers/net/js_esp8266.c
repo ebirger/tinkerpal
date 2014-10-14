@@ -40,7 +40,10 @@ int do_esp8266_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     else if (argc != 2)
         return js_invalid_args(ret);
     else
+    {
         params.serial_port = obj_get_int(argv[1]);
+        params.echo_on = 0;
+    }
 
     netif = esp8266_new(p);
     return netif_obj_constructor(netif, ret, this, argc, argv);
