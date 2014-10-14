@@ -255,7 +255,7 @@ int do_set_watch(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     e = js_event_new(argv[1], this, set_watch_trigger);
 
-    event_id = _event_watch_set(pin, e, qlen);
+    event_id = _event_watch_set(pin, e, qlen, 0);
     *ret = num_new_int(event_id);
     return 0;
 }
