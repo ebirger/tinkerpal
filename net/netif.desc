@@ -20,6 +20,15 @@ FUNCTION("MACAddrGet", netif, do_netif_mac_addr_get, {
         "console.log(e.MACAddrGet());\n",
 })
 
+FUNCTION("IPAddrGet", netif, do_netif_ip_addr_get, {
+    .params = {
+    },
+    .description = "Get Interface IP Address",
+    .return_value = "String containing the IP address",
+    .example = "var e = new NetifINET('eth0');\n"
+        "console.log(e.IPAddrGet());\n",
+})
+
 FUNCTION("onPortChange", netif, do_netif_on_port_change, {
     .params = {
         { 

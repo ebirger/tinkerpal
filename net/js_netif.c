@@ -76,6 +76,16 @@ int do_netif_mac_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
+int do_netif_ip_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+    tstr_t s;
+
+    tstr_cpy_str(&s, ip_addr_serialize(netif_ip_addr_get(netif)));
+    *ret = string_new(s);
+    return 0;
+}
+
 int do_netif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
