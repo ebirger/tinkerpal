@@ -1,0 +1,10 @@
+CONSTRUCTOR("NetifINET", netif, do_netif_inet_constructor, {
+    .params = {
+       { .name = "Net Device", .description = "Network Interface Name" },
+    },
+    .description = "INET Network Interface Object Constructor",
+    .return_value = "Created object",
+    .example = "var  n = new NetifINET('eth0');\n"
+        "console.log('link status: ' + n.linkStatus() ? 'connected' : "
+        "'disconnected');",
+})
