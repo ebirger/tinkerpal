@@ -99,8 +99,7 @@ int do_netif_ip_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
         e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-        /* XXX: event should be 'one shot' */
-        netif_on_event_set(netif, NETIF_EVENT_IPV4_CONNECTED, e);
+        _event_watch_set(NETIF_RES(netif, NETIF_EVENT_IPV4_CONNECTED), e, 0, 1);
     }
 
     if (netif_ip_connect(netif))
