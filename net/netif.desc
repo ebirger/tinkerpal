@@ -31,8 +31,8 @@ FUNCTION("IPAddrGet", netif, do_netif_ip_addr_get, {
 
 FUNCTION("onPortChange", netif, do_netif_on_port_change, {
     .params = {
-        { 
-	    .name = "cb", 
+        {
+	    .name = "cb",
 	    .description = "callback function called when link status has "
 	        "changed"
 	},

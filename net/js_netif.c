@@ -41,7 +41,7 @@ int netif_obj_constructor(netif_t *netif, obj_t **ret, obj_t *this,
 netif_t *netif_obj_get_netif(obj_t *o)
 {
     int id = -1;
-    
+
     tp_assert(!obj_get_property_int(&id, o, &Snetif_id));
     return netif_get_by_id(id);
 }
