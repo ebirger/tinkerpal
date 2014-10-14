@@ -86,6 +86,40 @@ int do_netif_ip_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
+int do_netif_ip_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+
+    if (argc > 1)
+    {
+        event_t *e;
+
+        if (!is_function(argv[1]))
+            return throw_exception(ret, &S("Invalid callback"));
+
+        e = js_event_new(argv[1], this, js_event_gen_trigger);
+
+        /* XXX: event should be 'one shot' */
+        netif_on_event_set(netif, NETIF_EVENT_IPV4_CONNECTED, e);
+    }
+
+    if (netif_ip_connect(netif))
+        return throw_exception(ret, &S("Failed to connect"));
+
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_netif_ip_disconnect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+
+    netif_ip_disconnect(netif);
+
+    *ret = UNDEF;
+    return 0;
+}
+
 int do_netif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);

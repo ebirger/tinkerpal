@@ -42,3 +42,25 @@ FUNCTION("onPortChange", netif, do_netif_on_port_change, {
     .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
         "e.onPortChange(function() { e.print('port state changed!'); });",
 })
+
+FUNCTION("IPConnect", netif, do_netif_ip_connect, {
+    .params = {
+        {
+	    .name = "cb (optional)",
+	    .description = "callback function called on IP address availablity"
+	},
+    },
+    .description = "Obtain IP Address",
+    .return_value = "None",
+    .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
+        "e.IPConnect();"
+})
+
+FUNCTION("IPDisconnect", netif, do_netif_ip_disconnect, {
+    .params = {
+    },
+    .description = "Release IP Address",
+    .return_value = "None",
+    .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
+        "e.IPDisconnect();"
+})
