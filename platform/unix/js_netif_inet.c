@@ -32,17 +32,20 @@ int do_netif_inet_constructor(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
     tstr_t dev_name_tstr;
-    char *dev_name;
+    char *dev_name = NULL;
     netif_t *netif;
 
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    dev_name_tstr = obj_get_str(argv[1]);
-    dev_name = tstr_to_strz(&dev_name_tstr);
+    if (argc == 2)
+    {
+        dev_name_tstr = obj_get_str(argv[1]);
+        dev_name = tstr_to_strz(&dev_name_tstr);
+    }
     netif = netif_inet_new(dev_name);
-    tstr_free(&dev_name_tstr);
-    tfree(dev_name);
+    if (dev_name)
+    {
+        tstr_free(&dev_name_tstr);
+        tfree(dev_name);
+    }
 
     if (!netif)
         return throw_exception(ret, &S("Exception: can't create device"));

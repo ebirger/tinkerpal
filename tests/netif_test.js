@@ -1,4 +1,4 @@
-var n = new NetifINET('eth0');
+var n = new NetifINET();
 
 debug.assert(n.linkStatus(), true);
 debug.assert((n.MACAddrGet())[0], 0);
