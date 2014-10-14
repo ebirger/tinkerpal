@@ -45,59 +45,6 @@ etherif_t *etherif_obj_get_etherif(obj_t *o)
     return etherif_get_by_id(id);
 }
 
-int do_etherif_packet_recv(obj_t **ret, obj_t *this, int argc,
-    obj_t *argv[])
-{
-    int size;
-    obj_t *array_buffer;
-    etherif_t *ethif = etherif_obj_get_etherif(this);
-
-    size = 400; /* Arbitrary, but should be good enough */
-    array_buffer = array_buffer_new(size);
-    size = etherif_packet_recv(ethif, array_buffer_ptr(array_buffer), size);
-    if (size <= 0)
-    {
-        obj_put(array_buffer);
-        return throw_exception(ret, &S("Exception: can't read packet"));
-    }
-    *ret = array_buffer_view_new(array_buffer, 
-        ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, size);
-    obj_put(array_buffer);
-    return 0;
-}
-
-int do_etherif_on_packet_received(obj_t **ret, obj_t *this, int argc,
-    obj_t *argv[])
-{
-    etherif_t *ethif = etherif_obj_get_etherif(this);
-    event_t *e;
-
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    e = js_event_new(argv[1], this, js_event_gen_trigger);
-
-    etherif_on_packet_received_event_set(ethif, e);
-    *ret = UNDEF;
-    return 0;
-}
-
-int do_etherif_on_packet_xmit(obj_t **ret, obj_t *this, int argc,
-    obj_t *argv[])
-{
-    etherif_t *ethif = etherif_obj_get_etherif(this);
-    event_t *e;
-
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    e = js_event_new(argv[1], this, js_event_gen_trigger);
-
-    etherif_on_packet_xmit_event_set(ethif, e);
-    *ret = UNDEF;
-    return 0;
-}
-
 int do_etherif_on_port_change(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
