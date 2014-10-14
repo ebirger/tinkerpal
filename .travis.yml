@@ -11,19 +11,19 @@ before_script:
 compiler:
   - gcc
 env:
-  global:
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #   via the "travis encrypt" command using the project repo's public key
-   - secure: "lMbQ+HTmAg9/doSsFNZPdzZy39QYtNc2wgaceFH5rIUXNBb8Z2SSUfiIpx0vjXCrysKSDWMJLuxYfm1Q0kUqg+Pvwcfey74HhbccUdrj/YjSP8wERM3Ue5+s5oAidsSzura96629D0KZbKgLpmvMPRhJ/46DHtBJ1Jwg0xa5T6I="
-  matrix:
-    - DEFCONFIG=unix_sim_tests_defconfig
-addons:
-  coverity_scan:
-    project:
-      name: "ebirger/tinkerpal"
-      description: "Build submitted via Travis CI"
-    notification_email: tinkerpal.ci@gmail.com
-    build_command_prepend: "make $DEFCONFIG"
-    build_command:   "make"
-    branch_pattern: coverity_scan
-script: make $DEFCONFIG && make V=1
+  - DEFCONFIG=unix_sim_tests_defconfig
+  - DEFCONFIG=unix_sim_unit_tests_defconfig UNIT_TESTS=1
+  - DEFCONFIG=frdm_kl25z_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=lm4f120xl_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=tm4c123g_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=tm4c1294_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=cc3200_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=lm3s6918_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=lm3s6965_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=stm32f3discovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=stm32f4discovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=stm32f429idiscovery_gcc_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+  - DEFCONFIG=stm32_hy_24_defconfig SKIP_TESTS=1 CROSS_COMPILE=arm-none-eabi-
+script: make $DEFCONFIG && make V=1 && cd tests && ./run_tests.sh && ./leak_check.sh && cd ..
+after_success:
+  - ./scripts/coveralls.sh
