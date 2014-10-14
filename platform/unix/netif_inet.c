@@ -244,8 +244,15 @@ netif_inet_t *netif_to_inet(netif_t *netif)
 
 netif_t *netif_inet_new(char *dev_name)
 {
-    netif_inet_t *inet = tmalloc_type(netif_inet_t);
+    netif_inet_t *inet;
 
+    if (strlen(dev_name) >= IFNAMSIZ)
+    {
+        tp_err(("netif_inet: invalid device name\n"));
+        return NULL;
+    }
+
+    inet = tmalloc_type(netif_inet_t);
     strcpy(inet->dev_name, dev_name);
     inet->socket = -1;
 
