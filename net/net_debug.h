@@ -31,7 +31,6 @@
 
 char *eth_mac_serialize(eth_mac_t *m);
 /* Address is expected in network order */
-char *ip_addr_serialize(u32 ip);
 void eth_hdr_dump(eth_hdr_t *hdr);
 void arp_packet_dump(arp_packet_t *arp);
 void ip_hdr_dump(ip_hdr_t *iph);

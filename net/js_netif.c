@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "net/js_netif.h"
+#include "net/net_utils.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
 
