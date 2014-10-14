@@ -22,64 +22,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "net/net_utils.h"
-#include "util/tprintf.h"
+#include "js/js_obj.h"
+#include "js/js_utils.h"
+#include "js/js_event.h"
+#include "net/js_netif.h"
+#include "drivers/net/esp8266.h"
+#include "boards/board.h"
 
-u16 net_csum(u16 *addr, u16 byte_len)
+int do_esp8266_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    u32 sum = 0;
+    esp8266_params_t params;
+    const esp8266_params_t *p = &params;
+    netif_t *netif;
 
-    for (; byte_len > 1; byte_len -= 2)
-        sum += *addr++;
+    if (argc == 1)
+        p = &board.esp8266_params;
+    else if (argc != 2)
+        return js_invalid_args(ret);
+    else
+        params.serial_port = obj_get_int(argv[1]);
 
-    if (byte_len)
-        sum += *(u8 *)addr;
-    while (sum >> 16)
-        sum = (sum & 0xffff) + (sum >> 16);
-
-    return (u16)~sum;
-}
-
-u32 ip_addr_parse(char *buf, int len)
-{
-    u32 ret = 0;
-    u8 *ptr = (u8 *)&ret;
-
-    while (len)
-    {
-        char c = *buf;
-
-        buf++;
-        len--;
-        if (c == '.')
-        {
-            if (ptr - (u8 *)&ret == 3)
-                goto Exit;
-
-            ptr++;
-        }
-        else if (c >= '0' && c <= '9')
-            *ptr = *ptr * 10 + c - '0';
-        else
-            break;
-    }
-
-Exit:
-    if (ptr - (u8 *)&ret != 3)
-        return 0;
-
-    return ntohl(ret);
-}
-
-char *ip_addr_serialize(u32 ip)
-{
-    static char buf[3 * 4 + 3 + 1];
-    u8 *p = (u8 *)&ip;
-
-#ifdef CONFIG_BIG_ENDIAN
-    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
-#else
-    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", p[3], p[2], p[1], p[0]);
-#endif
-    return buf;
+    netif = esp8266_new(p);
+    return netif_obj_constructor(netif, ret, this, argc, argv);
 }
