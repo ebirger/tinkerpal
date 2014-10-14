@@ -25,21 +25,21 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
-#include "net/js_etherif.h"
+#include "net/js_netif.h"
 #include "platform/arm/ti/stellaris_eth.h"
 
 int do_stellaris_eth_constructor(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
-    etherif_t *ethif;
+    netif_t *netif;
 
     if (argc != 1)
         return js_invalid_args(ret);
 
-    ethif = netif_to_etherif(stellaris_eth_new());
+    netif = stellaris_eth_new();
 
-    if (!ethif)
+    if (!netif)
         return throw_exception(ret, &S("Exception: can't create device"));
 
-    return etherif_obj_constructor(ethif, ret, this, argc, argv);
+    return netif_obj_constructor(netif, ret, this, argc, argv);
 }

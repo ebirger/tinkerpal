@@ -25,7 +25,7 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
-#include "net/js_etherif.h"
+#include "net/js_netif.h"
 #include "drivers/net/enc28j60.h"
 #include "boards/board.h"
 
@@ -33,7 +33,7 @@ int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     enc28j60_params_t params;
     const enc28j60_params_t *p = &params;
-    etherif_t *ethif;
+    netif_t *netif;
 
     /* XXX: ideally, we should receive an object with optional override info */
     if (argc == 1)
@@ -47,6 +47,6 @@ int do_enc28j60_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         params.intr = obj_get_int(argv[3]);
     }
 
-    ethif = netif_to_etherif(enc28j60_new(p));
-    return etherif_obj_constructor(ethif, ret, this, argc, argv);
+    netif = enc28j60_new(p);
+    return netif_obj_constructor(netif, ret, this, argc, argv);
 }

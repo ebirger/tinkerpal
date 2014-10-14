@@ -1,4 +1,4 @@
-CONSTRUCTOR("ENC28J60", etherif, do_enc28j60_constructor, {
+CONSTRUCTOR("ENC28J60", netif, do_enc28j60_constructor, {
     .params = {
        { .name = "SPI port", .description = "SPI Port" },
        { .name = "CS", .description = "SPI Chip Select Pin" },
@@ -7,6 +7,6 @@ CONSTRUCTOR("ENC28J60", etherif, do_enc28j60_constructor, {
     .description = "ENC28J60 Ethernet Constructor",
     .return_value = "Created object",
     .example = "var enc = new ENC28J60(SPI0, GPIO_PF0, GPIO_PF1);\n"
-        "console.log('link status: ' + enc.linkState ? 'connected' : "
+        "console.log('link status: ' + enc.linkStatus() ? 'connected' : "
         "'disconnected');",
 })
