@@ -4,7 +4,7 @@ CONSTRUCTOR("LinuxPacketEth", netif, do_linux_eth_constructor, {
     },
     .description = "Linux Packet Ethernet Object Constructor",
     .return_value = "Created object",
-    .example = "var enc = new LinuxPacketEth('eth0');\n"
-        "console.log('link status: ' + enc.linkState ? 'connected' : "
+    .example = "var  n = new LinuxPacketEth('eth0');\n"
+        "console.log('link status: ' + n.linkStatus() ? 'connected' : "
         "'disconnected');",
 })
