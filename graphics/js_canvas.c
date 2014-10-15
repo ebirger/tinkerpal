@@ -28,14 +28,22 @@
 #include "js/js_utils.h"
 #include "util/debug.h"
 
+static void canvas_obj_free(void *p)
+{
+}
+
 canvas_t *canvas_obj_get_canvas(obj_t *o)
 {
-    int canvas_id;
-   
-    if (obj_get_property_int(&canvas_id, o, &Scanvas_id))
+    pointer_t *p;
+
+    if (!is_pointer(o))
         return NULL;
 
-    return canvas_get_by_id(canvas_id);
+    p = to_pointer(o);
+    if (p->free != canvas_obj_free)
+        return NULL;
+
+    return p->ptr;
 }
 
 int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
@@ -106,8 +114,7 @@ int do_canvas_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
-    *ret = object_new();
-    obj_set_property_int(*ret, Scanvas_id, canvas->id);
+    *ret = pointer_new(canvas, canvas_obj_free);
     obj_inherit(*ret, argv[0]);
     return 0;
 }
