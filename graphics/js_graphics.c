@@ -31,18 +31,25 @@
 #include "graphics/js_canvas.h"
 #include "graphics/js_evaluated_canvas.h"
 
+static canvas_t *graphics_obj_get_canvas(obj_t *gr)
+{
+    int canvas_id;
+
+    if (obj_get_property_int(&canvas_id, gr, &Scanvas_id))
+        return NULL;
+
+    return canvas_get_by_id(canvas_id);
+}
+
 int do_graphics_rect_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, w, h, canvas_id, color;
+    int x, y, w, h, color;
     canvas_t *c;
 
     if (argc != 6)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
@@ -58,16 +65,13 @@ int do_graphics_rect_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_graphics_round_rect_draw(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
-    int x, y, w, h, r, canvas_id, color;
+    int x, y, w, h, r, color;
     canvas_t *c;
 
     if (argc != 7)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
@@ -83,16 +87,13 @@ int do_graphics_round_rect_draw(obj_t **ret, obj_t *this, int argc,
 
 int do_graphics_line_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x0, y0, x1, y1, canvas_id, color;
+    int x0, y0, x1, y1, color;
     canvas_t *c;
 
     if (argc != 6)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x0 = obj_get_int(argv[1]);
@@ -107,16 +108,13 @@ int do_graphics_line_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, radius, canvas_id, color;
+    int x, y, radius, color;
     canvas_t *c;
 
     if (argc != 5)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
@@ -130,17 +128,14 @@ int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, canvas_id, color;
+    int x, y, color;
     string_t *s;
     canvas_t *c;
 
     if (argc != 5)
         return js_invalid_args(ret);
     
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
