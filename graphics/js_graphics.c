@@ -169,9 +169,12 @@ int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
         canvas_obj_constructor(canvas, &canvas_obj, NULL, 1, &argv);
     }
+    else
+        obj_get(canvas_obj);
+
 
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
-    obj_set_property(*ret, Scanvas, canvas_obj);
+    _obj_set_property(*ret, Scanvas, canvas_obj);
     return 0;
 }
