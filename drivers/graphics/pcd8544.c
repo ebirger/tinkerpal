@@ -145,7 +145,5 @@ canvas_t *pcd8544_new(const pcd8544_params_t *params)
     screen->canvas.width = LCD_WIDTH;
     screen->canvas.height = LCD_HEIGHT;
     screen->canvas.ops = &pcd8544_ops;
-
-    canvas_register(&screen->canvas);
     return &screen->canvas;
 }

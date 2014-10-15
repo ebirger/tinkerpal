@@ -30,6 +30,7 @@
 #include "net/ether.h"
 #include "net/ipv4.h"
 #include "net/udp.h"
+#include "net/net_utils.h"
 #include "net/net_debug.h"
 
 #define DHCP_MIN_PACKET_LEN 300

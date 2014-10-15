@@ -130,6 +130,12 @@ typedef struct {
     function_args_t args;
 } arguments_t;
 
+typedef struct {
+    obj_t obj;
+    void *ptr;
+    void (*free)(void *ptr);
+} pointer_t;
+
 /* Class types.
  * Note: ENV_CLASS is a special class - it is not exposed as a JS type,
  * but shares a lot of common properties with other classes.
@@ -146,7 +152,8 @@ typedef struct {
 #define ARRAY_BUFFER_CLASS 10
 #define ARRAY_BUFFER_VIEW_CLASS 11
 #define ARGUMENTS_CLASS 12
-#define CLASS_LAST ARGUMENTS_CLASS
+#define POINTER_CLASS 13
+#define CLASS_LAST POINTER_CLASS
 #define OBJ_CLASS(obj) (OBJ_IS_INT_VAL(obj) ? NUM_CLASS : (obj)->class)
 
 /* Global objects */
@@ -395,6 +402,19 @@ static inline arguments_t *to_arguments(obj_t *o)
     return (arguments_t *)o;
 }
 
+/* "pointer" objects methods */
+obj_t *pointer_new(void *ptr, void (*free)(void *ptr));
+
+static inline int is_pointer(obj_t *o)
+{
+    return o && OBJ_CLASS(o) == POINTER_CLASS;
+}
+
+static inline pointer_t *to_pointer(obj_t *o)
+{
+    tp_assert(is_pointer(o));
+    return (pointer_t *)o;
+}
 
 /* Initialization sequence functions */
 void obj_class_set_prototype(unsigned char class, obj_t *proto);

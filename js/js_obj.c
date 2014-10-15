@@ -1633,6 +1633,31 @@ static obj_t *arguments_get_own_property(obj_t ***lval, obj_t *o,
     return obj_get(arguments->args.argv[idx]);
 }
 
+/*** "pointer" Class ***/
+obj_t *pointer_new(void *ptr, void (*free)(void *ptr))
+{
+    pointer_t *ret = (pointer_t *)obj_new(POINTER_CLASS);
+    
+    ret->ptr = ptr;
+    ret->free = free;
+    return (obj_t *)ret;
+}
+
+static void pointer_free(obj_t *o)
+{
+    pointer_t *p = to_pointer(o);
+
+    if (p->free)
+        p->free(p->ptr);
+}
+
+static void pointer_dump(printer_t *printer, obj_t *o)
+{
+    pointer_t *p = to_pointer(o);
+
+    tprintf(printer, "[0x%p]", p->ptr);
+}
+
 /*** Initialization Sequence Functions ***/
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {
@@ -1665,6 +1690,7 @@ void js_obj_init(void)
     OBJ_CACHE_INIT(array_buffer_t, ARRAY_BUFFER_CLASS);
     OBJ_CACHE_INIT(array_buffer_view_t, ARRAY_BUFFER_VIEW_CLASS);
     OBJ_CACHE_INIT(arguments_t, ARGUMENTS_CLASS);
+    OBJ_CACHE_INIT(pointer_t, POINTER_CLASS);
 }
 
 const obj_class_t classes[] = {
@@ -1740,5 +1766,9 @@ const obj_class_t classes[] = {
         .dump = array_dump,
         .free = arguments_free,
         .get_own_property = arguments_get_own_property,
+    },
+    [ POINTER_CLASS ] = {
+        .dump = pointer_dump,
+        .free = pointer_free,
     },
 };

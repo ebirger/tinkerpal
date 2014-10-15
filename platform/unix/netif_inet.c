@@ -67,7 +67,7 @@ static u32 dev_ip_addr_get(const char *dev_name)
 
     for (ifa = ifaddr; ifa; ifa = ifa->ifa_next)
     {
-        if (strncmp(ifa->ifa_name, dev_name, IFNAMSIZ -1))
+        if (*dev_name && strncmp(ifa->ifa_name, dev_name, IFNAMSIZ -1))
             continue;
         if (!ifa->ifa_addr || ifa->ifa_addr->sa_family != AF_INET)
             continue;
@@ -155,15 +155,18 @@ static int netif_inet_tcp_connect(netif_t *netif, u32 ip, u16 port)
         goto Error;
     }
 
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = dev_ip_addr_get(inet->dev_name);
-    addr.sin_port = 0;
-
-    if (bind(inet->socket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    if (*inet->dev_name)
     {
-        perror("netif_inet: bind");
-        goto Error;
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = dev_ip_addr_get(inet->dev_name);
+        addr.sin_port = 0;
+
+        if (bind(inet->socket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+        {
+            perror("netif_inet: bind");
+            goto Error;
+        }
     }
 
 #if 0
@@ -246,17 +249,20 @@ netif_t *netif_inet_new(char *dev_name)
 {
     netif_inet_t *inet;
 
-    if (strlen(dev_name) >= IFNAMSIZ)
+    if (dev_name && strlen(dev_name) >= IFNAMSIZ)
     {
         tp_err(("netif_inet: invalid device name\n"));
         return NULL;
     }
 
     inet = tmalloc_type(netif_inet_t);
-    strcpy(inet->dev_name, dev_name);
+    if (dev_name)
+        strcpy(inet->dev_name, dev_name);
+    else
+        inet->dev_name[0] = '\0';
     inet->socket = -1;
 
     netif_register(&inet->netif, &netif_inet_ops);
-    printf("Created INET Interface over dev %s\n", dev_name);
+    printf("Created INET Interface\n");
     return &inet->netif;
 }

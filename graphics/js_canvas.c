@@ -28,6 +28,25 @@
 #include "js/js_utils.h"
 #include "util/debug.h"
 
+static void canvas_obj_free(void *p)
+{
+    canvas_free(p);
+}
+
+canvas_t *canvas_obj_get_canvas(obj_t *o)
+{
+    pointer_t *p;
+
+    if (!is_pointer(o))
+        return NULL;
+
+    p = to_pointer(o);
+    if (p->free != canvas_obj_free)
+        return NULL;
+
+    return p->ptr;
+}
+
 int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     u16 x, y, color;
@@ -36,8 +55,7 @@ int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 4)
         return js_invalid_args(ret);
 
-    c = canvas_get_by_id(canvas_obj_get_id(this));
-    if (!c)
+    if (!(c = canvas_obj_get_canvas(this)))
     {
         tp_err(("'this' is not a valid canvas object\n"));
         return js_invalid_args(ret);
@@ -60,8 +78,7 @@ int do_canvas_flip(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 1)
         return js_invalid_args(ret);
 
-    c = canvas_get_by_id(canvas_obj_get_id(this));
-    if (!c)
+    if (!(c = canvas_obj_get_canvas(this)))
     {
         tp_err(("'this' is not a valid canvas object\n"));
         return js_invalid_args(ret);
@@ -81,8 +98,7 @@ int do_canvas_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 2)
         return js_invalid_args(ret);
 
-    c = canvas_get_by_id(canvas_obj_get_id(this));
-    if (!c)
+    if (!(c = canvas_obj_get_canvas(this)))
     {
         tp_err(("'this' is not a valid canvas object\n"));
         return js_invalid_args(ret);
@@ -99,18 +115,7 @@ int do_canvas_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
-    *ret = object_new();
-    obj_set_property_int(*ret, Scanvas_id, canvas->id);
+    *ret = pointer_new(canvas, canvas_obj_free);
     obj_inherit(*ret, argv[0]);
     return 0;
-}
-
-int canvas_obj_get_id(obj_t *o)
-{
-    int canvas_id;
-   
-    if (obj_get_property_int(&canvas_id, o, &Scanvas_id))
-        return -1;
-
-    return canvas_id;
 }

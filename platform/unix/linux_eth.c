@@ -165,6 +165,8 @@ static int linux_eth_sock_init(linux_eth_t *eth)
     {
         tp_err(("%s is not an Ethernet device (%d)\n", eth->dev_name,
             (int)ifr.ifr_hwaddr.sa_family));
+        close(eth->packet_socket);
+        eth->packet_socket = -1;
         return -1;
     }
 

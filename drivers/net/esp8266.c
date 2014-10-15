@@ -326,12 +326,9 @@ static void esp8266_wait_for_data(esp8266_t *e)
 
 static void esp8266_tcp_connect(esp8266_t *e)
 {
-    u8 *p = (u8 *)&e->ip;
-
     sm_init(e, esp8266_tcp_connect);
-    /* XXX: use common IP serialization function */
-    AT_PRINTF(e, "AT+CIPSTART=\"TCP\",\"%u.%u.%u.%u\",%d", p[0], p[1], p[2],
-        p[3], e->port);
+    AT_PRINTF(e, "AT+CIPSTART=\"TCP\",\"%s\",%d", ip_addr_serialize(e->ip),
+        e->port);
     MATCH(e, "Linked");
     sm_wait(e, 5000);
     netif_event_trigger(&e->netif, NETIF_EVENT_TCP_CONNECTED);
@@ -410,7 +407,7 @@ static u32 esp8266_netif_ip_addr_get(netif_t *netif)
 {
     esp8266_t *e = netif_to_esp8266(netif);
 
-    return htonl(e->our_ip);
+    return e->our_ip;
 }
 
 static void esp8266_netif_free(netif_t *netif)

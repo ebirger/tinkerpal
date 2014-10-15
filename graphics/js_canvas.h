@@ -28,11 +28,9 @@
 #include "js/js_obj.h"
 #include "graphics/canvas.h"
 
-#define Scanvas_id S("canvas_id")
-
 int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[]);
 
-int canvas_obj_get_id(obj_t *o);
+canvas_t *canvas_obj_get_canvas(obj_t *o);
 
 #endif

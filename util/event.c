@@ -242,7 +242,8 @@ void event_watch_signal(u32 resource_id)
     }
 }
 
-int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps)
+int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps,
+    int is_one_shot)
 {
     event_internal_t *n;
     
@@ -254,6 +255,8 @@ int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps)
     n->e = e;
     n->next = watches;
     n->flags = 0;
+    if (!is_one_shot)
+        EVENT_SET_PERIODIC(n);
     EVENT_SET_TS_SIZE(n, num_timestamps);
     watches = n;
     return n->event_id;
@@ -324,6 +327,9 @@ static int watches_process(void)
 
 	if (!EVENT_TS_COUNT(e))
 	    EVENT_OFF(e);
+
+        if (!EVENT_IS_PERIODIC(e))
+            EVENT_SET_DELETED(e);
 
         e->e->trigger(e->e, e->resource_id, ts);
         /* trigger may have triggered new watches */

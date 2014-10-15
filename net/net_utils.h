@@ -29,5 +29,6 @@
 
 u16 net_csum(u16 *addr, u16 byte_len);
 u32 ip_addr_parse(char *buf, int len);
+char *ip_addr_serialize(u32 ip);
 
 #endif

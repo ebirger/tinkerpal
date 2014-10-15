@@ -206,7 +206,5 @@ canvas_t *ili93xx_new(const ili93xx_params_t *params)
     i->canvas.width = 240;
     i->canvas.height = 320;
     i->canvas.ops = &ili93xx_ops;
-
-    canvas_register(&i->canvas);
     return &i->canvas;
 }

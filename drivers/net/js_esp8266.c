@@ -26,29 +26,25 @@
 #include "js/js_utils.h"
 #include "js/js_event.h"
 #include "net/js_netif.h"
-#include "platform/unix/netif_inet.h"
+#include "drivers/net/esp8266.h"
+#include "boards/board.h"
 
-int do_netif_inet_constructor(obj_t **ret, obj_t *this, int argc,
-    obj_t *argv[])
+int do_esp8266_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    tstr_t dev_name_tstr;
-    char *dev_name = NULL;
+    esp8266_params_t params;
+    const esp8266_params_t *p = &params;
     netif_t *netif;
 
-    if (argc == 2)
+    if (argc == 1)
+        p = &board.esp8266_params;
+    else if (argc != 2)
+        return js_invalid_args(ret);
+    else
     {
-        dev_name_tstr = obj_get_str(argv[1]);
-        dev_name = tstr_to_strz(&dev_name_tstr);
-    }
-    netif = netif_inet_new(dev_name);
-    if (dev_name)
-    {
-        tstr_free(&dev_name_tstr);
-        tfree(dev_name);
+        params.serial_port = obj_get_int(argv[1]);
+        params.echo_on = 0;
     }
 
-    if (!netif)
-        return throw_exception(ret, &S("Exception: can't create device"));
-
+    netif = esp8266_new(p);
     return netif_obj_constructor(netif, ret, this, argc, argv);
 }

@@ -81,8 +81,15 @@ static void graphics_test_process_line(tstr_t *line)
     console_printf("Ok\n");
 }
 
+static void graphics_test_quit(void)
+{
+    if (canvas)
+        canvas_free(canvas);
+}
+
 static cli_client_t graphics_test_cli_client = {
     .process_line = graphics_test_process_line,
+    .quit = graphics_test_quit,
 };
 
 static void lcd_init(void)

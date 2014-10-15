@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "net/net_utils.h"
+#include "util/tprintf.h"
 
 u16 net_csum(u16 *addr, u16 byte_len)
 {
@@ -67,6 +68,18 @@ Exit:
     if (ptr - (u8 *)&ret != 3)
         return 0;
 
-    return ret;
+    return ntohl(ret);
 }
 
+char *ip_addr_serialize(u32 ip)
+{
+    static char buf[3 * 4 + 3 + 1];
+    u8 *p = (u8 *)&ip;
+
+#ifdef CONFIG_BIG_ENDIAN
+    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
+#else
+    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", p[3], p[2], p[1], p[0]);
+#endif
+    return buf;
+}

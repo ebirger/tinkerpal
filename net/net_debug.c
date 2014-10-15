@@ -24,6 +24,7 @@
  */
 #include "util/debug.h"
 #include "util/tprintf.h"
+#include "net/net_utils.h"
 #include "net/net_debug.h"
 
 static char buf[18];
@@ -42,14 +43,6 @@ void eth_hdr_dump(eth_hdr_t *hdr)
     D("DST", "%s", eth_mac_serialize(&hdr->dst));
     D("SRC", "%s", eth_mac_serialize(&hdr->src));
     D("ETHERTYPE", "%04x", ntohs(hdr->eth_type));
-}
-
-char *ip_addr_serialize(u32 ip)
-{
-    u8 *p = (u8 *)&ip;
-
-    tsnprintf(buf, sizeof(buf), "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
-    return buf;
 }
 
 void arp_packet_dump(arp_packet_t *arp)

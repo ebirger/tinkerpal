@@ -31,18 +31,27 @@
 #include "graphics/js_canvas.h"
 #include "graphics/js_evaluated_canvas.h"
 
+#define Scanvas S("canvas")
+
+static canvas_t *graphics_obj_get_canvas(obj_t *gr)
+{
+    obj_t *o;
+
+    if (!(o = obj_get_property(NULL, gr, &Scanvas)))
+        return NULL;
+
+    return canvas_obj_get_canvas(o);
+}
+
 int do_graphics_rect_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, w, h, canvas_id, color;
+    int x, y, w, h, color;
     canvas_t *c;
 
     if (argc != 6)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
@@ -58,16 +67,13 @@ int do_graphics_rect_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_graphics_round_rect_draw(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
-    int x, y, w, h, r, canvas_id, color;
+    int x, y, w, h, r, color;
     canvas_t *c;
 
     if (argc != 7)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
@@ -83,16 +89,13 @@ int do_graphics_round_rect_draw(obj_t **ret, obj_t *this, int argc,
 
 int do_graphics_line_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x0, y0, x1, y1, canvas_id, color;
+    int x0, y0, x1, y1, color;
     canvas_t *c;
 
     if (argc != 6)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x0 = obj_get_int(argv[1]);
@@ -107,16 +110,13 @@ int do_graphics_line_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, radius, canvas_id, color;
+    int x, y, radius, color;
     canvas_t *c;
 
     if (argc != 5)
         return js_invalid_args(ret);
 
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
@@ -130,17 +130,14 @@ int do_graphics_circle_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int x, y, canvas_id, color;
+    int x, y, color;
     string_t *s;
     canvas_t *c;
 
     if (argc != 5)
         return js_invalid_args(ret);
     
-    if (obj_get_property_int(&canvas_id, this, &Scanvas_id))
-        return js_invalid_args(ret);
-
-    if (!(c = canvas_get_by_id(canvas_id)))
+    if (!(c = graphics_obj_get_canvas(this)))
         return js_invalid_args(ret);
 
     x = obj_get_int(argv[1]);
@@ -154,27 +151,30 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int canvas_id;
-    obj_t *o;
+    canvas_t *canvas;
+    obj_t *o, *canvas_obj;
 
     if (argc != 2)
         return js_invalid_args(ret);
 
-    o = argv[1];
+    o = canvas_obj = argv[1];
 
-    if ((canvas_id = canvas_obj_get_id(o)) < 0)
+    if (!(canvas = canvas_obj_get_canvas(o)))
     {
-        canvas_t *canvas;
-       
-        /* No canvas ID found. Try to create an evaluated canvas */
+        obj_t *argv = UNDEF;
+
+        /* No canvas found. Try to create an evaluated canvas */
         if (!(canvas = js_evaluated_canvas_new(o)))
             return js_invalid_args(ret);
 
-        canvas_id = canvas->id;
+        canvas_obj_constructor(canvas, &canvas_obj, NULL, 1, &argv);
     }
+    else
+        obj_get(canvas_obj);
+
 
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
-    obj_set_property_int(*ret, Scanvas_id, canvas_id);
+    _obj_set_property(*ret, Scanvas, canvas_obj);
     return 0;
 }
