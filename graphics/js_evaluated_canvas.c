@@ -82,10 +82,19 @@ static void js_evaluated_canvas_flip(canvas_t *c)
     obj_put(argv[0]);
 }
 
+static void js_evaluated_canvas_free(canvas_t *c)
+{
+    js_evaluated_canvas_t *jscanvas = JS_CANVAS_FROM_CANVAS(c);
+
+    obj_put(jscanvas->obj);
+    tfree(jscanvas);
+}
+
 static const canvas_ops_t js_evaluated_canvas_ops = {
     .pixel_set = js_evaluated_canvas_pixel_set,
     .fill = js_evaluated_canvas_fill,
     .flip = js_evaluated_canvas_flip,
+    .free = js_evaluated_canvas_free,
 };
 
 canvas_t *js_evaluated_canvas_new(obj_t *o)
@@ -97,7 +106,7 @@ canvas_t *js_evaluated_canvas_new(obj_t *o)
 
     jscanvas = tmalloc_type(js_evaluated_canvas_t);
     jscanvas->canvas.ops = &js_evaluated_canvas_ops;
-    jscanvas->obj = o;
+    jscanvas->obj = obj_get(o);
     /* XXX: get width + height */
     return &jscanvas->canvas;
 }
