@@ -166,9 +166,6 @@ int do_netif_tcp_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 4)
         return js_invalid_args(ret);
 
-    if (!is_string(argv[1]))
-        return js_invalid_args(ret);
-    
     ip_str = obj_get_str(argv[1]);
     ip = ip_addr_parse(TPTR(&ip_str), ip_str.len);
     tstr_free(&ip_str);
