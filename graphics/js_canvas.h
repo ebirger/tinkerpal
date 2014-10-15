@@ -28,8 +28,6 @@
 #include "js/js_obj.h"
 #include "graphics/canvas.h"
 
-#define Scanvas_id S("canvas_id")
-
 int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[]);
 
