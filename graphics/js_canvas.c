@@ -30,6 +30,7 @@
 
 static void canvas_obj_free(void *p)
 {
+    canvas_free(p);
 }
 
 canvas_t *canvas_obj_get_canvas(obj_t *o)

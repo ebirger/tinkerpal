@@ -33,6 +33,7 @@ typedef struct {
     void (*pixel_set)(canvas_t *c, u16 x, u16 y, u16 val);
     void (*fill)(canvas_t *c, u16 val);
     void (*flip)(canvas_t *c);
+    void (*free)(canvas_t *c);
 } canvas_ops_t;
 
 struct canvas_t {
@@ -57,5 +58,11 @@ static inline void canvas_flip(canvas_t *c)
 }
 
 void canvas_fill(canvas_t *c, u16 val);
+
+static inline void canvas_free(canvas_t *c)
+{
+    if (c->ops->free)
+        c->ops->free(c);
+}
 
 #endif
