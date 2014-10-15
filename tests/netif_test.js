@@ -6,5 +6,9 @@ debug.assert((n.MACAddrGet())[0], 0);
 
 n.IPConnect(function() {
     console.log("IP Connected: " + n.IPAddrGet());
-    n.IPDisconnect();
+    n.TCPConnect('188.226.224.148', 80, function() {
+        console.log("TCP Connected");
+        n.TCPDisconnect();
+        n.IPDisconnect();
+    });
 });
