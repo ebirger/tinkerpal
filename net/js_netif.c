@@ -154,3 +154,56 @@ int do_netif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     *ret = netif_link_status(netif) ? TRUE : FALSE;
     return 0;
 }
+
+int do_netif_tcp_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif;
+    event_t *e;
+    u32 ip;
+    u16 port;
+    tstr_t ip_str;
+
+    if (argc != 4)
+        return js_invalid_args(ret);
+
+    if (!is_string(argv[1]))
+        return js_invalid_args(ret);
+    
+    ip_str = obj_get_str(argv[1]);
+    ip = ip_addr_parse(TPTR(&ip_str), ip_str.len);
+    tstr_free(&ip_str);
+    if (!ip)
+        return js_invalid_args(ret);
+
+    if (!(port = (u16)obj_get_int(argv[2])))
+        return js_invalid_args(ret);
+
+    if (!is_function(argv[3]))
+        return throw_exception(ret, &S("Invalid callback"));
+
+    if (!(netif = netif_obj_get_netif(this)))
+        return throw_exception(ret, &Sinvalid_netif);
+
+    e = js_event_new(argv[3], this, js_event_gen_trigger);
+
+    _event_watch_set(NETIF_RES(netif, NETIF_EVENT_TCP_CONNECTED), e, 0, 1);
+
+    if (netif_tcp_connect(netif, ip, port))
+        return throw_exception(ret, &S("Failed to connect"));
+
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_netif_tcp_disconnect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    netif_tcp_disconnect(netif);
+
+    *ret = UNDEF;
+    return 0;
+}

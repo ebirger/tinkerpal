@@ -64,3 +64,35 @@ FUNCTION("IPDisconnect", netif, do_netif_ip_disconnect, {
     .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
         "e.IPDisconnect();"
 })
+
+FUNCTION("TCPConnect", netif, do_netif_tcp_connect, {
+    .params = {
+        {
+	    .name = "ip",
+	    .description = "IP address to connect to"
+	},
+        {
+	    .name = "port",
+	    .description = "tcp port to connect to"
+	},
+        {
+	    .name = "cb",
+	    .description = "callback function called on TCP connectivity"
+	},
+    },
+    .description = "Connect to a TCP IP:PORT",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { console.log('connected'); });"
+})
+
+FUNCTION("TCPDisconnect", netif, do_netif_tcp_disconnect, {
+    .params = {
+    },
+    .description = "Release TCP connection",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { console.log('connected'); e.TCPDisconnect() });"
+})
