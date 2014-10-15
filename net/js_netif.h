@@ -30,6 +30,5 @@
 
 int netif_obj_constructor(netif_t *netif, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[]);
-netif_t *netif_obj_get_netif(obj_t *o);
 
 #endif
