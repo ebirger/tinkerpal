@@ -154,7 +154,7 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    int canvas_id;
+    canvas_t *canvas;
     obj_t *o;
 
     if (argc != 2)
@@ -162,19 +162,15 @@ int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     o = argv[1];
 
-    if ((canvas_id = canvas_obj_get_id(o)) < 0)
+    if (!(canvas = canvas_obj_get_canvas(o)))
     {
-        canvas_t *canvas;
-       
-        /* No canvas ID found. Try to create an evaluated canvas */
+        /* No canvas found. Try to create an evaluated canvas */
         if (!(canvas = js_evaluated_canvas_new(o)))
             return js_invalid_args(ret);
-
-        canvas_id = canvas->id;
     }
 
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
-    obj_set_property_int(*ret, Scanvas_id, canvas_id);
+    obj_set_property_int(*ret, Scanvas_id, canvas->id);
     return 0;
 }

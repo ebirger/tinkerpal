@@ -28,6 +28,16 @@
 #include "js/js_utils.h"
 #include "util/debug.h"
 
+canvas_t *canvas_obj_get_canvas(obj_t *o)
+{
+    int canvas_id;
+   
+    if (obj_get_property_int(&canvas_id, o, &Scanvas_id))
+        return NULL;
+
+    return canvas_get_by_id(canvas_id);
+}
+
 int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     u16 x, y, color;
@@ -36,8 +46,7 @@ int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 4)
         return js_invalid_args(ret);
 
-    c = canvas_get_by_id(canvas_obj_get_id(this));
-    if (!c)
+    if (!(c = canvas_obj_get_canvas(this)))
     {
         tp_err(("'this' is not a valid canvas object\n"));
         return js_invalid_args(ret);
@@ -60,8 +69,7 @@ int do_canvas_flip(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 1)
         return js_invalid_args(ret);
 
-    c = canvas_get_by_id(canvas_obj_get_id(this));
-    if (!c)
+    if (!(c = canvas_obj_get_canvas(this)))
     {
         tp_err(("'this' is not a valid canvas object\n"));
         return js_invalid_args(ret);
@@ -81,8 +89,7 @@ int do_canvas_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 2)
         return js_invalid_args(ret);
 
-    c = canvas_get_by_id(canvas_obj_get_id(this));
-    if (!c)
+    if (!(c = canvas_obj_get_canvas(this)))
     {
         tp_err(("'this' is not a valid canvas object\n"));
         return js_invalid_args(ret);
@@ -103,14 +110,4 @@ int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     obj_set_property_int(*ret, Scanvas_id, canvas->id);
     obj_inherit(*ret, argv[0]);
     return 0;
-}
-
-int canvas_obj_get_id(obj_t *o)
-{
-    int canvas_id;
-   
-    if (obj_get_property_int(&canvas_id, o, &Scanvas_id))
-        return -1;
-
-    return canvas_id;
 }
