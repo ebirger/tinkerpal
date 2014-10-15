@@ -105,7 +105,5 @@ canvas_t *sdl_screen_new(const sdl_screen_params_t *params)
     screen->canvas.width = params->width;
     screen->canvas.height = params->height;
     screen->canvas.ops = &sdl_screen_ops;
-
-    canvas_register(&screen->canvas);
     return &screen->canvas;
 }

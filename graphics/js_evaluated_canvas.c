@@ -99,6 +99,5 @@ canvas_t *js_evaluated_canvas_new(obj_t *o)
     jscanvas->canvas.ops = &js_evaluated_canvas_ops;
     jscanvas->obj = o;
     /* XXX: get width + height */
-    canvas_register(&jscanvas->canvas);
     return &jscanvas->canvas;
 }

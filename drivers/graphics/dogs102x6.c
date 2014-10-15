@@ -167,7 +167,5 @@ canvas_t *dogs102x6_new(const dogs102x6_params_t *params)
     screen->canvas.width = 102;
     screen->canvas.height = 64;
     screen->canvas.ops = &dogs102x6_ops;
-
-    canvas_register(&screen->canvas);
     return &screen->canvas;
 }

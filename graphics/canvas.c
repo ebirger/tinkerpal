@@ -25,9 +25,6 @@
 #include "util/debug.h"
 #include "graphics/canvas.h"
 
-static canvas_t *canvases;
-static int canvases_last_id;
-
 void canvas_fill(canvas_t *c, u16 val)
 {
     int i, j;
@@ -46,19 +43,4 @@ void canvas_fill(canvas_t *c, u16 val)
             c->ops->pixel_set(c, i, j, val);
         }
     }
-}
-
-void canvas_register(canvas_t *c)
-{
-    c->id = ++canvases_last_id;
-    c->next = canvases;
-    canvases = c;
-}
-
-canvas_t *canvas_get_by_id(int id)
-{
-    canvas_t *ret;
-
-    for (ret = canvases; ret && ret->id != id; ret = ret->next);
-    return ret;
 }

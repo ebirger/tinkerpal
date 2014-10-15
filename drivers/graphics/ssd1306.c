@@ -209,7 +209,5 @@ canvas_t *ssd1306_new(const ssd1306_params_t *params)
     screen->canvas.width = WIDTH;
     screen->canvas.height = HEIGHT;
     screen->canvas.ops = &ssd1306_ops;
-
-    canvas_register(&screen->canvas);
     return &screen->canvas;
 }

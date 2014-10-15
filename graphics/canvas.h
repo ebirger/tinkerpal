@@ -36,8 +36,6 @@ typedef struct {
 } canvas_ops_t;
 
 struct canvas_t {
-    canvas_t *next;
-    int id;
     const canvas_ops_t *ops;
     u16 width;
     u16 height;
@@ -59,9 +57,5 @@ static inline void canvas_flip(canvas_t *c)
 }
 
 void canvas_fill(canvas_t *c, u16 val);
-
-canvas_t *canvas_get_by_id(int id);
-
-void canvas_register(canvas_t *c);
 
 #endif
