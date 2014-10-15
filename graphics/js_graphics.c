@@ -31,14 +31,16 @@
 #include "graphics/js_canvas.h"
 #include "graphics/js_evaluated_canvas.h"
 
+#define Scanvas S("canvas")
+
 static canvas_t *graphics_obj_get_canvas(obj_t *gr)
 {
-    int canvas_id;
+    obj_t *o;
 
-    if (obj_get_property_int(&canvas_id, gr, &Scanvas_id))
+    if (!(o = obj_get_property(NULL, gr, &Scanvas)))
         return NULL;
 
-    return canvas_get_by_id(canvas_id);
+    return canvas_obj_get_canvas(o);
 }
 
 int do_graphics_rect_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
@@ -150,22 +152,26 @@ int do_graphics_string_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     canvas_t *canvas;
-    obj_t *o;
+    obj_t *o, *canvas_obj;
 
     if (argc != 2)
         return js_invalid_args(ret);
 
-    o = argv[1];
+    o = canvas_obj = argv[1];
 
     if (!(canvas = canvas_obj_get_canvas(o)))
     {
+        obj_t *argv = UNDEF;
+
         /* No canvas found. Try to create an evaluated canvas */
         if (!(canvas = js_evaluated_canvas_new(o)))
             return js_invalid_args(ret);
+
+        canvas_obj_constructor(canvas, &canvas_obj, NULL, 1, &argv);
     }
 
     *ret = object_new();
     obj_inherit(*ret, argv[0]);
-    obj_set_property_int(*ret, Scanvas_id, canvas->id);
+    obj_set_property(*ret, Scanvas, canvas_obj);
     return 0;
 }
