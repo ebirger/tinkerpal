@@ -16,7 +16,7 @@ fi
 
 /sbin/ifconfig
 
-list="closure_test.js while_test.js func_test.js exp_test.js object_test.js string_test.js prototype_test.js member_test.js for_test.js array_test.js fp_test.js self_ref.js eval_test.js func_constructor_test.js throw_test.js switch_test.js properties_test.js typed_array.js func_bind_test.js func_apply_test.js timer_test.js file_test.js arguments_test.js module_test.js netif_test.js";
+list="closure_test.js while_test.js func_test.js exp_test.js object_test.js string_test.js prototype_test.js member_test.js for_test.js array_test.js fp_test.js self_ref.js eval_test.js func_constructor_test.js throw_test.js switch_test.js properties_test.js typed_array.js func_bind_test.js func_apply_test.js timer_test.js file_test.js arguments_test.js module_test.js netif_test.js misc_test.js";
 
 for l in $list; do 
 	echo "============================"
