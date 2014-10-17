@@ -1,9 +1,12 @@
 CONSTRUCTOR("ESP8266", netif, do_esp8266_constructor, {
     .params = {
-       { .name = "Serial port", .description = "Serial Port" },
+       { .name = "cb", .description = "Callback to be called when device "
+           "is ready" },
+       { .name = "Serial port (optional)", .description = "Serial Port" },
     },
     .description = "ESP8266 Wi-Fi Constructor",
     .return_value = "Created object",
-    .example = "var esp = new ESP8266(UART4);\n"
-        "esp.IPConnect(function() { console.log('connected'); });"
+    .example = "var esp = new ESP8266(function() {\n"
+        "esp.IPConnect(function() { console.log('connected'); });\n"
+        "}, UART4);\n"
 })
