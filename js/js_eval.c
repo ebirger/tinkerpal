@@ -1398,11 +1398,16 @@ static int eval_do_while(obj_t **ret, scan_t *scan)
         obj_put(*ret);
         *ret = UNDEF;
 
-        if (rc == COMPLETION_BREAK || rc == COMPLETION_CONTINUE ||
-	    EXECUTION_STOPPED())
+        if (rc == COMPLETION_BREAK || EXECUTION_STOPPED())
 	{
+            rc = 0;
             break;
 	}
+        else if (rc == COMPLETION_CONTINUE)
+        {
+            next = 1;
+            continue;
+        }
 
         js_scan_match(scan, TOK_WHILE);
 
