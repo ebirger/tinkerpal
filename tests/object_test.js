@@ -66,3 +66,7 @@ debug.assert(string_prop.a, 3);
 
 var int_prop = { 3 : "a" };
 debug.assert(int_prop[3], "a");
+
+var b = new Object();
+b.kuku = 3;
+debug.assert(b.kuku, 3);
