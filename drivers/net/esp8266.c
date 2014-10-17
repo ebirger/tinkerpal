@@ -71,11 +71,17 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
     (e)->func_name = #cb; \
     (e)->func = cb; \
     switch ((e)->state) { case 0:
-#define sm_wait(e, timeout) \
-    esp8266_timeout_set(e, timeout); \
+#define _sm_wait(e) \
     (e)->state = __LINE__; \
     return; \
-    case __LINE__: \
+    case __LINE__:
+#define sm_wait(e, timeout) \
+    esp8266_timeout_set(e, timeout, esp8266_timeout_trigger); \
+    _sm_wait(e) \
+    esp8266_timeout_del(e)
+#define sm_sleep(e, time) \
+    esp8266_timeout_set(e, time, esp8266_sleep_trigger); \
+    _sm_wait(e) \
     esp8266_timeout_del(e)
 #define sm_reset(e) (e)->state = 0
 #define sm_uninit(e) }
@@ -122,14 +128,22 @@ static void esp8266_timeout_trigger(event_t *evt, u32 id, u64 timestamp)
     sm_reset(e);
 }
 
-static inline void esp8266_timeout_set(esp8266_t *e, int timeout)
+static void esp8266_sleep_trigger(event_t *evt, u32 id, u64 timestamp)
+{
+    esp8266_t *e = container_of(evt, esp8266_t, timeout_evt);
+
+    e->func(e);
+}
+
+static inline void esp8266_timeout_set(esp8266_t *e, int timeout,
+    void (*trigger)(event_t *evt, u32 id, u64 timestamp))
 {
     if (!timeout)
     {
         e->timeout_evt_id = -1;
         return;
     }
-    e->timeout_evt = (event_t){ .trigger = esp8266_timeout_trigger };
+    e->timeout_evt = (event_t){ .trigger = trigger };
     e->timeout_evt_id = event_timer_set(timeout, &e->timeout_evt);
 }
 
@@ -230,6 +244,7 @@ static void esp8266_init(esp8266_t *e)
     AT_MATCH(e, "AT+RST", "ready");
     sm_wait(e, 2000);
     tp_out(("%s: reset done.\n", __func__));
+    sm_sleep(e, 2000);
     netif_event_trigger(&e->netif, NETIF_EVENT_READY);
     sm_uninit(e);
 }
@@ -261,6 +276,7 @@ static void esp8266_connect(esp8266_t *e)
     }
     tp_debug(("Got IP [%d] %s", e->line_buf_count, e->line_buf));
     e->our_ip = ip_addr_parse(e->line_buf, e->line_buf_count - 2);
+    sm_sleep(e, 5000);
     netif_event_trigger(&e->netif, NETIF_EVENT_IPV4_CONNECTED);
     sm_uninit(e);
 }
