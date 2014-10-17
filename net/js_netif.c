@@ -204,3 +204,101 @@ int do_netif_tcp_disconnect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     *ret = UNDEF;
     return 0;
 }
+
+int do_netif_on_tcp_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+    event_t *e;
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    *ret = UNDEF;
+    if (argc == 1 || (argc == 2 && argv[1] == UNDEF))
+    {
+        netif_on_event_clear(netif, NETIF_EVENT_TCP_DATA_AVAIL);
+        return 0;
+    }
+
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
+
+    netif_on_event_set(netif, NETIF_EVENT_TCP_DATA_AVAIL, e);
+    return 0;
+}
+
+int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+
+    if (argc != 2)
+        return js_invalid_args(ret);
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    *ret = UNDEF;
+
+    if (is_string(argv[1]))
+    {
+        string_t *s;
+
+        s = to_string(argv[1]);
+
+        netif_tcp_write(netif, TPTR(&s->value), s->value.len);
+        return 0;
+    }
+    
+    if (is_num(argv[1]))
+    {
+	int n = obj_get_int(argv[1]);
+	char b;
+
+	if (n < 0 || n > 255)
+	    return throw_exception(ret, &S("Value must be in [0-255] range"));
+
+	b = (char)n;
+	netif_tcp_write(netif, &b, 1);
+	return 0;
+    }
+    
+    if (is_array(argv[1]) || is_array_buffer_view(argv[1]))
+    {
+	array_iter_t iter;
+	int rc = 0;
+
+	array_iter_init(&iter, argv[1], 0);
+	while (array_iter_next(&iter))
+	{
+	    obj_t *new_argv[2];
+
+	    new_argv[0] = argv[0];
+	    new_argv[1] = iter.obj;
+
+	    if ((rc = do_netif_tcp_write(ret, this, 2, new_argv)))
+		break;
+	}
+	array_iter_uninit(&iter);
+	return rc;
+    }
+
+    /* Unknown parameter type */
+    return js_invalid_args(ret);
+}
+
+int do_netif_tcp_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+    tstr_t data;
+
+    if (argc != 1)
+        return js_invalid_args(ret);
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    /* XXX: read as much as possible */
+    tstr_alloc(&data, 64);
+    data.len = netif_tcp_read(netif, TPTR(&data), 64);
+    *ret = string_new(data);
+    return 0;
+}

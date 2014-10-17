@@ -40,7 +40,7 @@ FUNCTION("onPortChange", netif, do_netif_on_port_change, {
     .description = "Calls 'cb' when link state has changed",
     .return_value = "None",
     .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
-        "e.onPortChange(function() { e.print('port state changed!'); });",
+        "e.onPortChange(function() { console.log('port state changed!'); });",
 })
 
 FUNCTION("IPConnect", netif, do_netif_ip_connect, {
@@ -95,4 +95,43 @@ FUNCTION("TCPDisconnect", netif, do_netif_tcp_disconnect, {
     .example = "var e = new NetifINET();\n"
         "e.TCPIPConnect('192.168.1.10', 80, "
         "function() { console.log('connected'); e.TCPDisconnect() });"
+})
+
+FUNCTION("onTCPData", netif, do_netif_on_tcp_data, {
+    .params = {
+        {
+	    .name = "cb",
+	    .description = "callback function called when TCP data is "
+                "available. Empty callback removes the listener"
+	},
+    },
+    .description = "Calls 'cb' when TCP data is available",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.onTCPData(function() { console.log('TCP data ready!'); });",
+})
+
+FUNCTION("TCPWrite", netif, do_netif_tcp_write, {
+    .params = {
+        {
+	    .name = "data" ,
+	    .description = "Data (byte/array/string/typed array) to be sent"
+	},
+    },
+    .description = "Writes data to the TCP socket",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { e.TCPWrite('GET / HTTP 1.0\r\n\r\n'); });"
+})
+
+FUNCTION("TCPRead", netif, do_netif_tcp_read, {
+    .params = {
+    },
+    .description = "Reads data from the TCP socket",
+    .return_value = "String containing returned data",
+    .example = "var e = new NetifINET();\n"
+        "e.onTCPData(function() { console.log(n.TCPRead()); });\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { e.TCPWrite('GET / HTTP 1.0\r\n\r\n'); });"
 })
