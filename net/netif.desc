@@ -111,6 +111,20 @@ FUNCTION("onTCPData", netif, do_netif_on_tcp_data, {
         "e.onTCPData(function() { console.log('TCP data ready!'); });",
 })
 
+FUNCTION("onTCPDisconnect", netif, do_netif_on_tcp_disconnect, {
+    .params = {
+        {
+	    .name = "cb",
+	    .description = "callback function called when TCP stream is "
+                "disconnected. Empty callback removes the listener"
+	},
+    },
+    .description = "Calls 'cb' when TCP stream is disconnected",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.onTCPDisconnect(function() { console.log('TCP disconnected!'); });",
+})
+
 FUNCTION("TCPWrite", netif, do_netif_tcp_write, {
     .params = {
         {

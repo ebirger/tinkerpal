@@ -226,6 +226,28 @@ int do_netif_on_tcp_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
+int do_netif_on_tcp_disconnect(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+    event_t *e;
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    *ret = UNDEF;
+    if (argc == 1 || (argc == 2 && argv[1] == UNDEF))
+    {
+        netif_on_event_clear(netif, NETIF_EVENT_TCP_DISCONNECTED);
+        return 0;
+    }
+
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
+
+    _event_watch_set(NETIF_RES(netif, NETIF_EVENT_TCP_DISCONNECTED), e, 0, 1);
+    return 0;
+}
+
 int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
