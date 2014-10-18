@@ -38,4 +38,18 @@ else
 
 debug.assert(good, 1);
 
+/* Run various API functions */
+console.log('--------------');
 meminfo();
+console.log('--------------');
+describe(describe);
+console.log('--------------');
+debug.dump_env();
+console.log('--------------');
+good = 0;
+try {
+    compile(function() { });
+} catch(e) {
+    good = 1;
+}
+debug.assert(good, 1);
