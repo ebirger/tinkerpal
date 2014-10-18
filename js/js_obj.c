@@ -1754,6 +1754,7 @@ const obj_class_t classes[] = {
         .cast = array_buffer_cast,
         .free = array_buffer_free,
         .get_own_property = array_buffer_get_own_property,
+        .do_op = object_do_op,
     },
     [ ARRAY_BUFFER_VIEW_CLASS ] = {
         .dump = array_dump,
@@ -1761,14 +1762,17 @@ const obj_class_t classes[] = {
         .free = array_buffer_view_free,
         .get_own_property = array_buffer_view_get_own_property,
         .set_own_property = array_buffer_view_set_own_property,
+        .do_op = object_do_op,
     },
     [ ARGUMENTS_CLASS ] = {
         .dump = array_dump,
         .free = arguments_free,
         .get_own_property = arguments_get_own_property,
+        .do_op = object_do_op,
     },
     [ POINTER_CLASS ] = {
         .dump = pointer_dump,
         .free = pointer_free,
+        .do_op = object_do_op,
     },
 };
