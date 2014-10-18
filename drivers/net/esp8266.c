@@ -49,6 +49,7 @@ struct esp8266_t {
     /* Socket */
     u32 ip; /* IP in host order */
     u16 port;
+    int tcp_connected;
     int data_ready_count_tmp;
     int data_ready_count;
     int write_count;
@@ -348,6 +349,7 @@ static void _esp8266_wait_for_data(esp8266_t *e)
     sm_wait(e, 0);
     if (e->matched_idx == 1)
     {
+        e->tcp_connected = 0;
         netif_event_trigger(&e->netif, NETIF_EVENT_TCP_DISCONNECTED);
         esp8266_wait_for_data(e);
         return;
@@ -401,6 +403,7 @@ static void esp8266_tcp_connect(esp8266_t *e)
         e->port);
     MATCH(e, "Linked");
     sm_wait(e, 5000);
+    e->tcp_connected = 1;
     netif_event_trigger(&e->netif, NETIF_EVENT_TCP_CONNECTED);
     esp8266_wait_for_data(e);
     sm_uninit(e);
@@ -419,6 +422,12 @@ static int esp8266_netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
 {
     esp8266_t *e = netif_to_esp8266(netif);
 
+    if (e->tcp_connected)
+    {
+        tp_err(("esp8266: TCP already connected\n"));
+        return -1;
+    }
+
     e->ip = ip;
     e->port = port;
     sm_reset(e);
@@ -430,6 +439,12 @@ static int esp8266_netif_tcp_read(netif_t *netif, char *buf, int size)
 {
     esp8266_t *e = netif_to_esp8266(netif);
     int len;
+
+    if (!e->tcp_connected)
+    {
+        tp_err(("esp8266 read: TCP not connected\n"));
+        return -1;
+    }
 
     if (!e->data_ready_count)
         return 0;
@@ -457,6 +472,11 @@ static int esp8266_netif_tcp_write(netif_t *netif, char *buf, int size)
 {
     esp8266_t *e = netif_to_esp8266(netif);
 
+    if (!e->tcp_connected)
+    {
+        tp_err(("esp8266 write: TCP not connected\n"));
+        return -1;
+    }
     e->write_buf = buf;
     e->write_count = size;
     sm_reset(e);
@@ -467,6 +487,12 @@ static int esp8266_netif_tcp_write(netif_t *netif, char *buf, int size)
 static int esp8266_netif_tcp_disconnect(netif_t *netif)
 {
     esp8266_t *e = netif_to_esp8266(netif);
+
+    if (!e->tcp_connected)
+    {
+        /* TCP already disconnected. Nothing more to do */
+        return 0;
+    }
 
     sm_reset(e);
     esp8266_tcp_disconnect(e);
@@ -513,6 +539,7 @@ netif_t *esp8266_new(const esp8266_params_t *params)
 
     e->params = *params;
     sm_reset(e);
+    e->tcp_connected = 0;
     netif_register(&e->netif, &esp8266_netif_ops);
     esp8266_init(e);
     return &e->netif;
