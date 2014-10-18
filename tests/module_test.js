@@ -2,7 +2,6 @@
 as = require('assert');
 as2 = require('assert');
 debug.assert(as, as);
-as.equal(1, 1, "Ok");
 
 good = 0;
 try {
