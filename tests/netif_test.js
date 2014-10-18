@@ -7,13 +7,15 @@ debug.assert((n.MACAddrGet())[0], 0);
 n.IPConnect(function() {
     console.log("IP Connected: " + n.IPAddrGet());
     var full = "";
+    n.onTCPDisconnect(function() {
+        n.TCPDisconnect();
+        n.IPDisconnect();
+        n.onTCPData();
+        console.log(full);
+    });
     n.onTCPData(function() {
         var s = n.TCPRead();
         if (s == "") {
-            n.TCPDisconnect();
-            n.IPDisconnect();
-            n.onTCPData();
-            console.log(full);
             return;
         }
         full += s;
