@@ -34,7 +34,7 @@ int do_object_prototype_to_string(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
-static int do_object_prototype_on(obj_t **ret, obj_t *this, int argc,
+int do_object_prototype_on(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
     tstr_t event;
