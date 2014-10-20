@@ -25,4 +25,5 @@ debug.assert(good2, 10);
 function f() { }
 a.on('dummy', f);
 debug.assert(a.listeners('dummy')[0], f);
+debug.assert(a.listeners('no_such_event'), undefined);
 a.removeAllListeners('dummy');
