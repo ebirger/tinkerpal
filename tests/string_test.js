@@ -83,3 +83,5 @@ debug.assert("10" <= "10", true);
 debug.assert("10" == "10", true);
 debug.assert("10" != "11", true);
 debug.assert("20" != "22", true);
+debug.assert("" == "1", false);
+debug.assert("1" == "", false);

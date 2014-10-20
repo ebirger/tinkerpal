@@ -74,11 +74,8 @@ static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
     if (!a->len && !b->len)
         return 0;
 
-    if (!a->len)
-        return -1;
-
-    if (!b->len)
-        return 1;
+    if (!a->len || !b->len)
+        return a->len - b->len;
 
     if ((first_char_diff = *TPTR(a) - *TPTR(b)))
         return first_char_diff;
