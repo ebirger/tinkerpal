@@ -42,6 +42,9 @@ debug.assert(qq.indexOf("shiva"), -1);
 debug.assert(qq.indexOf("budha"), 2);
 console.log(qq.indexOf("budha"));
 
+var arr = ['real', 'real', 'real'];
+debug.assert(arr.indexOf('real', 2), 2);
+
 var gugu = [ "ka", "ja", "gugu", 1, 2, 3];
 debug.assert(gugu.join("--"), "ka--ja--gugu--1--2--3");
 debug.assert(gugu.join(), "ka,ja,gugu,1,2,3");
