@@ -22,71 +22,60 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/debug.h"
-#include "js/js_obj.h"
 #include "js/js_emitter.h"
-#include "js/js_utils.h"
 
-int do_object_prototype_to_string(obj_t **ret, obj_t *this, int argc, 
-    obj_t *argv[])
+void js_obj_on(obj_t *o, tstr_t event, obj_t *func)
 {
-    *ret = obj_cast(this, STRING_CLASS);
-    return 0;
+    obj_t *listeners;
+
+    TSTR_SET_INTERNAL(&event);
+
+    listeners = obj_get_own_property(NULL, o, &event);
+    if (!listeners)
+    {
+        listeners = array_new();
+        obj_set_property(o, event, listeners);
+    }
+
+    array_push(listeners, obj_get(func));
+
+    obj_put(listeners);
 }
 
-static int do_object_prototype_on(obj_t **ret, obj_t *this, int argc,
-    obj_t *argv[])
+void js_obj_emit(obj_t *o, tstr_t event)
 {
-    tstr_t event;
+    obj_t *listeners;
+    array_iter_t iter;
 
-    if (argc != 3 || !is_function(argv[2]))
-        return js_invalid_args(ret);
+    TSTR_SET_INTERNAL(&event);
 
-    event = obj_get_str(argv[1]);
+    listeners = obj_get_own_property(NULL, o, &event);
+    if (!listeners)
+        return;
 
-    js_obj_on(this, event, argv[2]);
+    array_iter_init(&iter, listeners, 0);
+    while (array_iter_next(&iter))
+    {
+        obj_t *ret;
 
-    tstr_free(&event);
-
-    *ret = UNDEF;
-    return 0;
+        function_call(&ret, o, 1, &iter.obj);
+        obj_put(ret);
+    }
+    array_iter_uninit(&iter);
+    obj_put(listeners);
 }
 
-int do_object_prototype_emit(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+void js_obj_remove_listeners(obj_t *o, tstr_t event)
 {
-    tstr_t event;
+    obj_t **lval, *listeners;
 
-    if (argc != 2)
-        return js_invalid_args(ret);
+    listeners = obj_get_own_property(&lval, o, &event);
+    if (!listeners)
+        return;
 
-    event = obj_get_str(argv[1]);
+    *lval = UNDEF;
+    obj_put(listeners); /* Remove our reference */
+    obj_put(listeners); /* Remove the object's reference */
 
-    js_obj_emit(this, event);
-
-    tstr_free(&event);
-    *ret = UNDEF;
-    return 0;
-}
-
-int do_object_prototype_remove_all_listeners(obj_t **ret, obj_t *this, int argc,
-    obj_t *argv[])
-{
-    tstr_t event;
-
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    event = obj_get_str(argv[1]);
-
-    js_obj_remove_listeners(this, event);
-
-    tstr_free(&event);
-    *ret = UNDEF;
-    return 0;
-}
-
-int do_object_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    *ret = object_new();
-    return 0;
+    /* XXX: there is a dangling container left */
 }
