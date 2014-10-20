@@ -57,6 +57,6 @@ int do_esp8266_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         return rc;
 
     e = js_event_new(argv[1], *ret, js_event_gen_trigger);
-    _event_watch_set(NETIF_RES(netif, NETIF_EVENT_READY), e, 0, 1);
+    event_watch_set_once(NETIF_RES(netif, NETIF_EVENT_READY), e);
     return 0;
 }

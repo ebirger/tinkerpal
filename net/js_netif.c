@@ -121,7 +121,7 @@ int do_netif_ip_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
         e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-        _event_watch_set(NETIF_RES(netif, NETIF_EVENT_IPV4_CONNECTED), e, 0, 1);
+        event_watch_set_once(NETIF_RES(netif, NETIF_EVENT_IPV4_CONNECTED), e);
     }
 
     if (netif_ip_connect(netif))
