@@ -201,11 +201,15 @@ Error:
 static int netif_inet_tcp_read(netif_t *netif, char *buf, int size)
 {
     netif_inet_t *inet = netif_to_inet(netif);
+    int len;
 
     if (inet->socket < 0)
         return -1;
 
-    return read(inet->socket, buf, size);
+    len = read(inet->socket, buf, size);
+    if (!len)
+        netif_event_trigger(netif, NETIF_EVENT_TCP_DISCONNECTED);
+    return len;
 }
 
 static int netif_inet_tcp_write(netif_t *netif, char *buf, int size)

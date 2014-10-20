@@ -41,6 +41,11 @@ struct event_t {
 int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps,
     int is_one_shot);
 
+static inline int event_watch_set_once(u32 resource_id, event_t *e)
+{
+    return _event_watch_set(resource_id, e, 0, 1);
+}
+
 static inline int event_watch_set(u32 resource_id, event_t *e)
 {
     return _event_watch_set(resource_id, e, 0, 0);

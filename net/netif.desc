@@ -40,7 +40,7 @@ FUNCTION("onPortChange", netif, do_netif_on_port_change, {
     .description = "Calls 'cb' when link state has changed",
     .return_value = "None",
     .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
-        "e.onPortChange(function() { e.print('port state changed!'); });",
+        "e.onPortChange(function() { console.log('port state changed!'); });",
 })
 
 FUNCTION("IPConnect", netif, do_netif_ip_connect, {
@@ -63,4 +63,89 @@ FUNCTION("IPDisconnect", netif, do_netif_ip_disconnect, {
     .return_value = "None",
     .example = "var e = new ENC28J60(SPI1, GPIO_PE3, GPIO_PF4);\n"
         "e.IPDisconnect();"
+})
+
+FUNCTION("TCPConnect", netif, do_netif_tcp_connect, {
+    .params = {
+        {
+	    .name = "ip",
+	    .description = "IP address to connect to"
+	},
+        {
+	    .name = "port",
+	    .description = "tcp port to connect to"
+	},
+        {
+	    .name = "cb",
+	    .description = "callback function called on TCP connectivity"
+	},
+    },
+    .description = "Connect to a TCP IP:PORT",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { console.log('connected'); });"
+})
+
+FUNCTION("TCPDisconnect", netif, do_netif_tcp_disconnect, {
+    .params = {
+    },
+    .description = "Release TCP connection",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { console.log('connected'); e.TCPDisconnect() });"
+})
+
+FUNCTION("onTCPData", netif, do_netif_on_tcp_data, {
+    .params = {
+        {
+	    .name = "cb",
+	    .description = "callback function called when TCP data is "
+                "available. Empty callback removes the listener"
+	},
+    },
+    .description = "Calls 'cb' when TCP data is available",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.onTCPData(function() { console.log('TCP data ready!'); });",
+})
+
+FUNCTION("onTCPDisconnect", netif, do_netif_on_tcp_disconnect, {
+    .params = {
+        {
+	    .name = "cb",
+	    .description = "callback function called when TCP stream is "
+                "disconnected. Empty callback removes the listener"
+	},
+    },
+    .description = "Calls 'cb' when TCP stream is disconnected",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.onTCPDisconnect(function() { console.log('TCP disconnected!'); });",
+})
+
+FUNCTION("TCPWrite", netif, do_netif_tcp_write, {
+    .params = {
+        {
+	    .name = "data" ,
+	    .description = "Data (byte/array/string/typed array) to be sent"
+	},
+    },
+    .description = "Writes data to the TCP socket",
+    .return_value = "None",
+    .example = "var e = new NetifINET();\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { e.TCPWrite('GET / HTTP 1.0\r\n\r\n'); });"
+})
+
+FUNCTION("TCPRead", netif, do_netif_tcp_read, {
+    .params = {
+    },
+    .description = "Reads data from the TCP socket",
+    .return_value = "String containing returned data",
+    .example = "var e = new NetifINET();\n"
+        "e.onTCPData(function() { console.log(n.TCPRead()); });\n"
+        "e.TCPIPConnect('192.168.1.10', 80, "
+        "function() { e.TCPWrite('GET / HTTP 1.0\r\n\r\n'); });"
 })

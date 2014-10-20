@@ -41,6 +41,9 @@ void app_start(int argc, char *argv[])
     if (vfs_file_read(&code, &file, VFS_FLAGS_ANY_FS))
         tp_crit(("Error reading file %s\n", argv[1]));
 
+    if (js_eval_rank(code))
+        tp_crit(("Invalid code, cannot execute\n"));
+
     if (js_eval(&o, &code) == COMPLETION_THROW)
         tp_crit(("Evaluation resulted in exception %o\n", o));
 

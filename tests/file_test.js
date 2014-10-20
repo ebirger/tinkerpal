@@ -12,3 +12,9 @@ debug.assert(dirs[0], 'FAT');
 var files = fs.readdirSync('FAT/');
 console.log(files);
 debug.assert(files[0], 'TEST.TXT');
+
+var dirs = fs.readdirSync('/');
+debug.assert(dirs[0], 'FAT');
+
+var builtin_files = fs.readdirSync('Builtin');
+debug.assert(builtin_files[0], 'assert');

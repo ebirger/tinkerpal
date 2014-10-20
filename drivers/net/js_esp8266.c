@@ -34,17 +34,29 @@ int do_esp8266_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     esp8266_params_t params;
     const esp8266_params_t *p = &params;
     netif_t *netif;
+    event_t *e;
+    int rc;
 
     if (argc == 1)
-        p = &board.esp8266_params;
-    else if (argc != 2)
         return js_invalid_args(ret);
+
+    if (!is_function(argv[1]))
+        return throw_exception(ret, &S("Invalid callback"));
+
+    if (argc < 3)
+        p = &board.esp8266_params;
     else
     {
-        params.serial_port = obj_get_int(argv[1]);
+        params.serial_port = obj_get_int(argv[2]);
         params.echo_on = 0;
     }
 
     netif = esp8266_new(p);
-    return netif_obj_constructor(netif, ret, this, argc, argv);
+
+    if ((rc = netif_obj_constructor(netif, ret, this, argc, argv)))
+        return rc;
+
+    e = js_event_new(argv[1], *ret, js_event_gen_trigger);
+    event_watch_set_once(NETIF_RES(netif, NETIF_EVENT_READY), e);
+    return 0;
 }

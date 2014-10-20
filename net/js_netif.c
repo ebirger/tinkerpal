@@ -121,7 +121,7 @@ int do_netif_ip_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
         e = js_event_new(argv[1], this, js_event_gen_trigger);
 
-        _event_watch_set(NETIF_RES(netif, NETIF_EVENT_IPV4_CONNECTED), e, 0, 1);
+        event_watch_set_once(NETIF_RES(netif, NETIF_EVENT_IPV4_CONNECTED), e);
     }
 
     if (netif_ip_connect(netif))
@@ -152,5 +152,175 @@ int do_netif_link_status(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         return throw_exception(ret, &Sinvalid_netif);
 
     *ret = netif_link_status(netif) ? TRUE : FALSE;
+    return 0;
+}
+
+int do_netif_tcp_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif;
+    event_t *e;
+    u32 ip;
+    u16 port;
+    tstr_t ip_str;
+
+    if (argc != 4)
+        return js_invalid_args(ret);
+
+    ip_str = obj_get_str(argv[1]);
+    ip = ip_addr_parse(TPTR(&ip_str), ip_str.len);
+    tstr_free(&ip_str);
+    if (!ip)
+        return js_invalid_args(ret);
+
+    if (!(port = (u16)obj_get_int(argv[2])))
+        return js_invalid_args(ret);
+
+    if (!is_function(argv[3]))
+        return throw_exception(ret, &S("Invalid callback"));
+
+    if (!(netif = netif_obj_get_netif(this)))
+        return throw_exception(ret, &Sinvalid_netif);
+
+    e = js_event_new(argv[3], this, js_event_gen_trigger);
+
+    _event_watch_set(NETIF_RES(netif, NETIF_EVENT_TCP_CONNECTED), e, 0, 1);
+
+    if (netif_tcp_connect(netif, ip, port))
+        return throw_exception(ret, &S("Failed to connect"));
+
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_netif_tcp_disconnect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    netif_tcp_disconnect(netif);
+
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_netif_on_tcp_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+    event_t *e;
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    *ret = UNDEF;
+    if (argc == 1 || (argc == 2 && argv[1] == UNDEF))
+    {
+        netif_on_event_clear(netif, NETIF_EVENT_TCP_DATA_AVAIL);
+        return 0;
+    }
+
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
+
+    netif_on_event_set(netif, NETIF_EVENT_TCP_DATA_AVAIL, e);
+    return 0;
+}
+
+int do_netif_on_tcp_disconnect(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+    event_t *e;
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    *ret = UNDEF;
+    if (argc == 1 || (argc == 2 && argv[1] == UNDEF))
+    {
+        netif_on_event_clear(netif, NETIF_EVENT_TCP_DISCONNECTED);
+        return 0;
+    }
+
+    e = js_event_new(argv[1], this, js_event_gen_trigger);
+
+    _event_watch_set(NETIF_RES(netif, NETIF_EVENT_TCP_DISCONNECTED), e, 0, 1);
+    return 0;
+}
+
+int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+
+    if (argc != 2)
+        return js_invalid_args(ret);
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    *ret = UNDEF;
+
+    if (is_string(argv[1]))
+    {
+        string_t *s;
+
+        s = to_string(argv[1]);
+
+        netif_tcp_write(netif, TPTR(&s->value), s->value.len);
+        return 0;
+    }
+    
+    if (is_num(argv[1]))
+    {
+	int n = obj_get_int(argv[1]);
+	char b;
+
+	if (n < 0 || n > 255)
+	    return throw_exception(ret, &S("Value must be in [0-255] range"));
+
+	b = (char)n;
+	netif_tcp_write(netif, &b, 1);
+	return 0;
+    }
+    
+    if (is_array(argv[1]) || is_array_buffer_view(argv[1]))
+    {
+	array_iter_t iter;
+	int rc = 0;
+
+	array_iter_init(&iter, argv[1], 0);
+	while (array_iter_next(&iter))
+	{
+	    obj_t *new_argv[2];
+
+	    new_argv[0] = argv[0];
+	    new_argv[1] = iter.obj;
+
+	    if ((rc = do_netif_tcp_write(ret, this, 2, new_argv)))
+		break;
+	}
+	array_iter_uninit(&iter);
+	return rc;
+    }
+
+    /* Unknown parameter type */
+    return js_invalid_args(ret);
+}
+
+int do_netif_tcp_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    netif_t *netif = netif_obj_get_netif(this);
+    tstr_t data;
+
+    if (argc != 1)
+        return js_invalid_args(ret);
+
+    if (!netif)
+        return throw_exception(ret, &Sinvalid_netif);
+
+    /* XXX: read as much as possible */
+    tstr_alloc(&data, 64);
+    data.len = netif_tcp_read(netif, TPTR(&data), 64);
+    *ret = string_new(data);
     return 0;
 }

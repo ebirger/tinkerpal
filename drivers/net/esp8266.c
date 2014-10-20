@@ -32,6 +32,12 @@
 #include "net/netif.h"
 #include "net/net_utils.h"
 
+typedef struct {
+    const char *head;
+    const char *ptr;
+    int len;
+} matched_str_t;
+
 typedef struct esp8266_t esp8266_t;
 struct esp8266_t {
     netif_t netif;
@@ -43,6 +49,7 @@ struct esp8266_t {
     /* Socket */
     u32 ip; /* IP in host order */
     u16 port;
+    int tcp_connected;
     int data_ready_count_tmp;
     int data_ready_count;
     int write_count;
@@ -52,10 +59,10 @@ struct esp8266_t {
     int timeout_evt_id;
     event_t serial_in_evt;
     /* Match context */
-    const char *cur_str;
-    const char *cur_str_ptr;
-    int cur_str_len;
+#define NUM_MATCHED_STRS 2
+    matched_str_t matched_strs[NUM_MATCHED_STRS];
     int match_read_size;
+    int matched_idx;
     /* Read line context */
     char line_buf[32];
     int line_buf_count;
@@ -71,11 +78,17 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
     (e)->func_name = #cb; \
     (e)->func = cb; \
     switch ((e)->state) { case 0:
-#define sm_wait(e, timeout) \
-    esp8266_timeout_set(e, timeout); \
+#define _sm_wait(e) \
     (e)->state = __LINE__; \
     return; \
-    case __LINE__: \
+    case __LINE__:
+#define sm_wait(e, timeout) \
+    esp8266_timeout_set(e, timeout, esp8266_timeout_trigger); \
+    _sm_wait(e) \
+    esp8266_timeout_del(e)
+#define sm_sleep(e, time) \
+    esp8266_timeout_set(e, time, esp8266_sleep_trigger); \
+    _sm_wait(e) \
     esp8266_timeout_del(e)
 #define sm_reset(e) (e)->state = 0
 #define sm_uninit(e) }
@@ -84,14 +97,11 @@ esp8266_t *netif_to_esp8266(netif_t *netif);
 #define AT_PRINTF(e, fmt, args...) \
     serial_printf((e)->params.serial_port, fmt "\r", args)
 #define AT(e, cmd) serial_write((e)->params.serial_port, cmd "\r", sizeof(cmd))
-#define _MATCH(e, ret, match_size) do { \
-    esp8266_serial_in_watch_set(e, esp8266_match_trigger); \
-    (e)->cur_str = (e)->cur_str_ptr = ret; \
-    (e)->cur_str_len = sizeof(ret) - 1; \
-    (e)->match_read_size = match_size; \
-    tp_assert((e)->cur_str_len); \
+#define _MATCH(e, match, match_step) do { \
+    const char *m = match; \
+    esp8266_match(e, &m, 1, match_step); \
 } while(0)
-#define MATCH(e, ret) _MATCH(e, ret, 0)
+#define MATCH(e, match) _MATCH(e, match, 0)
 #define AT_MATCH(e, cmd, ret) do { \
     AT(e, cmd); \
     MATCH(e, ret); \
@@ -122,14 +132,22 @@ static void esp8266_timeout_trigger(event_t *evt, u32 id, u64 timestamp)
     sm_reset(e);
 }
 
-static inline void esp8266_timeout_set(esp8266_t *e, int timeout)
+static void esp8266_sleep_trigger(event_t *evt, u32 id, u64 timestamp)
+{
+    esp8266_t *e = container_of(evt, esp8266_t, timeout_evt);
+
+    e->func(e);
+}
+
+static inline void esp8266_timeout_set(esp8266_t *e, int timeout,
+    void (*trigger)(event_t *evt, u32 id, u64 timestamp))
 {
     if (!timeout)
     {
         e->timeout_evt_id = -1;
         return;
     }
-    e->timeout_evt = (event_t){ .trigger = esp8266_timeout_trigger };
+    e->timeout_evt = (event_t){ .trigger = trigger };
     e->timeout_evt_id = event_timer_set(timeout, &e->timeout_evt);
 }
 
@@ -152,11 +170,44 @@ static inline int esp8266_read(esp8266_t *e, char *buf, int size)
     return len;
 }
 
+static void matched_str_init(matched_str_t *m, const char *s)
+{
+    m->head = m->ptr = s;
+    m->len = strlen(s);
+}
+
+static int matched_str_match(matched_str_t *m, char c)
+{
+    if (!m->len)
+        return 0;
+
+again:
+    if (c == *m->ptr)
+        m->ptr++;
+    else
+    {
+        if (m->ptr == m->head)
+            return 0;
+
+        /* No match. Start over */
+        m->ptr = m->head;
+        goto again;
+    }
+
+    if (m->ptr - m->head == m->len)
+    {
+        /* found */
+        return 1;
+    }
+
+    return 0;
+}
+
 static void esp8266_match_trigger(event_t *evt, u32 id, u64 timestamp)
 {
     esp8266_t *e = container_of(evt, esp8266_t, serial_in_evt);
     char buf[30];
-    int len, i;
+    int len, i, matched_idx;
 
     len = sizeof(buf);
     if (e->match_read_size && e->match_read_size < len)
@@ -164,26 +215,36 @@ static void esp8266_match_trigger(event_t *evt, u32 id, u64 timestamp)
     len = esp8266_read(e, buf, len);
     for (i = 0; i < len; i++)
     {
-retry:
-        if (buf[i] == *e->cur_str_ptr)
-            e->cur_str_ptr++;
-        else
+        for (matched_idx = 0; matched_idx < NUM_MATCHED_STRS; matched_idx++)
         {
-            if (e->cur_str_ptr == e->cur_str)
+            if (!matched_str_match(&e->matched_strs[matched_idx], buf[i]))
                 continue;
 
-            /* No match. Start over */
-            e->cur_str_ptr = e->cur_str;
-            goto retry;
-        }
-        if (e->cur_str_ptr - e->cur_str == e->cur_str_len)
-        {
             /* Full match */
             esp8266_serial_in_watch_del(e);
+            e->matched_idx = matched_idx;
             e->func(e);
             return;
         }
     }
+}
+
+static void esp8266_match(esp8266_t *e, const char *matches[],
+    int num_matches, int match_step_size)
+{
+    int i;
+
+    tp_assert(num_matches <= NUM_MATCHED_STRS);
+
+    esp8266_serial_in_watch_set(e, esp8266_match_trigger);
+    e->matched_idx = -1;
+    for (i = 0; i < NUM_MATCHED_STRS; i++)
+    {
+        const char *s = i < num_matches ? matches[i] : "";
+
+        matched_str_init(&e->matched_strs[i], s);
+    }
+    e->match_read_size = match_step_size;
 }
 
 static void esp8266_gen_trigger(event_t *evt, u32 id, u64 timestamp)
@@ -230,6 +291,8 @@ static void esp8266_init(esp8266_t *e)
     AT_MATCH(e, "AT+RST", "ready");
     sm_wait(e, 2000);
     tp_out(("%s: reset done.\n", __func__));
+    sm_sleep(e, 2000);
+    netif_event_trigger(&e->netif, NETIF_EVENT_READY);
     sm_uninit(e);
 }
 
@@ -260,6 +323,7 @@ static void esp8266_connect(esp8266_t *e)
     }
     tp_debug(("Got IP [%d] %s", e->line_buf_count, e->line_buf));
     e->our_ip = ip_addr_parse(e->line_buf, e->line_buf_count - 2);
+    sm_sleep(e, 5000);
     netif_event_trigger(&e->netif, NETIF_EVENT_IPV4_CONNECTED);
     sm_uninit(e);
 }
@@ -281,8 +345,17 @@ static int esp8266_netif_ip_connect(netif_t *netif)
 static void _esp8266_wait_for_data(esp8266_t *e)
 {
     sm_init(e, _esp8266_wait_for_data);
-    _MATCH(e, "+IPD,", 1);
+    esp8266_match(e, (const char *[]){"+IPD,", "Unlink"}, 2, 1);
     sm_wait(e, 0);
+    if (e->matched_idx == 1)
+    {
+        e->tcp_connected = 0;
+        netif_event_trigger(&e->netif, NETIF_EVENT_TCP_DISCONNECTED);
+        esp8266_wait_for_data(e);
+        return;
+    }
+
+    e->data_ready_count = e->data_ready_count_tmp = 0;
     esp8266_serial_in_watch_set(e, esp8266_gen_trigger);
     while(1)
     {
@@ -302,7 +375,6 @@ static void _esp8266_wait_for_data(esp8266_t *e)
         if (c == ':')
         {
             e->data_ready_count = e->data_ready_count_tmp;
-            e->data_ready_count_tmp = 0;
             continue;
         }
 
@@ -331,6 +403,7 @@ static void esp8266_tcp_connect(esp8266_t *e)
         e->port);
     MATCH(e, "Linked");
     sm_wait(e, 5000);
+    e->tcp_connected = 1;
     netif_event_trigger(&e->netif, NETIF_EVENT_TCP_CONNECTED);
     esp8266_wait_for_data(e);
     sm_uninit(e);
@@ -349,6 +422,12 @@ static int esp8266_netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
 {
     esp8266_t *e = netif_to_esp8266(netif);
 
+    if (e->tcp_connected)
+    {
+        tp_err(("esp8266: TCP already connected\n"));
+        return -1;
+    }
+
     e->ip = ip;
     e->port = port;
     sm_reset(e);
@@ -360,6 +439,12 @@ static int esp8266_netif_tcp_read(netif_t *netif, char *buf, int size)
 {
     esp8266_t *e = netif_to_esp8266(netif);
     int len;
+
+    if (!e->tcp_connected)
+    {
+        tp_err(("esp8266 read: TCP not connected\n"));
+        return -1;
+    }
 
     if (!e->data_ready_count)
         return 0;
@@ -387,6 +472,11 @@ static int esp8266_netif_tcp_write(netif_t *netif, char *buf, int size)
 {
     esp8266_t *e = netif_to_esp8266(netif);
 
+    if (!e->tcp_connected)
+    {
+        tp_err(("esp8266 write: TCP not connected\n"));
+        return -1;
+    }
     e->write_buf = buf;
     e->write_count = size;
     sm_reset(e);
@@ -397,6 +487,12 @@ static int esp8266_netif_tcp_write(netif_t *netif, char *buf, int size)
 static int esp8266_netif_tcp_disconnect(netif_t *netif)
 {
     esp8266_t *e = netif_to_esp8266(netif);
+
+    if (!e->tcp_connected)
+    {
+        /* TCP already disconnected. Nothing more to do */
+        return 0;
+    }
 
     sm_reset(e);
     esp8266_tcp_disconnect(e);
@@ -443,7 +539,7 @@ netif_t *esp8266_new(const esp8266_params_t *params)
 
     e->params = *params;
     sm_reset(e);
-    e->data_ready_count = e->data_ready_count_tmp = 0;
+    e->tcp_connected = 0;
     netif_register(&e->netif, &esp8266_netif_ops);
     esp8266_init(e);
     return &e->netif;

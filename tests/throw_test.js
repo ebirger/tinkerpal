@@ -46,6 +46,7 @@ function susu()
 susu();
 debug.assert(x, 1);
 
+good = 0;
 try
 {
     no_such_function();
@@ -53,8 +54,11 @@ try
 catch(s)
 {
     console.log(s);
+    good = 1;
 }
+debug.assert(good, 1);
 
+good = 0;
 try
 {
     var num = 1;
@@ -63,8 +67,11 @@ try
 catch(s)
 {
     console.log(s);
+    good = 1;
 }
+debug.assert(good, 1);
 
+good = 0;
 try
 {
     1 +  2 * no_such_function();
@@ -72,4 +79,19 @@ try
 catch(s)
 {
     console.log(s);
+    good = 1;
 }
+debug.assert(good, 1);
+
+good = 0;
+try
+{
+    /* Invalid args */
+    debug.assert(1, 2, 3);
+}
+catch(s)
+{
+    console.log(s);
+    good = 1;
+}
+debug.assert(good, 1);

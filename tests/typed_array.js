@@ -7,6 +7,7 @@ k[3] = 5;
 k[3] += 8;
 debug.assert(k[3], 13);
 debug.assert(k16[1], 3328);
+debug.assert(k.buffer, a);
 
 var a = new ArrayBuffer(16);
 var k32 = new Int32Array(a);
