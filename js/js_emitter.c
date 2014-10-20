@@ -65,6 +65,19 @@ void js_obj_emit(obj_t *o, tstr_t event)
     obj_put(listeners);
 }
 
+obj_t *js_obj_listeners(obj_t *o, tstr_t event)
+{
+    obj_t *listeners;
+
+    TSTR_SET_INTERNAL(&event);
+
+    listeners = obj_get_own_property(NULL, o, &event);
+    if (!listeners)
+        return UNDEF;
+
+    return listeners;
+}
+
 void js_obj_remove_listeners(obj_t *o, tstr_t event)
 {
     obj_t **lval, *listeners;

@@ -44,3 +44,12 @@ FUNCTION("removeAllListeners", object_prototype, do_object_prototype_remove_all_
     .return_value = "None",
     .example = "a.removeAllListeners('data');"
 })
+
+FUNCTION("listeners", object_prototype, do_object_prototype_listeners, {
+    .params = {
+        { .name = "event", .description = "event for fetching listeners" },
+    },
+    .description = "Returns an array with listeners for the specified event",
+    .return_value = "Listeners Array",
+    .example = "a.listeners('data');"
+})

@@ -85,6 +85,22 @@ int do_object_prototype_remove_all_listeners(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
+int do_object_prototype_listeners(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    tstr_t event;
+
+    if (argc != 2)
+        return js_invalid_args(ret);
+
+    event = obj_get_str(argv[1]);
+
+    *ret = js_obj_listeners(this, event);
+
+    tstr_free(&event);
+    return 0;
+}
+
 int do_object_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     *ret = object_new();

@@ -20,3 +20,9 @@ a.removeAllListeners('test2');
 a.emit('test2');
 debug.assert(good, 1);
 debug.assert(good2, 10);
+
+/* Object.listeners */
+function f() { }
+a.on('dummy', f);
+debug.assert(a.listeners('dummy')[0], f);
+a.removeAllListeners('dummy');

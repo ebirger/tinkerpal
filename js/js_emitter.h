@@ -30,6 +30,7 @@
 
 void js_obj_on(obj_t *o, tstr_t event, obj_t *func);
 void js_obj_emit(obj_t *o, tstr_t event);
+obj_t *js_obj_listeners(obj_t *o, tstr_t event);
 void js_obj_remove_listeners(obj_t *o, tstr_t event);
 
 #endif
