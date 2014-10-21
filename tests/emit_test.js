@@ -36,3 +36,8 @@ debug.assert(good, 100);
 a.removeAllListeners();
 a.emit('add', 1000);
 debug.assert(good, 100);
+a.removeAllListeners();
+good = 0;
+a.on('add', function(x) { good += x; });
+a.emit('add', 1000);
+debug.assert(good, 1000);

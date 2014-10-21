@@ -44,7 +44,8 @@ void js_obj_on(obj_t *o, tstr_t event, obj_t *func)
 
     root = obj_get_on_events_root(o);
     listeners = obj_get_own_property(NULL, root, &event);
-    if (!listeners)
+    /* XXX: we are accounting for possible dangling listener key */
+    if (!listeners || listeners == UNDEF)
     {
         listeners = array_new();
         obj_set_property(root, event, listeners);
