@@ -42,6 +42,9 @@ debug.assert(qq.indexOf("shiva"), -1);
 debug.assert(qq.indexOf("budha"), 2);
 console.log(qq.indexOf("budha"));
 
+var arr = ['real', 'real', 'real'];
+debug.assert(arr.indexOf('real', 2), 2);
+
 var gugu = [ "ka", "ja", "gugu", 1, 2, 3];
 debug.assert(gugu.join("--"), "ka--ja--gugu--1--2--3");
 debug.assert(gugu.join(), "ka,ja,gugu,1,2,3");
@@ -75,11 +78,13 @@ debug.assert([1,2,3] + 50, '1,2,350');
 debug.assert([1,2,3] + 'test', '1,2,3test');
 debug.assert([1,2,3] + [4,5,6], '1,2,34,5,6');
 
-debug.assert([,].join(), "undefined,undefined");
-debug.assert([1,].join(), "1,undefined");
+debug.assert([,].join(), "undefined");
+debug.assert([1,].join(), "1");
 debug.assert([,3].join(), "undefined,3");
 debug.assert([1,,3].join(), "1,undefined,3");
 debug.assert([1,,,3].join(), "1,undefined,undefined,3");
+debug.assert([1,].length, 1);
+debug.assert([1,,1].length, 3);
 
 /* Slice */
 x = [ 1, 2, 3 ].slice(1);

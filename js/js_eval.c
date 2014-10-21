@@ -456,7 +456,10 @@ static int eval_array(obj_t **po, scan_t *scan)
     while (CUR_TOK(scan) == TOK_COMMA)
     {
         js_scan_next_token(scan);
-        if (CUR_TOK(scan) == TOK_COMMA || CUR_TOK(scan) == TOK_CLOSE_MEMBER)
+        if (CUR_TOK(scan) == TOK_CLOSE_MEMBER)
+            continue;
+
+        if (CUR_TOK(scan) == TOK_COMMA)
         {
             array_push(o, UNDEF);
             continue;

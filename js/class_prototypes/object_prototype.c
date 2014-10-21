@@ -24,11 +24,83 @@
  */
 #include "util/debug.h"
 #include "js/js_obj.h"
+#include "js/js_emitter.h"
+#include "js/js_utils.h"
 
 int do_object_prototype_to_string(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[])
 {
     *ret = obj_cast(this, STRING_CLASS);
+    return 0;
+}
+
+int do_object_prototype_on(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    tstr_t event;
+
+    if (argc != 3 || !is_function(argv[2]))
+        return js_invalid_args(ret);
+
+    event = obj_get_str(argv[1]);
+
+    js_obj_on(this, event, argv[2]);
+
+    tstr_free(&event);
+
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_object_prototype_emit(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    tstr_t event;
+    obj_t *tmp;
+
+    if (argc < 2)
+        return js_invalid_args(ret);
+
+    event = obj_get_str(argv[1]);
+
+    tmp = argv[1];
+    js_obj_emit(this, event, argc - 1, argv + 1);
+    argv[1] = tmp;
+
+    tstr_free(&event);
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_object_prototype_remove_all_listeners(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    if (argc == 1)
+        js_obj_remove_all_listeners(this);
+    else
+    {
+        tstr_t event = obj_get_str(argv[1]);
+
+        js_obj_remove_listeners(this, event);
+        tstr_free(&event);
+    }
+
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_object_prototype_listeners(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    tstr_t event;
+
+    if (argc != 2)
+        return js_invalid_args(ret);
+
+    event = obj_get_str(argv[1]);
+
+    *ret = js_obj_listeners(this, event);
+
+    tstr_free(&event);
     return 0;
 }
 

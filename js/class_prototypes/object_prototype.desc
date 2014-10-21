@@ -9,10 +9,47 @@ CONSTRUCTOR("Object", object_prototype, do_object_constructor, {
     .example = "var o = new Object(5);",
 })
 
-FUNCTION("toString", object_prototype, do_object_prototype_to_string, { 
+FUNCTION("toString", object_prototype, do_object_prototype_to_string, {
     .params = { },
     .description = "The object is converted to a string",
     .return_value = "String value",
     .example = "var a = 1;\n"
         "debug.assert(a.toString(), '1');",
+})
+
+FUNCTION("on", object_prototype, do_object_prototype_on, {
+    .params = {
+        { .name = "event", .description = "event to listen on" },
+        { .name = "cb", .description = "callback function called on event" },
+    },
+    .description = "Adds a listener for the specified event",
+    .return_value = "None",
+    .example = "a.on('data', function() { console.log('data!'); });"
+})
+
+FUNCTION("emit", object_prototype, do_object_prototype_emit, {
+    .params = {
+        { .name = "event", .description = "event to listen on" },
+    },
+    .description = "Execute each of the listeners on the event",
+    .return_value = "None",
+    .example = "a.emit('data');"
+})
+
+FUNCTION("removeAllListeners", object_prototype, do_object_prototype_remove_all_listeners, {
+    .params = {
+        { .name = "event", .description = "(optional) event to stop listening on" },
+    },
+    .description = "removes listeners on a specified event, or all events",
+    .return_value = "None",
+    .example = "a.removeAllListeners('data');"
+})
+
+FUNCTION("listeners", object_prototype, do_object_prototype_listeners, {
+    .params = {
+        { .name = "event", .description = "event for fetching listeners" },
+    },
+    .description = "Returns an array with listeners for the specified event",
+    .return_value = "Listeners Array",
+    .example = "a.listeners('data');"
 })

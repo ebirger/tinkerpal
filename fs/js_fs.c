@@ -45,11 +45,10 @@ int do_read_file_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         goto Exit;
     }
 
-    *ret = string_new(tstr_dup(content));
+    *ret = string_new(content);
     rc = 0;
 
 Exit:
-    tstr_free(&content);
     tstr_free(&path);
     return rc;
 }
