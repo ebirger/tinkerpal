@@ -18,3 +18,53 @@ debug.assert(dirs[0], 'FAT');
 
 var builtin_files = fs.readdirSync('Builtin');
 debug.assert(builtin_files[0], 'assert');
+
+good = 0;
+try {
+    console.log(fs.readdirSync('Builtin/kuku/ku'));
+} catch (e) {
+    /* Builtin fs doesn't allow subfolders */
+    good = 1;
+}
+debug.assert(good, 1);
+
+/* Test file handling exceptions */
+good = 0;
+try {
+    fs.readdirSync('.', "invalid arg");
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
+good = 0;
+try {
+    fs.readFileSync('FAT/test.txt', "invalid arg");
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
+good = 0;
+try {
+    fs.readFileSync('FAT/no_such_file');
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
+good = 0;
+try {
+    fs.readdirSync('FAT/no_such_path/no_such_file');
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
+good = 0;
+try {
+    fs.writeFileSync('Local/test.txt', s, 'invalid arg');
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
