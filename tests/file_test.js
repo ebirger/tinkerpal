@@ -68,3 +68,34 @@ try {
     good = 1;
 }
 debug.assert(good, 1);
+
+good = 0;
+try {
+    fs.readFileSync('no_such_fs/no_such_file');
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
+good = 0;
+try {
+    fs.writeFileSync('no_such_fs/test.txt', s);
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
+good = 0;
+try {
+    fs.readdirSync('no_such_fs/');
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
+good = 0;
+try {
+    fs.readdirSync('no_such_fs/');
+} catch (e) {
+    good = 1;
+}
+debug.assert(good, 1);
