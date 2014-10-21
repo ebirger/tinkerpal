@@ -24,71 +24,100 @@
  */
 #include "js/js_emitter.h"
 
+#define Son_events INTERNAL_S("___on_events___")
+static obj_t *obj_get_on_events_root(obj_t *o)
+{
+    obj_t *root;
+
+    root = obj_get_own_property(NULL, o, &Son_events);
+    if (!root || root == UNDEF)
+    {
+        root = object_new();
+        obj_set_property(o, Son_events, root);
+    }
+    return root;
+}
+
 void js_obj_on(obj_t *o, tstr_t event, obj_t *func)
 {
-    obj_t *listeners;
+    obj_t *listeners, *root;
 
-    TSTR_SET_INTERNAL(&event);
-
-    listeners = obj_get_own_property(NULL, o, &event);
+    root = obj_get_on_events_root(o);
+    listeners = obj_get_own_property(NULL, root, &event);
     if (!listeners)
     {
         listeners = array_new();
-        obj_set_property(o, event, listeners);
+        obj_set_property(root, event, listeners);
     }
 
     array_push(listeners, obj_get(func));
 
     obj_put(listeners);
+    obj_put(root);
 }
 
-void js_obj_emit(obj_t *o, tstr_t event)
+void js_obj_emit(obj_t *o, tstr_t event, int argc, obj_t *argv[])
 {
-    obj_t *listeners;
+    obj_t *listeners, *root;
     array_iter_t iter;
 
-    TSTR_SET_INTERNAL(&event);
-
-    listeners = obj_get_own_property(NULL, o, &event);
+    root = obj_get_on_events_root(o);
+    listeners = obj_get_own_property(NULL, root, &event);
     if (!listeners)
-        return;
+        goto Exit;
 
     array_iter_init(&iter, listeners, 0);
     while (array_iter_next(&iter))
     {
         obj_t *ret;
 
-        function_call(&ret, o, 1, &iter.obj);
+        argv[0] = iter.obj;
+        function_call(&ret, o, argc, argv);
         obj_put(ret);
     }
     array_iter_uninit(&iter);
     obj_put(listeners);
+Exit:
+    obj_put(root);
 }
 
 obj_t *js_obj_listeners(obj_t *o, tstr_t event)
 {
-    obj_t *listeners;
+    obj_t *listeners, *root;
 
-    TSTR_SET_INTERNAL(&event);
-
-    listeners = obj_get_own_property(NULL, o, &event);
-    if (!listeners)
-        return UNDEF;
-
-    return listeners;
+    root = obj_get_on_events_root(o);
+    listeners = obj_get_own_property(NULL, root, &event);
+    obj_put(root);
+    return listeners ? : UNDEF;
 }
 
 void js_obj_remove_listeners(obj_t *o, tstr_t event)
 {
-    obj_t **lval, *listeners;
+    obj_t **lval, *listeners, *root;
 
-    listeners = obj_get_own_property(&lval, o, &event);
+    root = obj_get_on_events_root(o);
+    listeners = obj_get_own_property(&lval, root, &event);
     if (!listeners)
-        return;
+        goto Exit;
 
     *lval = UNDEF;
     obj_put(listeners); /* Remove our reference */
     obj_put(listeners); /* Remove the object's reference */
 
     /* XXX: there is a dangling container left */
+Exit:
+    obj_put(root);
+}
+
+void js_obj_remove_all_listeners(obj_t *o)
+{
+    obj_t *root, **lval;
+
+    root = obj_get_own_property(&lval, o, &Son_events);
+    if (!root)
+        return;
+
+    *lval = UNDEF;
+    obj_put(root); /* Remove our reference */
+    obj_put(root); /* Remove the object's reference */
 }

@@ -55,13 +55,16 @@ int do_object_prototype_on(obj_t **ret, obj_t *this, int argc,
 int do_object_prototype_emit(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tstr_t event;
+    obj_t *tmp;
 
-    if (argc != 2)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     event = obj_get_str(argv[1]);
 
-    js_obj_emit(this, event);
+    tmp = argv[1];
+    js_obj_emit(this, event, argc - 1, argv + 1);
+    argv[1] = tmp;
 
     tstr_free(&event);
     *ret = UNDEF;
@@ -71,16 +74,16 @@ int do_object_prototype_emit(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_object_prototype_remove_all_listeners(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {
-    tstr_t event;
+    if (argc == 1)
+        js_obj_remove_all_listeners(this);
+    else
+    {
+        tstr_t event = obj_get_str(argv[1]);
 
-    if (argc != 2)
-        return js_invalid_args(ret);
+        js_obj_remove_listeners(this, event);
+        tstr_free(&event);
+    }
 
-    event = obj_get_str(argv[1]);
-
-    js_obj_remove_listeners(this, event);
-
-    tstr_free(&event);
     *ret = UNDEF;
     return 0;
 }
