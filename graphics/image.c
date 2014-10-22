@@ -22,35 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __GRAPHICS_H__
-#define __GRAPHICS_H__
+#include "graphics/graphics.h"
 
-#include "util/tp_types.h"
-#include "util/tstr.h"
-#include "graphics/canvas.h"
-
-#define CIRC_0_45 (1<<0)
-#define CIRC_45_90 (1<<1)
-#define CIRC_90_135 (1<<2)
-#define CIRC_135_180 (1<<3)
-#define CIRC_180_225 (1<<4)
-#define CIRC_225_270 (1<<5)
-#define CIRC_270_315 (1<<6)
-#define CIRC_315_0 (1<<7)
-#define CIRC_ALL 0xff
-void _circle_draw(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color);
-static inline void circle_draw(canvas_t *c, int x0, int y0, int radius,
-    u16 color)
+void bitmap_draw(canvas_t *c, int x, int y, int w, int h, const u8 *image)
 {
-    _circle_draw(c, x0, y0, radius, CIRC_ALL, color);
-}
+    int i, j, byte_width = (w + 7) / 8;
 
-void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
-void line_draw(canvas_t *c, int x0, int y0, int x1, int y1, u16 color);
-void rect_draw(canvas_t *c, int x, int y, int w, int h, u16 color);
-#define ROUND_RECT_TYPE_REGULAR 0
-#define ROUND_RECT_TYPE_CORNERS_IN 1
-void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, int type,
-    u16 color);
-void bitmap_draw(canvas_t *c, int x, int y, int w, int h, const u8 *image);
-#endif
+    for (i = 0; i < w; i++)
+    {
+        for (j = 0; j < h; j++)
+        {
+            u16 val;
+            u8 cell;
+
+            cell = *(image + j * byte_width + (i / 8));
+            val = cell & (128 >> (i & 0x7)) ? (u16)-1 : 0;
+            canvas_pixel_set(c, i + x, j + y, val);
+        }
+    }
+}
