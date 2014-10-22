@@ -53,3 +53,5 @@ try {
     good = 1;
 }
 debug.assert(good, 1);
+
+console.log(-1.1);
