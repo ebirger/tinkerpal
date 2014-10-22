@@ -85,3 +85,12 @@ debug.assert("10" != "11", true);
 debug.assert("20" != "22", true);
 debug.assert("" == "1", false);
 debug.assert("1" == "", false);
+
+/* Number to string */
+debug.assert((1).toString(), '1');
+debug.assert((3).toString(2), '11');
+debug.assert((5).toString(16), '5');
+debug.assert((5).toString(4), '11');
+debug.assert((16).toString(16), '10');
+debug.assert((10).toString(16), 'a');
+debug.assert((33).toString(16), '21');

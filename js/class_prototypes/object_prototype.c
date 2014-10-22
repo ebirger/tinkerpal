@@ -30,7 +30,19 @@
 int do_object_prototype_to_string(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[])
 {
-    *ret = obj_cast(this, STRING_CLASS);
+    if (argc == 2 && is_num(this))
+    {
+        num_t *n = to_num(this);
+        int radix;
+
+        if (NUM_IS_FP((n = to_num(this))))
+            return throw_exception(ret, &S("Not supported yet"));
+
+        radix = obj_get_int(argv[1]);
+        *ret = string_new(_int_to_tstr(NUM_INT(n), radix));
+    }
+    else
+        *ret = obj_cast(this, STRING_CLASS);
     return 0;
 }
 
