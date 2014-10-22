@@ -22,28 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __TPRINTF_H__
-#define __TPRINTF_H__
+#include "graphics/graphics.h"
 
-#include <stdarg.h>
+void bitmap_draw(canvas_t *c, int x, int y, int w, int h, const u8 *image)
+{
+    int i, j, byte_width = (w + 7) / 8;
 
-typedef struct printer_t {
-    int (*print)(struct printer_t *printer, char *buf, int size);
-} printer_t;
+    for (i = 0; i < w; i++)
+    {
+        for (j = 0; j < h; j++)
+        {
+            u16 val;
+            u8 cell;
 
-int tsnprintf(char *buf, int n, char *fmt, ...);
-int vtsnprintf(char *buf, int n, char *fmt, va_list ap);
-
-void vtprintf(printer_t *printer, char *fmt, va_list ap);
-void tprintf(printer_t *printer, char *fmt, ...);
-
-int tsn_itoa(char *buf, int n, int val, int base);
-
-/* Allow adding custom tprintf handlers, e.g:
- * %o - print js object dump
- * %S - print tstr_t
- */
-typedef void (*tprintf_handler_t)(printer_t *printer, void *o);
-void tprintf_register_handler(char c, tprintf_handler_t h);
-
-#endif
+            cell = *(image + j * byte_width + (i / 8));
+            val = cell & (128 >> (i & 0x7)) ? (u16)-1 : 0;
+            canvas_pixel_set(c, i + x, j + y, val);
+        }
+    }
+}

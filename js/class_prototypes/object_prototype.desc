@@ -10,7 +10,9 @@ CONSTRUCTOR("Object", object_prototype, do_object_constructor, {
 })
 
 FUNCTION("toString", object_prototype, do_object_prototype_to_string, {
-    .params = { },
+    .params = {
+        { .name = "radix", .description = "(optional) radix to use in conversion" },
+    },
     .description = "The object is converted to a string",
     .return_value = "String value",
     .example = "var a = 1;\n"

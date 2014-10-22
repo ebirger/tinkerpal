@@ -264,3 +264,21 @@ void tprintf_register_handler(char c, tprintf_handler_t h)
     tprintf_handlers[num_tprintf_handlers].h = h;
     num_tprintf_handlers++;
 }
+
+int tsn_itoa(char *buf, int n, int val, int base)
+{
+    tsnprintf_ctx_t ctx;
+
+    ctx.printer.print = tsnprintf_print;
+    ctx.buf = buf;
+    ctx.count = 0;
+    ctx.max = n;
+
+    print_integer(&ctx.printer, val, base, 1, 0);
+
+    /* NULL terminate */
+    if (ctx.max)
+        ctx.buf[ctx.count] = '\0';
+
+    return ctx.count;
+}

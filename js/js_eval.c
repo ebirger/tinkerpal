@@ -676,21 +676,19 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
 static int eval_assert_is_function(obj_t **po, scan_t *scan)
 {
     obj_t *o_func = *po;
-    tstr_t *error = NULL;
+    int rc;
 
     if (o_func == UNDEF)
-        error = &S("Exception: Object is undefined, not a function");
+        rc = throw_exception(po, &S("Exception: Object is undefined"));
     else if (!is_function(o_func))
-        error = &S("Exception: Object is not a function");
+        rc = throw_exception(po, &S("Exception: Object is not a function"));
+    else
+        rc = 0;
 
-    if (error)
-    {
+    if (rc)
         js_scan_trace(scan);
-        /* Not a valid function. Throw exception */
-        return throw_exception(po, error);
-    }
 
-    return 0;
+    return rc;
 }
 
 static int eval_new(obj_t **po, scan_t *scan, reference_t *ref)
