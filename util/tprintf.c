@@ -274,7 +274,7 @@ int tsn_itoa(char *buf, int n, int val, int base)
     ctx.count = 0;
     ctx.max = n;
 
-    tprint_integer(&ctx.printer, val, base, 0);
+    print_integer(&ctx.printer, val, base, 1, 0);
 
     /* NULL terminate */
     if (ctx.max)
