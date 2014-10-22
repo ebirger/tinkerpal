@@ -177,7 +177,7 @@ tstr_t int_to_tstr(int i)
     static char buf[32];
     tstr_t ret;
 
-    tsnprintf(buf, sizeof(buf), "%d", i);
+    tsn_itoa(buf, sizeof(buf), i, 10);
     tstr_cpy_str(&ret, buf);
     return ret;
 }

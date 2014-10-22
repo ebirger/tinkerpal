@@ -37,6 +37,8 @@ int vtsnprintf(char *buf, int n, char *fmt, va_list ap);
 void vtprintf(printer_t *printer, char *fmt, va_list ap);
 void tprintf(printer_t *printer, char *fmt, ...);
 
+int tsn_itoa(char *buf, int n, int val, int base);
+
 /* Allow adding custom tprintf handlers, e.g:
  * %o - print js object dump
  * %S - print tstr_t
