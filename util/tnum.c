@@ -172,12 +172,12 @@ Exit:
     return 0;
 }
 
-tstr_t int_to_tstr(int i)
+tstr_t _int_to_tstr(int i, int base)
 {
     static char buf[32];
     tstr_t ret;
 
-    tsn_itoa(buf, sizeof(buf), i, 10);
+    tsn_itoa(buf, sizeof(buf), i, base);
     tstr_cpy_str(&ret, buf);
     return ret;
 }

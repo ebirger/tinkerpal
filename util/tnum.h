@@ -44,7 +44,11 @@ typedef struct {
 int exp_power(int exp);
 
 int tstr_to_tnum(tnum_t *ret, const tstr_t *s);
-tstr_t int_to_tstr(int i);
+tstr_t _int_to_tstr(int i, int base);
+static inline tstr_t int_to_tstr(int i)
+{
+    return _int_to_tstr(i, 10);
+}
 tstr_t double_to_tstr(double d);
 
 static inline tstr_t tnum_to_tstr(const tnum_t *n)
