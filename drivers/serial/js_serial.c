@@ -77,17 +77,26 @@ int do_serial_disable(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    event_t *e;
     int event_id;
 
-    if (argc != 2)
+    if (argc > 2)
         return js_invalid_args(ret);
 
-    e = js_event_new(argv[1], this, serial_on_data_cb);
+    if (argc == 1 || argv[1] == UNDEF)
+    {
+        event_watch_del_by_resource(serial_obj_get_id(this));
+        *ret = UNDEF;
+    }
+    else if (argc == 2)
+    {
+        event_t *e;
 
-    /* XXX: if event is already set, it should be cleared */
-    event_id = event_watch_set(serial_obj_get_id(this), e);
-    *ret = num_new_int(event_id);
+        e = js_event_new(argv[1], this, serial_on_data_cb);
+
+        /* XXX: if event is already set, it should be cleared */
+        event_id = event_watch_set(serial_obj_get_id(this), e);
+        *ret = num_new_int(event_id);
+    }
     return 0;
 }
 
