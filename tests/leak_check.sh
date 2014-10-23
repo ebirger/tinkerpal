@@ -8,7 +8,7 @@ fi
 
 function lc()
 {
-    valgrind -v --leak-check=full --num-callers=50 --show-reachable=yes $executable $1 &> $1.lc;
+    echo "dummy data" | valgrind -v --leak-check=full --num-callers=50 --show-reachable=yes --track-origins=yes $executable $1 &> $1.lc;
 }
 
 if [ $UNIT_TESTS ]; then

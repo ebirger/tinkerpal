@@ -20,7 +20,8 @@ list="closure_test.js while_test.js func_test.js exp_test.js object_test.js stri
 
 for l in $list; do 
 	echo "============================"
-	$executable $l;
+        # inject dummy data for input requiring tests (e.g. serial test)
+	echo "dummy data" | $executable $l;
 	if [[ $? != 0 ]]; then
 		echo "Test $l failed";
 		exit 1;
