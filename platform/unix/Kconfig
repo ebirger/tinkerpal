@@ -37,12 +37,12 @@ config PLATFORM_EMULATION_BLOCK_DISK_NUM_SECTORS
 
 config NETIF_INET
 	bool "Network Interface Using INET Sockets"
-	depends on PLATFORM_EMULATION
+	depends on PLATFORM_EMULATION && NET
 	default y
 
 config LINUX_ETH
 	bool "Linux User Mode Ethernet using Packet Socket"
-	depends on PLATFORM_EMULATION
+	depends on PLATFORM_EMULATION && NET
 	select ETHERIF
 	default n
 	help
