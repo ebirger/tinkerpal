@@ -142,7 +142,7 @@ void unix_get_time_from_boot(unsigned int *sec, unsigned int *usec)
 
 void unix_set_term_raw(int fd, int raw)
 {
-    struct termios term;
+    struct termios term = {};
 
     tcgetattr(fd, &term);
     if (raw)
