@@ -22,3 +22,6 @@ debug.assert(good, 1);
 
 console.set(s);
 s.onData(function(e) { s.onData(); console.log(e); });
+
+var s2 = new Serial(UART3);
+s2.print('kuku!');
