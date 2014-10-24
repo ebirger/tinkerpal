@@ -13,8 +13,7 @@ debug.assert(n.linkStatus(), true);
 debug.assert((n.MACAddrGet())[0], 0);
 debug.assert((n.MACAddrGet())[0], 0);
 
-n.IPConnect(function() {
-    console.log("IP Connected: " + n.IPAddrGet());
+function do_weather() {
     var full = "";
     n.onTCPDisconnect(function() {
         n.TCPDisconnect();
@@ -34,4 +33,9 @@ n.IPConnect(function() {
         n.TCPWrite('GET /data/2.5/weather?q=New%20York,US HTTP/1.0\r\n' +
             'Host: api.openweathermap.org\r\n\r\n');
     });
+}
+
+n.IPConnect(function() {
+    console.log("IP Connected: " + n.IPAddrGet());
+    do_weather();
 });
