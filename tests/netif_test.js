@@ -1,9 +1,26 @@
 var n = new NetifINET();
 
+/* Test method call on non netif object */
 good = 0;
 try {
-    /* Test method call on non netif object */
     n.linkStatus.call(1);
+} catch(e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
+/* Test invalid IP */
+good = 0;
+try {
+    n.TCPConnect('188.226.224148', 80, function() { });
+} catch(e) {
+    good = 1;
+}
+debug.assert(good, 1);
+/* Test invalid IP */
+good = 0;
+try {
+    n.TCPConnect('1a88.226.224.148', 80, function() { });
 } catch(e) {
     good = 1;
 }
