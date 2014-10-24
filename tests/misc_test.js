@@ -48,3 +48,5 @@ debug.dump_env();
 console.log('--------------');
 debug.assert_exception(function() { compile(function() { }); });
 console.log(-1.1);
+
+debug.assert_exception(function() { var x = 3 5; });
