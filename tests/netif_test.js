@@ -1,5 +1,14 @@
 var n = new NetifINET();
 
+good = 0;
+try {
+    /* Test method call on non netif object */
+    n.linkStatus.call(1);
+} catch(e) {
+    good = 1;
+}
+debug.assert(good, 1);
+
 debug.assert(n.linkStatus(), true);
 debug.assert((n.MACAddrGet())[0], 0);
 debug.assert((n.MACAddrGet())[0], 0);
