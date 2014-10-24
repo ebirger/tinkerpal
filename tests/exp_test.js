@@ -260,3 +260,5 @@ debug.assert(1|2, 3);
 debug.assert(1&3, 1);
 debug.assert(10000000|20000000, 28950400);
 debug.assert(1&3, 1);
+
+debug.assert_exception(function() { var x = 0x123g; });
