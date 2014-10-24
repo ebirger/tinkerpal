@@ -49,6 +49,15 @@ FUNCTION("assert_cond", debug, do_assert_cond, {
     .example = "debug.assert_cond(1 == 1);",
 })
 
+FUNCTION("assert_exception", debug, do_assert_exception, {
+    .params = { 
+       { .name = "cb", .description = "function to test" },
+     },
+    .description = "Panic if calling cb() does not raise an exception",
+    .return_value = "None",
+    .example = "debug.assert_exception(function() { throw 'error'; });",
+})
+
 FUNCTION("dump_env", debug, do_dump_env, {
     .params = { 
      },

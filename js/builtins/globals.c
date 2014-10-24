@@ -117,6 +117,24 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
+int do_assert_exception(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    obj_t *o = UNDEF;
+    int failed;
+
+    if (argc != 2 || !is_function(argv[1]))
+        return js_invalid_args(ret);
+
+    failed = function_call(&o, this, argc - 1, argv + 1) != COMPLETION_THROW;
+    tp_out(("output: %o\n", o));
+    obj_put(o);
+    if (failed)
+        tp_crit(("Calling function did not result in exception\n"));
+
+    *ret = UNDEF;
+    return 0;
+}
+
 int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     extern obj_t *global_env;
