@@ -18,3 +18,7 @@ p(2, 3, 4, 5);
 b = 3;
 function f(a, b, c) { debug.assert(b, undefined); }
 f(1);
+function k() { debug.assert(arguments[2], undefined); }
+k();
+function k() { debug.assert(arguments["kuku"], undefined); }
+k();
