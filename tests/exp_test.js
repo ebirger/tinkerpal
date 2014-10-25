@@ -270,6 +270,18 @@ debug.assert(undefined <= undefined, false);
 debug.assert(undefined >= undefined, false);
 debug.assert(undefined == undefined, true);
 debug.assert(undefined === undefined, true);
+debug.assert(undefined == null, true);
+debug.assert(undefined === null, false);
+debug.assert(undefined != null, false);
+debug.assert(undefined !== null, true);
+debug.assert(null == null, true);
+debug.assert(null === null, true);
+debug.assert(null != null, false);
+debug.assert(null !== null, false);
+debug.assert(null == undefined, true);
+debug.assert(null === undefined, false);
+debug.assert(null != undefined, false);
+debug.assert(null !== undefined, true);
 
 /* Binary operators */
 debug.assert(1|2, 3);
