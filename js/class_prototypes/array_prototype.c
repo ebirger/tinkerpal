@@ -71,11 +71,11 @@ int do_array_prototype_foreach(obj_t **ret, obj_t *this, int argc,
     obj_t *cb_this;
     array_iter_t iter;
 
-    if (argc != 2 && argc != 3)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     cb = to_function(argv[1]);
-    cb_this = argc == 3 ? argv[2] : UNDEF;
+    cb_this = argc > 2 ? argv[2] : UNDEF;
 
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))
@@ -98,11 +98,11 @@ int do_array_prototype_indexof(obj_t **ret, obj_t *this, int argc,
     int is_eq = 0;
     array_iter_t iter;
 
-    if (argc != 2 && argc != 3)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     item = argv[1];
-    start = argc == 3 ? NUM_INT(to_num(argv[2])) : 0;
+    start = argc > 2 ? NUM_INT(to_num(argv[2])) : 0;
 
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))

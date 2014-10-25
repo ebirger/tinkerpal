@@ -141,3 +141,7 @@ debug.assert(a.length, 2);
 a = [1,2,3];
 x = a.pop(1);
 debug.assert(x, 3);
+a = [1,2,3];
+debug.assert_exception(function() { a.forEach(); });
+debug.assert_exception(function() { a.indexOf(); });
+debug.assert(a.indexOf(2,1,2,3,4,5), 1);
