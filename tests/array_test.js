@@ -138,3 +138,6 @@ a.push();
 debug.assert(a.length, 1);
 a.push(undefined);
 debug.assert(a.length, 2);
+a = [1,2,3];
+x = a.pop(1);
+debug.assert(x, 3);

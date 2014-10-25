@@ -45,9 +45,6 @@ int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_array_prototype_pop(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    if (argc != 1)
-        return js_invalid_args(ret);
-
     *ret = array_pop(this);
     return 0;
 }
