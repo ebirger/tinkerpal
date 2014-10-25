@@ -31,8 +31,11 @@ int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int i;
     obj_t *obj = NULL;
 
-    if (argc <= 1)
-        return js_invalid_args(ret);
+    if (argc == 1)
+    {
+        *ret = num_new_int(array_length_get(this));
+        return 0;
+    }
 
     for (i = 1; i < argc; i++)
         obj = array_push(this, obj_get(argv[i]));

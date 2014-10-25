@@ -133,3 +133,8 @@ debug.assert(x, "1,3,10");
 x = [1, 2, 3];
 x.kuku = 3;
 debug.assert(x.kuku, 3);
+a = [1];
+a.push();
+debug.assert(a.length, 1);
+a.push(undefined);
+debug.assert(a.length, 2);
