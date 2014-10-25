@@ -308,7 +308,7 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_GE:
         if (oa == UNDEF)
         {
-            ret = TRUE;
+            ret = FALSE;
             break;
         }
         goto do_op;
@@ -316,7 +316,7 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_LE:
         if (ob == UNDEF)
         {
-            ret = TRUE;
+            ret = FALSE;
             break;
         }
         goto do_op;
@@ -1545,12 +1545,18 @@ static int array_buffer_view_set_own_property(obj_t *o, tstr_t str,
     tnum_t tidx;
     int val, idx;
 
-    if (tstr_to_tnum(&tidx, &str))
+    if (tstr_to_tnum(&tidx, &str) || NUMERIC_IS_FP(tidx))
+    {
+        /* Allow creating arbitrary properties on typed arrays */
         return -1;
+    }
 
     idx = NUMERIC_INT(tidx);
     if (v->length < idx)
-        return -1;
+    {
+        /* Out of range indices are ignored */
+        return 0;
+    }
 
     val = obj_get_int(value);
     /* value is no longer needed. We do not really store a reference to it */

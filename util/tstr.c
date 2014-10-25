@@ -204,6 +204,8 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
                 break;
             }
         default:
+            /* Unknown, copy as is */
+            *out++ = *in;
             break;
         }
     }

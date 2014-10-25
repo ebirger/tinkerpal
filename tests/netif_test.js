@@ -1,11 +1,19 @@
 var n = new NetifINET();
 
+/* Test method call on non netif object */
+debug.assert_exception(function() { n.linkStatus.call(1); });
+
+/* Test invalid IP */
+good = 0;
+debug.assert_exception(function() { n.TCPConnect('188.226.224148', 80, function() { }); });
+/* Test invalid IP */
+debug.assert_exception(function() { n.TCPConnect('1a88.226.224.148', 80, function() { }); });
+
 debug.assert(n.linkStatus(), true);
 debug.assert((n.MACAddrGet())[0], 0);
 debug.assert((n.MACAddrGet())[0], 0);
 
-n.IPConnect(function() {
-    console.log("IP Connected: " + n.IPAddrGet());
+function do_weather() {
     var full = "";
     n.onTCPDisconnect(function() {
         n.TCPDisconnect();
@@ -25,4 +33,9 @@ n.IPConnect(function() {
         n.TCPWrite('GET /data/2.5/weather?q=New%20York,US HTTP/1.0\r\n' +
             'Host: api.openweathermap.org\r\n\r\n');
     });
+}
+
+n.IPConnect(function() {
+    console.log("IP Connected: " + n.IPAddrGet());
+    do_weather();
 });

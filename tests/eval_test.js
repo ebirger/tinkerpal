@@ -13,3 +13,5 @@ debug.assert(l, 2);
 
 var m = eval(1);
 debug.assert(m, 1);
+
+debug.assert(eval(), undefined);

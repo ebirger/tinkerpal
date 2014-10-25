@@ -191,7 +191,12 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
                 goto Exit;
             }
 
-            function_args_add(&args, o);
+            if (function_args_add(&args, o))
+            {
+                obj_put(o);
+                rc = js_invalid_args(po);
+                goto Exit;
+            }
 
             while (CUR_TOK(scan) == TOK_COMMA)
             {
@@ -202,7 +207,12 @@ static int eval_function_call(obj_t **po, scan_t *scan, reference_t *ref,
                     goto Exit;
                 }
 
-                function_args_add(&args, o);
+                if (function_args_add(&args, o))
+                {
+                    obj_put(o);
+                    rc = js_invalid_args(po);
+                    goto Exit;
+                }
             }
         }
         if (_js_scan_match(scan, TOK_CLOSE_PAREN))

@@ -46,6 +46,7 @@ debug.assert(2>1,true);
 debug.assert(2>1>0,true);
 debug.assert(5>3>2,false);
 debug.assert(1>=1,true);
+debug.assert(1<=1,true);
 debug.assert(1>=2,false);
 debug.assert(2>=1,true);
 debug.assert(1+3<2+5,true);
@@ -57,6 +58,7 @@ debug.assert(!!!1,false);
 debug.assert(!(1==0),true);
 debug.assert(1&&1||2, true);
 debug.assert(1&&1||2*0, true);
+debug.assert(0||1, true);
 var x = 0, y, z, q;
 console.log(3);
 debug.assert(x++,0);
@@ -175,6 +177,7 @@ x >>>= 1;
 debug.assert(x, 2147483647);
 
 /* toInteger */
+debug.assert(toInteger(), 0);
 debug.assert(toInteger(1), 1);
 debug.assert(toInteger("1"), 1);
 debug.assert(toInteger(-1), -1);
@@ -211,6 +214,7 @@ debug.assert("73"%3, 1);
 debug.assert("73"-3, 70);
 
 /* isNaN */
+debug.assert(isNaN(), true);
 debug.assert(isNaN(1), false);
 debug.assert(isNaN("kuku"), true);
 debug.assert(isNaN(""), false); // converted to 0
@@ -254,9 +258,38 @@ debug.assert(3.2/4 < 1, true);
 debug.assert(3.2/3 >= 1, true);
 debug.assert(3.2/3 <= 1, false);
 debug.assert(3.2/3 != 1, true);
+debug.assert(undefined > 3, false);
+debug.assert(undefined < 3, false);
+debug.assert(undefined <= 3, false);
+debug.assert(undefined >= 3, false);
+debug.assert(3 > undefined, false);
+debug.assert(3 < undefined, false);
+debug.assert(3 >= undefined, false);
+debug.assert(3 <= undefined, false);
+debug.assert(undefined > undefined, false);
+debug.assert(undefined < undefined, false);
+debug.assert(undefined <= undefined, false);
+debug.assert(undefined >= undefined, false);
+debug.assert(undefined == undefined, true);
+debug.assert(undefined === undefined, true);
+debug.assert(undefined == null, true);
+debug.assert(undefined === null, false);
+debug.assert(undefined != null, false);
+debug.assert(undefined !== null, true);
+debug.assert(null == null, true);
+debug.assert(null === null, true);
+debug.assert(null != null, false);
+debug.assert(null !== null, false);
+debug.assert(null == undefined, true);
+debug.assert(null === undefined, false);
+debug.assert(null != undefined, false);
+debug.assert(null !== undefined, true);
 
 /* Binary operators */
 debug.assert(1|2, 3);
 debug.assert(1&3, 1);
 debug.assert(10000000|20000000, 28950400);
 debug.assert(1&3, 1);
+
+debug.assert_exception(function() { var x = 0x123g; });
+debug.assert_exception(function() { var x = 1.3.3; });

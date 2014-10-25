@@ -46,52 +46,7 @@ function susu()
 susu();
 debug.assert(x, 1);
 
-good = 0;
-try
-{
-    no_such_function();
-}
-catch(s)
-{
-    console.log(s);
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try
-{
-    var num = 1;
-    num();
-}
-catch(s)
-{
-    console.log(s);
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try
-{
-    1 +  2 * no_such_function();
-}
-catch(s)
-{
-    console.log(s);
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try
-{
-    /* Invalid args */
-    debug.assert(1, 2, 3);
-}
-catch(s)
-{
-    console.log(s);
-    good = 1;
-}
-debug.assert(good, 1);
+debug.assert_exception(function() { no_such_function(); });
+debug.assert_exception(function() { var num = 1; num(); });
+debug.assert_exception(function() { 1 + 2 * no_such_function(); });
+debug.assert_exception(function() { debug.assert(1, 2, 3); });

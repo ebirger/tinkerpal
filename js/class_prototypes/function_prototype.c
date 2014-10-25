@@ -71,12 +71,20 @@ int do_function_prototype_apply(obj_t **ret, obj_t *this, int argc,
 
         array_iter_init(&iter, argv[2], 0);
         while (array_iter_next(&iter))
-            function_args_add(&args, obj_get(iter.obj));
+        {
+            if (function_args_add(&args, obj_get(iter.obj)))
+            {
+                obj_put(iter.obj);
+                rc = js_invalid_args(ret);
+                goto Exit;
+            }
+        }
         array_iter_uninit(&iter);
     }
 
     rc = function_call(ret, argv[1], args.argc, args.argv);
 
+Exit:
     for (i = 1; i < args.argc; i++)
         obj_put(args.argv[i]);
     function_args_uninit(&args);

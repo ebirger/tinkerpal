@@ -31,8 +31,11 @@ int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     int i;
     obj_t *obj = NULL;
 
-    if (argc <= 1)
-        return js_invalid_args(ret);
+    if (argc == 1)
+    {
+        *ret = num_new_int(array_length_get(this));
+        return 0;
+    }
 
     for (i = 1; i < argc; i++)
         obj = array_push(this, obj_get(argv[i]));
@@ -42,9 +45,6 @@ int do_array_prototype_push(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_array_prototype_pop(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    if (argc != 1)
-        return js_invalid_args(ret);
-
     *ret = array_pop(this);
     return 0;
 }
@@ -71,11 +71,11 @@ int do_array_prototype_foreach(obj_t **ret, obj_t *this, int argc,
     obj_t *cb_this;
     array_iter_t iter;
 
-    if (argc != 2 && argc != 3)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     cb = to_function(argv[1]);
-    cb_this = argc == 3 ? argv[2] : UNDEF;
+    cb_this = argc > 2 ? argv[2] : UNDEF;
 
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))
@@ -98,11 +98,11 @@ int do_array_prototype_indexof(obj_t **ret, obj_t *this, int argc,
     int is_eq = 0;
     array_iter_t iter;
 
-    if (argc != 2 && argc != 3)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     item = argv[1];
-    start = argc == 3 ? NUM_INT(to_num(argv[2])) : 0;
+    start = argc > 2 ? NUM_INT(to_num(argv[2])) : 0;
 
     array_iter_init(&iter, this, 0);
     while (array_iter_next(&iter))
@@ -125,9 +125,6 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *o = NULL;
     array_iter_t iter;
 
-    if (argc != 2 && argc != 1)
-        return js_invalid_args(ret);
-
     array_iter_init(&iter, this, 0);
     if (iter.len == 0)
     {
@@ -136,7 +133,7 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         goto Exit;
     }
 
-    sep = argc == 2 ? obj_get(argv[1]) : string_new(comma);
+    sep = argc > 1 ? obj_get(argv[1]) : string_new(comma);
 
     while (array_iter_next(&iter))
     {
@@ -167,11 +164,11 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     array_iter_t iter;
     int rc = 0;
 
-    if (argc != 2 && argc != 3)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     cb = to_function(argv[1]);
-    cb_this = argc == 3 ? argv[2] : UNDEF;
+    cb_this = argc > 2 ? argv[2] : UNDEF;
 
     *ret = new_arr = array_new();
 
@@ -207,14 +204,11 @@ int do_array_prototype_slice(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     array_iter_t iter;
     int rc = 0, start = 0, end = 0;
 
-    if (argc > 3)
-        return js_invalid_args(ret);
-
     if (argc >= 2)
     {
         if (argv[1] != UNDEF)
             start = obj_get_int(argv[1]);
-        if (argc == 3 && argv[2] != UNDEF)
+        if (argc > 2 && argv[2] != UNDEF)
             end = obj_get_int(argv[2]);
     }
 

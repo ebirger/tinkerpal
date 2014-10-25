@@ -57,7 +57,8 @@ FUNCTION("onData", serial, do_serial_on_data, {
     .params = {
         { .name = "cb", .description = "callback function accepting a data object" },
     },
-    .description = "Calls 'cb' when data is available on serial port",
+    .description = "Calls 'cb' when data is available on serial port.\n"
+        "If cb is undefined, removes the previously set cb",
     .return_value = "Event ID",
     .example = "var s = new Serial(UART1);\n"
         "s.onData(function(e) { s.print(e.data); });",

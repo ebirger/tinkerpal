@@ -109,3 +109,12 @@ debug.assert(a[0], 255);
 var a = new Int8Array([255]);
 debug.assert(a.length, 1);
 debug.assert(a[0], -1);
+
+var a = new Int8Array([255]);
+a[5] = 3;
+debug.assert(a[5], undefined);
+a["ab"] = 3;
+debug.assert(a["ab"], 3);
+a[1.3] = "kuku";
+debug.assert(a[1.3], "kuku");
+debug.assert(a.length, 1);

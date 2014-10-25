@@ -19,83 +19,16 @@ debug.assert(dirs[0], 'FAT');
 var builtin_files = fs.readdirSync('Builtin');
 debug.assert(builtin_files[0], 'assert');
 
-good = 0;
-try {
-    console.log(fs.readdirSync('Builtin/kuku/ku'));
-} catch (e) {
-    /* Builtin fs doesn't allow subfolders */
-    good = 1;
-}
-debug.assert(good, 1);
+/* Builtin fs doesn't allow subfolders */
+debug.assert_exception(function() { console.log(fs.readdirSync('Builtin/kuku/ku')); });
 
 /* Test file handling exceptions */
-good = 0;
-try {
-    fs.readdirSync('.', "invalid arg");
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try {
-    fs.readFileSync('FAT/test.txt', "invalid arg");
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try {
-    fs.readFileSync('FAT/no_such_file');
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try {
-    fs.readdirSync('FAT/no_such_path/no_such_file');
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try {
-    fs.writeFileSync('Local/test.txt', s, 'invalid arg');
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try {
-    fs.readFileSync('no_such_fs/no_such_file');
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try {
-    fs.writeFileSync('no_such_fs/test.txt', s);
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-
-good = 0;
-try {
-    fs.readdirSync('no_such_fs/');
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
-good = 0;
-try {
-    fs.readdirSync('no_such_fs/');
-} catch (e) {
-    good = 1;
-}
-debug.assert(good, 1);
+debug.assert_exception(function() { fs.readdirSync('.', "invalid arg"); });
+debug.assert_exception(function() { fs.readFileSync('FAT/test.txt', "invalid arg"); });
+debug.assert_exception(function() { fs.readFileSync('FAT/no_such_file'); });
+debug.assert_exception(function() { fs.readdirSync('FAT/no_such_path/no_such_file'); });
+debug.assert_exception(function() { fs.writeFileSync('Local/test.txt', s, 'invalid arg'); });
+debug.assert_exception(function() { fs.readFileSync('no_such_fs/no_such_file'); });
+debug.assert_exception(function() { fs.writeFileSync('no_such_fs/test.txt', s); });
+debug.assert_exception(function() { fs.readdirSync('no_such_fs/'); });
+debug.assert_exception(function() { fs.readdirSync('no_such_fs/'); });

@@ -10,3 +10,7 @@ var tid2 = setInterval(function() { if (++count2 == 3) return -1; }, 300);
 setTimeout(function() { debug.assert(count2, 3); }, 1200);
 setTimeout(function() { }, 1600);
 setTimeout(function() {clearTimeout(); }, 1500);
+
+debug.assert_exception(function() { setTimeout(); });
+debug.assert_exception(function() { setInterval(function() {}, 5000, 1); });
+debug.assert_exception(function() { clearInterval(1, 2); });

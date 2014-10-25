@@ -68,12 +68,14 @@ Exit:
 
 int do_is_nan(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    obj_t *obj_num;
+    obj_t *obj_num, *o;
 
-    if (argc != 2)
-        return js_invalid_args(ret);
+    if (argc == 1)
+        o = UNDEF;
+    else
+        o = argv[1];
 
-    obj_num = obj_cast(argv[1], NUM_CLASS);
+    obj_num = obj_cast(o, NUM_CLASS);
     *ret = obj_num == NAN_OBJ ? TRUE : FALSE;
     obj_put(obj_num);
     return 0;
@@ -112,6 +114,24 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     failed = !obj_true(cond);
     if (failed)
         tp_crit(("assertion failed: cond: %o\n", cond));
+
+    *ret = UNDEF;
+    return 0;
+}
+
+int do_assert_exception(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    obj_t *o = UNDEF;
+    int failed;
+
+    if (argc != 2 || !is_function(argv[1]))
+        return js_invalid_args(ret);
+
+    failed = function_call(&o, this, argc - 1, argv + 1) != COMPLETION_THROW;
+    tp_out(("output: %o\n", o));
+    obj_put(o);
+    if (failed)
+        tp_crit(("Calling function did not result in exception\n"));
 
     *ret = UNDEF;
     return 0;
