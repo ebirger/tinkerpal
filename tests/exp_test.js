@@ -57,6 +57,7 @@ debug.assert(!!!1,false);
 debug.assert(!(1==0),true);
 debug.assert(1&&1||2, true);
 debug.assert(1&&1||2*0, true);
+debug.assert(0||1, true);
 var x = 0, y, z, q;
 console.log(3);
 debug.assert(x++,0);
