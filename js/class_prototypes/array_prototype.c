@@ -125,9 +125,6 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *o = NULL;
     array_iter_t iter;
 
-    if (argc != 2 && argc != 1)
-        return js_invalid_args(ret);
-
     array_iter_init(&iter, this, 0);
     if (iter.len == 0)
     {
@@ -136,7 +133,7 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         goto Exit;
     }
 
-    sep = argc == 2 ? obj_get(argv[1]) : string_new(comma);
+    sep = argc > 1 ? obj_get(argv[1]) : string_new(comma);
 
     while (array_iter_next(&iter))
     {
@@ -167,11 +164,11 @@ int do_array_prototype_map(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     array_iter_t iter;
     int rc = 0;
 
-    if (argc != 2 && argc != 3)
+    if (argc < 2)
         return js_invalid_args(ret);
 
     cb = to_function(argv[1]);
-    cb_this = argc == 3 ? argv[2] : UNDEF;
+    cb_this = argc > 2 ? argv[2] : UNDEF;
 
     *ret = new_arr = array_new();
 
@@ -207,14 +204,11 @@ int do_array_prototype_slice(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     array_iter_t iter;
     int rc = 0, start = 0, end = 0;
 
-    if (argc > 3)
-        return js_invalid_args(ret);
-
     if (argc >= 2)
     {
         if (argv[1] != UNDEF)
             start = obj_get_int(argv[1]);
-        if (argc == 3 && argv[2] != UNDEF)
+        if (argc > 2 && argv[2] != UNDEF)
             end = obj_get_int(argv[2]);
     }
 
