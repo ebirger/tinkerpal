@@ -70,3 +70,6 @@ debug.assert(int_prop[3], "a");
 var b = new Object();
 b.kuku = 3;
 debug.assert(b.kuku, 3);
+
+(3).kuku = 3;
+debug.assert((3).kuku, undefined);
