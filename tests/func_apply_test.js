@@ -13,3 +13,4 @@ debug.assert(o.sum, 8);
 /* Test non-array argsArray */
 console.log("==4==");
 debug.assert(sum.apply(undefined, "abc"), "ab");
+debug.assert_exception(function() { sum.apply(); });

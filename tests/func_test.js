@@ -68,3 +68,4 @@ debug.assert(kuku().lulu, 3);
 
 function pupu() { return arguments[0] + arguments[1]; }
 debug.assert(pupu.call(undefined, 1, 2), 3);
+debug.assert_exception(function() { pupu.call(); });
