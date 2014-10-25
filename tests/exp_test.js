@@ -177,6 +177,7 @@ x >>>= 1;
 debug.assert(x, 2147483647);
 
 /* toInteger */
+debug.assert(toInteger(), 0);
 debug.assert(toInteger(1), 1);
 debug.assert(toInteger("1"), 1);
 debug.assert(toInteger(-1), -1);
@@ -213,6 +214,7 @@ debug.assert("73"%3, 1);
 debug.assert("73"-3, 70);
 
 /* isNaN */
+debug.assert(isNaN(), true);
 debug.assert(isNaN(1), false);
 debug.assert(isNaN("kuku"), true);
 debug.assert(isNaN(""), false); // converted to 0

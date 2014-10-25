@@ -51,3 +51,8 @@ debug.assert_exception(function() { compile(function() { }); });
 console.log(-1.1);
 
 debug.assert_exception(function() { var x = 3 5; });
+debug.assert_exception(function() { debug.assert_cond(true, 1); });
+debug.assert_exception(function() { debug.assert_exception(true); });
+debug.assert_exception(function() { debug.dump_env(3); });
+debug.assert_exception(function() { describe(1, 3) });
+debug.assert_exception(function() { compile(1, 3) });
