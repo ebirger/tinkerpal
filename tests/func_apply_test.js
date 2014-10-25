@@ -14,3 +14,7 @@ debug.assert(o.sum, 8);
 console.log("==4==");
 debug.assert(sum.apply(undefined, "abc"), "ab");
 debug.assert_exception(function() { sum.apply(); });
+debug.assert_exception(function() {
+    /* Test too many args */
+    sum.apply(undefined,[1,2,3,4,5,6,7,8,9,10,11,12,13,14]); 
+});

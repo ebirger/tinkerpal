@@ -253,15 +253,17 @@ static inline void function_args_init(function_args_t *args, obj_t *func)
     args->argv[args->argc++] = func; /* argv[0] is our very own function */
 }
 
-static inline void function_args_add(function_args_t *args, obj_t *obj)
+static inline int function_args_add(function_args_t *args, obj_t *obj)
 {
-    args->argv[args->argc++] = obj;
-    if (args->argc == CONFIG_MAX_FUNCTION_CALL_ARGS)
+    if (args->argc == CONFIG_MAX_FUNCTION_CALL_ARGS - 1)
     {
-        tp_crit(("Exceeded maximal function call arguments.\n"
+        tp_err(("Exceeded maximal function call arguments.\n"
             "You can refine this behavior by increasing "
             "CONFIG_MAX_FUNCTION_CALL_ARGS\n"));
+        return -1;
     }
+    args->argv[args->argc++] = obj;
+    return 0;
 }
 
 static inline void function_args_uninit(function_args_t *args)
