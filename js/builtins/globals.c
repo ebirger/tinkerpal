@@ -68,12 +68,14 @@ Exit:
 
 int do_is_nan(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    obj_t *obj_num;
+    obj_t *obj_num, *o;
 
-    if (argc != 2)
-        return js_invalid_args(ret);
+    if (argc == 1)
+        o = UNDEF;
+    else
+        o = argv[1];
 
-    obj_num = obj_cast(argv[1], NUM_CLASS);
+    obj_num = obj_cast(o, NUM_CLASS);
     *ret = obj_num == NAN_OBJ ? TRUE : FALSE;
     obj_put(obj_num);
     return 0;
