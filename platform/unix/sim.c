@@ -270,7 +270,7 @@ static void sim_unix_uninit(void)
     printf("Unix Platform Simulator Uninit\n");
     if (pty_fd != -1)
     {
-        unix_set_term_raw(ext_tty_fd, 0);
+        unix_set_term_raw(pty_fd, 0);
         close(pty_fd);
     }
     if (ext_tty_fd != -1)
