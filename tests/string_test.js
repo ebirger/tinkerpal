@@ -31,6 +31,7 @@ debug.assert("kuku".split()[0], "kuku");
 console.log("".split());
 debug.assert("kukuya".length, 6);
 debug.assert("kaku".indexOf("ku"), 2);
+debug.assert("kaku".indexOf(), -1);
 debug.assert("012345678".substring(2, 7), "23456");
 debug.assert("012345678".substring(2), "2345678");
 console.log("012345678".substring(2,5));

@@ -67,8 +67,12 @@ int do_string_prototype_indexof(obj_t **ret, obj_t *this, int argc,
     tstr_t needle, haystack;
     int idx;
 
-    if (argc != 2)
-        return js_invalid_args(ret); /* XXX: support position */
+    /* XXX: support position */
+    if (argc == 1)
+    {
+        *ret = num_new_int(-1);
+        return 0;
+    }
 
     haystack = obj_get_str(this);
     needle = obj_get_str(argv[1]);
