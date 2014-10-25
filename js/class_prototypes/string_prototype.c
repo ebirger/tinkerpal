@@ -32,13 +32,14 @@ int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     tstr_t orig, cur, sep;
     int idx = 0;
 
-    if (argc != 2)
-        return js_invalid_args(ret); /* XXX: support limit */
-
+    /* XXX: support limit */
     *ret = array_new();
+    orig = cur = obj_get_str(this);
+
+    if (argc == 1 || argv[1] == UNDEF)
+        goto Exit;
 
     sep = obj_get_str(argv[1]);
-    orig = cur = obj_get_str(this);
     while (1)
     {
         tstr_t n = cur;
@@ -52,9 +53,10 @@ int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         idx += sep.len;
         tstr_advance(&cur, idx);
     }
-    if (cur.len)
-        array_push(*ret, string_new(tstr_dup(cur)));
     tstr_free(&sep);
+
+Exit:
+    array_push(*ret, string_new(tstr_dup(cur)));
     tstr_free(&orig);
     return 0;
 }
