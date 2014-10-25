@@ -43,6 +43,7 @@ console.log('--------------');
 meminfo();
 console.log('--------------');
 describe(describe);
+describe(3);
 console.log('--------------');
 debug.dump_env();
 console.log('--------------');
