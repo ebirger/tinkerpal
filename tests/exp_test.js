@@ -46,6 +46,7 @@ debug.assert(2>1,true);
 debug.assert(2>1>0,true);
 debug.assert(5>3>2,false);
 debug.assert(1>=1,true);
+debug.assert(1<=1,true);
 debug.assert(1>=2,false);
 debug.assert(2>=1,true);
 debug.assert(1+3<2+5,true);
