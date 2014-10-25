@@ -308,7 +308,7 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_GE:
         if (oa == UNDEF)
         {
-            ret = TRUE;
+            ret = FALSE;
             break;
         }
         goto do_op;
@@ -316,7 +316,7 @@ obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_LE:
         if (ob == UNDEF)
         {
-            ret = TRUE;
+            ret = FALSE;
             break;
         }
         goto do_op;
