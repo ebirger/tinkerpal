@@ -255,6 +255,20 @@ debug.assert(3.2/4 < 1, true);
 debug.assert(3.2/3 >= 1, true);
 debug.assert(3.2/3 <= 1, false);
 debug.assert(3.2/3 != 1, true);
+debug.assert(undefined > 3, false);
+debug.assert(undefined < 3, false);
+debug.assert(undefined <= 3, false);
+debug.assert(undefined >= 3, false);
+debug.assert(3 > undefined, false);
+debug.assert(3 < undefined, false);
+debug.assert(3 >= undefined, false);
+debug.assert(3 <= undefined, false);
+debug.assert(undefined > undefined, false);
+debug.assert(undefined < undefined, false);
+debug.assert(undefined <= undefined, false);
+debug.assert(undefined >= undefined, false);
+debug.assert(undefined == undefined, true);
+debug.assert(undefined === undefined, true);
 
 /* Binary operators */
 debug.assert(1|2, 3);
