@@ -39,6 +39,7 @@ debug.assert("012345678".charAt(4), "4");
 debug.assert("123\n".length, 4);
 console.log("123\n123");
 debug.assert("\n", "\u000a");
+debug.assert("u0", "\u0");
 var lui = new String("lui");
 debug.assert(lui, "lui");
 var fui = String("fui");
