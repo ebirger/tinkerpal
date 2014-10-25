@@ -156,9 +156,6 @@ static int string_to_upper_lower_case(obj_t **ret, obj_t *this, int argc,
 {
     tstr_t s;
 
-    if (argc != 1)
-        return js_invalid_args(ret);
-
     s = obj_get_str(this);
 
     *ret = string_new(tstr_to_upper_lower(s, is_lower));
