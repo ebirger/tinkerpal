@@ -44,6 +44,7 @@ debug.assert(lui, "lui");
 var fui = String("fui");
 debug.assert(fui, "fui");
 debug.assert("abc"[1], "b");
+debug.assert("abc"[4], undefined);
 debug.assert([].map.call("abc", function(x) { return x + 1; })[1], "b1");
 
 /* Upper | Lower case */
