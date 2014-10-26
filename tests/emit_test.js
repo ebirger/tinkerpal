@@ -21,6 +21,7 @@ a.removeAllListeners('test2');
 a.emit('test2');
 debug.assert(good, 1);
 debug.assert(good2, 10);
+a.on('test2', function() { good2+=10; }, 3);
 
 /* Object.listeners */
 function f() { }
@@ -44,3 +45,6 @@ debug.assert(good, 1000);
 
 /* Remove non-existent listener */
 a.removeAllListeners('kuku');
+debug.assert_exception(function() { a.on('add', "should_be_function"); });
+debug.assert_exception(function() { a.emit(); });
+debug.assert_exception(function() { a.listeners(); });
