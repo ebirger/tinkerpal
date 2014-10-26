@@ -29,14 +29,14 @@
 int do_array_buffer_constructor(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[])
 {
-    int len;
+    int len = 0;
 
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    len = obj_get_int(argv[1]);
-    if (len < 0)
-        return throw_exception(ret, &S("Exception: Invalid range"));
+    if (argc > 1)
+    {
+        len = obj_get_int(argv[1]);
+        if (len < 0)
+            return throw_exception(ret, &S("Exception: Invalid range"));
+    }
 
     *ret = array_buffer_new(len);
     return 0;
@@ -48,14 +48,14 @@ int do_array_buffer_view_subarray(obj_t **ret, obj_t *this, int argc,
     array_buffer_view_t *v = to_array_buffer_view(this);
     int begin, end;
 
-    if (argc != 2 && argc != 3)
-        return throw_exception(ret, &S("Wrong number of arguments"));
-
-    if ((begin = obj_get_int(argv[1])) < 0)
+    if (argc == 1)
+        begin = 0;
+    else if ((begin = obj_get_int(argv[1])) < 0)
         begin += v->length;
+
     begin += v->offset;
 
-    if (argc == 3)
+    if (argc > 2)
     {
         if ((end = obj_get_int(argv[2])) < 0)
             end += v->length;
@@ -100,10 +100,12 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
     int length, offset = 0;
     array_buffer_view_t *orig_abv = NULL;
 
-    if (argc < 2)
-        return throw_exception(ret, &S("Wrong number of arguments"));
-
-    if (is_array_buffer(argv[1]))
+    if (argc == 1)
+    {
+        length = 0;
+        array_buffer = array_buffer_new(0);
+    }
+    else if (is_array_buffer(argv[1]))
     {
         array_buffer = obj_get(argv[1]);
         length = to_array_buffer(array_buffer)->value.len >> 
@@ -133,7 +135,10 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
         array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
     }
     else
-        return throw_exception(ret, &S("Invalid arguments"));
+    {
+        length = 0;
+        array_buffer = array_buffer_new(0);
+    }
 
     *ret = array_buffer_view_new(array_buffer, flags, offset, length);
 

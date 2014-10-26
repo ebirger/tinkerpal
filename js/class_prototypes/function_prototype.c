@@ -100,21 +100,14 @@ static int function_bind_call(obj_t **ret, obj_t *this, int argc,
     wrapper_env = to_function(argv[0])->scope;
 
     bound_func = obj_get_own_property(NULL, wrapper_env, &Sbound_func);
-    bound_this = obj_get_own_property(NULL, wrapper_env, &Sbound_this);
-    if (!bound_func || bound_func == UNDEF || !bound_this || 
-        bound_this == UNDEF)
-    {
-        rc = throw_exception(ret, &S("Exception: invalid bound fountion"));
-        goto Exit;
-
-    }
+    if (!(bound_this = obj_get_own_property(NULL, wrapper_env, &Sbound_this)))
+        bound_this = obj_get(this);
 
     saved_func = argv[0];
     argv[0] = bound_func;
     rc = function_call(ret, bound_this, argc, argv);
     argv[0] = saved_func; /* restore it so it could be freed */
 
-Exit:
     obj_put(bound_func);
     obj_put(bound_this);
     return rc;
@@ -125,12 +118,10 @@ int do_function_prototype_bind(obj_t **ret, obj_t *this, int argc,
 {
     obj_t *wrapper_env;
 
-    if (argc <= 1)
-        return js_invalid_args(ret);
-
     wrapper_env = env_new(NULL);
     obj_set_property(wrapper_env, Sbound_func, this);
-    obj_set_property(wrapper_env, Sbound_this, argv[1]);
+    if (argc > 1)
+        obj_set_property(wrapper_env, Sbound_this, argv[1]);
 
     *ret = function_new(NULL, NULL, NULL, wrapper_env, function_bind_call);
     obj_put(wrapper_env);
@@ -184,6 +175,8 @@ int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         tstr_list_add(&params, &INTERNAL_S("__constructed_func__"));
         if (parse_function_param_list(&params, scanned_params))
         {
+            tstr_list_free(&params);
+            tstr_free(&params_raw);
             js_scan_uninit(scanned_params);
             return throw_exception(ret, &S("Exception: Parse error"));
         }

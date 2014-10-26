@@ -313,6 +313,9 @@ int parse_function_param_list(tstr_list_t **params, scan_t *scan)
     while (CUR_TOK(scan) == TOK_COMMA)
     {
         js_scan_next_token(scan);
+        if (CUR_TOK(scan) == TOK_EOF)
+            return -1;
+
         if (js_scan_get_identifier(scan, &param))
         {
             tstr_list_free(params);
@@ -943,7 +946,10 @@ static int eval_assignment(obj_t **po, scan_t *scan, reference_t *ref)
 
     /* Get new value */
     if ((rc = eval_expression(po, scan)))
+    {
+        obj_put(old_object);
         return rc;
+    }
     
     if (valid_lval(ref))
     {

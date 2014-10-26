@@ -63,6 +63,8 @@ debug.assert(k32.length, 64);
 for (var i = 0; i < k32.length; i++) k32[i] = (i+1)*2;
 
 var s32 = k32.subarray(1);
+var s32_2 = k32.subarray();
+for (var i = 0; i < k32.length; i++) debug.assert(s32_2[i], k32[i]);
 debug.assert(s32[0], k32[1]);
 debug.assert(s32.length, k32.length - 1);
 s32 = k32.subarray(1, -1);
@@ -118,3 +120,11 @@ debug.assert(a["ab"], 3);
 a[1.3] = "kuku";
 debug.assert(a[1.3], "kuku");
 debug.assert(a.length, 1);
+
+a = new ArrayBuffer();
+debug.assert(a.byteLength, 0);
+debug.assert_exception(function() { a = new ArrayBuffer(-1); });
+var a = new Int8Array(0);
+debug.assert(a.length, 0);
+var a = new Int8Array("ab");
+debug.assert(a.length, 0);
