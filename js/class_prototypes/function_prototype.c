@@ -175,6 +175,8 @@ int do_function_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         tstr_list_add(&params, &INTERNAL_S("__constructed_func__"));
         if (parse_function_param_list(&params, scanned_params))
         {
+            tstr_list_free(&params);
+            tstr_free(&params_raw);
             js_scan_uninit(scanned_params);
             return throw_exception(ret, &S("Exception: Parse error"));
         }
