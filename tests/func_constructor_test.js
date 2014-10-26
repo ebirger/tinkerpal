@@ -14,3 +14,4 @@ var sum = new Function("a, b", "return a+b");
 debug.assert(sum(1, 2), 3);
 var sum = new Function("a, b", "c",  "return a+b+c");
 debug.assert(sum(1, 2, 3), 6);
+debug.assert_exception(function() { var f = new Function("a, b", "c",); });
