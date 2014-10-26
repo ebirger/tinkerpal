@@ -118,3 +118,7 @@ debug.assert(a["ab"], 3);
 a[1.3] = "kuku";
 debug.assert(a[1.3], "kuku");
 debug.assert(a.length, 1);
+
+a = new ArrayBuffer();
+debug.assert(a.byteLength, 0);
+debug.assert_exception(function() { a = new ArrayBuffer(-1); });

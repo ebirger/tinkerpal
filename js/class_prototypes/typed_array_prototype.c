@@ -29,14 +29,14 @@
 int do_array_buffer_constructor(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[])
 {
-    int len;
+    int len = 0;
 
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    len = obj_get_int(argv[1]);
-    if (len < 0)
-        return throw_exception(ret, &S("Exception: Invalid range"));
+    if (argc > 1)
+    {
+        len = obj_get_int(argv[1]);
+        if (len < 0)
+            return throw_exception(ret, &S("Exception: Invalid range"));
+    }
 
     *ret = array_buffer_new(len);
     return 0;
