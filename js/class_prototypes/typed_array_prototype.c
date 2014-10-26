@@ -100,10 +100,12 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
     int length, offset = 0;
     array_buffer_view_t *orig_abv = NULL;
 
-    if (argc < 2)
-        return throw_exception(ret, &S("Wrong number of arguments"));
-
-    if (is_array_buffer(argv[1]))
+    if (argc == 1)
+    {
+        length = 0;
+        array_buffer = array_buffer_new(0);
+    }
+    else if (is_array_buffer(argv[1]))
     {
         array_buffer = obj_get(argv[1]);
         length = to_array_buffer(array_buffer)->value.len >> 
@@ -133,7 +135,10 @@ static int array_buffer_view_constructor(obj_t **ret, obj_t *this, int argc,
         array_buffer = array_buffer_new(length << (flags & ABV_SHIFT_MASK));
     }
     else
-        return throw_exception(ret, &S("Invalid arguments"));
+    {
+        length = 0;
+        array_buffer = array_buffer_new(0);
+    }
 
     *ret = array_buffer_view_new(array_buffer, flags, offset, length);
 

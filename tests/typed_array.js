@@ -124,3 +124,7 @@ debug.assert(a.length, 1);
 a = new ArrayBuffer();
 debug.assert(a.byteLength, 0);
 debug.assert_exception(function() { a = new ArrayBuffer(-1); });
+var a = new Int8Array(0);
+debug.assert(a.length, 0);
+var a = new Int8Array("ab");
+debug.assert(a.length, 0);
