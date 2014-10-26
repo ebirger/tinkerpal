@@ -48,14 +48,14 @@ int do_array_buffer_view_subarray(obj_t **ret, obj_t *this, int argc,
     array_buffer_view_t *v = to_array_buffer_view(this);
     int begin, end;
 
-    if (argc != 2 && argc != 3)
-        return throw_exception(ret, &S("Wrong number of arguments"));
-
-    if ((begin = obj_get_int(argv[1])) < 0)
+    if (argc == 1)
+        begin = 0;
+    else if ((begin = obj_get_int(argv[1])) < 0)
         begin += v->length;
+
     begin += v->offset;
 
-    if (argc == 3)
+    if (argc > 2)
     {
         if ((end = obj_get_int(argv[2])) < 0)
             end += v->length;

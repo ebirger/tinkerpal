@@ -63,6 +63,8 @@ debug.assert(k32.length, 64);
 for (var i = 0; i < k32.length; i++) k32[i] = (i+1)*2;
 
 var s32 = k32.subarray(1);
+var s32_2 = k32.subarray();
+for (var i = 0; i < k32.length; i++) debug.assert(s32_2[i], k32[i]);
 debug.assert(s32[0], k32[1]);
 debug.assert(s32.length, k32.length - 1);
 s32 = k32.subarray(1, -1);
