@@ -946,7 +946,10 @@ static int eval_assignment(obj_t **po, scan_t *scan, reference_t *ref)
 
     /* Get new value */
     if ((rc = eval_expression(po, scan)))
+    {
+        obj_put(old_object);
         return rc;
+    }
     
     if (valid_lval(ref))
     {
