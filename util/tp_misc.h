@@ -39,9 +39,9 @@
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 /* Returns 10^exp */
-static inline u64 exp_power(int exp)
+static inline s64 exp_power(int exp)
 {
-    u64 pow;
+    s64 pow;
 
     switch (exp)
     {
