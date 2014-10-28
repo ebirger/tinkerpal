@@ -38,6 +38,28 @@
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 
+/* Returns 10^exp */
+static inline u64 exp_power(int exp)
+{
+    u64 pow;
+
+    switch (exp)
+    {
+    case 0: pow = 1; break;
+    case 1: pow = 10; break;
+    case 2: pow = 100; break;
+    case 3: pow = 1000; break;
+    case 4: pow = 10000; break;
+    case 5: pow = 100000; break;
+    case 6: pow = 1000000; break;
+    default:
+        pow = 1;
+        while (exp--)
+            pow *= 10;
+    }
+    return pow;
+}
+
 /* The PP_NARG macro returns the number of arguments that have been
   * passed to it.
   * found at: https://groups.google.com/forum/#!topic/comp.std.c/d-6Mj5Lko_s

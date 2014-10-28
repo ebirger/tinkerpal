@@ -38,18 +38,6 @@ static inline int is_bin_digit(char c)
     return c >= '0' && c <= '1';
 }
 
-int exp_power(int exp)
-{
-    int pow = 1;
-
-    if (!exp)
-        return 1;
-
-    while (exp--)
-        pow *= 10;
-    return pow;
-}
-
 static int is_fp(const tstr_t *s)
 {
     int i;
