@@ -74,4 +74,8 @@ config X86_PLATFORM_EMULATION
 	help
 		Bare metal x86
 
+config TRINKET_PRO
+	bool "Trinket Pro ATMEGA328"
+	select ATMEGA328
+
 endchoice

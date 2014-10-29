@@ -14,6 +14,7 @@ MK_OBJS+=$(if $(CONFIG_MSP430F5529_EXP),board_msp430f5529.o)
 MK_OBJS+=$(if $(CONFIG_MSP430F5529_LAUNCHPAD),board_msp430f5529.o)
 MK_OBJS+=$(if $(CONFIG_PLATFORM_EMULATION),board_unix_sim.o)
 MK_OBJS+=$(if $(CONFIG_X86_PLATFORM_EMULATION),board_x86_sim.o)
+MK_OBJS+=$(if $(CONFIG_TRINKET_PRO),board_trinket_pro.o)
 
 include boards/burners.mk
 
@@ -41,6 +42,10 @@ endif
 
 ifneq ($(CONFIG_X86_PLATFORM_EMULATION),)
   BURN_CMD=$(X86_BURNER)
+endif
+
+ifneq ($(CONFIG_TRINKET_PRO),)
+  BURN_CMD=$(ATMEGA328_BURNER)
 endif
 
 # Simulation
