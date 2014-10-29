@@ -49,8 +49,8 @@ typedef struct event_internal_t {
 } event_internal_t;
 
 #define EVENT_FLAGS_U8_SET(e, x, shift) do { \
-    (e)->flags &= ~(0xff << (shift)); \
-    (e)->flags |= (x) << (shift); \
+    (e)->flags &= ~((u32)0xff << (shift)); \
+    (e)->flags |= (u32)(x) << (shift); \
 } while(0)
 #define EVENT_FLAGS_U8_GET(e, shift) (((e)->flags >> (shift)) & 0xff)
 
