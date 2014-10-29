@@ -180,7 +180,7 @@ else
 	$(error burn command not available)
 endif
 
-simulate :
+simulate : $(SIMULATOR)
 ifneq ($(SIMULATE_CMD),)
 	$(if $(SIMULATE_NOTE),$(call note,$(SIMULATE_NOTE)))
 	@$(SIMULATE_CMD)
