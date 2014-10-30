@@ -31,6 +31,9 @@
 
 #define DEFAULT_BAUD 19200
 
+static volatile unsigned int ticks;
+static unsigned int last_ticks, cm_time_sec, cm_time_msec;
+
 static void avr8_msleep(double ms)
 {
     int i = (int)ms;
@@ -39,19 +42,50 @@ static void avr8_msleep(double ms)
         _delay_ms(1);
 }
 
+static void clock_init(void)
+{
+    /* Set the Timer Mode to CTC */
+    TCCR0A |= (1 << WGM01);
+    /* Count value */
+    OCR0A = 0xF9;
+    /* ISR COMPA vector */
+    TIMSK0 |= (1 << OCIE0A);
+    sei();
+    /* Set prescaler to 64 and start the timer */
+    TCCR0B |= (1 << CS01) | (1 << CS00);
+}
+
+ISR (TIMER0_COMPA_vect)
+{
+    ticks++;
+}
+
 static void avr8_init(void)
 {
+    clock_init();
 }
 
 void avr8_time_from_boot(unsigned int *sec, unsigned int *usec)
 {
+    unsigned int cur_ticks = ticks;
+
+    cm_time_msec += cur_ticks - last_ticks;
+    last_ticks = cur_ticks;
+
+    while (cm_time_msec >= 1000)
+    {
+	cm_time_msec -= 1000;
+	cm_time_sec++;
+    }
+    *sec = cm_time_sec;
+    *usec = cm_time_msec * 1000;
 }
 
 static int avr8_select(int ms)
 {
-    int event = 0;
+    int expire = platform_get_ticks_from_boot() + ms, event = 0;
 
-    while (!event)
+    while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {
         cli();
         event |= buffered_serial_events_process();
