@@ -28,6 +28,7 @@
 #include <avr/sleep.h>
 #include <util/delay.h>
 #include "platform/platform.h"
+#include "util/tp_misc.h"
 
 #define DEFAULT_BAUD 19200
 
@@ -144,6 +145,41 @@ static void avr8_serial_irq_enable(int u, int enable)
         cli();
 }
 
+#define GPIO_SET(reg, pin, val) do { \
+    switch (GPIO_PORT(pin)) \
+    { \
+    case GPIO_PORT_B: bit_set(reg##B, GPIO_BIT(pin), val); break; \
+    case GPIO_PORT_C: bit_set(reg##C, GPIO_BIT(pin), val); break; \
+    case GPIO_PORT_D: bit_set(reg##D, GPIO_BIT(pin), val); break; \
+    } \
+} while (0)
+
+static void avr8_gpio_digital_write(int pin, int value)
+{
+    GPIO_SET(PORT, pin, value);
+}
+
+static int avr8_set_pin_mode(int pin, gpio_pin_mode_t mode)
+{
+    int ddr;
+
+    switch (mode)
+    {
+    case GPIO_PM_OUTPUT:
+        ddr = 1;
+        break;
+    case GPIO_PM_INPUT:
+        ddr = 0;
+        break;
+    default:
+        return -1;
+    }
+
+    GPIO_SET(DDR, pin, ddr);
+    return 0;
+}
+
+
 const platform_t platform = {
     .serial = {
         .enable = avr8_uart_enable,
@@ -151,6 +187,12 @@ const platform_t platform = {
         .read = buffered_serial_read,
         .irq_enable = avr8_serial_irq_enable,
     },
+#ifdef CONFIG_GPIO
+    .gpio = {
+        .digital_write = avr8_gpio_digital_write,
+        .set_pin_mode = avr8_set_pin_mode,
+    },
+#endif
     .init = avr8_init,
     .select = avr8_select,
     .msleep = avr8_msleep,

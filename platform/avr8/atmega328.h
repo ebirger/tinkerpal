@@ -35,6 +35,44 @@ typedef char gpio_port_t;
 #define NUM_UARTS 1
 #define USART0 0
 
-#define NUM_GPIO_PORTS 0
+#define NUM_GPIO_PORTS 4
+
+#define GPIO_PORT_A 0
+#define GPIO_PORT_B 1
+#define GPIO_PORT_C 2
+#define GPIO_PORT_D 3
+
+#define _PA0 0x00
+#define _PA1 0x01
+#define _PA2 0x02
+#define _PA3 0x03
+#define _PA4 0x04
+#define _PA5 0x05
+#define _PA6 0x06
+#define _PA7 0x07
+#define _PB0 0x08
+#define _PB1 0x09
+#define _PB2 0x0a
+#define _PB3 0x0b
+#define _PB4 0x0c
+#define _PB5 0x0d
+#define _PB6 0x0e
+#define _PB7 0x0f
+#define _PC0 0x10
+#define _PC1 0x11
+#define _PC2 0x12
+#define _PC3 0x13
+#define _PC4 0x14
+#define _PC5 0x15
+#define _PC6 0x16
+#define _PC7 0x17
+#define _PD0 0x18
+#define _PD1 0x19
+#define _PD2 0x1a
+#define _PD3 0x1b
+#define _PD4 0x1c
+#define _PD5 0x1d
+#define _PD6 0x1e
+#define _PD7 0x1f
 
 #endif
