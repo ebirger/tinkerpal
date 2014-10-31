@@ -386,7 +386,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
 {
     tstr_t property;
     token_type_t tok = CUR_TOK(scan);
-    int rc;
+    int rc = 0;
     
     switch (tok)
     {
@@ -413,14 +413,19 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     }
 
     if (_js_scan_match(scan, TOK_COLON))
-        return parse_error(po);
+    {
+        rc = parse_error(po);
+        goto Exit;
+    }
 
     if ((rc = eval_expression(po, scan)))
-        return rc;
+        goto Exit;
 
     _obj_set_property(o, property, *po);
+
+Exit:
     tstr_free(&property);
-    return 0;
+    return rc;
 }
 
 static int eval_object(obj_t **po, scan_t *scan)
