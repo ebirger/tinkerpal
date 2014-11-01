@@ -2,6 +2,16 @@ var n = new NetifINET();
 
 /* Test method call on non netif object */
 debug.assert_exception(function() { n.linkStatus.call(1); });
+debug.assert_exception(function() { n.MACAddrGet.call(1); });
+debug.assert_exception(function() { n.IPAddrGet.call(1); });
+debug.assert_exception(function() { n.IPConnect.call(1); });
+debug.assert_exception(function() { n.IPDisconnect.call(1); });
+debug.assert_exception(function() { n.TCPDisconnect.call(1); });
+debug.assert_exception(function() { n.onTCPData.call(1); });
+debug.assert_exception(function() { n.onTCPDisconnect.call(1); });
+debug.assert_exception(function() { n.TCPWrite.call(1, "kku"); });
+debug.assert_exception(function() { n.TCPRead.call(1, "kku"); });
+debug.assert_exception(function() { n.TCPRead.call(1); });
 
 /* Test invalid IP */
 good = 0;
