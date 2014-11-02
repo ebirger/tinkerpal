@@ -50,3 +50,5 @@ debug.assert_exception(function() { no_such_function(); });
 debug.assert_exception(function() { var num = 1; num(); });
 debug.assert_exception(function() { 1 + 2 * no_such_function(); });
 debug.assert_exception(function() { debug.assert(1, 2, 3); });
+debug.assert_exception(function() { (debug.assert(1, 2, 3)); });
+debug.assert_exception(function() { (debug.assert(1, 2, 3);) });
