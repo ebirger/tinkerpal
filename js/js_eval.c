@@ -647,7 +647,9 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
     {
         token_type_t tok = CUR_TOK(scan);
 
-        rc = eval_atom(po, scan, NULL, ref);
+        if ((rc = eval_atom(po, scan, NULL, ref)))
+            return rc;
+
         o = *po;
         if (tok == TOK_ID)
             o = *po = get_property(NULL, *po, ref);

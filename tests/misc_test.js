@@ -57,3 +57,11 @@ debug.assert_exception(function() { debug.dump_env(3); });
 debug.assert_exception(function() { describe(1, 3) });
 debug.assert_exception(function() { compile(1, 3) });
 debug.assert_exception(function() { var x = 3, 3; });
+good = 0;
+try {
+    console.log(arguments[0]);
+} catch (exp) {
+    console.log(exp);
+    good = 1;
+}
+debug.assert(good, 1);
