@@ -1375,7 +1375,7 @@ static int eval_while(obj_t **ret, scan_t *scan)
         if ((rc = eval_parenthesized_condition(ret, &next, 
             rc == COMPLETION_BREAK, scan)))
         {
-            return rc;
+            goto Exit;
         }
 
         if (!next || EXECUTION_STOPPED())
@@ -1385,15 +1385,13 @@ static int eval_while(obj_t **ret, scan_t *scan)
         }
         rc = eval_statement(ret, scan);
         if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
-        {
-            js_scan_free(start);
-            return rc;
-        }
+            goto Exit;
 
         obj_put(*ret);
         js_scan_restore(scan, start);
     }
     *ret = UNDEF;
+Exit:
     js_scan_free(start);
     return rc;
 }

@@ -80,3 +80,10 @@ do
 debug.assert(c, 6);
 
 main();
+
+debug.assert_exception(function() {
+    do { } while (no_such_func());
+});
+debug.assert_exception(function() {
+    while (no_such_func()) {}
+});
