@@ -68,3 +68,12 @@ debug.assert_exception(function() {
 debug.assert_exception(function() {
     for (3 = 4; ;) {}
 });
+
+var a = [ 0, 1, 2 ], b;
+function f() { return a; }
+for (b in f())
+    debug.assert(a[b], b);
+
+var a = [[ 0, 1, 2 ]], b;
+for (c in a[0])
+    debug.assert(a[0][c], c);
