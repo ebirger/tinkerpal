@@ -73,3 +73,7 @@ debug.assert(b.kuku, 3);
 
 (3).kuku = 3;
 debug.assert((3).kuku, undefined);
+debug.assert_exception(function() { kuku = { [] : 3 }; });
+debug.assert_exception(function() { kuku = { kuku ; 3 }; });
+debug.assert_exception(function() { kuku = { kuku : throw 3 }; });
+debug.assert_exception(function() { kuku = { kuku : 3; }; });

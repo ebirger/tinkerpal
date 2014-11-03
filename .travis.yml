@@ -5,6 +5,8 @@ before_install:
  - sudo apt-get install gperf
  - sudo apt-get install valgrind
  - sudo apt-get install gcc-arm-none-eabi
+ - sudo apt-get install gcc-avr
+ - sudo apt-get install avr-libc
  - sudo pip install cpp-coveralls
 before_script:
  - arm-none-eabi-gcc --version

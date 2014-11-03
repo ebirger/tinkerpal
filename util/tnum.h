@@ -40,9 +40,6 @@ typedef struct {
 #define NUMERIC_INT(x) ((x).value.i)
 #define NUMERIC_FP(x) ((x).value.fp)
 
-/* Returns 10^exp */
-int exp_power(int exp);
-
 int tstr_to_tnum(tnum_t *ret, const tstr_t *s);
 tstr_t _int_to_tstr(int i, int base);
 static inline tstr_t int_to_tstr(int i)

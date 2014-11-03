@@ -64,3 +64,6 @@ X86_BURNER=true && mkdir -p $(BUILD)/isodir/boot && \
   cp $(TARGET) $(BUILD)/isodir/boot/tp.bin && \
   echo "menuentry 'TinkerPal' { multiboot /boot/tp.bin ) }" > $(BUILD)/isodir/boot/grub/grub.cfg && \
   grub-mkrescue -o $(IMAGE:.bin=.iso) $(BUILD)/isodir
+
+# ATMEGA328
+ATMEGA328_BURNER=avrdude -c usbtiny -p m328p -Uflash:w:$(TARGET)

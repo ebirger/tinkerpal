@@ -118,17 +118,20 @@ $(BUILD)/descs.h: $(DESCS) $(BUILD)/autoconf.h
 
 AUTO_GEN_FILES+=$(BUILD)/descs.h
 
-$(BUILD)/%.o : %.c $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+ALL_DEPS:=$(BUILD)/autoconf.h $(BUILD)/version_data.h \
+  $(if $(CONFIG_JS),$(BUILD)/descs.h)
+
+$(BUILD)/%.o : %.c $(ALL_DEPS)
 	@echo $($(quiet_)compile)
 	@$(call compile)
 	@$(call calc_deps)
 
-$(BUILD)/%.o : $(BUILD)/%.c $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+$(BUILD)/%.o : $(BUILD)/%.c $(ALL_DEPS)
 	@echo $($(quiet_)compile)
 	@$(call compile)
 	@$(call calc_deps)
 
-$(BUILD)/%.o : %.s $(BUILD)/autoconf.h $(BUILD)/version_data.h $(BUILD)/descs.h
+$(BUILD)/%.o : %.s $(ALL_DEPS)
 	@echo $($(quiet_)asm)
 	@$(call asm)
 
@@ -177,7 +180,7 @@ else
 	$(error burn command not available)
 endif
 
-simulate :
+simulate : $(SIMULATOR)
 ifneq ($(SIMULATE_CMD),)
 	$(if $(SIMULATE_NOTE),$(call note,$(SIMULATE_NOTE)))
 	@$(SIMULATE_CMD)

@@ -22,40 +22,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __PLATFORM_CONSTS_H__
-#define __PLATFORM_CONSTS_H__
+#ifndef __ATMEGA328_CONSTS_H__
+#define __ATMEGA328_CONSTS_H__
 
-#ifdef CONFIG_PLATFORM_EMULATION
-#include "platform/unix/sim.h"
-#elif defined(CONFIG_LM4F120XL)
-#include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
-#elif defined(CONFIG_LM3S6965)
-#include "platform/arm/ti/lm3s6965/lm3s6965.h"
-#elif defined(CONFIG_LM3S6918)
-#include "platform/arm/ti/lm3s6918/lm3s6918.h"
-#elif defined(CONFIG_TM4C123G)
-#include "platform/arm/ti/tm4c123g/tm4c123g.h"
-#elif defined(CONFIG_TM4C1294)
-#include "platform/arm/ti/tm4c1294/tm4c1294.h"
-#elif defined(CONFIG_CC3200)
-#include "platform/arm/ti/cc3200/cc3200.h"
-#elif defined(CONFIG_STM32F103XX)
-#include "platform/arm/stm32/stm32f1xx/stm32f103xx.h"
-#elif defined(CONFIG_STM32F303XX)
-#include "platform/arm/stm32/stm32f3xx/stm32f303xx.h"
-#elif defined(CONFIG_STM32F407XX)
-#include "platform/arm/stm32/stm32f4xx/stm32f407xx.h"
-#elif defined(CONFIG_STM32F429XX)
-#include "platform/arm/stm32/stm32f4xx/stm32f429xx.h"
-#elif defined(CONFIG_FRDM_KL25Z)
-#include "platform/arm/frdm/kl25z.h"
-#elif defined(CONFIG_MSP430F5529)
-#include "platform/msp430/msp430f5529.h"
-#elif defined(CONFIG_ATMEGA328)
-#include "platform/avr8/atmega328.h"
-#elif defined(CONFIG_X86_PLATFORM_EMULATION)
-#else
-#error Platform constants not defined
-#endif
+#define GPIO(port, pin) (((port) << 3) + (pin))
+#define GPIO_BIT(p) (1 << ((p) & 0x7))
+#define GPIO_PORT(p) ((p) >> 3)
+#define GPIO_NUM_PORT_PINS 8
+
+typedef char gpio_port_t;
+
+#define NUM_UARTS 1
+#define USART0 0
+
+#define NUM_GPIO_PORTS 4
+
+#define GPIO_PORT_A 0
+#define GPIO_PORT_B 1
+#define GPIO_PORT_C 2
+#define GPIO_PORT_D 3
+
+#define _PA0 0x00
+#define _PA1 0x01
+#define _PA2 0x02
+#define _PA3 0x03
+#define _PA4 0x04
+#define _PA5 0x05
+#define _PA6 0x06
+#define _PA7 0x07
+#define _PB0 0x08
+#define _PB1 0x09
+#define _PB2 0x0a
+#define _PB3 0x0b
+#define _PB4 0x0c
+#define _PB5 0x0d
+#define _PB6 0x0e
+#define _PB7 0x0f
+#define _PC0 0x10
+#define _PC1 0x11
+#define _PC2 0x12
+#define _PC3 0x13
+#define _PC4 0x14
+#define _PC5 0x15
+#define _PC6 0x16
+#define _PC7 0x17
+#define _PD0 0x18
+#define _PD1 0x19
+#define _PD2 0x1a
+#define _PD3 0x1b
+#define _PD4 0x1c
+#define _PD5 0x1d
+#define _PD6 0x1e
+#define _PD7 0x1f
 
 #endif

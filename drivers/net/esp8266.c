@@ -291,7 +291,7 @@ static void esp8266_init(esp8266_t *e)
     AT_MATCH(e, "AT+RST", "ready");
     sm_wait(e, 2000);
     tp_out(("%s: reset done.\n", __func__));
-    sm_sleep(e, 2000);
+    sm_sleep(e, 5000);
     netif_event_trigger(&e->netif, NETIF_EVENT_READY);
     sm_uninit(e);
 }

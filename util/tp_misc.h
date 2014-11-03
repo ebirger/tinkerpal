@@ -37,6 +37,29 @@
 #define ARRAY_SIZE(a) ((sizeof(a)) / sizeof((a)[0]))
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+/* Returns 10^exp */
+static inline s64 exp_power(int exp)
+{
+    s64 pow;
+
+    switch (exp)
+    {
+    case 0: pow = 1; break;
+    case 1: pow = 10; break;
+    case 2: pow = 100; break;
+    case 3: pow = 1000; break;
+    case 4: pow = 10000; break;
+    case 5: pow = 100000; break;
+    case 6: pow = 1000000; break;
+    default:
+        pow = 1;
+        while (exp--)
+            pow *= 10;
+    }
+    return pow;
+}
 
 /* The PP_NARG macro returns the number of arguments that have been
   * passed to it.

@@ -386,7 +386,7 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
 {
     tstr_t property;
     token_type_t tok = CUR_TOK(scan);
-    int rc;
+    int rc = 0;
     
     switch (tok)
     {
@@ -413,14 +413,19 @@ static int eval_property(obj_t **po, scan_t *scan, obj_t *o)
     }
 
     if (_js_scan_match(scan, TOK_COLON))
-        return parse_error(po);
+    {
+        rc = parse_error(po);
+        goto Exit;
+    }
 
     if ((rc = eval_expression(po, scan)))
-        return rc;
+        goto Exit;
 
     _obj_set_property(o, property, *po);
+
+Exit:
     tstr_free(&property);
-    return 0;
+    return rc;
 }
 
 static int eval_object(obj_t **po, scan_t *scan)
@@ -642,7 +647,9 @@ static int eval_member(obj_t **po, scan_t *scan, obj_t *o, reference_t *ref)
     {
         token_type_t tok = CUR_TOK(scan);
 
-        rc = eval_atom(po, scan, NULL, ref);
+        if ((rc = eval_atom(po, scan, NULL, ref)))
+            return rc;
+
         o = *po;
         if (tok == TOK_ID)
             o = *po = get_property(NULL, *po, ref);
@@ -1368,7 +1375,7 @@ static int eval_while(obj_t **ret, scan_t *scan)
         if ((rc = eval_parenthesized_condition(ret, &next, 
             rc == COMPLETION_BREAK, scan)))
         {
-            return rc;
+            goto Exit;
         }
 
         if (!next || EXECUTION_STOPPED())
@@ -1378,15 +1385,13 @@ static int eval_while(obj_t **ret, scan_t *scan)
         }
         rc = eval_statement(ret, scan);
         if (rc == COMPLETION_RETURN || rc == COMPLETION_THROW)
-        {
-            js_scan_free(start);
-            return rc;
-        }
+            goto Exit;
 
         obj_put(*ret);
         js_scan_restore(scan, start);
     }
     *ret = UNDEF;
+Exit:
     js_scan_free(start);
     return rc;
 }

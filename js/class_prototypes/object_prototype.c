@@ -51,7 +51,7 @@ int do_object_prototype_on(obj_t **ret, obj_t *this, int argc,
 {
     tstr_t event;
 
-    if (argc != 3 || !is_function(argv[2]))
+    if (argc < 3 || !is_function(argv[2]))
         return js_invalid_args(ret);
 
     event = obj_get_str(argv[1]);

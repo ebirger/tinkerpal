@@ -26,10 +26,10 @@
 #define __CONSOLE_H__
 
 #include "util/event.h"
+#include "drivers/resources.h"
 
 #ifdef CONFIG_PLAT_HAS_SERIAL
 
-#include "drivers/resources.h"
 #include "util/tprintf.h"
 
 void console_printf(char *fmt, ...);

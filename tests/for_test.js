@@ -62,4 +62,18 @@ debug.assert(count, 0);
 var count = 5;
 for (;;) if (count-- == 3) break;
 debug.assert(count, 2);
+debug.assert_exception(function() {
+    for (var 3 = 4; ;) {}
+});
+debug.assert_exception(function() {
+    for (3 = 4; ;) {}
+});
 
+var a = [ 0, 1, 2 ], b;
+function f() { return a; }
+for (b in f())
+    debug.assert(a[b], b);
+
+var a = [[ 0, 1, 2 ]], b;
+for (c in a[0])
+    debug.assert(a[0][c], c);

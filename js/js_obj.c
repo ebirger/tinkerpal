@@ -23,11 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/tp_types.h"
+#include "util/tp_misc.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
 #include "mem/mem_cache.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"
+#include <math.h>
+#include <float.h>
 
 #define Slength INTERNAL_S("length")
 
@@ -468,6 +471,16 @@ static obj_t *num_cast(obj_t *o, unsigned char class)
     return UNDEF;
 }
 
+static int fp_is_eq(double a, double b)
+{
+    double aa, bb, diff;
+
+    aa = fabs(a);
+    bb = fabs(b);
+    diff = fabs(a - b);
+    return diff <= MAX(aa, bb) * FLT_EPSILON ? 1 : 0;
+}
+
 static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
     num_t *a = to_num(oa), *b;
@@ -504,11 +517,11 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         case TOK_OR: ret = nan ? NAN_OBJ : num_new_int((int)va | (int)vb); break;
         case TOK_XOR: ret = nan ? NAN_OBJ : num_new_int((int)va ^ (int)vb); break;
         case TOK_GR: ret = !nan && (va > vb) ? TRUE : FALSE; break;
-        case TOK_GE: ret = !nan && (va >= vb) ? TRUE : FALSE; break;
+        case TOK_GE: ret = !nan && ((va > vb) || fp_is_eq(va, vb)) ? TRUE : FALSE; break;
         case TOK_LT: ret = !nan && (va < vb) ? TRUE : FALSE; break;
-        case TOK_LE: ret = !nan && (va <= vb) ? TRUE : FALSE; break;
-        case TOK_IS_EQ: ret = !nan && (va == vb) ? TRUE : FALSE; break;
-        case TOK_NOT_EQ: ret = nan || (va != vb) ? TRUE : FALSE; break;
+        case TOK_LE: ret = !nan && ((va < vb) || fp_is_eq(va, vb)) ? TRUE : FALSE; break;
+        case TOK_IS_EQ: ret = !nan && fp_is_eq(va, vb) ? TRUE : FALSE; break;
+        case TOK_NOT_EQ: ret = nan || !fp_is_eq(va, vb) ? TRUE : FALSE; break;
         default:
             ret = UNDEF;
             tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
