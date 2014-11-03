@@ -76,3 +76,12 @@ function fallthrough_to_default()
 
 debug.assert(fallthrough_to_default(), 4);
 debug.assert(val, 3);
+debug.assert_exception(function() {
+        switch (no_func())
+        {
+        }
+});
+debug.assert_exception(function() { switch(1); });
+debug.assert_exception(function() { switch(1) { case 3=1: } });
+debug.assert_exception(function() { switch(1) { 1: } });
+debug.assert_exception(function() { switch(1) { case 1 console.log(11); } });
