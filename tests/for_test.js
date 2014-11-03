@@ -62,4 +62,9 @@ debug.assert(count, 0);
 var count = 5;
 for (;;) if (count-- == 3) break;
 debug.assert(count, 2);
-
+debug.assert_exception(function() {
+    for (var 3 = 4; ;) {}
+});
+debug.assert_exception(function() {
+    for (3 = 4; ;) {}
+});
