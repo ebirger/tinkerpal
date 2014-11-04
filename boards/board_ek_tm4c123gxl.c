@@ -59,7 +59,6 @@ const board_t board = {
 #ifdef CONFIG_ESP8266
     .esp8266_params = {
         .serial_port = UART_RES(UART4),
-        .echo_on = 1,
     },
 #endif
 #ifdef CONFIG_PCD8544
