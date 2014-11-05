@@ -125,14 +125,24 @@ int msp430f5529_serial_write(int u, char *buf, int size)
     return 0;
 }
 
+#ifndef CONFIG_GCC
 #pragma vector = USCI_A0_VECTOR
-__interrupt void uscia0rx_isr(void)
+__interrupt
+#else
+__attribute__((interrupt(USCI_A0_VECTOR)))
+#endif
+void uscia0rx_isr(void)
 {
     buffered_serial_push(USCIA0, UCA0RXBUF & 0xff);
 }
 
+#ifndef CONFIG_GCC
 #pragma vector = USCI_A1_VECTOR
-__interrupt void uscia1rx_isr(void)
+__interrupt
+#else
+__attribute__((interrupt(USCI_A1_VECTOR)))
+#endif
+void uscia1rx_isr(void)
 {
     buffered_serial_push(USCIA1, UCA1RXBUF & 0xff);
 }
