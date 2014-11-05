@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
+#include "platform/arm/cortex-m.h"
 
 static volatile uint32_t ticks;
 static uint32_t last_ticks, cm_time_sec, cm_time_msec;

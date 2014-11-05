@@ -25,6 +25,8 @@
 #ifndef __UNIX_H__
 #define __UNIX_H__
 
+#include "platform/platform.h"
+
 typedef struct {
     int event;
     int in_fd;

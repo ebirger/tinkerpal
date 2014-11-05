@@ -25,6 +25,8 @@
 #ifndef __CORTEX_M_H__
 #define __CORTEX_M_H__
 
+#include "platform/platform.h"
+
 void cortex_m_meminfo(void);
 
 /* Generic Cortex M initialization - copy data from flash to RAM,
