@@ -461,7 +461,7 @@ void js_scan_trace(scan_t *scan)
 {
     char *p;
 
-    for (p = scan->trace_point; p - scan->pc < scan->size && *p != '\n' && 
+    for (p = scan->trace_point; p - scan->lpc < scan->size && *p != '\n' &&
         *p != '\r' ; p++)
     {
         tp_out(("%c", *p));
