@@ -30,6 +30,13 @@
 const board_t board = {
     .desc = "TI MSP430F5529",
     .default_console_id = UART_RES(USCIA1),
+#ifdef CONFIG_MSP430F5529_LAUNCHPAD
+    .leds = (resource_t []){
+        GPIO_RES(PA0),
+        GPIO_RES(PD7),
+        0
+    },
+#endif
 #ifdef CONFIG_DOGS102X6
     .dogs102x6_params = {
         .rst = GPIO_RES(PE7),
