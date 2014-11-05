@@ -32,6 +32,6 @@ void cortex_m_meminfo(void);
  */
 void cortex_m_reset_isr(void);
 void cortex_m_panic(void);
-void cortex_m_get_time_from_boot(unsigned int *sec, unsigned int *usec);
+void cortex_m_get_time_from_boot(uint32_t *sec, uint32_t *usec);
 
 #endif

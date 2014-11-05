@@ -101,7 +101,8 @@ static void kl25z_serial_irq_enable(int u, int enabled)
 
 static int kl25z_select(int ms)
 {
-    int expire = platform_get_ticks_from_boot() + ms, event = 0;
+    uint64_t expire = platform_get_ticks_from_boot() + ms;
+    int event = 0;
 
     while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {

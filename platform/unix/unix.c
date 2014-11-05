@@ -129,7 +129,7 @@ void unix_panic(void)
     exit(1);
 }
 
-void unix_get_time_from_boot(unsigned int *sec, unsigned int *usec)
+void unix_get_time_from_boot(uint32_t *sec, uint32_t *usec)
 {
     struct timeval now, diff;
 

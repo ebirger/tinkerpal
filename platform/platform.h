@@ -86,7 +86,7 @@ typedef struct {
     } usb;
     void (*init)(void);
     void (*meminfo)(void);
-    void (*get_time_from_boot)(unsigned int *sec, unsigned int *usec);
+    void (*get_time_from_boot)(uint32_t *sec, uint32_t *usec);
     unsigned long (*get_system_clock)(void);
     void (*msleep)(double ms);
     int (*select)(int ms);
@@ -112,16 +112,15 @@ static inline void platform_meminfo(void)
     platform.meminfo();
 }
 
-static inline void platform_get_time_from_boot(unsigned int *sec,
-    unsigned int *usec)
+static inline void platform_get_time_from_boot(uint32_t *sec, uint32_t *usec)
 {
     tp_assert(platform.get_time_from_boot);
     platform.get_time_from_boot(sec, usec);
 }
 
-static inline int platform_get_ticks_from_boot(void)
+static inline uint64_t platform_get_ticks_from_boot(void)
 {
-    unsigned int sec, usec;
+    uint32_t sec, usec;
 
     platform_get_time_from_boot(&sec, &usec);
     return sec * 1000 + usec / 1000;

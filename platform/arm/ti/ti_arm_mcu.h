@@ -107,7 +107,7 @@ extern const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[];
 extern const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params;
 
 void ti_arm_mcu_systick_init(void);
-void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec);
+void ti_arm_mcu_get_time_from_boot(uint32_t *sec, uint32_t *usec);
 unsigned long ti_arm_mcu_get_system_clock(void);
 void ti_arm_mcu_msleep(double ms);
 

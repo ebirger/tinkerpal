@@ -62,11 +62,11 @@ void ti_arm_mcu_systick_isr(void)
     ctrl_dummy = HWREG(NVIC_ST_CTRL); /* Clear the 'count' bit */
 }
 
-void ti_arm_mcu_get_time_from_boot(unsigned int *sec, unsigned int *usec)
+void ti_arm_mcu_get_time_from_boot(uint32_t *sec, uint32_t *usec)
 {
     do
     {
-	unsigned int current, tmp_usec;
+	uint32_t current, tmp_usec;
 
 	cortex_m_get_time_from_boot(sec, &tmp_usec);
 	current = MAP_SysTickValueGet();
@@ -215,7 +215,8 @@ int ti_arm_mcu_uart_set_params(int u, const serial_params_t *params)
 
 int ti_arm_mcu_select(int ms)
 {
-    int expire = platform_get_ticks_from_boot() + ms, event = 0;
+    uint64_t expire = platform_get_ticks_from_boot() + ms;
+    int event = 0;
 
     while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {

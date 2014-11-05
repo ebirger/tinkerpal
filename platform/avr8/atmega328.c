@@ -32,8 +32,8 @@
 
 #define DEFAULT_BAUD 19200
 
-static volatile unsigned int ticks;
-static unsigned int last_ticks, cm_time_sec, cm_time_msec;
+static volatile uint32_t ticks;
+static uint32_t last_ticks, cm_time_sec, cm_time_msec;
 
 static void avr8_msleep(double ms)
 {
@@ -66,9 +66,9 @@ static void avr8_init(void)
     clock_init();
 }
 
-void avr8_time_from_boot(unsigned int *sec, unsigned int *usec)
+void avr8_time_from_boot(uint32_t *sec, uint32_t *usec)
 {
-    unsigned int cur_ticks = ticks;
+    uint32_t cur_ticks = ticks;
 
     cm_time_msec += cur_ticks - last_ticks;
     last_ticks = cur_ticks;
@@ -84,7 +84,8 @@ void avr8_time_from_boot(unsigned int *sec, unsigned int *usec)
 
 static int avr8_select(int ms)
 {
-    int expire = platform_get_ticks_from_boot() + ms, event = 0;
+    uint64_t expire = platform_get_ticks_from_boot() + ms;
+    int event = 0;
 
     while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {

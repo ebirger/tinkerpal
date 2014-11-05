@@ -24,8 +24,8 @@
  */
 #include "util/debug.h"
 
-static volatile unsigned int ticks;
-static unsigned int last_ticks, cm_time_sec, cm_time_msec;
+static volatile uint32_t ticks;
+static uint32_t last_ticks, cm_time_sec, cm_time_msec;
 
 #ifdef CONFIG_GCC
 static char *heap_end = 0;
@@ -143,9 +143,9 @@ void cortex_m_systick_isr(void)
     ticks++;
 }
 
-void cortex_m_get_time_from_boot(unsigned int *sec, unsigned int *usec)
+void cortex_m_get_time_from_boot(uint32_t *sec, uint32_t *usec)
 {
-    unsigned int cur_ticks = ticks;
+    uint32_t cur_ticks = ticks;
 
     cm_time_msec += cur_ticks - last_ticks;
     last_ticks = cur_ticks;
