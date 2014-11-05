@@ -28,6 +28,9 @@
 #include "platform/msp430/msp430f5529_usci.h"
 #include "drivers/gpio/gpio_platform.h"
 
+static volatile uint32_t ticks;
+static uint32_t last_ticks, cm_time_sec, cm_time_msec;
+
 #define SYSCLK 12000000
 
 /* We need to disable the WDT before system start since buffer initialization
@@ -83,6 +86,13 @@ static void clock_init(void)
     } while (SFRIFG1&OFIFG); /* Test oscillator fault flag */
 }
 
+static void timer_init(void)
+{
+    TA0CCR0 = SYSCLK / 8 / 1000; /* 1 ms */
+    TA0CCTL0 = CCIE; /* Enable counter interrupts */
+    TA0CTL = TASSEL_2 | ID_3 | MC_1 | TAIE; /* Count up, SMCLK, div 8 */
+}
+
 unsigned long msp430f5529_get_system_clock(void)
 {
     return SYSCLK;
@@ -91,6 +101,7 @@ unsigned long msp430f5529_get_system_clock(void)
 void msp430f5529_init(void)
 {
     clock_init();
+    timer_init();
 
     __bis_SR_register(GIE); /* Enable interrupts */
 }
@@ -147,6 +158,18 @@ void uscia1rx_isr(void)
     buffered_serial_push(USCIA1, UCA1RXBUF & 0xff);
 }
 
+#ifndef CONFIG_GCC
+#pragma vector = TIMER0_A0_VECTOR
+__interrupt
+#else
+__attribute__((interrupt(TIMER0_A0_VECTOR)))
+#endif
+void timer0_a0_isr(void)
+{
+    ticks++;
+    TA0CTL &= ~TAIFG;
+}
+
 void msp430f5529_serial_irq_enable(int u, int enabled)
 {
     const msp430f5529_usci_t *usci = &msp430f5529_uscis[u];
@@ -172,6 +195,22 @@ int msp430f5529_select(int ms)
     }
 
     return event;
+}
+
+void msp430f5529_time_from_boot(uint32_t *sec, uint32_t *usec)
+{
+    uint32_t cur_ticks = ticks;
+
+    cm_time_msec += cur_ticks - last_ticks;
+    last_ticks = cur_ticks;
+
+    while (cm_time_msec >= 1000)
+    {
+	cm_time_msec -= 1000;
+	cm_time_sec++;
+    }
+    *sec = cm_time_sec;
+    *usec = cm_time_msec * 1000;
 }
 
 const platform_t platform = {
@@ -203,4 +242,5 @@ const platform_t platform = {
     .select = msp430f5529_select,
     .get_system_clock = msp430f5529_get_system_clock,
     .msleep = msp430f5529_msleep,
+    .get_time_from_boot = msp430f5529_time_from_boot,
 };
