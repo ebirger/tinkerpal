@@ -25,6 +25,7 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
 
+#include <stdint.h>
 #include "util/debug.h"
 #include "drivers/serial/serial_platform.h"
 #include "usb/usbd_core_platform.h"
