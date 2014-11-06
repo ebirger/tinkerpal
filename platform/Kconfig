@@ -34,6 +34,9 @@ config PLAT_HAS_USB
 config 16_BIT
 	bool
 
+config PLAT_TICKS
+        bool
+
 source "platform/arm/Kconfig"
 source "platform/msp430/Kconfig"
 source "platform/unix/Kconfig"
