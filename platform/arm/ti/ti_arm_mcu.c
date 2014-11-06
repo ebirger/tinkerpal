@@ -31,6 +31,7 @@
 #include "driverlib/rom_map.h"
 #include "driverlib/uart.h"
 #include "platform/platform.h"
+#include "platform/ticks.h"
 #ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio_platform.h"
 #endif
@@ -68,9 +69,9 @@ void ti_arm_mcu_get_time_from_boot(uint32_t *sec, uint32_t *usec)
     {
 	uint32_t current, tmp_usec;
 
-	cortex_m_get_time_from_boot(sec, &tmp_usec);
+	gen_get_time_from_boot(sec, &tmp_usec);
 	current = MAP_SysTickValueGet();
-	cortex_m_get_time_from_boot(sec, usec);
+	gen_get_time_from_boot(sec, usec);
 
 	if ((HWREG(NVIC_ST_CTRL) & NVIC_ST_CTRL_COUNT) || tmp_usec != *usec)
 	{

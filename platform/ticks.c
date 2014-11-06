@@ -22,17 +22,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __CORTEX_M_H__
-#define __CORTEX_M_H__
+#include "platform/ticks.h"
 
-#include "platform/platform.h"
+volatile uint32_t ticks;
+static uint32_t last_ticks, cm_time_sec, cm_time_msec;
 
-void cortex_m_meminfo(void);
+void gen_get_time_from_boot(uint32_t *sec, uint32_t *usec)
+{
+    uint32_t cur_ticks = ticks;
 
-/* Generic Cortex M initialization - copy data from flash to RAM,
- * zero BSS
- */
-void cortex_m_reset_isr(void);
-void cortex_m_panic(void);
+    cm_time_msec += cur_ticks - last_ticks;
+    last_ticks = cur_ticks;
 
-#endif
+    while (cm_time_msec >= 1000)
+    {
+	cm_time_msec -= 1000;
+	cm_time_sec++;
+    }
+    *sec = cm_time_sec;
+    *usec = cm_time_msec * 1000;
+}

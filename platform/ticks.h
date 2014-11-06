@@ -22,17 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __CORTEX_M_H__
-#define __CORTEX_M_H__
+#ifndef __TICKS_H__
+#define __TICKS_H__
 
-#include "platform/platform.h"
+#include <stdint.h>
 
-void cortex_m_meminfo(void);
+static inline void tick(void)
+{
+    extern volatile uint32_t ticks;
 
-/* Generic Cortex M initialization - copy data from flash to RAM,
- * zero BSS
- */
-void cortex_m_reset_isr(void);
-void cortex_m_panic(void);
+    ticks++;
+}
+
+void gen_get_time_from_boot(uint32_t *sec, uint32_t *usec);
 
 #endif

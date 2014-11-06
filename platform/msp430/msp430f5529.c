@@ -24,12 +24,10 @@
  */
 #include <msp430.h>
 #include "platform/platform.h"
+#include "platform/ticks.h"
 #include "platform/msp430/msp430f5529_gpio.h"
 #include "platform/msp430/msp430f5529_usci.h"
 #include "drivers/gpio/gpio_platform.h"
-
-static volatile uint32_t ticks;
-static uint32_t last_ticks, cm_time_sec, cm_time_msec;
 
 #define SYSCLK 12000000
 
@@ -166,7 +164,7 @@ __attribute__((interrupt(TIMER0_A0_VECTOR)))
 #endif
 void timer0_a0_isr(void)
 {
-    ticks++;
+    tick();
     TA0CTL &= ~TAIFG;
 }
 
@@ -195,22 +193,6 @@ int msp430f5529_select(int ms)
     }
 
     return event;
-}
-
-void msp430f5529_time_from_boot(uint32_t *sec, uint32_t *usec)
-{
-    uint32_t cur_ticks = ticks;
-
-    cm_time_msec += cur_ticks - last_ticks;
-    last_ticks = cur_ticks;
-
-    while (cm_time_msec >= 1000)
-    {
-	cm_time_msec -= 1000;
-	cm_time_sec++;
-    }
-    *sec = cm_time_sec;
-    *usec = cm_time_msec * 1000;
 }
 
 const platform_t platform = {
@@ -242,5 +224,5 @@ const platform_t platform = {
     .select = msp430f5529_select,
     .get_system_clock = msp430f5529_get_system_clock,
     .msleep = msp430f5529_msleep,
-    .get_time_from_boot = msp430f5529_time_from_boot,
+    .get_time_from_boot = gen_get_time_from_boot,
 };
