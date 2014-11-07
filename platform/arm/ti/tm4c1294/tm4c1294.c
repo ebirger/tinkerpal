@@ -154,6 +154,11 @@ const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
     {}
 };
 
+const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params = {
+    .dp_pin = PL6,
+    .dm_pin = PL7,
+};
+
 static unsigned long system_clock;
 
 #ifdef CONFIG_GPIO
@@ -237,6 +242,17 @@ const platform_t platform = {
     .i2c = {
         .init = ti_arm_mcu_i2c_init,
         .reg_write = ti_arm_mcu_i2c_reg_write,
+    },
+#endif
+#ifdef CONFIG_USB_DEVICE
+    .usb = {
+        .init = ti_arm_mcu_usb_init,
+        .connect = ti_arm_mcu_usb_connect,
+        .ep_cfg = ti_arm_mcu_usb_ep_cfg,
+        .ep_data_ack = ti_arm_mcu_usb_ep_data_ack,
+        .ep_data_get = ti_arm_mcu_usb_ep_data_get,
+        .ep_data_send = ti_arm_mcu_usb_ep_data_send,
+        .set_addr = ti_arm_mcu_usb_set_addr,
     },
 #endif
     .init = tm4c1294_init,
