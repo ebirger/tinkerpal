@@ -5,7 +5,7 @@ PATCH_VERSION=3
 HOST_OS=$(shell uname)
 
 BUILD?=build.$(HOST_OS)
-STAGING=staging.$(HOST_OS)
+export STAGING=staging.$(HOST_OS)
 BSPS_DIR?=$(STAGING)/bsps
 
 ifeq ($(V),1)
