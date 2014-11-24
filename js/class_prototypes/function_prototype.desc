@@ -35,7 +35,7 @@ FUNCTION("apply", function_prototype, do_function_prototype_apply, {
     .description = "Invoke function call",
     .return_value = "The function's return value",
     .example = "function fun(a, b) { return a + b; }\n"
-	"fun.apply(undefined, [1, 2]); // 3 \n"
+	"fun.apply(undefined, [1, 2]); // 3"
 })
 
 FUNCTION("bind", function_prototype, do_function_prototype_bind, { 
@@ -47,5 +47,5 @@ FUNCTION("bind", function_prototype, do_function_prototype_bind, {
     .return_value = "A new Function object",
     .example = "function fun() { return this.prop; }\n"
         "var f = fun.bind({ prop : 1});\n"
-	"f(); // 1\n",
+	"f(); // 1",
 })
