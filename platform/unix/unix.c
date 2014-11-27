@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define _XOPEN_SOURCE 600 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #define _DARWIN_C_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
