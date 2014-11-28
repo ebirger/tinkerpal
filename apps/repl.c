@@ -89,7 +89,7 @@ static void repl_process_line(tstr_t *line)
     static tstr_t multiline;
     tstr_t *to_eval;
 
-    if (TPTR(&multiline))
+    if (multiline.len)
     {
         tstr_t old = multiline;
 
@@ -103,7 +103,7 @@ static void repl_process_line(tstr_t *line)
     rank = js_eval_rank(*to_eval);
     if (rank > 0)
     {
-        if (!TPTR(&multiline))
+        if (!multiline.len)
             multiline = tstr_dup(*line);
         cli_prompt_set(".", rank + 2);
         return;
@@ -124,10 +124,10 @@ static void repl_process_line(tstr_t *line)
     COLOR(TERM_COLOR_RESET);
     obj_put(o);
 
-    if (TPTR(&multiline))
+    if (multiline.len)
     {
         tstr_free(&multiline);
-        TPTR(&multiline) = NULL;
+	multiline.len = 0;
     }
     cli_prompt_set(NULL, 0);
 }
