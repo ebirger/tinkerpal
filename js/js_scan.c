@@ -45,8 +45,7 @@ struct scan_t {
     int size; /* should be size_t */
     char look;
 #define SCAN_FLAG_EOF 0x0001
-#define SCAN_FLAG_ALLOCED 0x0002
-#define SCAN_FLAG_INVALID 0x0004
+#define SCAN_FLAG_INVALID 0x0002
     unsigned short flags;
     scan_value_t value;
 };
@@ -55,7 +54,6 @@ static get_constants_cb_t g_get_constants_cb;
 
 #define IS_EOF(scan) ((scan)->flags & SCAN_FLAG_EOF)
 #define SET_EOF(scan) ((scan)->flags |= SCAN_FLAG_EOF)
-#define IS_ALLOCED(scan) ((scan)->flags & SCAN_FLAG_ALLOCED)
 
 static inline int is_digit(char c)
 {
@@ -620,7 +618,7 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
     scan_t *ret = js_scan_save(start);
 
     ret->size = end->lpc - start->lpc;
-    if (start->flags & SCAN_FLAG_ALLOCED)
+    if (TSTR_IS_ALLOCATED(&start->code))
     {
         ret->internal_buf = tmalloc(ret->size, "scan internal buffer");
         memcpy(ret->internal_buf, start->lpc, ret->size);
@@ -659,7 +657,7 @@ scan_t *_js_scan_init(tstr_t *data, int own_data)
     scan->last_token_start = scan->trace_point = scan->pc = TPTR(data);
     scan->size = data->len + 1;
     scan->look = 255;
-    scan->flags = TSTR_IS_ALLOCATED(data) ? SCAN_FLAG_ALLOCED : 0;
+    scan->flags = 0;
     scan->internal_buf = own_data ? TPTR(data) : NULL;
     _get_char(scan);
     skip_white(scan);
