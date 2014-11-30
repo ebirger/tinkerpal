@@ -132,4 +132,9 @@ static inline void tstr_advance(tstr_t *t, int amount)
 
 int prefix_comp(int len, char *a, char *b);
 
+int __tstr_dump(tstr_t *t, int offset, int size,
+    int (*__dump_fn)(void *ctx, char *buf, int size), void *ctx);
+int tstr_dump(tstr_t *t, int offset, int size,
+    int (*dump_fn)(char *buf, int size));
+
 #endif

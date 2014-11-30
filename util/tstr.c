@@ -273,3 +273,22 @@ char *tstr_to_strz(tstr_t *t)
     ret[t->len] = '\0';
     return ret;
 }
+
+int __tstr_dump(tstr_t *t, int offset, int size,
+    int (*__dump_fn)(void *ctx, char *buf, int size), void *ctx)
+{
+    return __dump_fn(ctx, TPTR(t) + offset, size);
+}
+
+static int tstr_dump_dump_fn(void *ctx, char *buf, int size)
+{
+    int (*real_dump_fn)(char *buf, int size) = ctx;
+
+    return real_dump_fn(buf, size);
+}
+
+int tstr_dump(tstr_t *t, int offset, int size,
+    int (*dump_fn)(char *buf, int size))
+{
+    return __tstr_dump(t, offset, size, tstr_dump_dump_fn, dump_fn);
+}

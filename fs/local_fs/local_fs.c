@@ -72,6 +72,13 @@ Exit:
     return rc;
 }
 
+static int local_file_wrt_tstr_dump(void *ctx, char *buf, int len)
+{
+    FILE *fp = ctx;
+    
+    return fwrite(buf, 1, len, fp);
+}
+
 static int local_file_write(tstr_t *content, tstr_t *file_name)
 {
     FILE *fp;
@@ -87,7 +94,7 @@ static int local_file_write(tstr_t *content, tstr_t *file_name)
         goto Exit;
     }
 
-    nwrote = fwrite(TPTR(content), 1, content->len, fp);
+    nwrote = __tstr_dump(content, 0, content->len, local_file_wrt_tstr_dump, fp);
     if (nwrote != content->len)
     {
         tp_err(("Wrote %d/%d to file %S\n", nwrote, content->len, file_name));

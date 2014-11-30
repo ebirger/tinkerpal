@@ -71,7 +71,7 @@ static void repl_syntax_highlight(tstr_t *line)
         }
 
         offset = line->len - js_scan_get_remaining(s);
-        console_write(TPTR(line) + last_offset, offset - last_offset);
+        tstr_dump(line, last_offset, offset - last_offset, console_write);
         COLOR(TERM_COLOR_RESET);
         last_offset = offset;
         js_scan_next_token(s);

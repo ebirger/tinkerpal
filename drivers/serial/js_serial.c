@@ -100,6 +100,13 @@ int do_serial_on_data(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
+static int do_serial_print_tstr_dump(void *ctx, char *buf, int len)
+{
+    obj_t *this = ctx;
+
+    return serial_write(serial_obj_get_id(this), buf, len);
+}
+
 int do_serial_print(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     string_t *s;
@@ -109,7 +116,7 @@ int do_serial_print(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     s = to_string(argv[1]);
 
-    serial_write(serial_obj_get_id(this), TPTR(&s->value), s->value.len);
+    __tstr_dump(&s->value, 0, s->value.len, do_serial_print_tstr_dump, this);
     *ret = UNDEF;
     return 0;
 }

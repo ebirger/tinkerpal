@@ -143,14 +143,11 @@ static void do_left(void)
 
 static void do_right(void)
 {
-    char b;
-
     if (cur_line_pos == cur_line.len)
         return;
 
     /* Write current character */
-    b = *(TPTR(&cur_line) + cur_line_pos);
-    console_write(&b, 1);
+    tstr_dump(&cur_line, cur_line_pos, 1, console_write);
     cur_line_pos++;
 }
 
