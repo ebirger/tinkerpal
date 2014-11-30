@@ -36,6 +36,7 @@ typedef union {
 
 struct scan_t {
     token_type_t tok; /* Must be first */
+    tstr_t code;
     char *lpc;
     char *pc;
     char *trace_point;
@@ -649,6 +650,7 @@ scan_t *_js_scan_init(tstr_t *data, int own_data)
 {
     scan_t *scan = tmalloc_type(scan_t);
 
+    scan->code = *data;
     scan->last_token_start = scan->trace_point = scan->pc = TPTR(data);
     scan->size = data->len + 1;
     scan->look = 255;
