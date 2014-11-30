@@ -170,8 +170,8 @@ static void skip_white(scan_t *scan)
 
 static inline tstr_t extract_string(scan_t *scan)
 {
-    tstr_t ret = {};
-    unsigned short tflags = IS_ALLOCED(scan) ? TSTR_FLAG_ALLOCATED : 0;
+    tstr_t ret;
+    unsigned short tflags = 0;
     char *start;
     token_type_t delim = scan->look;
 
@@ -191,7 +191,9 @@ static inline tstr_t extract_string(scan_t *scan)
         _get_char(scan);
     }
 
-    tstr_init(&ret, start, scan->lpc - start, tflags);
+    ret = tstr_piece(scan->code, start- TPTR(&scan->code),
+	scan->lpc - start);
+    ret.flags |= tflags;
     _get_char(scan); /* skip enclosure */
     skip_white(scan);
     return ret;
@@ -199,15 +201,17 @@ static inline tstr_t extract_string(scan_t *scan)
 
 static inline tstr_t extract_identifier(scan_t *scan)
 {
-    tstr_t ret = {};
-    unsigned short tflags = IS_ALLOCED(scan) ? TSTR_FLAG_ALLOCATED : 0;
+    tstr_t ret;
+    unsigned short tflags = 0;
     char *start;
 
     start = scan->lpc;
     while (is_valid_identifier_non_first_letter(scan->look))
         _get_char(scan);
 
-    tstr_init(&ret, start, scan->lpc - start, tflags);
+    ret = tstr_piece(scan->code, start - TPTR(&scan->code),
+	scan->lpc - start);
+    ret.flags |= tflags;
     skip_white(scan);
     return ret;
 }
@@ -318,7 +322,8 @@ static inline tnum_t extract_num(scan_t *scan)
     start = scan->lpc;
     while (is_number_letter(scan->look))
         _get_char(scan);
-    tstr_init(&s, start, scan->lpc - start, 0);
+    s = tstr_piece(scan->code, start - TPTR(&scan->code),
+	scan->lpc - start);
     skip_white(scan);
 
     if (tstr_to_tnum(&ret, &s))
