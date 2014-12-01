@@ -50,6 +50,20 @@ static const fs_t *fs_list[] = {
 
 #define foreach_fs(fs) for (fs = fs_list; *fs; fs++)
 
+int vfs_is_root_path(tstr_t *path)
+{
+    char c;
+
+    if (path->len == 0)
+        return 1;
+
+    if (path->len > 1)
+        return 0;
+
+    c = tstr_peek(path, 0);
+    return c == '.' || c == '/';
+}
+
 int vfs_file_read_anyfs(tstr_t *content, tstr_t *file_name)
 {
     const fs_t **fs;
