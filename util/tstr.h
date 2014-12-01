@@ -142,4 +142,6 @@ static inline char tstr_peek(const tstr_t *t, int index)
     return *(TPTR(t) + index);
 }
 
+void tstr_move(tstr_t *t, int to_idx, int from_idx, int count);
+
 #endif
