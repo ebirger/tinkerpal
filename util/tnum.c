@@ -44,7 +44,7 @@ static int is_fp(const tstr_t *s)
 
     for (i = 0; i < s->len; i++)
     {
-        if (TPTR(s)[i] == '.')
+        if (tstr_peek(s, i) == '.')
             return 1;
     }
     return 0;
@@ -62,25 +62,26 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
 
     /* Skip leading whitespace
      * XXX: skip trailing whitespace too */
-    while (i < s->len && is_whitespace(TPTR(s)[i]))
+    /* XXX: should be using tstr iterator API */
+    while (i < s->len && is_whitespace(tstr_peek(s, i)))
         i++;
 
     if (i == s->len)
         goto Exit;
 
-    if (TPTR(s)[i] == '-')
+    if (tstr_peek(s, i) == '-')
     {
         sign = -1;
         i++;
     }
 
-    if (s->len - i > 1 && TPTR(s)[i] == '0' && !is_fp(s))
+    if (s->len - i > 1 && tstr_peek(s, i) == '0' && !is_fp(s))
     {
         radix = 8;
         i++;
         if (s->len - i > 1)
         {
-            switch (TPTR(s)[i])
+            switch (tstr_peek(s,i))
             {
             case 'b':
             case 'B':
@@ -103,7 +104,7 @@ int tstr_to_tnum(tnum_t *ret, const tstr_t *s)
 
     for (; i < s->len; i++)
     {
-        char c = TPTR(s)[i];
+        char c = tstr_peek(s, i);
 
         if ((radix == 16 && !isxdigit((int)c)) ||
             (radix == 10 && (!isdigit((int)c) && c != '.' && c != 'e')) ||
