@@ -41,7 +41,7 @@ struct scan_t {
     int pc;
     int trace_point;
     int last_token_start;
-    char *internal_buf;
+    tstr_t *internal_buf;
     int size; /* should be size_t */
     char look;
 #define SCAN_FLAG_EOF 0x0001
@@ -611,7 +611,7 @@ scan_t *js_scan_save(scan_t *scan)
 
 void js_scan_restore(scan_t *dst, scan_t *src)
 {
-    char *internal_buf = dst->internal_buf;
+    tstr_t *internal_buf = dst->internal_buf;
 
     *dst = *src;
     dst->internal_buf = internal_buf;
@@ -625,7 +625,7 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
     if (TSTR_IS_ALLOCATED(&start->code))
     {
         ret->code = tstr_slice(start->code, start->lpc, ret->size);
-        ret->internal_buf = TPTR(&ret->code);
+        ret->internal_buf = &ret->code;
         ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 0;
         ret->pc += start->pc - start->lpc;
     }
@@ -638,7 +638,7 @@ void js_scan_free(scan_t *scan)
         return;
 
     if (scan->internal_buf)
-        tfree(scan->internal_buf);
+        tstr_free(scan->internal_buf);
     tfree(scan);
 }
 
@@ -661,7 +661,7 @@ scan_t *_js_scan_init(tstr_t *data, int own_data)
     scan->size = data->len + 1;
     scan->look = 255;
     scan->flags = 0;
-    scan->internal_buf = own_data ? TPTR(data) : NULL;
+    scan->internal_buf = own_data ? &scan->code : 0;
     _get_char(scan);
     skip_white(scan);
     js_scan_next_token(scan);
