@@ -137,4 +137,9 @@ int __tstr_dump(tstr_t *t, int offset, int size,
 int tstr_dump(tstr_t *t, int offset, int size,
     int (*dump_fn)(char *buf, int size));
 
+static inline char tstr_peek(const tstr_t *t, int index)
+{
+    return *(TPTR(t) + index);
+}
+
 #endif
