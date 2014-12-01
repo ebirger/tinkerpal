@@ -172,7 +172,7 @@ unsigned short msp430f5529_gpio_get_port_val(int port, unsigned short mask)
 }
 
 #define GPIO_ISR(n) \
-__interrupt void msp430f5529_gpio_port_##n##_isr(void) \
+void msp430f5529_gpio_port_##n##_isr(void) \
 { \
     unsigned char istat; \
     istat = P##n##IFG; \
@@ -180,8 +180,18 @@ __interrupt void msp430f5529_gpio_port_##n##_isr(void) \
     gpio_state_set(n - 1, istat); \
 }
 
-#pragma vector=PORT1_VECTOR
+#ifndef CONFIG_GCC
+#pragma vector = PORT1_VECTOR
+__interrupt
+#else
+__attribute__((interrupt(PORT1_VECTOR)))
+#endif
 GPIO_ISR(1)
 
-#pragma vector=PORT2_VECTOR
+#ifndef CONFIG_GCC
+#pragma vector = PORT2_VECTOR
+__interrupt
+#else
+__attribute__((interrupt(PORT2_VECTOR)))
+#endif
 GPIO_ISR(2)

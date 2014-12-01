@@ -25,6 +25,8 @@
 #ifndef __CORTEX_M_H__
 #define __CORTEX_M_H__
 
+#include "platform/platform.h"
+
 void cortex_m_meminfo(void);
 
 /* Generic Cortex M initialization - copy data from flash to RAM,
@@ -32,6 +34,5 @@ void cortex_m_meminfo(void);
  */
 void cortex_m_reset_isr(void);
 void cortex_m_panic(void);
-void cortex_m_get_time_from_boot(unsigned int *sec, unsigned int *usec);
 
 #endif

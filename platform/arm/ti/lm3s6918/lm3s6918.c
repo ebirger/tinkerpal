@@ -43,6 +43,7 @@
 #include "util/debug.h"
 #include "drivers/gpio/gpio_platform.h"
 #include "platform/platform.h"
+#include "platform/ticks.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/lm3s6918/lm3s6918.h"
@@ -178,7 +179,7 @@ const platform_t platform = {
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = ti_arm_mcu_select,
-    .get_time_from_boot = cortex_m_get_time_from_boot,
+    .get_time_from_boot = gen_get_time_from_boot,
     .get_system_clock = ti_arm_mcu_get_system_clock,
     .msleep = ti_arm_mcu_msleep,
 };

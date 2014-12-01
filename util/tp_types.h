@@ -25,34 +25,17 @@
 #ifndef __TP_TYPES_H__
 #define __TP_TYPES_H__
 
-#ifdef CONFIG_16_BIT
+#include <stdint.h>
 
-typedef char s8;
-typedef unsigned char u8;
-typedef short s16;
-typedef unsigned short u16;
-typedef long s32;
-typedef unsigned long u32;
-typedef long long s64;
-typedef unsigned long long u64;
-
-typedef unsigned int uint_ptr_t;
-typedef int int_ptr_t;
-
-#else
-
-typedef char s8;
-typedef unsigned char u8;
-typedef short s16;
-typedef unsigned short u16;
-typedef int s32;
-typedef unsigned int u32;
-typedef long long s64;
-typedef unsigned long long u64;
-
-typedef unsigned long uint_ptr_t;
-typedef long int_ptr_t;
-
-#endif
+typedef int8_t s8;
+typedef uint8_t u8;
+typedef int16_t s16;
+typedef uint16_t u16;
+typedef int32_t s32;
+typedef uint32_t u32;
+typedef int64_t s64;
+typedef uint64_t u64;
+typedef uintptr_t uint_ptr_t;
+typedef intptr_t int_ptr_t;
 
 #endif

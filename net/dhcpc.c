@@ -255,9 +255,9 @@ static void dhcpc_recv(udp_socket_t *sock)
     if (dhcpc_options_process(dhcpc))
         return;
 
-    tp_out(("Address: %s\n", ip_addr_serialize(htonl(dhcpc->ip_info.ip))));
-    tp_out(("Netmask: %s\n", ip_addr_serialize(htonl(dhcpc->ip_info.netmask))));
-    tp_out(("Router: %s\n", ip_addr_serialize(htonl(dhcpc->ip_info.router))));
+    tp_out(("Address: %s\n", ip_addr_serialize(dhcpc->ip_info.ip)));
+    tp_out(("Netmask: %s\n", ip_addr_serialize(dhcpc->ip_info.netmask)));
+    tp_out(("Router: %s\n", ip_addr_serialize(dhcpc->ip_info.router)));
 
     switch (dhcpc->waited_message)
     {

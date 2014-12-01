@@ -26,6 +26,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "util/tstr.h"
+#include "util/debug.h"
 #include "mem/tmalloc.h"
 
 /* XXX: move to a different file */
@@ -272,4 +273,35 @@ char *tstr_to_strz(tstr_t *t)
     memcpy(ret, TPTR(t), t->len);
     ret[t->len] = '\0';
     return ret;
+}
+
+int __tstr_dump(tstr_t *t, int offset, int size,
+    int (*__dump_fn)(void *ctx, char *buf, int size), void *ctx)
+{
+    return __dump_fn(ctx, TPTR(t) + offset, size);
+}
+
+static int tstr_dump_dump_fn(void *ctx, char *buf, int size)
+{
+    int (*real_dump_fn)(char *buf, int size) = ctx;
+
+    return real_dump_fn(buf, size);
+}
+
+int tstr_dump(tstr_t *t, int offset, int size,
+    int (*dump_fn)(char *buf, int size))
+{
+    return __tstr_dump(t, offset, size, tstr_dump_dump_fn, dump_fn);
+}
+
+void tstr_move(tstr_t *t, int to_idx, int from_idx, int count)
+{
+    char *from, *to;
+
+    tp_assert(from_idx > 0 && from_idx < t->len);
+    tp_assert(to_idx > 0 && to_idx < t->len);
+
+    from = TPTR(t) + from_idx;
+    to = TPTR(t) + to_idx;
+    memmove(to, from, count);
 }

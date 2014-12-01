@@ -16,6 +16,7 @@ ifneq ($(CONFIG_TI_CCS5),)
 endif
 
 ifneq ($(CONFIG_GCC),)
-  CFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog -Os
-  LDFLAGS+=-mmcu=msp430f5529 -mdisable-watchdog
+  MSP_DIR=$(dir $(CROSS_COMPILE))..
+  CFLAGS+=-mmcu=msp430f5529 -I$(MSP_DIR)/include -Os
+  LDFLAGS+=-mmcu=msp430f5529 -L$(MSP_DIR)/include
 endif

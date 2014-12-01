@@ -24,6 +24,7 @@
  */
 #include <msp430.h>
 #include "platform/platform.h"
+#include "platform/ticks.h"
 #include "platform/msp430/msp430f5529_gpio.h"
 #include "platform/msp430/msp430f5529_usci.h"
 #include "drivers/gpio/gpio_platform.h"
@@ -83,6 +84,13 @@ static void clock_init(void)
     } while (SFRIFG1&OFIFG); /* Test oscillator fault flag */
 }
 
+static void timer_init(void)
+{
+    TA0CCR0 = SYSCLK / 8 / 1000; /* 1 ms */
+    TA0CCTL0 = CCIE; /* Enable counter interrupts */
+    TA0CTL = TASSEL_2 | ID_3 | MC_1 | TAIE; /* Count up, SMCLK, div 8 */
+}
+
 unsigned long msp430f5529_get_system_clock(void)
 {
     return SYSCLK;
@@ -91,6 +99,7 @@ unsigned long msp430f5529_get_system_clock(void)
 void msp430f5529_init(void)
 {
     clock_init();
+    timer_init();
 
     __bis_SR_register(GIE); /* Enable interrupts */
 }
@@ -125,16 +134,38 @@ int msp430f5529_serial_write(int u, char *buf, int size)
     return 0;
 }
 
+#ifndef CONFIG_GCC
 #pragma vector = USCI_A0_VECTOR
-__interrupt void uscia0rx_isr(void)
+__interrupt
+#else
+__attribute__((interrupt(USCI_A0_VECTOR)))
+#endif
+void uscia0rx_isr(void)
 {
     buffered_serial_push(USCIA0, UCA0RXBUF & 0xff);
 }
 
+#ifndef CONFIG_GCC
 #pragma vector = USCI_A1_VECTOR
-__interrupt void uscia1rx_isr(void)
+__interrupt
+#else
+__attribute__((interrupt(USCI_A1_VECTOR)))
+#endif
+void uscia1rx_isr(void)
 {
     buffered_serial_push(USCIA1, UCA1RXBUF & 0xff);
+}
+
+#ifndef CONFIG_GCC
+#pragma vector = TIMER0_A0_VECTOR
+__interrupt
+#else
+__attribute__((interrupt(TIMER0_A0_VECTOR)))
+#endif
+void timer0_a0_isr(void)
+{
+    tick();
+    TA0CTL &= ~TAIFG;
 }
 
 void msp430f5529_serial_irq_enable(int u, int enabled)
@@ -193,4 +224,5 @@ const platform_t platform = {
     .select = msp430f5529_select,
     .get_system_clock = msp430f5529_get_system_clock,
     .msleep = msp430f5529_msleep,
+    .get_time_from_boot = gen_get_time_from_boot,
 };

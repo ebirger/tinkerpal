@@ -1,5 +1,6 @@
 config ARM
 	bool
+        select PLAT_TICKS
 
 source "platform/arm/ti/Kconfig"
 source "platform/arm/stm32/Kconfig"

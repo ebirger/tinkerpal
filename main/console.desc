@@ -7,7 +7,7 @@ FUNCTION("set", console, do_console_set, {
     },
     .description = "Sets TinkerPal console to a given serial port",
     .return_value = "None",
-    .example = "console.set(new Serial(UART1));\n",
+    .example = "console.set(new Serial(UART1));",
 })
 
 FUNCTION("log", console, do_console_log, {

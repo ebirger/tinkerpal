@@ -72,7 +72,7 @@ static void net_test_process_line(tstr_t *line)
     }
     if (!tstr_cmp(line, &S("ip")))
     {
-        u32 addr = ntohl(netif_ip_addr_get(netif));
+        u32 addr = netif_ip_addr_get(netif);
 
         console_printf("IP address: %s\n", ip_addr_serialize(addr));
     }

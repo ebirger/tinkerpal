@@ -24,6 +24,7 @@
  */
 #define _XOPEN_SOURCE 600 
 #define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #define _DARWIN_C_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -129,7 +130,7 @@ void unix_panic(void)
     exit(1);
 }
 
-void unix_get_time_from_boot(unsigned int *sec, unsigned int *usec)
+void unix_get_time_from_boot(uint32_t *sec, uint32_t *usec)
 {
     struct timeval now, diff;
 

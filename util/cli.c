@@ -143,14 +143,11 @@ static void do_left(void)
 
 static void do_right(void)
 {
-    char b;
-
     if (cur_line_pos == cur_line.len)
         return;
 
     /* Write current character */
-    b = *(TPTR(&cur_line) + cur_line_pos);
-    console_write(&b, 1);
+    tstr_dump(&cur_line, cur_line_pos, 1, console_write);
     cur_line_pos++;
 }
 
@@ -167,10 +164,8 @@ static void do_bs(void)
     delta = cur_line.len - cur_line_pos;
     if (delta)
     {
-        char *cur = TPTR(&cur_line) + cur_line_pos;
-
-        memmove(cur - 1, cur, delta);
-        console_write(cur - 1, delta);
+        tstr_move(&cur_line, cur_line_pos - 1, cur_line_pos, delta);
+        tstr_dump(&cur_line, cur_line_pos - 1, delta, console_write);
     }
 
     /* Erase last character */

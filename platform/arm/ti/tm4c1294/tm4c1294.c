@@ -41,6 +41,7 @@
 #include "util/debug.h"
 #include "drivers/gpio/gpio_platform.h"
 #include "platform/platform.h"
+#include "platform/ticks.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/tm4c1294/tm4c1294.h"
@@ -153,6 +154,11 @@ const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
     {}
 };
 
+const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params = {
+    .dp_pin = PL6,
+    .dm_pin = PL7,
+};
+
 static unsigned long system_clock;
 
 #ifdef CONFIG_GPIO
@@ -238,11 +244,22 @@ const platform_t platform = {
         .reg_write = ti_arm_mcu_i2c_reg_write,
     },
 #endif
+#ifdef CONFIG_USB_DEVICE
+    .usb = {
+        .init = ti_arm_mcu_usb_init,
+        .connect = ti_arm_mcu_usb_connect,
+        .ep_cfg = ti_arm_mcu_usb_ep_cfg,
+        .ep_data_ack = ti_arm_mcu_usb_ep_data_ack,
+        .ep_data_get = ti_arm_mcu_usb_ep_data_get,
+        .ep_data_send = ti_arm_mcu_usb_ep_data_send,
+        .set_addr = ti_arm_mcu_usb_set_addr,
+    },
+#endif
     .init = tm4c1294_init,
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = ti_arm_mcu_select,
-    .get_time_from_boot = cortex_m_get_time_from_boot,
+    .get_time_from_boot = gen_get_time_from_boot,
     .get_system_clock = tm4c1294_get_system_clock,
     .msleep = ti_arm_mcu_msleep,
 };

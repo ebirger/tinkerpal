@@ -144,7 +144,7 @@ int do_string_prototype_char_code_at(obj_t **ret, obj_t *this, int argc,
     if (pos < 0 || pos >= s.len)
         goto Exit;
 
-    *ret = num_new_int(*(TPTR(&s) + pos));
+    *ret = num_new_int(tstr_peek(&s, pos));
 
 Exit:
     tstr_free(&s);

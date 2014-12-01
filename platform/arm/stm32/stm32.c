@@ -33,7 +33,8 @@ extern uint32_t SystemCoreClock;
 
 int stm32_select(int ms)
 {
-    int expire = platform_get_ticks_from_boot() + ms, event = 0;
+    uint64_t expire = platform_get_ticks_from_boot() + ms;
+    int event = 0;
 
     while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {

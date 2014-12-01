@@ -23,9 +23,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
-
-static volatile unsigned int ticks;
-static unsigned int last_ticks, cm_time_sec, cm_time_msec;
+#include "platform/ticks.h"
+#include "platform/arm/cortex-m.h"
 
 #ifdef CONFIG_GCC
 static char *heap_end = 0;
@@ -140,23 +139,7 @@ void cortex_m_reset_isr(void)
 
 void cortex_m_systick_isr(void)
 {
-    ticks++;
-}
-
-void cortex_m_get_time_from_boot(unsigned int *sec, unsigned int *usec)
-{
-    unsigned int cur_ticks = ticks;
-
-    cm_time_msec += cur_ticks - last_ticks;
-    last_ticks = cur_ticks;
-
-    while (cm_time_msec >= 1000)
-    {
-	cm_time_msec -= 1000;
-	cm_time_sec++;
-    }
-    *sec = cm_time_sec;
-    *usec = cm_time_msec * 1000;
+    tick();
 }
 
 void cortex_m_panic(void)

@@ -40,14 +40,9 @@ typedef struct {
     void (*uninit)(void);
 } fs_t;
 
-static inline int vfs_is_root_path(tstr_t *path)
-{
-    return path->len == 0 || (path->len == 1 && (TPTR(path)[0] == '.' || 
-        TPTR(path)[0] == '/'));
-}
-
 #define VFS_FLAGS_ANY_FS 0x1
 
+int vfs_is_root_path(tstr_t *path);
 int vfs_file_read(tstr_t *content, tstr_t *file_name, int flags);
 int vfs_file_write(tstr_t *content, tstr_t *file_name);
 int vfs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx);

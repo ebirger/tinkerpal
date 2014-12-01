@@ -28,12 +28,10 @@
 #include <avr/sleep.h>
 #include <util/delay.h>
 #include "platform/platform.h"
+#include "platform/ticks.h"
 #include "util/tp_misc.h"
 
 #define DEFAULT_BAUD 19200
-
-static volatile unsigned int ticks;
-static unsigned int last_ticks, cm_time_sec, cm_time_msec;
 
 static void avr8_msleep(double ms)
 {
@@ -58,7 +56,7 @@ static void clock_init(void)
 
 ISR (TIMER0_COMPA_vect)
 {
-    ticks++;
+    tick();
 }
 
 static void avr8_init(void)
@@ -66,25 +64,10 @@ static void avr8_init(void)
     clock_init();
 }
 
-void avr8_time_from_boot(unsigned int *sec, unsigned int *usec)
-{
-    unsigned int cur_ticks = ticks;
-
-    cm_time_msec += cur_ticks - last_ticks;
-    last_ticks = cur_ticks;
-
-    while (cm_time_msec >= 1000)
-    {
-	cm_time_msec -= 1000;
-	cm_time_sec++;
-    }
-    *sec = cm_time_sec;
-    *usec = cm_time_msec * 1000;
-}
-
 static int avr8_select(int ms)
 {
-    int expire = platform_get_ticks_from_boot() + ms, event = 0;
+    uint64_t expire = platform_get_ticks_from_boot() + ms;
+    int event = 0;
 
     while ((!ms || platform_get_ticks_from_boot() < expire) && !event)
     {
@@ -196,7 +179,7 @@ const platform_t platform = {
     .init = avr8_init,
     .select = avr8_select,
     .msleep = avr8_msleep,
-    .get_time_from_boot = avr8_time_from_boot,
+    .get_time_from_boot = gen_get_time_from_boot,
 };
 
 int main(void)

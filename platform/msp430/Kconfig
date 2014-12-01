@@ -3,6 +3,7 @@ config MSP430
 	select PLAT_HAS_TI_CCS5
         select PLAT_HAS_GCC
 	select PLAT_HAS_MALLOC
+        select PLAT_TICKS
 	select 16_BIT
 
 config MSP430F5529

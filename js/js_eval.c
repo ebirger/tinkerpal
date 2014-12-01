@@ -1944,7 +1944,7 @@ int js_eval_rank(tstr_t code)
 } while(0)
     while (code.len)
     {
-        char c = *TPTR(&code);
+        char c = tstr_peek(&code, 0);
         if (is_open_char(c))
             PUSH(open_char_recip(c));
         if (is_close_char(c))

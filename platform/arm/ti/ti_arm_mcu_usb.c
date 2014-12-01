@@ -29,6 +29,7 @@
 #include "driverlib/rom_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/usb.h"
+#include "driverlib/interrupt.h"
 #include "platform/platform.h"
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "usb/usbd_core_platform.h"

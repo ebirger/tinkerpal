@@ -24,6 +24,7 @@
  */
 #include "util/debug.h"
 #include "platform/platform.h"
+#include "platform/ticks.h"
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/stm32/stm32f4xx/stm32f4xx_common.h"
 #include "platform/arm/stm32/stm32f4xx/stm32f407xx.h"
@@ -208,7 +209,7 @@ const platform_t platform = {
     .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = stm32_select,
-    .get_time_from_boot = cortex_m_get_time_from_boot,
+    .get_time_from_boot = gen_get_time_from_boot,
     .get_system_clock = stm32_get_system_clock,
     .msleep = stm32_msleep,
 };

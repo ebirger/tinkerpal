@@ -121,10 +121,22 @@ Exit:
     return rc;
 }
 
+static int fat_file_write_tstr_dump(void *ctx, char *buf, int len)
+{
+    FIL *fp = ctx;
+    UINT bw;
+    int rc;
+
+    rc = f_write(fp, buf, len, &bw);
+    if (rc != FR_OK || bw != len)
+        return rc;
+
+    return bw;
+}
+
 static int fat_file_write(tstr_t *content, tstr_t *file_name)
 {
     FIL fp = {};
-    UINT bw;
     char *file_n = NULL;
     int rc = -1;
 
@@ -136,11 +148,10 @@ static int fat_file_write(tstr_t *content, tstr_t *file_name)
         goto Exit;
     }
 
-    rc = f_write(&fp, TPTR(content), content->len, &bw);
-    if (rc != FR_OK || bw != content->len)
+    rc = __tstr_dump(content, 0, content->len, fat_file_write_tstr_dump, &fp);
+    if (rc < 0 || rc != content->len)
     {
-        tp_err(("Wrote %d/%d to file %S rc %d\n", bw, content->len, 
-            file_name, rc));
+        tp_err(("Error writing to filefile %S rc %d\n", file_name, rc));
         goto Exit;
     }
 

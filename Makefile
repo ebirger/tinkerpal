@@ -5,7 +5,7 @@ PATCH_VERSION=3
 HOST_OS=$(shell uname)
 
 BUILD?=build.$(HOST_OS)
-STAGING=staging.$(HOST_OS)
+export STAGING=staging.$(HOST_OS)
 BSPS_DIR?=$(STAGING)/bsps
 
 ifeq ($(V),1)
@@ -74,7 +74,7 @@ IMAGE=$(BUILD)/$(IMAGE_NAME)
 _all: $(BSPS_DIR)/.fetched $(IMAGE) $(BUILD)/auto.conf
   
 clean: 
-	$(Q)$(RM) $(TARGET) $(IMAGE) $(OBJS) $(AUTO_GEN_FILES) $(OBJS:.o=.d) $(LINK_DEPS)
+	$(Q)rm -f $(TARGET) $(IMAGE) $(OBJS) $(AUTO_GEN_FILES) $(OBJS:.o=.d) $(LINK_DEPS)
 
 endif
 
@@ -83,7 +83,7 @@ include scripts/Makefile.config
 ifneq ($(wildcard $(BUILD)),)
 
 distclean: 
-	$(RM) -rf $(BUILD)
+	rm -rf $(BUILD)
 
 endif
 

@@ -81,4 +81,5 @@ config TM4C1294
 	select PLAT_HAS_PWM
 	select PLAT_HAS_EMBEDDED_ETH
 	select PLAT_HAS_I2C
+	select PLAT_HAS_USB
 	select TI_I2C_WAIT_FOR_BUSY_WAR

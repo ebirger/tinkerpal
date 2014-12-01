@@ -28,4 +28,9 @@
 const board_t board = {
     .desc = "Trinket Pro",
     .default_console_id = UART_RES(USART0),
+    .leds = (resource_t []){
+        GPIO_RES(_PB5),
+        GPIO_RES(_PB6),
+        0
+    },
 };

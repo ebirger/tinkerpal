@@ -30,6 +30,11 @@ extern void reset_isr(void);
 extern void ti_arm_mcu_uart_isr(int u);
 void ti_arm_mcu_gpio_isr(int port) { }
 extern void cortex_m_systick_isr(void);
+#ifdef CONFIG_USB
+extern void ti_arm_mcu_usb_isr(void);
+#else
+static void ti_arm_mcu_usb_isr(void) { }
+#endif
 
 static void uart0_isr(void) { ti_arm_mcu_uart_isr(UART0); }
 static void uart1_isr(void) { ti_arm_mcu_uart_isr(UART1); }
@@ -146,7 +151,7 @@ void (*const g_pfnVectors[])(void) =
     default_isr,                      // CAN1
     tiva_c_emac_isr,                  // Ethernet
     default_isr,                      // Hibernate
-    default_isr,                      // USB0
+    ti_arm_mcu_usb_isr,               // USB0
     default_isr,                      // PWM Generator 3
     default_isr,                      // uDMA Software Transfer
     default_isr,                      // uDMA Error

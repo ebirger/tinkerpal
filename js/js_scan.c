@@ -36,16 +36,16 @@ typedef union {
 
 struct scan_t {
     token_type_t tok; /* Must be first */
-    char *lpc;
-    char *pc;
-    char *trace_point;
-    char *last_token_start;
-    char *internal_buf;
+    tstr_t code;
+    int lpc;
+    int pc;
+    int trace_point;
+    int last_token_start;
+    tstr_t *internal_buf;
     int size; /* should be size_t */
     char look;
 #define SCAN_FLAG_EOF 0x0001
-#define SCAN_FLAG_ALLOCED 0x0002
-#define SCAN_FLAG_INVALID 0x0004
+#define SCAN_FLAG_INVALID 0x0002
     unsigned short flags;
     scan_value_t value;
 };
@@ -54,7 +54,6 @@ static get_constants_cb_t g_get_constants_cb;
 
 #define IS_EOF(scan) ((scan)->flags & SCAN_FLAG_EOF)
 #define SET_EOF(scan) ((scan)->flags |= SCAN_FLAG_EOF)
-#define IS_ALLOCED(scan) ((scan)->flags & SCAN_FLAG_ALLOCED)
 
 static inline int is_digit(char c)
 {
@@ -116,7 +115,7 @@ static void _get_char(scan_t *scan)
     {
         scan->lpc = scan->pc;
         if (scan->size > 1)
-            scan->look = *scan->pc;
+            scan->look = tstr_peek(&scan->code, scan->pc);
         scan->pc++;
         scan->size--;
     }
@@ -142,7 +141,7 @@ static void skip_white(scan_t *scan)
             break;
         
         /* XXX: rewrite this pretty */
-        next = *scan->pc;
+	next = tstr_peek(&scan->code, scan->pc);
         /* Skip single line comment */
         if (next == '/')
         {
@@ -157,8 +156,11 @@ static void skip_white(scan_t *scan)
             _get_char(scan); /* Skip '/' */
             _get_char(scan); /* Skip '*' */
             /* XXX: assert on nested comments */
-            while (scan->look != '*' && *scan->pc != '/' && !IS_EOF(scan))
+            while (scan->look != '*' &&
+                tstr_peek(&scan->code, scan->pc) != '/' && !IS_EOF(scan))
+	    {
                 _get_char(scan);
+	    }
             _get_char(scan); /* Skip '*' */
             _get_char(scan); /* Skip '/' */
         }
@@ -169,9 +171,9 @@ static void skip_white(scan_t *scan)
 
 static inline tstr_t extract_string(scan_t *scan)
 {
-    tstr_t ret = {};
-    unsigned short tflags = IS_ALLOCED(scan) ? TSTR_FLAG_ALLOCATED : 0;
-    char *start;
+    tstr_t ret;
+    unsigned short tflags = 0;
+    int start;
     token_type_t delim = scan->look;
 
     _get_char(scan); /* skip enclosure */
@@ -190,7 +192,8 @@ static inline tstr_t extract_string(scan_t *scan)
         _get_char(scan);
     }
 
-    tstr_init(&ret, start, scan->lpc - start, tflags);
+    ret = tstr_piece(scan->code, start, scan->lpc - start);
+    ret.flags |= tflags;
     _get_char(scan); /* skip enclosure */
     skip_white(scan);
     return ret;
@@ -198,15 +201,16 @@ static inline tstr_t extract_string(scan_t *scan)
 
 static inline tstr_t extract_identifier(scan_t *scan)
 {
-    tstr_t ret = {};
-    unsigned short tflags = IS_ALLOCED(scan) ? TSTR_FLAG_ALLOCATED : 0;
-    char *start;
+    tstr_t ret;
+    unsigned short tflags = 0;
+    int start;
 
     start = scan->lpc;
     while (is_valid_identifier_non_first_letter(scan->look))
         _get_char(scan);
 
-    tstr_init(&ret, start, scan->lpc - start, tflags);
+    ret = tstr_piece(scan->code, start, scan->lpc - start);
+    ret.flags |= tflags;
     skip_white(scan);
     return ret;
 }
@@ -312,12 +316,12 @@ static inline tnum_t extract_num(scan_t *scan)
 {
     tstr_t s;
     tnum_t ret;
-    char *start;
+    int start;
 
     start = scan->lpc;
     while (is_number_letter(scan->look))
         _get_char(scan);
-    tstr_init(&s, start, scan->lpc - start, 0);
+    s = tstr_piece(scan->code, start, scan->lpc - start);
     skip_white(scan);
 
     if (tstr_to_tnum(&ret, &s))
@@ -351,12 +355,12 @@ void js_scan_next_token(scan_t *scan)
     }
     if (scan->size > 1)
     {
-        next = *scan->pc;
+        next = tstr_peek(&scan->code, scan->pc);
         if (scan->size > 2)
         {
-            next2 = *(scan->pc + 1);
+	    next2 = tstr_peek(&scan->code, scan->pc + 1);
             if (scan->size > 3)
-                next3 = *(scan->pc + 2);
+		next3 = tstr_peek(&scan->code, scan->pc + 2);
         }
     }
     switch (scan->look)
@@ -459,16 +463,20 @@ static char *tok_to_str(token_type_t tok)
 
 void js_scan_trace(scan_t *scan)
 {
-    char *p;
+    int p;
 
-    for (p = scan->trace_point; p - scan->pc < scan->size && *p != '\n' && 
-        *p != '\r' ; p++)
+    for (p = scan->trace_point; p - scan->lpc < scan->size; p++)
     {
-        tp_out(("%c", *p));
+        char c = tstr_peek(&scan->code, p);
+
+        if (c == '\n' || c == '\r')
+            break;
+
+        tp_out(("%c", c));
     }
     tp_out(("\n"));
     for (p = scan->trace_point; p < scan->last_token_start; p++)
-        tp_out((" ", *p));
+        tp_out((" ", tstr_peek(&scan->code, p)));
     tp_out(("^\n"));
 }
 
@@ -603,7 +611,7 @@ scan_t *js_scan_save(scan_t *scan)
 
 void js_scan_restore(scan_t *dst, scan_t *src)
 {
-    char *internal_buf = dst->internal_buf;
+    tstr_t *internal_buf = dst->internal_buf;
 
     *dst = *src;
     dst->internal_buf = internal_buf;
@@ -614,12 +622,11 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
     scan_t *ret = js_scan_save(start);
 
     ret->size = end->lpc - start->lpc;
-    if (start->flags & SCAN_FLAG_ALLOCED)
+    if (TSTR_IS_ALLOCATED(&start->code))
     {
-        ret->internal_buf = tmalloc(ret->size, "scan internal buffer");
-        memcpy(ret->internal_buf, start->lpc, ret->size);
-        ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 
-            ret->internal_buf; 
+        ret->code = tstr_slice(start->code, start->lpc, ret->size);
+        ret->internal_buf = &ret->code;
+        ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 0;
         ret->pc += start->pc - start->lpc;
     }
     return ret;
@@ -631,7 +638,7 @@ void js_scan_free(scan_t *scan)
         return;
 
     if (scan->internal_buf)
-        tfree(scan->internal_buf);
+        tstr_free(scan->internal_buf);
     tfree(scan);
 }
 
@@ -649,11 +656,12 @@ scan_t *_js_scan_init(tstr_t *data, int own_data)
 {
     scan_t *scan = tmalloc_type(scan_t);
 
-    scan->last_token_start = scan->trace_point = scan->pc = TPTR(data);
+    scan->code = *data;
+    scan->last_token_start = scan->trace_point = scan->pc = 0;
     scan->size = data->len + 1;
     scan->look = 255;
-    scan->flags = TSTR_IS_ALLOCATED(data) ? SCAN_FLAG_ALLOCED : 0;
-    scan->internal_buf = own_data ? TPTR(data) : NULL;
+    scan->flags = 0;
+    scan->internal_buf = own_data ? &scan->code : 0;
     _get_char(scan);
     skip_white(scan);
     js_scan_next_token(scan);

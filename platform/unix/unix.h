@@ -25,6 +25,8 @@
 #ifndef __UNIX_H__
 #define __UNIX_H__
 
+#include "platform/platform.h"
+
 typedef struct {
     int event;
     int in_fd;
@@ -37,7 +39,7 @@ void unix_set_nonblock(int fd);
 int unix_select(int ms, unix_fd_event_map_t *map);
 int unix_read(int event, char *buf, int size, unix_fd_event_map_t *map);
 int unix_write(int event, char *buf, int size, unix_fd_event_map_t *map);
-void unix_get_time_from_boot(unsigned int *sec, unsigned int *usec);
+void unix_get_time_from_boot(uint32_t *sec, uint32_t *usec);
 void unix_panic(void);
 
 void unix_init(void);
