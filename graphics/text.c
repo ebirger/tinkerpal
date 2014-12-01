@@ -26,12 +26,12 @@
 #include "graphics/font.h"
 #include "util/debug.h"
 
-static inline int text_point(int x, int y, const char *str)
+static inline int text_point(int x, int y, const tstr_t *str)
 {
     const unsigned char *c;
 
     /* Font size 8x7 */
-    c = font[str[x >> 3] - ' '];
+    c = font[tstr_peek(str, x >> 3) - ' '];
     return c[y] & (1<<(x & 0x7));
 }
 
@@ -45,7 +45,7 @@ void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color)
     {
         for (j = 0; j < 7; j++)
         {
-            if (!text_point(i, j, TPTR(str)))
+            if (!text_point(i, j, str))
                continue;
 
             canvas_pixel_set(c, i + x, j + y, color);
