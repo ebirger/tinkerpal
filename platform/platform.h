@@ -123,7 +123,7 @@ static inline uint64_t platform_get_ticks_from_boot(void)
     uint32_t sec, usec;
 
     platform_get_time_from_boot(&sec, &usec);
-    return sec * 1000 + usec / 1000;
+    return (uint64_t)sec * 1000 + usec / 1000;
 }
 
 static inline void platform_msleep(double ms)
