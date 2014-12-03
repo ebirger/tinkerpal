@@ -248,6 +248,11 @@ int do_netif_on_tcp_disconnect(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
+static int netif_tcp_write_dump(void *ctx, char *buf, int len)
+{
+    return netif_tcp_write(ctx, buf, len);
+}
+
 int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
@@ -262,11 +267,9 @@ int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     if (is_string(argv[1]))
     {
-        string_t *s;
+        string_t *s = to_string(argv[1]);
 
-        s = to_string(argv[1]);
-
-        netif_tcp_write(netif, TPTR(&s->value), s->value.len);
+        __tstr_dump(&s->value, 0, s->value.len, netif_tcp_write_dump, netif);
         return 0;
     }
     
