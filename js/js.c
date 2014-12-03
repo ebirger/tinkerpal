@@ -56,19 +56,19 @@ static int js_get_constants_cb(int *constant, tstr_t *s)
     /* Additional constants will be registered here */
 
 #ifdef CONFIG_GPIO
-    if (!gpio_get_constant(constant, TPTR(s), s->len))
+    if (!gpio_get_constant(constant, *s))
         return 0;
 #endif
 #ifdef CONFIG_PLAT_HAS_SERIAL
-    if (!serial_get_constant(constant, TPTR(s), s->len))
+    if (!serial_get_constant(constant, *s))
         return 0;
 #endif
 #ifdef CONFIG_SPI
-    if (!spi_get_constant(constant, TPTR(s), s->len))
+    if (!spi_get_constant(constant, *s))
         return 0;
 #endif
 #ifdef CONFIG_I2C
-    if (!i2c_get_constant(constant, TPTR(s), s->len))
+    if (!i2c_get_constant(constant, *s))
         return 0;
 #endif
 

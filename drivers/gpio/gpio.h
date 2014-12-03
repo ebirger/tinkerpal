@@ -99,26 +99,24 @@ static inline u16 gpio_get_port_val(resource_t port, u16 mask)
     return platform.gpio.get_port_val(RES_MAJ(port), mask);
 }
 
-/* XXX: should receive tstr */
-static inline int gpio_get_constant(int *constant, char *buf, int len)
+static inline int gpio_get_constant(int *constant, tstr_t t)
 {
     int pin;
 
 #define GPIO_PREFIX "GPIO_P"
 
-    if (len < sizeof(GPIO_PREFIX) -1 || 
-        prefix_comp(sizeof(GPIO_PREFIX) - 1, GPIO_PREFIX, buf))
-    {
+    if (tstr_ncmp_str(&t, GPIO_PREFIX, sizeof(GPIO_PREFIX) - 1))
         return -1;
+
+    tstr_advance(&t, sizeof(GPIO_PREFIX) - 1);
+
+    if (t.len == 2)
+        pin = GPIO(tstr_peek(&t, 0) - 'A', tstr_peek(&t, 1) - '0');
+    else if (t.len == 3)
+    {
+        pin = GPIO(tstr_peek(&t, 0) - 'A', ((tstr_peek(&t, 1) - '0') * 10) +
+            tstr_peek(&t, 2) - '0');
     }
-
-    buf += sizeof(GPIO_PREFIX) - 1;
-    len -= sizeof(GPIO_PREFIX) - 1;
-
-    if (len == 2)
-        pin = GPIO(buf[0] - 'A', buf[1] - '0');
-    else if (len == 3)
-        pin = GPIO(buf[0] - 'A', ((buf[1] - '0') * 10) + buf[2] - '0');
     else 
         return -1;
 

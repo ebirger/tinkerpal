@@ -216,28 +216,26 @@ int serial_set_params(resource_t id, const serial_params_t *params)
 }
 
 static int _serial_get_constant(char *prefix, int maj, int *constant,
-    char *buf, int len)
+    tstr_t t)
 {
     int prefix_len = strlen(prefix);
 
-    if (len < prefix_len || prefix_comp(prefix_len, prefix, buf))
+    if (tstr_ncmp_str(&t, prefix, prefix_len))
         return -1;
 
-    buf += prefix_len;
-    len -= prefix_len;
-
-    if (len != 1)
+    tstr_advance(&t, prefix_len);
+    if (t.len != 1)
         return -1;
 
-    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, maj, buf[0] - '0');
+    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, maj, tstr_peek(&t, 0) - '0');
     return 0;
 }
 
-int serial_get_constant(int *constant, char *buf, int len)
+int serial_get_constant(int *constant, tstr_t t)
 {
-    if (!_serial_get_constant("UART", SERIAL_UART_MAJ, constant, buf, len))
+    if (!_serial_get_constant("UART", SERIAL_UART_MAJ, constant, t))
         return 0;
-    if (!_serial_get_constant("USB", SERIAL_USB_MAJ, constant, buf, len))
+    if (!_serial_get_constant("USB", SERIAL_USB_MAJ, constant, t))
         return 0;
     return -1;
 }

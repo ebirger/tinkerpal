@@ -92,6 +92,13 @@ static inline int _tstr_cmp_str(const tstr_t *a, const char *b,
         memcmp(TPTR(a), b, blen);
 }
 
+static inline int tstr_ncmp_str(const tstr_t *a, const char *b,
+    unsigned short blen)
+{
+    return a->len < blen || (blen && (*TPTR(a) != *b)) ||
+        memcmp(TPTR(a), b, blen);
+}
+
 static inline int tstr_cmp_str(const tstr_t *a, const char *b)
 {
     unsigned short blen = strlen(b);

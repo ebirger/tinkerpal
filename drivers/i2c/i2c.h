@@ -47,23 +47,19 @@ static inline void i2c_reg_write(int port, u8 addr, u8 reg, u8 *data, int len)
     return platform.i2c.reg_write(RES_MAJ(port), addr, reg, data, len);
 }
 
-static inline int i2c_get_constant(int *constant, char *buf, int len)
+static inline int i2c_get_constant(int *constant, tstr_t t)
 {
 #define I2C_PREFIX "I2C"
 
-    if (len < sizeof(I2C_PREFIX) -1 || 
-        prefix_comp(sizeof(I2C_PREFIX) - 1, I2C_PREFIX, buf))
-    {
-        return -1;
-    }
-
-    buf += sizeof(I2C_PREFIX) - 1;
-    len -= sizeof(I2C_PREFIX) - 1;
-
-    if (len != 1)
+    if (tstr_ncmp_str(&t, I2C_PREFIX, sizeof(I2C_PREFIX) - 1))
         return -1;
 
-    *constant = (int)RES(I2C_RESOURCE_ID_BASE, buf[0] - '0', 0);
+    tstr_advance(&t, sizeof(I2C_PREFIX) - 1);
+
+    if (t.len != 1)
+        return -1;
+
+    *constant = (int)RES(I2C_RESOURCE_ID_BASE, tstr_peek(&t, 0) - '0', 0);
     return 0;
 }
 
