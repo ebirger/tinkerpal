@@ -232,19 +232,6 @@ tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
     return ret;
 }
 
-/* XXX: this is stupid. Should use tstr and have tstr prefix comp */
-int prefix_comp(int len, char *a, char *b)
-{
-    int i;
-
-    for (i = 0; i < len; i++)
-    {
-        if (a[i] != b[i])
-            return -1;
-    }
-    return 0;
-}
-
 tstr_t tstr_cut(tstr_t *t, char delim)
 {
     int i;
