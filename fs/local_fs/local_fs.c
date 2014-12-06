@@ -29,6 +29,11 @@
 #include "fs/vfs.h"
 #include <stdio.h>
 
+static int local_file_read_fill_fn(void *ctx, char *buf, int size)
+{
+    return fread(buf, 1, size, ctx);
+}
+
 static int local_file_read(tstr_t *content, tstr_t *file_name)
 {
     FILE *fp;
@@ -55,7 +60,7 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
     rewind(fp);
 
     tstr_alloc(content, fsize);
-    nread = fread(TPTR(content), 1, fsize, fp);
+    nread = tstr_fill(content, fsize, local_file_read_fill_fn, fp);
     if (nread != fsize)
     {
         tp_err(("Read %d/%d from file %S\n", nread, content->len, file_name));
