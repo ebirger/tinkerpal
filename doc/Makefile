@@ -6,7 +6,7 @@ DESCS=$(shell find . -name "*.desc")
 
 RESTDOWN_DIR=$(STAGING)/restdown
 RESTDOWN_EXEC=$(RESTDOWN_DIR)/bin/restdown
-RESTDOWN=python $(RESTDOWN_EXEC)
+RESTDOWN=python2 $(RESTDOWN_EXEC)
 $(RESTDOWN_DIR)/.git:
 	@git clone https://github.com/trentm/restdown.git $(RESTDOWN_DIR)
 
