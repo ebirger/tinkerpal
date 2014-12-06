@@ -115,7 +115,6 @@ static inline tstr_t tstr_slice(tstr_t s, int index, int count)
 {
     return tstr_dup(tstr_piece(s, index, count));
 }
-tstr_t tstr_slice(tstr_t s, int index, int count);
 void tstr_free(tstr_t *s);
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b);
 void tstr_unescape(tstr_t *dst, tstr_t *src);
