@@ -310,6 +310,11 @@ int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return js_invalid_args(ret);
 }
 
+static int netif_tcp_read_fill_fn(void *ctx, char *buf, int size)
+{
+    return netif_tcp_read(ctx, buf, size);
+}
+
 int do_netif_tcp_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
@@ -323,7 +328,7 @@ int do_netif_tcp_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     /* XXX: read as much as possible */
     tstr_alloc(&data, 64);
-    data.len = netif_tcp_read(netif, TPTR(&data), 64);
+    data.len = tstr_fill(&data, 64, netif_tcp_read_fill_fn, netif);
     *ret = string_new(data);
     return 0;
 }
