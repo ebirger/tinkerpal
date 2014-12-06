@@ -292,3 +292,9 @@ void tstr_move(tstr_t *t, int to_idx, int from_idx, int count)
     to = TPTR(t) + to_idx;
     memmove(to, from, count);
 }
+
+int tstr_fill(tstr_t *t, int size,
+    int (*fill_fn)(void *ctx, char *buf, int size), void *ctx)
+{
+    return fill_fn(ctx, TPTR(t), size);
+}

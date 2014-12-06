@@ -148,4 +148,7 @@ static inline char tstr_peek(const tstr_t *t, int index)
 
 void tstr_move(tstr_t *t, int to_idx, int from_idx, int count);
 
+int tstr_fill(tstr_t *t, int size,
+    int (*fill_fn)(void *ctx, char *buf, int size), void *ctx);
+
 #endif
