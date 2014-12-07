@@ -29,6 +29,7 @@
 #include "util/tprintf.h"
 #include "util/debug.h"
 #include "util/tp_types.h"
+#include "util/tstr_list.h"
 #include "mem/tmalloc.h"
 
 #ifdef CONFIG_OBJ_DOC

@@ -70,28 +70,6 @@ void tstr_cpy_str(tstr_t *t, const char *s)
     memcpy(TPTR(t), s, len);
 }
 
-void tstr_list_add(tstr_list_t **l, tstr_t *s)
-{
-    tstr_list_t *n = tmalloc_type(tstr_list_t), **iter;
-    /* TODO: verify no double strs */
-    n->str = *s;
-    n->next = NULL;
-    for (iter = l; *iter; iter = &(*iter)->next);
-    *iter = n;
-}
-
-void tstr_list_free(tstr_list_t **l)
-{
-    tstr_list_t *temp;
-
-    while ((temp = *l))
-    {
-        *l = (*l)->next;
-        tstr_free(&temp->str);
-        tfree(temp);
-    }
-}
-
 int tstr_find(tstr_t *haystack, tstr_t *needle)
 { 
     int i, j;

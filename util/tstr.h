@@ -50,11 +50,6 @@ typedef struct {
 
 char digit_value(char c);
 
-typedef struct tstr_list_t {
-    struct tstr_list_t *next;
-    tstr_t str;
-} tstr_list_t;
-
 void tstr_cpy_str(tstr_t *t, const char *s);
 
 /* Allocate the data within the tstr */
@@ -62,9 +57,6 @@ void tstr_alloc(tstr_t *t, int len);
 void tstr_zalloc(tstr_t *t, int len);
 
 void tstr_init(tstr_t *t, char *data, int len, unsigned short flags);
-
-void tstr_list_add(tstr_list_t **l, tstr_t *s);
-void tstr_list_free(tstr_list_t **l);
 
 static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
 {

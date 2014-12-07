@@ -26,6 +26,7 @@
 #include "util/tp_misc.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
+#include "util/tstr_list.h"
 #include "mem/mem_cache.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"

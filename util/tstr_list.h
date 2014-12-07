@@ -22,32 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __JS_EVAL_H__
-#define __JS_EVAL_H__
+#ifndef __TSTR_LIST_H__
+#define __TSTR_LIST_H__
 
 #include "util/tstr.h"
-#include "util/tstr_list.h"
-#include "js/js_obj.h"
 
-int js_eval(obj_t **ret, tstr_t *code);
-int js_eval_module(obj_t **ret, tstr_t *code);
-int js_eval_obj(obj_t **ret, obj_t *obj);
-/* Return 'rank' of code - used for multiline edit:
- * Examples:
- *    function f() { => 1
- *    function f() { while(1) { => 2
- * ...
- */
-int js_eval_rank(tstr_t code);
-/* Stop current execution */
-void js_eval_stop_execution(void);
+typedef struct tstr_list_t {
+    struct tstr_list_t *next;
+    tstr_t str;
+} tstr_list_t;
 
-void evaluated_function_code_free(void *code);
-int call_evaluated_function(obj_t **ret, obj_t *this_obj, int argc, 
-    obj_t *argv[]);
-int parse_function_param_list(tstr_list_t **params, scan_t *scan);
-
-void js_eval_uninit(void);
-void js_eval_init(void);
+void tstr_list_add(tstr_list_t **l, tstr_t *s);
+void tstr_list_free(tstr_list_t **l);
 
 #endif
