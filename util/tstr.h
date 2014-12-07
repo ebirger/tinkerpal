@@ -157,4 +157,9 @@ static inline void tstr_serialize(char *buf, const tstr_t *t, int offset,
     memcpy(buf, TPTR(t) + offset, size);
 }
 
+static inline void tstr_cpy_buf(tstr_t *t, char *buf, int offset, int size)
+{
+    memcpy(TPTR(t) + offset, buf, size);
+}
+
 #endif
