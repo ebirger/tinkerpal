@@ -77,18 +77,19 @@ int do_netif_on_port_change(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_netif_mac_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
-    obj_t *array_buffer;
-    eth_mac_t *mac;
+    obj_t *arr_buf;
+    eth_mac_t mac;
+    int sz = sizeof(mac);
 
     if (!netif)
         return throw_exception(ret, &Sinvalid_netif);
 
-    array_buffer = array_buffer_new(sizeof(*mac));
-    mac = array_buffer_ptr(array_buffer);
-    netif_mac_addr_get(netif, mac);
-    *ret = array_buffer_view_new(array_buffer,
-        ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, sizeof(*mac));
-    obj_put(array_buffer);
+    netif_mac_addr_get(netif, &mac);
+    arr_buf = array_buffer_new(sz);
+    tstr_cpy_buf(&to_array_buffer(arr_buf)->value, (char *)&mac, 0, sz);
+    *ret = array_buffer_view_new(arr_buf,
+        ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, sz);
+    obj_put(arr_buf);
     return 0;
 }
 

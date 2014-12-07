@@ -368,11 +368,6 @@ static inline array_buffer_t *to_array_buffer(obj_t *o)
     return (array_buffer_t *)o;
 }
 
-static inline void *array_buffer_ptr(obj_t *o)
-{
-    return (void *)TPTR(&(to_array_buffer(o)->value));
-}
-
 /* Note: no bounds checking on array_buffer_view_item_val_get() and
  * array_buffer_view_item_val_set()
  */
