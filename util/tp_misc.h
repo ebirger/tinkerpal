@@ -26,6 +26,7 @@
 #define __TP_MISC_H__
 
 #include <stddef.h>
+#include <ctype.h>
 #include "util/tp_types.h"
 
 #define bit_set(x, bit, val) x = (val) ? x | (bit) : x & ~(bit)
@@ -59,6 +60,17 @@ static inline s64 exp_power(int exp)
             pow *= 10;
     }
     return pow;
+}
+
+static inline char digit_value(char c)
+{
+    if (isdigit((int)c))
+        return c - '0';
+    if (c >= 'a' && c <= 'f')
+        return 10 + c - 'a';
+    if (c >= 'A' && c <= 'F')
+        return 10 + c - 'A';
+    return 0;
 }
 
 /* The PP_NARG macro returns the number of arguments that have been

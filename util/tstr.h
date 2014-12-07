@@ -48,8 +48,6 @@ typedef struct {
 #define INTERNAL_S(s) (tstr_t){ .ptr = (s), .len = sizeof(s) - 1, \
     .flags = TSTR_FLAG_INTERNAL }
 
-char digit_value(char c);
-
 void tstr_cpy_str(tstr_t *t, const char *s);
 
 /* Allocate the data within the tstr */

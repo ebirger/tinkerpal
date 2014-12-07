@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <string.h>
-#include <ctype.h>
 #include "util/tnum.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
+#include "util/tp_misc.h"
 
 static inline int is_oct_digit(char c)
 {

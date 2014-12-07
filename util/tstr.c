@@ -24,22 +24,10 @@
  */
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include "util/tstr.h"
 #include "util/debug.h"
+#include "util/tp_misc.h"
 #include "mem/tmalloc.h"
-
-/* XXX: move to a different file */
-char digit_value(char c)
-{
-    if (isdigit((int)c))
-        return c - '0';
-    if (c >= 'a' && c <= 'f')
-        return 10 + c - 'a';
-    if (c >= 'A' && c <= 'F')
-        return 10 + c - 'A';
-    return 0;
-}
 
 void tstr_alloc(tstr_t *t, int len)
 {
