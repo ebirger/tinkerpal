@@ -1452,28 +1452,29 @@ static obj_t *array_buffer_view_cast(obj_t *o, unsigned char class)
 int array_buffer_view_item_val_get(array_buffer_view_t *v, int idx)
 {
     int shift;
-    tstr_t bval;
+    char buf[sizeof(u64)]; /* Maximal type size */
+    char *bval = buf;
 
     idx += v->offset;
     shift = v->flags & ABV_SHIFT_MASK;
-    bval = tstr_piece(v->array_buffer->value, idx << shift, 1 << shift);
+    tstr_serialize(bval, &v->array_buffer->value, idx << shift, 1 << shift);
     switch (shift)
     {
     case 0:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            return (int)*(u8 *)TPTR(&bval);
+            return (int)*(u8 *)bval;
         else
-            return (int)*(s8 *)TPTR(&bval);
+            return (int)*(s8 *)bval;
     case 1:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            return (int)*((u16 *)TPTR(&bval));
+            return (int)*((u16 *)bval);
         else
-            return (int)*((s16 *)TPTR(&bval));
+            return (int)*((s16 *)bval);
     case 2:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            return (int)*(u32 *)TPTR(&bval);
+            return (int)*(u32 *)bval;
         else
-            return (int)*(s32 *)TPTR(&bval);
+            return (int)*(s32 *)bval;
     }
     return 0;
 }
