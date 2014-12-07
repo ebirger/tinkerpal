@@ -90,7 +90,7 @@ int history_get(history_t *h, char *buf, int free_size)
     int size;
     
     size = MIN(h->current->str.len, free_size);
-    tstr_serialize(buf, &h->current->str, size);
+    tstr_serialize(buf, &h->current->str, 0, size);
     return size;
 }
 

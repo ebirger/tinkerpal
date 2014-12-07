@@ -151,9 +151,10 @@ void tstr_move(tstr_t *t, int to_idx, int from_idx, int count);
 int tstr_fill(tstr_t *t, int size,
     int (*fill_fn)(void *ctx, char *buf, int size), void *ctx);
 
-static inline void tstr_serialize(char *buf, const tstr_t *t, int size)
+static inline void tstr_serialize(char *buf, const tstr_t *t, int offset,
+    int size)
 {
-    memcpy(buf, TPTR(t), size);
+    memcpy(buf, TPTR(t) + offset, size);
 }
 
 #endif
