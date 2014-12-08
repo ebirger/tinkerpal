@@ -1930,7 +1930,7 @@ static inline int is_close_char(char c)
 int js_eval_rank(tstr_t code)
 {
     char rank_stack[32], popped;
-    int sp = 0;
+    int sp = 0, idx = 0;
 
 #define PUSH(c) do { \
     if (sp == sizeof(rank_stack)) \
@@ -1943,9 +1943,9 @@ int js_eval_rank(tstr_t code)
     sp--; \
     popped = rank_stack[sp]; \
 } while(0)
-    while (code.len)
+    while (code.len - idx)
     {
-        char c = tstr_peek(&code, 0);
+        char c = tstr_peek(&code, idx++);
         if (is_open_char(c))
             PUSH(open_char_recip(c));
         if (is_close_char(c))
@@ -1954,7 +1954,6 @@ int js_eval_rank(tstr_t code)
             if (popped != c)
                 return -1;
         }
-        tstr_advance(&code, 1);
     }
     return sp;
 }
