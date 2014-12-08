@@ -58,7 +58,7 @@ void tstr_cpy_str(tstr_t *t, const char *s)
     memcpy(TPTR(t), s, len);
 }
 
-int tstr_find(tstr_t *haystack, tstr_t *needle)
+int tstr_find(const tstr_t *haystack, tstr_t *needle)
 { 
     int i, j;
 
