@@ -99,7 +99,7 @@ static inline int tstr_cmp_str(const tstr_t *a, const char *b)
 int tstr_find(const tstr_t *haystack, tstr_t *needle);
 tstr_t tstr_dup(tstr_t s);
 /* Return a tstr_t pointing to s[index] - with count bytes */
-tstr_t tstr_piece(tstr_t s, int index, int count);
+tstr_t tstr_piece(const tstr_t s, int index, int count);
 /* Return a copy of the tstr_piece */
 static inline tstr_t tstr_slice(tstr_t s, int index, int count)
 {

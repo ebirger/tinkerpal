@@ -98,7 +98,7 @@ tstr_t tstr_dup(tstr_t s)
     return ret;
 }
 
-tstr_t tstr_piece(tstr_t s, int index, int count)
+tstr_t tstr_piece(const tstr_t s, int index, int count)
 {
     tstr_t ret;
 
