@@ -75,15 +75,23 @@ int vfs_file_read_anyfs(tstr_t *content, tstr_t *file_name)
     return -1;
 }
 
-static const fs_t *get_fs(tstr_t *file_name)
+static const fs_t *get_fs(const tstr_t *file_name)
 {
-    tstr_t fs_name;
     const fs_t **fs;
+    int slash_idx;
 
-    fs_name = tstr_cut(file_name, '/');
+    slash_idx = tstr_find(file_name, &S("/"));
+
     foreach_fs(fs)
     {
-        if (!tstr_cmp_str(&fs_name, (*fs)->name))
+        int fs_len = strlen((*fs)->name);
+
+        if (slash_idx < 0 && fs_len != file_name->len)
+            continue;
+        else if (slash_idx > 0 && fs_len != slash_idx)
+            continue;
+
+        if (!tstr_ncmp_str(file_name, (*fs)->name, fs_len))
             return *fs;
     }
 
@@ -91,33 +99,43 @@ static const fs_t *get_fs(tstr_t *file_name)
     return NULL;
 }
 
+static tstr_t get_file_path(const tstr_t *file_name)
+{
+    int path_idx;
+
+    path_idx = tstr_find(file_name, &S("/"));
+    if (path_idx < 0)
+        return S("");
+
+    path_idx += 1; /* Skip '/' */
+    return tstr_piece(*file_name, path_idx, file_name->len - path_idx);
+}
+
 int vfs_file_read(tstr_t *content, tstr_t *file_name, int flags)
 {
     const fs_t *fs;
-    tstr_t file_name_copy;
+    tstr_t file_path;
 
     if (flags & VFS_FLAGS_ANY_FS)
         return vfs_file_read_anyfs(content, file_name);
 
-    /* get_fs cuts the fs name from the file_name, so we copy it */
-    file_name_copy = *file_name;
-    if (!(fs = get_fs(&file_name_copy)))
+    if (!(fs = get_fs(file_name)))
         return -1;
 
-    return fs->file_read(content, &file_name_copy);
+    file_path = get_file_path(file_name);
+    return fs->file_read(content, &file_path);
 }
 
 int vfs_file_write(tstr_t *content, tstr_t *file_name)
 {
     const fs_t *fs;
-    tstr_t file_name_copy;
+    tstr_t file_path;
 
-    /* get_fs cuts the fs name from the file_name, so we copy it */
-    file_name_copy = *file_name;
-    if (!(fs = get_fs(&file_name_copy)))
+    if (!(fs = get_fs(file_name)))
         return -1;
 
-    return fs->file_write(content, &file_name_copy);
+    file_path = get_file_path(file_name);
+    return fs->file_write(content, &file_path);
 }
 
 static void readdir_root(readdir_cb_t cb, void *ctx)
@@ -137,7 +155,7 @@ static void readdir_root(readdir_cb_t cb, void *ctx)
 int vfs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 {
     const fs_t *fs;
-    tstr_t path_copy;
+    tstr_t file_path;
 
     if (vfs_is_root_path(path))
     {
@@ -145,12 +163,11 @@ int vfs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
         return 0;
     }
 
-    /* get_fs cuts the fs name from the path, so we copy it */
-    path_copy = *path;
-    if (!(fs = get_fs(&path_copy)))
+    if (!(fs = get_fs(path)))
         return -1;
 
-    return fs->readdir(&path_copy, cb, ctx);
+    file_path = get_file_path(path);
+    return fs->readdir(&file_path, cb, ctx);
 }
 
 void vfs_init(void)
