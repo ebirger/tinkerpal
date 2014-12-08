@@ -111,12 +111,6 @@ void tstr_unescape(tstr_t *dst, tstr_t *src);
 
 tstr_t tstr_to_upper_lower(tstr_t s, int is_lower);
 
-/* Returns a new tstr pointing to the old value, with len set
- * to the substring until delim
- * The prefix is cut from the original tstr.
- */
-tstr_t tstr_cut(tstr_t *t, char delim);
-
 /* Return a NULL terminated, allocated string from tstr_t */
 char *tstr_to_strz(tstr_t *t);
 

@@ -198,26 +198,6 @@ tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
     return ret;
 }
 
-tstr_t tstr_cut(tstr_t *t, char delim)
-{
-    int i;
-    tstr_t ret;
-
-    ret = *t;
-    for (i = 0; i < t->len && TPTR(t)[i] != delim; i++);
-    if (i == t->len)
-    {
-        TPTR(t) = NULL;
-        t->len = 0;
-        return ret;
-    }
-
-    ret.len = i; 
-    /* Skip over prefix + delim */
-    tstr_advance(t, i + 1);
-    return ret;
-}
-
 char *tstr_to_strz(tstr_t *t)
 {
     char *ret;
