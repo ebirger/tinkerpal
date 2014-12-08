@@ -49,17 +49,18 @@ static inline void i2c_reg_write(int port, u8 addr, u8 reg, u8 *data, int len)
 
 static inline int i2c_get_constant(int *constant, tstr_t t)
 {
+    int pfx_len;
+
 #define I2C_PREFIX "I2C"
+    pfx_len = sizeof(I2C_PREFIX) - 1;
 
-    if (tstr_ncmp_str(&t, I2C_PREFIX, sizeof(I2C_PREFIX) - 1))
+    if (tstr_ncmp_str(&t, I2C_PREFIX, pfx_len))
         return -1;
 
-    tstr_advance(&t, sizeof(I2C_PREFIX) - 1);
-
-    if (t.len != 1)
+    if (t.len != pfx_len + 1)
         return -1;
 
-    *constant = (int)RES(I2C_RESOURCE_ID_BASE, tstr_peek(&t, 0) - '0', 0);
+    *constant = (int)RES(I2C_RESOURCE_ID_BASE, tstr_peek(&t, pfx_len) - '0', 0);
     return 0;
 }
 

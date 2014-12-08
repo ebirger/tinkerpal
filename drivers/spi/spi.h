@@ -88,17 +88,18 @@ static inline void spi_send_mult(resource_t port, u8 buf[], int len)
 
 static inline int spi_get_constant(int *constant, tstr_t t)
 {
+    int pfx_len;
+
 #define SPI_PREFIX "SPI"
+    pfx_len = sizeof(SPI_PREFIX) - 1;
 
-    if (tstr_ncmp_str(&t, SPI_PREFIX, sizeof(SPI_PREFIX) - 1))
+    if (tstr_ncmp_str(&t, SPI_PREFIX, pfx_len))
         return -1;
 
-    tstr_advance(&t, sizeof(SPI_PREFIX) - 1);
-
-    if (t.len != 1)
+    if (t.len != pfx_len + 1)
         return -1;
 
-    *constant = (int)RES(SPI_RESOURCE_ID_BASE, tstr_peek(&t, 0) - '0', 0);
+    *constant = (int)RES(SPI_RESOURCE_ID_BASE, tstr_peek(&t, pfx_len) - '0', 0);
     return 0;
 }
 

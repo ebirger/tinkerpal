@@ -218,16 +218,16 @@ int serial_set_params(resource_t id, const serial_params_t *params)
 static int _serial_get_constant(char *prefix, int maj, int *constant,
     tstr_t t)
 {
-    int prefix_len = strlen(prefix);
+    int prefix_len = strlen(prefix), ser;
 
     if (tstr_ncmp_str(&t, prefix, prefix_len))
         return -1;
 
-    tstr_advance(&t, prefix_len);
-    if (t.len != 1)
+    if (t.len != prefix_len + 1)
         return -1;
 
-    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, maj, tstr_peek(&t, 0) - '0');
+    ser = tstr_peek(&t, prefix_len) - '0';
+    *constant = (int)RES(SERIAL_RESOURCE_ID_BASE, maj, ser);
     return 0;
 }
 
