@@ -184,15 +184,15 @@ tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
 {
     char *out;
     tstr_t ret;
+    int idx = 0;
 
     tstr_alloc(&ret, s.len);
     out = TPTR(&ret);
-    while (s.len)
+    while (s.len - idx)
     {
-        unsigned char c = (unsigned char)*TPTR(&s);
+        u8 c = (u8)*(TPTR(&s) + idx++);
 
         *out++ = is_lower ? (char)tolower(c) : (char)toupper(c);
-        tstr_advance(&s, 1);
     }
 
     return ret;
