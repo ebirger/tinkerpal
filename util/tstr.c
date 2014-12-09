@@ -89,12 +89,13 @@ tstr_t tstr_dup(tstr_t s)
 {
     tstr_t ret;
 
-    ret = s;
     if (TSTR_IS_ALLOCATED(&s))
     {
-        TPTR(&ret) = tmalloc(ret.len, "dupped str");
+        tstr_alloc(&ret, s.len);
         memcpy(TPTR(&ret), TPTR(&s), ret.len);
     }
+    else
+        ret = s;
     return ret;
 }
 
