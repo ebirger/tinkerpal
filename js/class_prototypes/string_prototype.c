@@ -30,7 +30,6 @@
 int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tstr_t orig, cur, sep;
-    int idx = 0;
 
     /* XXX: support limit */
     *ret = array_new();
@@ -42,16 +41,16 @@ int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     sep = obj_get_str(argv[1]);
     while (1)
     {
-        tstr_t n = cur;
+        tstr_t a, b;
+        int idx;
 
         idx = tstr_find(&cur, &sep);
         if (idx == -1)
             break;
 
-        n.len = idx;
-        array_push(*ret, string_new(tstr_dup(n)));
-        idx += sep.len;
-        tstr_advance(&cur, idx);
+        tstr_split(&cur, &a, &b, idx, sep.len);
+        array_push(*ret, string_new(tstr_dup(a)));
+        cur = b;
     }
     tstr_free(&sep);
 
