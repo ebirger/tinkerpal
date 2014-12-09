@@ -99,11 +99,11 @@ static inline int tstr_cmp_str(const tstr_t *a, const char *b)
 int tstr_find(const tstr_t *haystack, tstr_t *needle);
 tstr_t tstr_dup(tstr_t s);
 /* Return a tstr_t pointing to s[index] - with count bytes */
-tstr_t tstr_piece(const tstr_t s, int index, int count);
+tstr_t tstr_piece(const tstr_t *s, int index, int count);
 /* Return a copy of the tstr_piece */
 static inline tstr_t tstr_slice(tstr_t s, int index, int count)
 {
-    return tstr_dup(tstr_piece(s, index, count));
+    return tstr_dup(tstr_piece(&s, index, count));
 }
 void tstr_free(tstr_t *s);
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b);
@@ -143,8 +143,8 @@ static inline void tstr_cpy_buf(tstr_t *t, char *buf, int offset, int size)
 static inline void tstr_split(const tstr_t *t, tstr_t *a, tstr_t *b, int idx,
     int sep_len)
 {
-    *a = tstr_piece(*t, 0, idx);
-    *b = tstr_piece(*t, idx + sep_len, t->len - (idx + sep_len));
+    *a = tstr_piece(t, 0, idx);
+    *b = tstr_piece(t, idx + sep_len, t->len - (idx + sep_len));
 }
 
 #endif
