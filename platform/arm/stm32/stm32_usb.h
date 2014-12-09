@@ -35,7 +35,7 @@ void stm32_usb_ep_data_ack(int ep, int data_phase);
 void stm32_usb_set_addr(unsigned short addr);
 int stm32_usb_ep_data_wait(int ep, unsigned char *data, unsigned long len);
 int stm32_usb_ep_data_get(int ep, unsigned char *data, unsigned long len);
-int stm32_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
+int stm32_usb_ep_data_send(int ep, const unsigned char *data, unsigned long len,
     int last);
 int stm32_usb_event_process(void);
 

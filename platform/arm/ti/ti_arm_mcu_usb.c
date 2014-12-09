@@ -57,15 +57,18 @@ void ti_arm_mcu_usb_ep_data_ack(int ep, int data_phase)
     MAP_USBDevEndpointDataAck(USB0_BASE, ep_map(ep), data_phase ? false : true);
 }
 
-int ti_arm_mcu_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
-    int last)
+int ti_arm_mcu_usb_ep_data_send(int ep, const unsigned char *data,
+    unsigned long len, int last)
 {
     unsigned int mapped_ep = ep_map(ep);
 
     if (len)
     {
-        if (MAP_USBEndpointDataPut(USB0_BASE, mapped_ep, data, len))
+        if (MAP_USBEndpointDataPut(USB0_BASE, mapped_ep,
+            ((unsigned char *)(unsigned long)data), len))
+        {
             return -1;
+        }
     }
     
     return MAP_USBEndpointDataSend(USB0_BASE, mapped_ep, last ?

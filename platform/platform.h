@@ -80,8 +80,8 @@ typedef struct {
         void (*ep_data_ack)(int ep, int data_phase);
         int (*ep_data_wait)(int ep, unsigned char *data, unsigned long len);
         int (*ep_data_get)(int ep, unsigned char *data, unsigned long len);
-        int (*ep_data_send)(int ep, unsigned char *data, unsigned long len,
-            int last);
+        int (*ep_data_send)(int ep, const unsigned char *data,
+            unsigned long len, int last);
         void (*set_addr)(unsigned short addr);
     } usb;
     void (*init)(void);
