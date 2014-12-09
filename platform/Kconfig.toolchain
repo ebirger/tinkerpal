@@ -26,4 +26,7 @@ config GCC_LTO
 config GCC_GCOV
 	bool "GCC Coverage Data Generation"
 
+config GCC_CAST_QUAL
+	bool "GCC warn on qualifier removal by cast"
+
 endif
