@@ -102,7 +102,7 @@ int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc,
     if (start < 0 || start >= s.len || end <= start || end > s.len)
         return js_invalid_args(ret);
 
-    retval = tstr_slice(s, start, end - start);
+    retval = tstr_slice(&s, start, end - start);
     *ret = string_new(retval);
     tstr_free(&s);
     return 0;
@@ -121,7 +121,7 @@ int do_string_prototype_char_at(obj_t **ret, obj_t *this, int argc,
     if (pos < 0 || pos >= s.len)
         goto Exit;
 
-    retval = tstr_slice(s, pos, 1);
+    retval = tstr_slice(&s, pos, 1);
 
 Exit:
     *ret = string_new(retval);

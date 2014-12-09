@@ -1349,7 +1349,7 @@ static obj_t *string_get_own_property(obj_t ***lval, obj_t *o,
     if (s->value.len <= idx)
         return NULL;
 
-    retval = tstr_slice(s->value, idx, 1);
+    retval = tstr_slice(&s->value, idx, 1);
     if (lval)
         *lval = NULL;
     return string_new(retval);

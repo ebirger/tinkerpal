@@ -101,9 +101,9 @@ tstr_t tstr_dup(tstr_t s);
 /* Return a tstr_t pointing to s[index] - with count bytes */
 tstr_t tstr_piece(const tstr_t *s, int index, int count);
 /* Return a copy of the tstr_piece */
-static inline tstr_t tstr_slice(tstr_t s, int index, int count)
+static inline tstr_t tstr_slice(const tstr_t *s, int index, int count)
 {
-    return tstr_dup(tstr_piece(&s, index, count));
+    return tstr_dup(tstr_piece(s, index, count));
 }
 void tstr_free(tstr_t *s);
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b);

@@ -624,7 +624,7 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
     ret->size = end->lpc - start->lpc;
     if (TSTR_IS_ALLOCATED(&start->code))
     {
-        ret->code = tstr_slice(start->code, start->lpc, ret->size);
+        ret->code = tstr_slice(&start->code, start->lpc, ret->size);
         ret->internal_buf = &ret->code;
         ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 0;
         ret->pc += start->pc - start->lpc;
