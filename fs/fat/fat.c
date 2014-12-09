@@ -198,7 +198,6 @@ int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
     for (;;) 
     {
         tstr_t fn = {};
-        int rc;
 
         res = f_readdir(&dir, &fno);
         if (res != FR_OK || fno.fname[0] == '\0') 
@@ -209,10 +208,8 @@ int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
             continue;
 
         tstr_cpy_str(&fn, fno.fname);
-        rc = cb(&fn, ctx);
+        cb(&fn, ctx);
         tstr_free(&fn);
-        if (rc)
-            break;
     }
 
     return res == FR_OK ? 0 : -1;
