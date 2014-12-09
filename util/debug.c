@@ -31,7 +31,7 @@ void debug_init(debugfn_t *fn)
     debugfn = *fn;
 }
 
-void hexdump(unsigned char *buf, int len)
+void hexdump(const unsigned char *buf, int len)
 {
     int i;
 
