@@ -146,4 +146,11 @@ static inline void tstr_cpy_buf(tstr_t *t, char *buf, int offset, int size)
     memcpy(TPTR(t) + offset, buf, size);
 }
 
+static inline void tstr_split(const tstr_t *t, tstr_t *a, tstr_t *b, int idx,
+    int sep_len)
+{
+    *a = tstr_piece(*t, 0, idx);
+    *b = tstr_piece(*t, idx + sep_len, t->len - (idx + sep_len));
+}
+
 #endif
