@@ -192,7 +192,7 @@ static inline tstr_t extract_string(scan_t *scan)
         _get_char(scan);
     }
 
-    ret = tstr_piece(scan->code, start, scan->lpc - start);
+    ret = tstr_piece(&scan->code, start, scan->lpc - start);
     ret.flags |= tflags;
     _get_char(scan); /* skip enclosure */
     skip_white(scan);
@@ -209,7 +209,7 @@ static inline tstr_t extract_identifier(scan_t *scan)
     while (is_valid_identifier_non_first_letter(scan->look))
         _get_char(scan);
 
-    ret = tstr_piece(scan->code, start, scan->lpc - start);
+    ret = tstr_piece(&scan->code, start, scan->lpc - start);
     ret.flags |= tflags;
     skip_white(scan);
     return ret;
@@ -321,7 +321,7 @@ static inline tnum_t extract_num(scan_t *scan)
     start = scan->lpc;
     while (is_number_letter(scan->look))
         _get_char(scan);
-    s = tstr_piece(scan->code, start, scan->lpc - start);
+    s = tstr_piece(&scan->code, start, scan->lpc - start);
     skip_white(scan);
 
     if (tstr_to_tnum(&ret, &s))
@@ -624,7 +624,7 @@ scan_t *js_scan_slice(scan_t *start, scan_t *end)
     ret->size = end->lpc - start->lpc;
     if (TSTR_IS_ALLOCATED(&start->code))
     {
-        ret->code = tstr_slice(start->code, start->lpc, ret->size);
+        ret->code = tstr_slice(&start->code, start->lpc, ret->size);
         ret->internal_buf = &ret->code;
         ret->lpc = ret->pc = ret->last_token_start = ret->trace_point = 0;
         ret->pc += start->pc - start->lpc;

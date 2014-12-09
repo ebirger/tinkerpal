@@ -48,13 +48,6 @@ typedef struct {
 #define INTERNAL_S(s) (tstr_t){ .ptr = (s), .len = sizeof(s) - 1, \
     .flags = TSTR_FLAG_INTERNAL }
 
-char digit_value(char c);
-
-typedef struct tstr_list_t {
-    struct tstr_list_t *next;
-    tstr_t str;
-} tstr_list_t;
-
 void tstr_cpy_str(tstr_t *t, const char *s);
 
 /* Allocate the data within the tstr */
@@ -62,9 +55,6 @@ void tstr_alloc(tstr_t *t, int len);
 void tstr_zalloc(tstr_t *t, int len);
 
 void tstr_init(tstr_t *t, char *data, int len, unsigned short flags);
-
-void tstr_list_add(tstr_list_t **l, tstr_t *s);
-void tstr_list_free(tstr_list_t **l);
 
 static inline int tstr_cmp(const tstr_t *a, const tstr_t *b)
 {
@@ -92,6 +82,13 @@ static inline int _tstr_cmp_str(const tstr_t *a, const char *b,
         memcmp(TPTR(a), b, blen);
 }
 
+static inline int tstr_ncmp_str(const tstr_t *a, const char *b,
+    unsigned short blen)
+{
+    return a->len < blen || (blen && (*TPTR(a) != *b)) ||
+        memcmp(TPTR(a), b, blen);
+}
+
 static inline int tstr_cmp_str(const tstr_t *a, const char *b)
 {
     unsigned short blen = strlen(b);
@@ -99,38 +96,23 @@ static inline int tstr_cmp_str(const tstr_t *a, const char *b)
     return _tstr_cmp_str(a, b, blen);
 }
 
-int tstr_find(tstr_t *haystack, tstr_t *needle);
+int tstr_find(const tstr_t *haystack, tstr_t *needle);
 tstr_t tstr_dup(tstr_t s);
 /* Return a tstr_t pointing to s[index] - with count bytes */
-tstr_t tstr_piece(tstr_t s, int index, int count);
+tstr_t tstr_piece(const tstr_t *s, int index, int count);
 /* Return a copy of the tstr_piece */
-static inline tstr_t tstr_slice(tstr_t s, int index, int count)
+static inline tstr_t tstr_slice(const tstr_t *s, int index, int count)
 {
     return tstr_dup(tstr_piece(s, index, count));
 }
-tstr_t tstr_slice(tstr_t s, int index, int count);
 void tstr_free(tstr_t *s);
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b);
 void tstr_unescape(tstr_t *dst, tstr_t *src);
 
 tstr_t tstr_to_upper_lower(tstr_t s, int is_lower);
 
-/* Returns a new tstr pointing to the old value, with len set
- * to the substring until delim
- * The prefix is cut from the original tstr.
- */
-tstr_t tstr_cut(tstr_t *t, char delim);
-
 /* Return a NULL terminated, allocated string from tstr_t */
 char *tstr_to_strz(tstr_t *t);
-
-static inline void tstr_advance(tstr_t *t, int amount)
-{
-    TPTR(t) += amount;
-    t->len -= amount;
-}
-
-int prefix_comp(int len, char *a, char *b);
 
 int __tstr_dump(tstr_t *t, int offset, int size,
     int (*__dump_fn)(void *ctx, char *buf, int size), void *ctx);
@@ -143,5 +125,26 @@ static inline char tstr_peek(const tstr_t *t, int index)
 }
 
 void tstr_move(tstr_t *t, int to_idx, int from_idx, int count);
+
+int tstr_fill(tstr_t *t, int size,
+    int (*fill_fn)(void *ctx, char *buf, int size), void *ctx);
+
+static inline void tstr_serialize(char *buf, const tstr_t *t, int offset,
+    int size)
+{
+    memcpy(buf, TPTR(t) + offset, size);
+}
+
+static inline void tstr_cpy_buf(tstr_t *t, char *buf, int offset, int size)
+{
+    memcpy(TPTR(t) + offset, buf, size);
+}
+
+static inline void tstr_split(const tstr_t *t, tstr_t *a, tstr_t *b, int idx,
+    int sep_len)
+{
+    *a = tstr_piece(t, 0, idx);
+    *b = tstr_piece(t, idx + sep_len, t->len - (idx + sep_len));
+}
 
 #endif

@@ -86,23 +86,20 @@ static inline void spi_send_mult(resource_t port, u8 buf[], int len)
         spi_send(port, *buf++);
 }
 
-static inline int spi_get_constant(int *constant, char *buf, int len)
+static inline int spi_get_constant(int *constant, tstr_t t)
 {
+    int pfx_len;
+
 #define SPI_PREFIX "SPI"
+    pfx_len = sizeof(SPI_PREFIX) - 1;
 
-    if (len < sizeof(SPI_PREFIX) -1 || 
-        prefix_comp(sizeof(SPI_PREFIX) - 1, SPI_PREFIX, buf))
-    {
-        return -1;
-    }
-
-    buf += sizeof(SPI_PREFIX) - 1;
-    len -= sizeof(SPI_PREFIX) - 1;
-
-    if (len != 1)
+    if (tstr_ncmp_str(&t, SPI_PREFIX, pfx_len))
         return -1;
 
-    *constant = (int)RES(SPI_RESOURCE_ID_BASE, buf[0] - '0', 0);
+    if (t.len != pfx_len + 1)
+        return -1;
+
+    *constant = (int)RES(SPI_RESOURCE_ID_BASE, tstr_peek(&t, pfx_len) - '0', 0);
     return 0;
 }
 

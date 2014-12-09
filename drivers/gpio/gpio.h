@@ -99,30 +99,39 @@ static inline u16 gpio_get_port_val(resource_t port, u16 mask)
     return platform.gpio.get_port_val(RES_MAJ(port), mask);
 }
 
-/* XXX: should receive tstr */
-static inline int gpio_get_constant(int *constant, char *buf, int len)
+static inline int gpio_get_constant(int *constant, tstr_t t)
 {
-    int pin;
+    int pin, pfx_len;
+    char cport, cpin_hi, cpin_lo;
 
 #define GPIO_PREFIX "GPIO_P"
+    pfx_len = sizeof(GPIO_PREFIX) - 1;
 
-    if (len < sizeof(GPIO_PREFIX) -1 || 
-        prefix_comp(sizeof(GPIO_PREFIX) - 1, GPIO_PREFIX, buf))
+    if (t.len < pfx_len + 2)
+        return -1;
+
+    if (tstr_ncmp_str(&t, GPIO_PREFIX, pfx_len))
+        return -1;
+
+    cport = tstr_peek(&t, pfx_len);
+    if (cport < 'A' || cport >= 'A' + NUM_GPIO_PORTS)
+        return -1;
+
+    if (t.len == pfx_len + 2)
     {
-        return -1;
+        cpin_hi = '0';
+        cpin_lo = tstr_peek(&t, pfx_len + 1);
     }
-
-    buf += sizeof(GPIO_PREFIX) - 1;
-    len -= sizeof(GPIO_PREFIX) - 1;
-
-    if (len == 2)
-        pin = GPIO(buf[0] - 'A', buf[1] - '0');
-    else if (len == 3)
-        pin = GPIO(buf[0] - 'A', ((buf[1] - '0') * 10) + buf[2] - '0');
-    else 
+    else if (t.len == pfx_len + 3)
+    {
+        cpin_hi = tstr_peek(&t, pfx_len + 1);
+        cpin_lo = tstr_peek(&t, pfx_len + 2);
+    }
+    else
         return -1;
 
-    *constant = (int)RES(GPIO_RESOURCE_ID_BASE, pin, 0);
+    pin = GPIO(cport - 'A', ((cpin_hi - '0') * 10) + cpin_lo - '0');
+    *constant = (int)GPIO_RES(pin);
     return 0;
 }
 

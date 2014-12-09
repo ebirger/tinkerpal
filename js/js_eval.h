@@ -26,6 +26,7 @@
 #define __JS_EVAL_H__
 
 #include "util/tstr.h"
+#include "util/tstr_list.h"
 #include "js/js_obj.h"
 
 int js_eval(obj_t **ret, tstr_t *code);

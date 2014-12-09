@@ -29,6 +29,7 @@
 #include "util/tprintf.h"
 #include "util/debug.h"
 #include "util/tp_types.h"
+#include "util/tstr_list.h"
 #include "mem/tmalloc.h"
 
 #ifdef CONFIG_OBJ_DOC
@@ -366,11 +367,6 @@ static inline array_buffer_t *to_array_buffer(obj_t *o)
 {
     tp_assert(is_array_buffer(o));
     return (array_buffer_t *)o;
-}
-
-static inline void *array_buffer_ptr(obj_t *o)
-{
-    return (void *)TPTR(&(to_array_buffer(o)->value));
 }
 
 /* Note: no bounds checking on array_buffer_view_item_val_get() and

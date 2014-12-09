@@ -77,18 +77,19 @@ int do_netif_on_port_change(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int do_netif_mac_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
-    obj_t *array_buffer;
-    eth_mac_t *mac;
+    obj_t *arr_buf;
+    eth_mac_t mac;
+    int sz = sizeof(mac);
 
     if (!netif)
         return throw_exception(ret, &Sinvalid_netif);
 
-    array_buffer = array_buffer_new(sizeof(*mac));
-    mac = array_buffer_ptr(array_buffer);
-    netif_mac_addr_get(netif, mac);
-    *ret = array_buffer_view_new(array_buffer,
-        ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, sizeof(*mac));
-    obj_put(array_buffer);
+    netif_mac_addr_get(netif, &mac);
+    arr_buf = array_buffer_new(sz);
+    tstr_cpy_buf(&to_array_buffer(arr_buf)->value, (char *)&mac, 0, sz);
+    *ret = array_buffer_view_new(arr_buf,
+        ABV_SHIFT_8_BIT | ABV_FLAG_UNSIGNED, 0, sz);
+    obj_put(arr_buf);
     return 0;
 }
 
@@ -167,7 +168,7 @@ int do_netif_tcp_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         return js_invalid_args(ret);
 
     ip_str = obj_get_str(argv[1]);
-    ip = ip_addr_parse(TPTR(&ip_str), ip_str.len);
+    ip = ip_addr_parse(tstr_to_strz(&ip_str), ip_str.len);
     tstr_free(&ip_str);
     if (!ip)
         return js_invalid_args(ret);
@@ -248,6 +249,11 @@ int do_netif_on_tcp_disconnect(obj_t **ret, obj_t *this, int argc,
     return 0;
 }
 
+static int netif_tcp_write_dump(void *ctx, char *buf, int len)
+{
+    return netif_tcp_write(ctx, buf, len);
+}
+
 int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
@@ -262,11 +268,9 @@ int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     if (is_string(argv[1]))
     {
-        string_t *s;
+        string_t *s = to_string(argv[1]);
 
-        s = to_string(argv[1]);
-
-        netif_tcp_write(netif, TPTR(&s->value), s->value.len);
+        __tstr_dump(&s->value, 0, s->value.len, netif_tcp_write_dump, netif);
         return 0;
     }
     
@@ -307,6 +311,11 @@ int do_netif_tcp_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return js_invalid_args(ret);
 }
 
+static int netif_tcp_read_fill_fn(void *ctx, char *buf, int size)
+{
+    return netif_tcp_read(ctx, buf, size);
+}
+
 int do_netif_tcp_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     netif_t *netif = netif_obj_get_netif(this);
@@ -320,7 +329,7 @@ int do_netif_tcp_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     /* XXX: read as much as possible */
     tstr_alloc(&data, 64);
-    data.len = netif_tcp_read(netif, TPTR(&data), 64);
+    data.len = tstr_fill(&data, 64, netif_tcp_read_fill_fn, netif);
     *ret = string_new(data);
     return 0;
 }

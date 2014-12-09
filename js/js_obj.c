@@ -26,6 +26,7 @@
 #include "util/tp_misc.h"
 #include "util/tprintf.h"
 #include "util/debug.h"
+#include "util/tstr_list.h"
 #include "mem/mem_cache.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"
@@ -1348,7 +1349,7 @@ static obj_t *string_get_own_property(obj_t ***lval, obj_t *o,
     if (s->value.len <= idx)
         return NULL;
 
-    retval = tstr_slice(s->value, idx, 1);
+    retval = tstr_slice(&s->value, idx, 1);
     if (lval)
         *lval = NULL;
     return string_new(retval);
@@ -1452,28 +1453,29 @@ static obj_t *array_buffer_view_cast(obj_t *o, unsigned char class)
 int array_buffer_view_item_val_get(array_buffer_view_t *v, int idx)
 {
     int shift;
-    tstr_t bval;
+    char buf[sizeof(u64)]; /* Maximal type size */
+    char *bval = buf;
 
     idx += v->offset;
     shift = v->flags & ABV_SHIFT_MASK;
-    bval = tstr_piece(v->array_buffer->value, idx << shift, 1 << shift);
+    tstr_serialize(bval, &v->array_buffer->value, idx << shift, 1 << shift);
     switch (shift)
     {
     case 0:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            return (int)*(u8 *)TPTR(&bval);
+            return (int)*(u8 *)bval;
         else
-            return (int)*(s8 *)TPTR(&bval);
+            return (int)*(s8 *)bval;
     case 1:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            return (int)*((u16 *)TPTR(&bval));
+            return (int)*((u16 *)bval);
         else
-            return (int)*((s16 *)TPTR(&bval));
+            return (int)*((s16 *)bval);
     case 2:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            return (int)*(u32 *)TPTR(&bval);
+            return (int)*(u32 *)bval;
         else
-            return (int)*(s32 *)TPTR(&bval);
+            return (int)*(s32 *)bval;
     }
     return 0;
 }
@@ -1481,34 +1483,36 @@ int array_buffer_view_item_val_get(array_buffer_view_t *v, int idx)
 int array_buffer_view_item_val_set(array_buffer_view_t *v, int idx, int val)
 {
     int shift;
-    tstr_t bval;
+    char buf[sizeof(u64)]; /* Maximal type size */
+    char *bval = buf;
 
     shift = v->flags & ABV_SHIFT_MASK;
     idx += v->offset;
-    bval = tstr_piece(v->array_buffer->value, idx << shift, 1 << shift);
     switch (shift)
     {
     case 0:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            *(u8 *)TPTR(&bval) = (u8)val;
+            *(u8 *)bval = (u8)val;
         else
-            *(s8 *)TPTR(&bval) = (s8)val;
+            *(s8 *)bval = (s8)val;
         break;
     case 1:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            *(u16 *)TPTR(&bval) = (u16)val;
+            *(u16 *)bval = (u16)val;
         else
-            *(s16 *)TPTR(&bval) = (s16)val;
+            *(s16 *)bval = (s16)val;
         break;
     case 2:
         if (v->flags & ABV_FLAG_UNSIGNED)
-            *(u32 *)TPTR(&bval) = (u32)val;
+            *(u32 *)bval = (u32)val;
         else
-            *(s32 *)TPTR(&bval) = (s32)val;
+            *(s32 *)bval = (s32)val;
         break;
     default:
         return -1;
     }
+
+    tstr_cpy_buf(&v->array_buffer->value, bval, idx << shift, 1 << shift);
     return 0;
 }
 

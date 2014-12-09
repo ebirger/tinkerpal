@@ -81,11 +81,22 @@ DWORD get_fattime(void)
     return 0;
 }
 
+static int fat_file_read_fill_fn(void *ctx, char *buf, int size)
+{
+    UINT br = 0;
+    int rc;
+
+    rc = f_read(ctx, buf, size, &br);
+    if (rc != FR_OK || br != size)
+        return -1;
+
+    return br;
+}
+
 static int fat_file_read(tstr_t *content, tstr_t *file_name)
 {
     FIL fp = {};
     FILINFO info;
-    UINT br;
     char *file_n = NULL;
     int rc = -1;
 
@@ -104,11 +115,10 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
     }
 
     tstr_alloc(content, info.fsize);
-    rc = f_read(&fp, TPTR(content), content->len, &br);
-    if (rc != FR_OK || br != content->len)
+    rc = tstr_fill(content, info.fsize, fat_file_read_fill_fn, &fp);
+    if (rc != content->len)
     {
-        tp_err(("Read %d/%d from file %S rc %d\n", br, content->len, 
-            file_name, rc));
+        tp_err(("failed reading from file %S rc %d\n", file_name, rc));
         tstr_free(content);
         goto Exit;
     }

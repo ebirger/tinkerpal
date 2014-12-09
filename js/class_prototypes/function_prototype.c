@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/debug.h"
+#include "util/tstr_list.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_eval.h"

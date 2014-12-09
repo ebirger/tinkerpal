@@ -31,6 +31,13 @@
 
 #define Sserial_id S("serial_id")
 
+static int serial_read_fill_fn(void *ctx, char *buf, int size)
+{
+    u32 id = (u32)(int_ptr_t)ctx;
+
+    return serial_read(id, buf, size);
+}
+
 static void serial_on_data_cb(event_t *e, u32 id, u64 timestamp)
 {
     obj_t *o, *argv[2], *data_obj, *this, *func;
@@ -38,7 +45,7 @@ static void serial_on_data_cb(event_t *e, u32 id, u64 timestamp)
 
     /* XXX: read as much as possible */
     tstr_alloc(&data, 30);
-    data.len = serial_read(id, TPTR(&data), 30);
+    data.len = tstr_fill(&data, 30, serial_read_fill_fn, (void *)(int_ptr_t)id);
 
     data_obj = object_new();
     obj_set_property_str(data_obj, S("data"), data);

@@ -30,7 +30,6 @@
 int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     tstr_t orig, cur, sep;
-    int idx = 0;
 
     /* XXX: support limit */
     *ret = array_new();
@@ -42,16 +41,16 @@ int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     sep = obj_get_str(argv[1]);
     while (1)
     {
-        tstr_t n = cur;
+        tstr_t a, b;
+        int idx;
 
         idx = tstr_find(&cur, &sep);
         if (idx == -1)
             break;
 
-        n.len = idx;
-        array_push(*ret, string_new(tstr_dup(n)));
-        idx += sep.len;
-        tstr_advance(&cur, idx);
+        tstr_split(&cur, &a, &b, idx, sep.len);
+        array_push(*ret, string_new(tstr_dup(a)));
+        cur = b;
     }
     tstr_free(&sep);
 
@@ -103,7 +102,7 @@ int do_string_prototype_substring(obj_t **ret, obj_t *this, int argc,
     if (start < 0 || start >= s.len || end <= start || end > s.len)
         return js_invalid_args(ret);
 
-    retval = tstr_slice(s, start, end - start);
+    retval = tstr_slice(&s, start, end - start);
     *ret = string_new(retval);
     tstr_free(&s);
     return 0;
@@ -122,7 +121,7 @@ int do_string_prototype_char_at(obj_t **ret, obj_t *this, int argc,
     if (pos < 0 || pos >= s.len)
         goto Exit;
 
-    retval = tstr_slice(s, pos, 1);
+    retval = tstr_slice(&s, pos, 1);
 
 Exit:
     *ret = string_new(retval);

@@ -22,24 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __DRIVERS_SERIAL_H__
-#define __DRIVERS_SERIAL_H__
+#include "util/tstr_list.h"
+#include "mem/tmalloc.h"
 
-#include "util/tstr.h"
-#include "drivers/resources.h"
-#include "platform/platform.h"
+void tstr_list_add(tstr_list_t **l, tstr_t *s)
+{
+    tstr_list_t *n = tmalloc_type(tstr_list_t), **iter;
+    /* TODO: verify no double strs */
+    n->str = *s;
+    n->next = NULL;
+    for (iter = l; *iter; iter = &(*iter)->next);
+    *iter = n;
+}
 
-#define SERIAL_UART_MAJ 0
-#define SERIAL_USB_MAJ 1
+void tstr_list_free(tstr_list_t **l)
+{
+    tstr_list_t *temp;
 
-#define UART_RES(u) RES(SERIAL_RESOURCE_ID_BASE, SERIAL_UART_MAJ, u)
-#define USB_RES RES(SERIAL_RESOURCE_ID_BASE, SERIAL_USB_MAJ, 0)
-
-int serial_read(resource_t id, char *buf, int size);
-int serial_write(resource_t id, char *buf, int size);
-void serial_printf(resource_t id, char *fmt, ...);
-int serial_enable(resource_t id, int enabled);
-int serial_set_params(resource_t id, const serial_params_t *params);
-int serial_get_constant(int *constant, tstr_t t);
-
-#endif
+    while ((temp = *l))
+    {
+        *l = (*l)->next;
+        tstr_free(&temp->str);
+        tfree(temp);
+    }
+}

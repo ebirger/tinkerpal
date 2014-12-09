@@ -105,9 +105,11 @@ static void read_ack(void)
 static void roll_back(void)
 {
     free_size += cur_line.len;
-    read_buf = buf = TPTR(&cur_line);
     reset_line();
+    read_buf -= cur_line_pos;
+    buf -= cur_line_pos;
     cur_line_pos = cur_line.len = 0;
+
 }
 
 static void output_history(void)
@@ -311,8 +313,9 @@ static void on_event(event_t *e, u32 id, u64 timestamp)
         else if (g_client->process_line)
             g_client->process_line(&cur_line);
         history_commit(history, &cur_line);
-        cur_line.len = cur_line_pos = 0;
-        TPTR(&cur_line) = read_buf = buf = cli_buf;
+        cur_line_pos = 0;
+        read_buf = buf = cli_buf;
+        tstr_init(&cur_line, cli_buf, 0, TSTR_FLAG_ALLOCATED);
     }
 
     output_prompt();
@@ -347,8 +350,8 @@ void cli_start(cli_client_t *client)
 {
     g_client = client;
     output_prompt();
-    read_buf = buf = TPTR(&cur_line) = cli_buf;
+    read_buf = buf = cli_buf;
+    tstr_init(&cur_line, cli_buf, 0, TSTR_FLAG_ALLOCATED);
     history = history_new();
-    TSTR_SET_ALLOCATED(&cur_line);
     console_event_watch_set(&cli_event);
 }

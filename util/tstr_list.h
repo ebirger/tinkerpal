@@ -22,24 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __DRIVERS_SERIAL_H__
-#define __DRIVERS_SERIAL_H__
+#ifndef __TSTR_LIST_H__
+#define __TSTR_LIST_H__
 
 #include "util/tstr.h"
-#include "drivers/resources.h"
-#include "platform/platform.h"
 
-#define SERIAL_UART_MAJ 0
-#define SERIAL_USB_MAJ 1
+typedef struct tstr_list_t {
+    struct tstr_list_t *next;
+    tstr_t str;
+} tstr_list_t;
 
-#define UART_RES(u) RES(SERIAL_RESOURCE_ID_BASE, SERIAL_UART_MAJ, u)
-#define USB_RES RES(SERIAL_RESOURCE_ID_BASE, SERIAL_USB_MAJ, 0)
-
-int serial_read(resource_t id, char *buf, int size);
-int serial_write(resource_t id, char *buf, int size);
-void serial_printf(resource_t id, char *fmt, ...);
-int serial_enable(resource_t id, int enabled);
-int serial_set_params(resource_t id, const serial_params_t *params);
-int serial_get_constant(int *constant, tstr_t t);
+void tstr_list_add(tstr_list_t **l, tstr_t *s);
+void tstr_list_free(tstr_list_t **l);
 
 #endif

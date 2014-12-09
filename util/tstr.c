@@ -24,22 +24,10 @@
  */
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include "util/tstr.h"
 #include "util/debug.h"
+#include "util/tp_misc.h"
 #include "mem/tmalloc.h"
-
-/* XXX: move to a different file */
-char digit_value(char c)
-{
-    if (isdigit((int)c))
-        return c - '0';
-    if (c >= 'a' && c <= 'f')
-        return 10 + c - 'a';
-    if (c >= 'A' && c <= 'F')
-        return 10 + c - 'A';
-    return 0;
-}
 
 void tstr_alloc(tstr_t *t, int len)
 {
@@ -70,29 +58,7 @@ void tstr_cpy_str(tstr_t *t, const char *s)
     memcpy(TPTR(t), s, len);
 }
 
-void tstr_list_add(tstr_list_t **l, tstr_t *s)
-{
-    tstr_list_t *n = tmalloc_type(tstr_list_t), **iter;
-    /* TODO: verify no double strs */
-    n->str = *s;
-    n->next = NULL;
-    for (iter = l; *iter; iter = &(*iter)->next);
-    *iter = n;
-}
-
-void tstr_list_free(tstr_list_t **l)
-{
-    tstr_list_t *temp;
-
-    while ((temp = *l))
-    {
-        *l = (*l)->next;
-        tstr_free(&temp->str);
-        tfree(temp);
-    }
-}
-
-int tstr_find(tstr_t *haystack, tstr_t *needle)
+int tstr_find(const tstr_t *haystack, tstr_t *needle)
 { 
     int i, j;
 
@@ -132,11 +98,11 @@ tstr_t tstr_dup(tstr_t s)
     return ret;
 }
 
-tstr_t tstr_piece(tstr_t s, int index, int count)
+tstr_t tstr_piece(const tstr_t *s, int index, int count)
 {
     tstr_t ret;
 
-    ret = s;
+    ret = *s;
     TPTR(&ret) += index;
     ret.len = count;
     return ret;
@@ -218,50 +184,17 @@ tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
 {
     char *out;
     tstr_t ret;
+    int idx = 0;
 
     tstr_alloc(&ret, s.len);
     out = TPTR(&ret);
-    while (s.len)
+    while (s.len - idx)
     {
-        unsigned char c = (unsigned char)*TPTR(&s);
+        u8 c = (u8)*(TPTR(&s) + idx++);
 
         *out++ = is_lower ? (char)tolower(c) : (char)toupper(c);
-        tstr_advance(&s, 1);
     }
 
-    return ret;
-}
-
-/* XXX: this is stupid. Should use tstr and have tstr prefix comp */
-int prefix_comp(int len, char *a, char *b)
-{
-    int i;
-
-    for (i = 0; i < len; i++)
-    {
-        if (a[i] != b[i])
-            return -1;
-    }
-    return 0;
-}
-
-tstr_t tstr_cut(tstr_t *t, char delim)
-{
-    int i;
-    tstr_t ret;
-
-    ret = *t;
-    for (i = 0; i < t->len && TPTR(t)[i] != delim; i++);
-    if (i == t->len)
-    {
-        TPTR(t) = NULL;
-        t->len = 0;
-        return ret;
-    }
-
-    ret.len = i; 
-    /* Skip over prefix + delim */
-    tstr_advance(t, i + 1);
     return ret;
 }
 
@@ -304,4 +237,10 @@ void tstr_move(tstr_t *t, int to_idx, int from_idx, int count)
     from = TPTR(t) + from_idx;
     to = TPTR(t) + to_idx;
     memmove(to, from, count);
+}
+
+int tstr_fill(tstr_t *t, int size,
+    int (*fill_fn)(void *ctx, char *buf, int size), void *ctx)
+{
+    return fill_fn(ctx, TPTR(t), size);
 }
