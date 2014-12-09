@@ -127,7 +127,8 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
     unsigned short left;
     char *in, *out;
 
-    out = TPTR(dst) = tmalloc(src->len, "Unescaped string");
+    out = tmalloc(src->len, "Unescaped string");
+    tstr_init(dst, out, src->len, TSTR_FLAG_ALLOCATED);
 
     for (in = TPTR(src); (left = src->len - (in - TPTR(src))) > 0; in++)
     {
@@ -175,7 +176,6 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
         }
     }
     dst->len = out - TPTR(dst);
-    TSTR_SET_ALLOCATED(dst);
 }
 
 tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
