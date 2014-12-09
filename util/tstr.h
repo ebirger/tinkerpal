@@ -114,12 +114,6 @@ tstr_t tstr_to_upper_lower(tstr_t s, int is_lower);
 /* Return a NULL terminated, allocated string from tstr_t */
 char *tstr_to_strz(tstr_t *t);
 
-static inline void tstr_advance(tstr_t *t, int amount)
-{
-    TPTR(t) += amount;
-    t->len -= amount;
-}
-
 int __tstr_dump(tstr_t *t, int offset, int size,
     int (*__dump_fn)(void *ctx, char *buf, int size), void *ctx);
 int tstr_dump(tstr_t *t, int offset, int size,
