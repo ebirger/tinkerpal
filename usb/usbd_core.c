@@ -71,7 +71,7 @@ typedef struct {
 
     volatile int xfer_complete;
 
-    u8 *send_data;
+    const u8 *send_data;
     u16 send_data_remaining;
 
     u8 *recv_data;
@@ -94,7 +94,7 @@ void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
     platform.usb.ep_cfg(ep, max_pkt_size_in, max_pkt_size_out, type);
 }
 
-static int _usbd_ep_send(int ep, u8 *data, int len)
+static int _usbd_ep_send(int ep, const u8 *data, int len)
 {
     usbd_ep_t *uep = &usbd_eps[ep];
 
@@ -110,7 +110,7 @@ static int _usbd_ep_send(int ep, u8 *data, int len)
     return platform.usb.ep_data_send(ep, data, uep->max_pkt_size_in, 0);
 }
 
-int usbd_ep_send(int ep, u8 *data, int len)
+int usbd_ep_send(int ep, const u8 *data, int len)
 {
     usbd_ep_t *uep = &usbd_eps[ep];
 
@@ -153,19 +153,20 @@ static void get_descriptor_handler(usb_setup_t *setup)
     case USB_DESC_DEVICE:
         tp_out(("GET_DESCRIPTOR: DEVICE\n"));
         len = MIN(setup->wLength, sizeof(usb_device_desc));
-        usbd_ep_send(USBD_EP0, (u8 *)&usb_device_desc, len);
+        usbd_ep_send(USBD_EP0, (const u8 *)&usb_device_desc, len);
         break;
     case USB_DESC_CONFIGURATION:
         {
-            usb_cfg_desc_t *cfg_header = (usb_cfg_desc_t *)&usb_full_cfg_desc;
+            const usb_cfg_desc_t *cfg_header =
+                (const usb_cfg_desc_t *)&usb_full_cfg_desc;
 
             tp_out(("GET_DESCRIPTOR: CONFIGURATION\n"));
             /* XXX: validate index, stall if necessary */
             len = MIN(setup->wLength, cfg_header->wTotalLength);
             tp_out(("---------------------------------\n"));
-            hexdump((u8 *)&usb_full_cfg_desc, len);
+            hexdump((const u8 *)&usb_full_cfg_desc, len);
             tp_out(("---------------------------------\n"));
-            usbd_ep_send(USBD_EP0, (u8 *)&usb_full_cfg_desc, len);
+            usbd_ep_send(USBD_EP0, (const u8 *)&usb_full_cfg_desc, len);
         }
         break;
     case USB_DESC_STRING:
@@ -173,7 +174,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
             const u8 *str = usb_string_descs[setup->wValue & 0xff];
 
             len = MIN(setup->wLength, str[0]);
-            usbd_ep_send(USBD_EP0, (u8 *)str, len);
+            usbd_ep_send(USBD_EP0, str, len);
         }
         break;
     }
