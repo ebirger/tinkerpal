@@ -31,10 +31,15 @@
 
 void tstr_alloc(tstr_t *t, int len)
 {
-    TPTR(t) = tmalloc(len, "TSTR");
     t->len = len;
     t->flags = 0;
-    TSTR_SET_ALLOCATED(t);
+    if (len <= sizeof(t->u))
+        t->flags |= TSTR_FLAG_INLINE;
+    else
+    {
+        t->u.ptr = tmalloc(len, "TSTR");
+        TSTR_SET_ALLOCATED(t);
+    }
 }
 
 void tstr_zalloc(tstr_t *t, int len)
@@ -45,7 +50,7 @@ void tstr_zalloc(tstr_t *t, int len)
 
 void tstr_init(tstr_t *t, char *data, int len, unsigned short flags)
 {
-    TPTR(t) = data;
+    t->u.ptr = data;
     t->len = len;
     t->flags = flags;
 }
@@ -104,7 +109,10 @@ tstr_t tstr_piece(const tstr_t *s, int index, int count)
     tstr_t ret;
 
     ret = *s;
-    TPTR(&ret) += index;
+    if (s->flags & TSTR_FLAG_INLINE)
+        memmove(ret.u.buf, ret.u.buf + index, count);
+    else
+        ret.u.ptr += index;
     ret.len = count;
     return ret;
 }

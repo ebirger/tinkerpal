@@ -33,19 +33,23 @@ typedef struct {
 #define TSTR_FLAG_ALLOCATED 0x0001
 #define TSTR_FLAG_ESCAPED 0x0002
 #define TSTR_FLAG_INTERNAL 0x0004
+#define TSTR_FLAG_INLINE 0x0008
     unsigned short flags;
-    char *ptr;
+    union {
+        char *ptr;
+        char buf[0];
+    } u;
 } tstr_t;
 
-#define TPTR(t) ((t)->ptr)
+#define TPTR(t) ((t)->flags & TSTR_FLAG_INLINE ? (t)->u.buf : (t)->u.ptr)
 #define TSTR_IS_ALLOCATED(t) ((t)->flags & TSTR_FLAG_ALLOCATED)
 #define TSTR_SET_ALLOCATED(t) ((t)->flags |= TSTR_FLAG_ALLOCATED)
 #define TSTR_IS_ESCAPED(t) ((t)->flags & TSTR_FLAG_ESCAPED)
 #define TSTR_SET_ESCAPED(t) ((t)->flags |= TSTR_FLAG_ESCAPED)
 #define TSTR_IS_INTERNAL(t) ((t)->flags & TSTR_FLAG_INTERNAL)
 #define TSTR_SET_INTERNAL(t) ((t)->flags |= TSTR_FLAG_INTERNAL)
-#define S(s) (tstr_t){ .ptr = (s), .len = sizeof(s) - 1, .flags = 0 }
-#define INTERNAL_S(s) (tstr_t){ .ptr = (s), .len = sizeof(s) - 1, \
+#define S(s) (tstr_t){ .u = { .ptr = (s) }, .len = sizeof(s) - 1, .flags = 0 }
+#define INTERNAL_S(s) (tstr_t){ .u = { .ptr = (s) }, .len = sizeof(s) - 1, \
     .flags = TSTR_FLAG_INTERNAL }
 
 void tstr_cpy_str(tstr_t *t, const char *s);
