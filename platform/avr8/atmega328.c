@@ -29,6 +29,7 @@
 #include <util/delay.h>
 #include "platform/platform.h"
 #include "platform/ticks.h"
+#include "platform/avr8/atmega328_i2c.h"
 #include "util/tp_misc.h"
 
 #define DEFAULT_BAUD 19200
@@ -174,6 +175,12 @@ const platform_t platform = {
     .gpio = {
         .digital_write = avr8_gpio_digital_write,
         .set_pin_mode = avr8_set_pin_mode,
+    },
+#endif
+#ifdef CONFIG_I2C
+    .i2c = {
+        .init = avr8_i2c_init,
+        .reg_write = avr8_i2c_reg_write,
     },
 #endif
     .init = avr8_init,
