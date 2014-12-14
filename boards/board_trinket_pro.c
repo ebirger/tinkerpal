@@ -33,4 +33,10 @@ const board_t board = {
         GPIO_RES(_PB6),
         0
     },
+#ifdef CONFIG_SSD1306
+    .ssd1306_params = {
+        .i2c_port = I2C_RES(0),
+	.i2c_addr = 0x78,
+    },
+#endif
 };
