@@ -72,6 +72,16 @@ typedef struct {
 } function_t;
 
 typedef struct {
+    tstr_t *name;
+    obj_t **parent;
+    call_t call;
+#ifdef CONFIG_OBJ_DOC
+    doc_function_t doc;
+    char *doc_name;
+#endif
+} function_template_t;
+
+typedef struct {
     int argc;
     obj_t **argv;
 } function_args_t;
@@ -176,8 +186,6 @@ extern bool_t false_obj;
 
 #define STATIC_OBJ(c) _STATIC_OBJ(c, 0)
 
-#define STATIC_FUNCTION(f) { .obj = STATIC_OBJ(FUNCTION_CLASS), \
-    .call = f, .code = NULL, .scope = NULL, .formal_params = NULL }
 #define STATIC_CONSTRUCTOR(f) { \
     .obj = _STATIC_OBJ(FUNCTION_CLASS, OBJ_FUNCTION_CONSTRUCTOR), \
     .call = f, .code = NULL, .scope = NULL, .formal_params = NULL }
@@ -189,7 +197,7 @@ extern bool_t false_obj;
 
 /* Generic obj methods */
 obj_t *obj_cast(obj_t *o, unsigned char class);
-obj_t **obj_var_create(obj_t *o, tstr_t *str);
+obj_t **obj_var_create(obj_t *o, const tstr_t *str);
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *str);
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property);
 obj_t *obj_has_property(obj_t *o, const tstr_t *property); /* TRUE/FALSE */

@@ -22,32 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __USBD_CORE_H__
-#define __USBD_CORE_H__
+#ifndef __ATMEGA328_I2C_H__
+#define __ATMEGA328_I2C_H__
 
-#include "util/tp_types.h"
-#include "usb/usbd_core_platform.h"
-
-typedef struct {
-    u8 bmRequestType;
-    u8 bRequest;
-    u16 wValue;
-    u16 wIndex;
-    u16 wLength;
-} usb_setup_t;
-
-typedef void (*usb_req_handler_t)(usb_setup_t *setup);
-typedef void (*data_ready_cb_t)(int data_len);
-
-void usbd_dump_setup(usb_setup_t *setup);
-
-void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
-    usb_ep_type_t type);
-int usbd_ep_send(int ep, const u8 *data, int len);
-void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb);
-
-/* Defined by USB classes */
-extern void usbd_class_init(void);
-extern void usbd_class_req_do(usb_setup_t *setup);
+int avr8_i2c_init(int port);
+void avr8_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
+    unsigned char *data, int len);
 
 #endif

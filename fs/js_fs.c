@@ -79,12 +79,11 @@ Exit:
     return rc;
 }
 
-static int readdir_cb(tstr_t *file_name, void *ctx)
+static void readdir_cb(tstr_t *file_name, void *ctx)
 {
     obj_t *arr = (obj_t *)ctx;
 
     array_push(arr, string_new(tstr_dup(*file_name)));
-    return 0;
 }
 
 int do_readdir_sync(obj_t **ret, obj_t *this, int argc, obj_t *argv[])

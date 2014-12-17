@@ -31,10 +31,15 @@
 
 void tstr_alloc(tstr_t *t, int len)
 {
-    TPTR(t) = tmalloc(len, "TSTR");
     t->len = len;
     t->flags = 0;
-    TSTR_SET_ALLOCATED(t);
+    if (len <= sizeof(t->u))
+        t->flags |= TSTR_FLAG_INLINE;
+    else
+    {
+        t->u.ptr = tmalloc(len, "TSTR");
+        TSTR_SET_ALLOCATED(t);
+    }
 }
 
 void tstr_zalloc(tstr_t *t, int len)
@@ -45,7 +50,7 @@ void tstr_zalloc(tstr_t *t, int len)
 
 void tstr_init(tstr_t *t, char *data, int len, unsigned short flags)
 {
-    TPTR(t) = data;
+    t->u.ptr = data;
     t->len = len;
     t->flags = flags;
 }
@@ -89,12 +94,13 @@ tstr_t tstr_dup(tstr_t s)
 {
     tstr_t ret;
 
-    ret = s;
     if (TSTR_IS_ALLOCATED(&s))
     {
-        TPTR(&ret) = tmalloc(ret.len, "dupped str");
+        tstr_alloc(&ret, s.len);
         memcpy(TPTR(&ret), TPTR(&s), ret.len);
     }
+    else
+        ret = s;
     return ret;
 }
 
@@ -103,7 +109,10 @@ tstr_t tstr_piece(const tstr_t *s, int index, int count)
     tstr_t ret;
 
     ret = *s;
-    TPTR(&ret) += index;
+    if (s->flags & TSTR_FLAG_INLINE)
+        memmove(ret.u.buf, ret.u.buf + index, count);
+    else
+        ret.u.ptr += index;
     ret.len = count;
     return ret;
 }
@@ -116,12 +125,9 @@ void tstr_free(tstr_t *s)
 
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b)
 {
-    dst->flags = 0;
-    dst->len = a->len + b->len;
-    TPTR(dst) = tmalloc(dst->len, "string");
+    tstr_alloc(dst, a->len + b->len);
     memcpy(TPTR(dst), TPTR(a), a->len);
     memcpy(TPTR(dst) + a->len, TPTR(b), b->len);
-    TSTR_SET_ALLOCATED(dst);
 }
 
 void tstr_unescape(tstr_t *dst, tstr_t *src)
@@ -129,7 +135,8 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
     unsigned short left;
     char *in, *out;
 
-    out = TPTR(dst) = tmalloc(src->len, "Unescaped string");
+    out = tmalloc(src->len, "Unescaped string");
+    tstr_init(dst, out, src->len, TSTR_FLAG_ALLOCATED);
 
     for (in = TPTR(src); (left = src->len - (in - TPTR(src))) > 0; in++)
     {
@@ -177,7 +184,6 @@ void tstr_unescape(tstr_t *dst, tstr_t *src)
         }
     }
     dst->len = out - TPTR(dst);
-    TSTR_SET_ALLOCATED(dst);
 }
 
 tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)

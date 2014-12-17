@@ -81,6 +81,6 @@ void debug_init(debugfn_t *fn);
         tp_crit(("%s: assertion %s failed\n", __FUNCTION__, #x)); \
 } while (0)
 
-void hexdump(unsigned char *buf, int len);
+void hexdump(const unsigned char *buf, int len);
 
 #endif

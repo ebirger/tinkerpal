@@ -139,9 +139,9 @@ static void readdir_root(readdir_cb_t cb, void *ctx)
     {
         tstr_t t;
 
-        tstr_init(&t, (char *)(*fs)->name, strlen((*fs)->name), 0);
-        if (cb(&t, ctx))
-            break;
+        tstr_cpy_str(&t, (*fs)->name);
+        cb(&t, ctx);
+        tstr_free(&t);
     }
 }
 

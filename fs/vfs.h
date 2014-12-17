@@ -29,7 +29,7 @@
 
 #include "util/tstr.h"
 
-typedef int (*readdir_cb_t)(tstr_t *file_name, void *ctx);
+typedef void (*readdir_cb_t)(tstr_t *file_name, void *ctx);
 
 typedef struct {
     const char *name;

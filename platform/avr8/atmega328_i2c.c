@@ -22,32 +22,62 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __USBD_CORE_H__
-#define __USBD_CORE_H__
+#include <stdint.h>
+#include <avr/io.h>
+#include "platform/avr8/atmega328_i2c.h"
 
-#include "util/tp_types.h"
-#include "usb/usbd_core_platform.h"
+#define I2C_PORT PORTC
+#define I2C_SCL PC5
+#define I2C_SDA PC4
 
-typedef struct {
-    u8 bmRequestType;
-    u8 bRequest;
-    u16 wValue;
-    u16 wIndex;
-    u16 wLength;
-} usb_setup_t;
+static void avr8_i2c_start(void)
+{
+    TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+}
 
-typedef void (*usb_req_handler_t)(usb_setup_t *setup);
-typedef void (*data_ready_cb_t)(int data_len);
+static void avr8_i2c_stop(void)
+{
+    TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEN);
+}
 
-void usbd_dump_setup(usb_setup_t *setup);
+static void avr8_i2c_write(uint8_t c)
+{
+    TWDR = c;
+    TWCR = (1<<TWINT) | (1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+}
 
-void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
-    usb_ep_type_t type);
-int usbd_ep_send(int ep, const u8 *data, int len);
-void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb);
+int avr8_i2c_init(int port)
+{
+    TWBR = 0x03;
+    TWSR = 0;
+    TWCR |= 1<<TWEN;
+ 
+    /* Enable pull-ups */
+    I2C_PORT |= (1<<I2C_SCL)|(1<<I2C_SDA);
+    return 0;
+}
 
-/* Defined by USB classes */
-extern void usbd_class_init(void);
-extern void usbd_class_req_do(usb_setup_t *setup);
+static inline uint8_t avr8_i2c_status(void)
+{
+    return TWSR & 0xF8;
+}
 
-#endif
+void avr8_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
+    unsigned char *data, int len)
+{
+#define EXPECT(x) if (avr8_i2c_status() != (x)) return
+    avr8_i2c_start();
+    EXPECT(0x08);
+    avr8_i2c_write(addr);
+    EXPECT(0x18);
+    avr8_i2c_write(reg);
+    EXPECT(0x28);
+    while (len--)
+    {
+        avr8_i2c_write(*data++);
+        EXPECT(0x28);
+    }
+    avr8_i2c_stop();
+}

@@ -302,7 +302,7 @@ int stm32_usb_ep_data_get(int ep, unsigned char *data, unsigned long len)
     return len;
 }
 
-int stm32_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
+int stm32_usb_ep_data_send(int ep, const unsigned char *data, unsigned long len,
     int last)
 {
     int rc = -1;
@@ -316,7 +316,7 @@ int stm32_usb_ep_data_send(int ep, unsigned char *data, unsigned long len,
         if (!data)
             rc = USBD_CtlSendStatus(&dev);
         else
-            rc = USBD_CtlSendData(&dev, data, len);
+            rc = USBD_CtlSendData(&dev, (unsigned char *)(unsigned long)data, len);
     }
     return rc;
 }
