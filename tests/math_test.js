@@ -6,6 +6,7 @@ debug.assert(Math.asin(1), Math.Pi / 2);
 debug.assert(Math.acos(1), 0);
 debug.assert(Math.tan(Math.Pi / 4), 1);
 debug.assert(Math.atan(0), 0);
+debug.assert(Math.sqrt(9), 3);
 debug.assert(Math.log(Math.E * Math.E), 2);
 debug.assert(Math.exp(2), Math.E * Math.E);
 debug.assert(Math.floor(2.4), 2);
