@@ -126,7 +126,7 @@ static obj_t **var_get(var_t *vars, const tstr_t *key)
     return &iter->obj;
 }
 
-static obj_t **var_create(var_t **vars, tstr_t *key)
+static obj_t **var_create(var_t **vars, const tstr_t *key)
 {
     var_t **iter;
 
@@ -343,7 +343,7 @@ do_op:
     return ret;
 }
 
-obj_t **obj_var_create(obj_t *o, tstr_t *key)
+obj_t **obj_var_create(obj_t *o, const tstr_t *key)
 {
     if (CLASS(o)->pre_var_create)
         CLASS(o)->pre_var_create(o, key);
