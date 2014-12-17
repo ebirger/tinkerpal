@@ -806,19 +806,26 @@ static obj_t *function_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     return ret;
 }
 
-obj_t *function_new(tstr_list_t *params, void *code, code_free_cb_t code_free,
-    obj_t *scope, call_t call)
+static obj_t *_function_new(tstr_list_t *params, void *code,
+    code_free_cb_t code_free, obj_t *scope, obj_t *prototype, call_t call)
 {
     function_t *ret = (function_t *)obj_new(FUNCTION_CLASS);
 
     tp_assert(call);
-    _obj_set_property(&ret->obj, Sprototype, object_new());
+    if (prototype)
+        _obj_set_property(&ret->obj, Sprototype, prototype);
     ret->formal_params = params;
     ret->code = code;
     ret->code_free_cb = code_free;
     ret->scope = obj_get(scope);
     ret->call = call;
     return (obj_t *)ret;
+}
+
+obj_t *function_new(tstr_list_t *params, void *code, code_free_cb_t code_free,
+    obj_t *scope, call_t call)
+{
+    return _function_new(params, code, code_free, scope, object_new(), call);
 }
 
 int function_def_construct(obj_t **ret, obj_t *this_obj, int argc, 
