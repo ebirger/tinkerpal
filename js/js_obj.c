@@ -77,6 +77,8 @@ bool_t false_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 0 };
 
 static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 double num_fp_value(num_t *n);
+static obj_t *_function_new(tstr_list_t *params, void *code,
+    code_free_cb_t code_free, obj_t *scope, obj_t *prototype, call_t call);
 
 /*** "vars" API ***/
 
@@ -228,15 +230,52 @@ void obj_describe(printer_t *printer, obj_t *o)
 #endif
 }
 
+static const function_template_t *templ_find(obj_t *o, const tstr_t *name)
+{
+    extern const function_template_t function_templates[];
+    const function_template_t *tmpl;
+
+    for (tmpl = function_templates; tmpl->name; tmpl++)
+    {
+        if (*tmpl->parent != o || tstr_cmp(tmpl->name, name))
+            continue;
+
+        return tmpl;
+    }
+    return NULL;
+}
+
+static obj_t *obj_gen_from_templ(const function_template_t *tmpl)
+{
+    obj_t *o;
+    
+    o = _function_new(NULL, NULL, NULL, NULL, NULL, tmpl->call);
+
+#ifdef CONFIG_OBJ_DOC
+    {
+        function_t *f = (function_t *)o;
+        memcpy(&f->doc, &tmpl->doc, sizeof(f->doc));
+        f->doc.name = tmpl->doc_name;
+    }
+#endif
+    return o;
+}
+
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)
 {
     obj_t **ref;
+    const function_template_t *tmpl;
 
     if (OBJ_IS_INT_VAL(o))
         return NULL;
 
-    if ((ref = var_get(o->properties, key)))
+    if ((ref = var_get(o->properties, key)) || (tmpl = templ_find(o, key)))
     {
+        if (!ref)
+        {
+            ref = obj_var_create(o, key);
+            *ref = obj_get(obj_gen_from_templ(tmpl));
+        }
         if (lval)
             *lval = ref;
         return *ref;

@@ -26,9 +26,10 @@
 #include "js/js_builtins.h"
 #include "js/js_obj.h"
 
+extern obj_t *global_env;
+
 #define FUNCTION(n, o, f, ...) \
-    extern int f(obj_t **ret, obj_t *this, int argc, obj_t *argv[]); \
-    static function_t f##_func = STATIC_FUNCTION(f);
+    extern int f(obj_t **ret, obj_t *this, int argc, obj_t *argv[]);
 #define CONSTRUCTOR(n, o, f, ...) \
     extern int f(obj_t **ret, obj_t *this, int argc, obj_t *argv[]); \
     static function_t f##_func = STATIC_CONSTRUCTOR(f);
@@ -43,6 +44,48 @@
     extern void uninit(void);
 
 #include "descs.h"
+
+#undef FUNCTION
+#undef OBJECT
+#undef CONSTRUCTOR
+#undef CLASS_PROTOTYPE
+#undef PROTOTYPE
+#undef CONST
+#undef CONST_INT_VAL
+#undef CATEGORY
+#undef CATEGORY_INIT
+
+/* Function templates array */
+#define CONSTRUCTOR(...)
+#define OBJECT(...)
+#define PROTOTYPE(...)
+#define CONST(...)
+#define CONST_INT_VAL(...)
+#define CATEGORY(...)
+#define CLASS_PROTOTYPE(n, o, p, c, ...)
+#define CATEGORY_INIT(init, uninit, ...)
+#ifdef CONFIG_OBJ_DOC
+#define FUNCTION(n, o, f, d...) \
+    { \
+        .name = &S(n), \
+        .parent = &o, \
+        .call = f, \
+        .doc_name = n, \
+        .doc = d \
+    },
+#else
+#define FUNCTION(n, o, f, ...) \
+    { \
+        .name = &S(n), \
+        .parent = &o, \
+        .call = f \
+    },
+#endif
+
+const function_template_t function_templates[] = {
+#include "descs.h"
+    {}
+};
 
 #undef FUNCTION
 #undef OBJECT
@@ -84,8 +127,6 @@ void js_builtins_uninit(void)
 
 void js_builtins_init(void)
 {
-    extern obj_t *global_env;
-
 #ifdef CONFIG_OBJ_DOC
 #define OBJ_DOC_FUNCTION_INIT(n, o, f, d...) do { \
     doc_function_t doc = d; \
@@ -96,12 +137,10 @@ void js_builtins_init(void)
 #define OBJ_DOC_FUNCTION_INIT(n, o, f, d...)
 #endif
 
-#define FUNCTION(n, o, f, d...) do { \
-    _obj_set_property(o, S(n), (obj_t *)&f##_func); \
-    OBJ_DOC_FUNCTION_INIT(n, o, f, d); \
-} while(0);
+#define FUNCTION(n, o, f, d...)
 #define CONSTRUCTOR(n, o, f, d...) do { \
-    FUNCTION(n, global_env, f, d) \
+    _obj_set_property(global_env, S(n), (obj_t *)&f##_func); \
+    OBJ_DOC_FUNCTION_INIT(n, global_env, f, d); \
     _obj_set_property(&f##_func.obj, Sprototype, o); \
 } while(0);
 #define OBJECT(n, o, ...) do { \

@@ -72,6 +72,16 @@ typedef struct {
 } function_t;
 
 typedef struct {
+    tstr_t *name;
+    obj_t **parent;
+    call_t call;
+#ifdef CONFIG_OBJ_DOC
+    doc_function_t doc;
+    char *doc_name;
+#endif
+} function_template_t;
+
+typedef struct {
     int argc;
     obj_t **argv;
 } function_args_t;
@@ -176,8 +186,6 @@ extern bool_t false_obj;
 
 #define STATIC_OBJ(c) _STATIC_OBJ(c, 0)
 
-#define STATIC_FUNCTION(f) { .obj = STATIC_OBJ(FUNCTION_CLASS), \
-    .call = f, .code = NULL, .scope = NULL, .formal_params = NULL }
 #define STATIC_CONSTRUCTOR(f) { \
     .obj = _STATIC_OBJ(FUNCTION_CLASS, OBJ_FUNCTION_CONSTRUCTOR), \
     .call = f, .code = NULL, .scope = NULL, .formal_params = NULL }
