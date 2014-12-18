@@ -56,7 +56,7 @@ const board_t board = {
         .intr = GPIO_RES(PF4),
     },
 #endif
-#ifdef CONFIG_ESP8266
+#ifdef CONFIG_NET_ESP8266
     .esp8266_params = {
         .serial_port = UART_RES(UART4),
     },

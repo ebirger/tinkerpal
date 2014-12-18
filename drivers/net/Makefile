@@ -3,7 +3,7 @@ ifneq ($(CONFIG_ENC28J60),)
   MK_DESCS=enc28j60.desc
 endif
 
-ifneq ($(CONFIG_ESP8266),)
+ifneq ($(CONFIG_NET_ESP8266),)
   MK_OBJS+=esp8266.o $(if $(CONFIG_JS),js_esp8266.o)
   MK_DESCS=esp8266.desc
 endif
