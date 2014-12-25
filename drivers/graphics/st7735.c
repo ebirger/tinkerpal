@@ -155,7 +155,7 @@ static void st7735_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
     st7735_t *screen = container_of(c, st7735_t, canvas);
 
-    st7735_set_window(screen, x, y, x+1, y+1);
+    st7735_set_window(screen, x, y, x + 1, y + 1);
 
     gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, 1);
