@@ -64,6 +64,27 @@ int do_graphics_rect_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     return 0;
 }
 
+int do_graphics_rect_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    int x, y, w, h, color;
+    canvas_t *c;
+
+    if (argc != 6)
+        return js_invalid_args(ret);
+
+    if (!(c = graphics_obj_get_canvas(this)))
+        return js_invalid_args(ret);
+
+    x = obj_get_int(argv[1]);
+    y = obj_get_int(argv[2]);
+    w = obj_get_int(argv[3]);
+    h = obj_get_int(argv[4]);
+    color = obj_get_int(argv[5]);
+
+    rect_fill(c, x, y, w, h, color);
+    return 0;
+}
+
 int do_graphics_round_rect_draw(obj_t **ret, obj_t *this, int argc,
     obj_t *argv[])
 {

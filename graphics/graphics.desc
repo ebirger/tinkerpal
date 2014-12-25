@@ -93,3 +93,18 @@ FUNCTION("roundRectDraw", graphics, do_graphics_round_rect_draw, {
         "var g = new Graphics(lcd);\n"
         "g.roundRectDraw(10, 10, 20, 20, 4, 0xffff);",
 })
+
+FUNCTION("rectFill", graphics, do_graphics_rect_fill, {
+    .params = {
+        { .name = "x" , .description = "X coordinate" },
+        { .name = "y" , .description = "Y coordinate" },
+        { .name = "w" , .description = "Width" },
+        { .name = "h" , .description = "Height" },
+        { .name = "color" , .description = "Color" },
+    },
+    .description = "Draws a filled rectangle on LCD",
+    .return_value = "None",
+    .example = "var lcd = new ST7735();\n"
+        "var g = new Graphics(lcd);\n"
+        "g.rectFill(10, 10, 20, 20, g.RED);",
+})

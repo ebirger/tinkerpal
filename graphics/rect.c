@@ -59,3 +59,11 @@ void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, int type,
     canvas_hline(c, x + w - r, x + r, y + h, color);
     canvas_vline(c, x, y + h - r, y + r, color);
 }
+
+void rect_fill(canvas_t *c, int x, int y, int w, int h, u16 color)
+{
+    int j;
+
+    for (j = 0; j < h; j++)
+        canvas_hline(c, x, x + w, y + j, color);
+}
