@@ -78,7 +78,7 @@ static st7735_t g_st7735_screen;
 #define ST7735_PWCTR4 0xc3
 #define ST7735_PWCTR5 0xc4
 
-static void _st7735_write(st7735_t *screen, int iscmd, u8 *data, int len)
+static void st7735_write(st7735_t *screen, int iscmd, u8 *data, int len)
 {
     gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, !iscmd);
@@ -88,29 +88,15 @@ static void _st7735_write(st7735_t *screen, int iscmd, u8 *data, int len)
     gpio_digital_write(screen->params.cs, 1);
 }
 
-static void st7735_write(st7735_t *screen, int iscmd, u8 data)
+static void st7735_cmd(st7735_t *screen, u8 op, int num_params, u8 *params)
 {
-    _st7735_write(screen, iscmd, &data, 1);
+    st7735_write(screen, 1, &op, 1);
+    if (num_params)
+        st7735_write(screen, 0, params, num_params);
 }
 
-typedef struct {
-    u8 op;
-    int num_params;
-    u8 *params;
-} st7735_cmd_t;
-
-static void st7735_cmd(st7735_t *screen, const st7735_cmd_t *cmd)
-{
-    st7735_write(screen, 1, cmd->op);
-    if (cmd->num_params)
-        _st7735_write(screen, 0, cmd->params, cmd->num_params);
-}
-
-#define DO_CMD(screen, c, args...) st7735_cmd(screen, &(st7735_cmd_t){ \
-    .op = (c), \
-    .num_params = ARRAY_SIZE(((u8 []) { args })), \
-    .params = (u8 []){ args } \
-})
+#define DO_CMD(screen, op, args...) \
+    st7735_cmd(screen, op, ARRAY_SIZE(((u8 []){ args })), (u8 []){ args })
 
 static void st7735_init_seq(st7735_t *screen)
 {
