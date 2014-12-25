@@ -1,0 +1,8 @@
+CONSTRUCTOR("ST7735", canvas, do_st7735_constructor, {
+    .params = {
+    },
+    .description = "ST7735 Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new ST7735();\n"
+        "lcd.pixelDraw(10, 10, 1);",
+})
