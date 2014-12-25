@@ -31,6 +31,8 @@ typedef struct canvas_t canvas_t;
     
 typedef struct {
     void (*pixel_set)(canvas_t *c, u16 x, u16 y, u16 val);
+    void (*hline)(canvas_t *c, u16 x0, u16 x1, u16 y, u16 val);
+    void (*vline)(canvas_t *c, u16 x0, u16 y0, u16 y1, u16 val);
     void (*fill)(canvas_t *c, u16 val);
     void (*flip)(canvas_t *c);
     void (*free)(canvas_t *c);
@@ -56,6 +58,8 @@ static inline void canvas_flip(canvas_t *c)
         c->ops->flip(c);
 }
 
+void canvas_hline(canvas_t *c, u16 x0, u16 x1, u16 y, u16 val);
+void canvas_vline(canvas_t *c, u16 x, u16 y0, u16 y1, u16 val);
 void canvas_fill(canvas_t *c, u16 val);
 
 static inline void canvas_free(canvas_t *c)
