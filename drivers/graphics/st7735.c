@@ -151,34 +151,12 @@ void st7735_set_window(st7735_t *screen, u8 x0, u8 y0, u8 x1, u8 y1)
     DO_CMD(screen, ST7735_RAMWR);
 }
 
-static void st7735_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+static void st7735_fill_window(st7735_t *screen, int n, u16 val)
 {
-    st7735_t *screen = container_of(c, st7735_t, canvas);
-
-    st7735_set_window(screen, x, y, x + 1, y + 1);
-
     gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, 1);
 
-    spi_send(screen->params.spi_port, val >> 8);
-    spi_send(screen->params.spi_port, val & 0xff);
-
-    gpio_digital_write(screen->params.cs, 1);
-}
-
-static void st7735_fill(canvas_t *c, u16 val)
-{
-    st7735_t *screen = container_of(c, st7735_t, canvas);
-    int i, w, h;
-
-    w = screen->canvas.width;
-    h = screen->canvas.height;
-    st7735_set_window(screen, 0, 0, w - 1, h - 1);
-
-    gpio_digital_write(screen->params.cs, 0);
-    gpio_digital_write(screen->params.cd, 1);
-
-    for (i = w * h; i > 0; i--)
+    while (val--)
     {
         spi_send(screen->params.spi_port, val >> 8);
         spi_send(screen->params.spi_port, val & 0xff);
@@ -187,8 +165,45 @@ static void st7735_fill(canvas_t *c, u16 val)
     gpio_digital_write(screen->params.cs, 1);
 }
 
+static void st7735_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+{
+    st7735_t *screen = container_of(c, st7735_t, canvas);
+
+    st7735_set_window(screen, x, y, x + 1, y + 1);
+    st7735_fill_window(screen, 1, val);
+}
+
+static void st7735_hline(canvas_t *c, u16 x0, u16 x1, u16 y, u16 val)
+{
+    st7735_t *screen = container_of(c, st7735_t, canvas);
+
+    st7735_set_window(screen, x0, y, x1, y + 1);
+    st7735_fill_window(screen, x1 - x0, val);
+}
+
+static void st7735_vline(canvas_t *c, u16 x, u16 y0, u16 y1, u16 val)
+{
+    st7735_t *screen = container_of(c, st7735_t, canvas);
+
+    st7735_set_window(screen, x, y0, x, y1);
+    st7735_fill_window(screen, y1 - y0, val);
+}
+
+static void st7735_fill(canvas_t *c, u16 val)
+{
+    st7735_t *screen = container_of(c, st7735_t, canvas);
+    int w, h;
+
+    w = screen->canvas.width;
+    h = screen->canvas.height;
+    st7735_set_window(screen, 0, 0, w - 1, h - 1);
+    st7735_fill_window(screen, w * h, val);
+}
+
 static const canvas_ops_t st7735_ops = {
     .pixel_set = st7735_pixel_set,
+    .hline = st7735_hline,
+    .vline = st7735_vline,
     .fill = st7735_fill,
 };
 
