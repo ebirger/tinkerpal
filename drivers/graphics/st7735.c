@@ -99,18 +99,11 @@ typedef struct {
     u8 *params;
 } st7735_cmd_t;
 
-#define OP_DELAY 0xff
-
 static void st7735_cmd(st7735_t *screen, const st7735_cmd_t *cmd)
 {
-    if (cmd->op == OP_DELAY)
-        platform_msleep(cmd->params[0]);
-    else
-    {
-        st7735_write(screen, 1, cmd->op);
-        if (cmd->num_params)
-            _st7735_write(screen, 0, cmd->params, cmd->num_params);
-    }
+    st7735_write(screen, 1, cmd->op);
+    if (cmd->num_params)
+        _st7735_write(screen, 0, cmd->params, cmd->num_params);
 }
 
 #define DO_CMD(screen, c, args...) st7735_cmd(screen, &(st7735_cmd_t){ \
@@ -122,9 +115,9 @@ static void st7735_cmd(st7735_t *screen, const st7735_cmd_t *cmd)
 static void st7735_init_seq(st7735_t *screen)
 {
     DO_CMD(screen, ST7735_SWRESET);
-    DO_CMD(screen, OP_DELAY, 150);
+    platform_msleep(150);
     DO_CMD(screen, ST7735_SLPOUT);
-    DO_CMD(screen, OP_DELAY, 255);
+    platform_msleep(255);
     DO_CMD(screen, ST7735_INVCTR, ST7735_INVCTR_NLA|ST7735_INVCTR_NLB|ST7735_INVCTR_NLC);
     /* Use default values for Power Control unless otherwise specified */
     DO_CMD(screen, ST7735_PWCTR1, 0xa8, 0x08 , 0x84);
@@ -138,9 +131,9 @@ static void st7735_init_seq(st7735_t *screen)
     DO_CMD(screen, ST7735_CASET, 0x00, 0x00, 0x00, LCD_WIDTH - 1);
     DO_CMD(screen, ST7735_RASET, 0x00, 0x00, 0x00, LCD_HEIGHT - 1);
     DO_CMD(screen, ST7735_NORON);
-    DO_CMD(screen, OP_DELAY, 10);
+    platform_msleep(10);
     DO_CMD(screen, ST7735_DISPON);
-    DO_CMD(screen, OP_DELAY, 100);
+    platform_msleep(100);
 }
 
 static void chip_init(st7735_t *screen)
