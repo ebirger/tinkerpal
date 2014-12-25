@@ -156,7 +156,7 @@ static void st7735_fill_window(st7735_t *screen, int n, u16 val)
     gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, 1);
 
-    while (val--)
+    while (n--)
     {
         spi_send(screen->params.spi_port, val >> 8);
         spi_send(screen->params.spi_port, val & 0xff);
