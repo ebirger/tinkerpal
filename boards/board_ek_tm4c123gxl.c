@@ -70,4 +70,13 @@ const board_t board = {
         .backlight = GPIO_RES(PF2),
     },
 #endif
+#ifdef CONFIG_ST7735
+    .st7735_params = {
+        .rst = GPIO_RES(PF3),
+        .cs = GPIO_RES(PB6),
+        .cd = GPIO_RES(PA6),
+        .spi_port = SPI_RES(SSI0),
+        .backlight = GPIO_RES(PF2),
+    },
+#endif
 };

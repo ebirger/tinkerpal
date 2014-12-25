@@ -54,6 +54,9 @@ typedef spi_graphics_screen_params_t pcd8544_params_t;
 #ifdef CONFIG_SSD1329
 typedef spi_graphics_screen_params_t ssd1329_params_t;
 #endif
+#ifdef CONFIG_ST7735
+typedef spi_graphics_screen_params_t st7735_params_t;
+#endif
 
 #ifdef CONFIG_ILI93XX
 typedef struct {
@@ -99,6 +102,10 @@ canvas_t *ssd1306_new(const ssd1306_params_t *params);
 
 #ifdef CONFIG_SSD1329
 canvas_t *ssd1329_new(const ssd1329_params_t *params);
+#endif
+
+#ifdef CONFIG_ST7735
+canvas_t *st7735_new(const st7735_params_t *params);
 #endif
 
 #endif

@@ -72,6 +72,9 @@ typedef struct {
 #ifdef CONFIG_PCD8544
     pcd8544_params_t pcd8544_params;
 #endif
+#ifdef CONFIG_ST7735
+    st7735_params_t st7735_params;
+#endif
 #ifdef CONFIG_MMC
     mmc_params_t mmc_params;
 #endif
