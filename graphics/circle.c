@@ -76,3 +76,36 @@ void _circle_draw(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color)
             canvas_pixel_set(c, x0 - y, y0 - x, color);
     }
 }
+
+void circle_fill(canvas_t *c, int x0, int y0, int radius, u16 color)
+{
+    int error = 1 - radius;
+    int errorY = 1;
+    int errorX = -2 * radius;
+    int x = radius, y = 0;
+
+    canvas_hline(c, x0 - radius, x0 + radius, y0, color);
+    while (y < x)
+    {
+        if (error > 0)
+        {
+            /* >= 0 produces a slimmer circle.
+             * =0 produces the circle at radius 11
+             */
+            x--;
+            errorX += 2;
+            error += errorX;
+        }
+        y++;
+        errorY += 2;
+        error += errorY;
+        /* 315-0 -> 0-45 */
+        canvas_hline(c, x0 - y, x0 + y, y0 - x, color);
+        /* 270-315 -> 45-90 */
+        canvas_hline(c, x0 - x, x0 + x, y0 - y, color);
+        /* 225-270 -> 90-135 */
+        canvas_hline(c, x0 - x, x0 + x, y0 + y, color);
+        /* 180-225 -> 135-180 */
+        canvas_hline(c, x0 - y, x0 + y, y0 + x, color);
+    }
+}
