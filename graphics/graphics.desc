@@ -48,6 +48,20 @@ FUNCTION("circleDraw", graphics, do_graphics_circle_draw, {
         "g.circleDraw(20, 20, 10, 0xffff);",
 })
 
+FUNCTION("circleFill", graphics, do_graphics_circle_fill, {
+    .params = {
+        { .name = "x" , .description = "X coordinate" },
+        { .name = "y" , .description = "Y coordinate" },
+        { .name = "radius" , .description = "Circle Radius" },
+        { .name = "color" , .description = "Color" },
+    },
+    .description = "Draws a circle on LCD",
+    .return_value = "None",
+    .example = "var lcd = new Dogs102x6();\n"
+        "var g = new Graphics(lcd);\n"
+        "g.circleFill(20, 20, 10, 0xffff);",
+})
+
 FUNCTION("lineDraw", graphics, do_graphics_line_draw, {
     .params = {
         { .name = "x0" , .description = "X0 coordinate" },
