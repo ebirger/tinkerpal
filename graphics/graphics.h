@@ -56,4 +56,19 @@ void rect_fill(canvas_t *c, int x, int y, int w, int h, u16 color);
 void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, int type,
     u16 color);
 void bitmap_draw(canvas_t *c, int x, int y, int w, int h, const u8 *image);
+
+typedef struct chart_t chart_t;
+typedef struct {
+    int npoints;
+    int x;
+    int y;
+    int w;
+    int h;
+    u16 color;
+} chart_params_t;
+
+void chart_add_point(chart_t *chart, s8 point);
+chart_t *chart_new(canvas_t *c, const chart_params_t *params);
+void chart_free(chart_t *chart);
+
 #endif
