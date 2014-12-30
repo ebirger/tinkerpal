@@ -39,7 +39,8 @@ static inline int i2c_init(resource_t port)
     return platform.i2c.init(RES_MAJ(port));
 }
 
-static inline void i2c_reg_write(int port, u8 addr, u8 reg, u8 *data, int len)
+static inline void i2c_reg_write(int port, u8 addr, u8 reg, const u8 *data,
+    int len)
 {
     if (RES_BASE(port) != I2C_RESOURCE_ID_BASE)
         return;

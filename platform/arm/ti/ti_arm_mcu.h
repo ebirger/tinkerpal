@@ -244,7 +244,7 @@ unsigned long ti_arm_mcu_spi_receive(int port);
 #ifdef CONFIG_I2C
 int ti_arm_mcu_i2c_init(int port);
 void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
-    unsigned char *data, int len);
+    const unsigned char *data, int len);
 #endif
 #ifdef CONFIG_USB_DEVICE
 void ti_arm_mcu_usb_set_addr(unsigned short addr);

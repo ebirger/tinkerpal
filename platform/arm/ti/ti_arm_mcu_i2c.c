@@ -68,7 +68,7 @@ static void wait_for_completion(unsigned long base)
 }
 
 void ti_arm_mcu_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
-    unsigned char *data, int len)
+    const unsigned char *data, int len)
 {
     const ti_arm_mcu_i2c_t *i2c = &ti_arm_mcu_i2cs[port];
     

@@ -70,7 +70,7 @@ typedef struct {
     struct {
         int (*init)(int port);
         void (*reg_write)(int port, unsigned char addr, unsigned char reg,
-            unsigned char *data, int len);
+            const unsigned char *data, int len);
     } i2c;
     struct {
         int (*init)(void);

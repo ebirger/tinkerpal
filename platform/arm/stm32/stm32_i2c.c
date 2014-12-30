@@ -26,7 +26,7 @@
 #include "platform/arm/stm32/stm32_gpio.h"
 
 void stm32_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
-    unsigned char *data, int len)
+    const unsigned char *data, int len)
 {
     const stm32_i2c_t *i2c = &stm32_i2cs[port];
 
