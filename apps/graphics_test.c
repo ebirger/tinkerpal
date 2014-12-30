@@ -104,6 +104,7 @@ static void graphics_test_process_line(tstr_t *line)
                 s8 p = sin(i * j * 3.14 * 2) * canvas->height / 2;
                 chart_add_point(chart, p);
             }
+            canvas_flip(canvas);
         }
         chart_free(chart);
     }
