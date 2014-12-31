@@ -230,6 +230,7 @@ void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b);
 /** @brief Unescape tstr_t contents
  *
  * New tstr_t data never points to the original tstr_t data
+ * @todo escaping map should be provided by caller
  *
  * @param dst output tstr_t
  * @param src input tstr_t
