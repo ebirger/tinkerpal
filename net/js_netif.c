@@ -101,7 +101,7 @@ int do_netif_ip_addr_get(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (!netif)
         return throw_exception(ret, &Sinvalid_netif);
 
-    tstr_cpy_str(&s, ip_addr_serialize(netif_ip_addr_get(netif)));
+    tstr_init_copy_string(&s, ip_addr_serialize(netif_ip_addr_get(netif)));
     *ret = string_new(s);
     return 0;
 }

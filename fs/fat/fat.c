@@ -207,7 +207,7 @@ int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
         if (fno.fname[0] == '.') 
             continue;
 
-        tstr_cpy_str(&fn, fno.fname);
+        tstr_init_copy_string(&fn, fno.fname);
         cb(&fn, ctx);
         tstr_free(&fn);
     }

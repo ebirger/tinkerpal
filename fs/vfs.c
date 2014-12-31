@@ -139,7 +139,7 @@ static void readdir_root(readdir_cb_t cb, void *ctx)
     {
         tstr_t t;
 
-        tstr_cpy_str(&t, (*fs)->name);
+        tstr_init_copy_string(&t, (*fs)->name);
         cb(&t, ctx);
         tstr_free(&t);
     }

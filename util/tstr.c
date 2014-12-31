@@ -55,7 +55,7 @@ void tstr_init(tstr_t *t, char *data, int len, unsigned short flags)
     t->flags = flags;
 }
 
-void tstr_cpy_str(tstr_t *t, const char *s)
+void tstr_init_copy_string(tstr_t *t, const char *s)
 {
     int len = strlen(s);
 

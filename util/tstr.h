@@ -94,7 +94,7 @@ void tstr_init_zalloc_data(tstr_t *t, int len);
  * @param s C string to copy
  * @return void
  */
-void tstr_cpy_str(tstr_t *t, const char *s);
+void tstr_init_copy_string(tstr_t *t, const char *s);
 
 /** @brief Free a tstr_t instance
  *
