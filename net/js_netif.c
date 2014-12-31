@@ -328,7 +328,7 @@ int do_netif_tcp_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         return throw_exception(ret, &Sinvalid_netif);
 
     /* XXX: read as much as possible */
-    tstr_alloc(&data, 64);
+    tstr_init_alloc_data(&data, 64);
     data.len = tstr_fill(&data, 64, netif_tcp_read_fill_fn, netif);
     *ret = string_new(data);
     return 0;

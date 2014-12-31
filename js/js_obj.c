@@ -1459,7 +1459,7 @@ obj_t *array_buffer_new(int length)
 {
     array_buffer_t *ret = (array_buffer_t *)obj_new(ARRAY_BUFFER_CLASS);
     
-    tstr_zalloc(&ret->value, length);
+    tstr_init_zalloc_data(&ret->value, length);
     return (obj_t *)ret;
 }
 

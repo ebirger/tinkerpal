@@ -59,7 +59,7 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
 
     rewind(fp);
 
-    tstr_alloc(content, fsize);
+    tstr_init_alloc_data(content, fsize);
     nread = tstr_fill(content, fsize, local_file_read_fill_fn, fp);
     if (nread != fsize)
     {

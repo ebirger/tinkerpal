@@ -71,7 +71,7 @@ void tstr_init(tstr_t *t, char *data, int len, unsigned short flags);
  * @param len size to allocate
  * @return void
  */
-void tstr_alloc(tstr_t *t, int len);
+void tstr_init_alloc_data(tstr_t *t, int len);
 
 /** @brief Initialize a tstr_t instance, allocate and zero associated data
  *
@@ -82,7 +82,7 @@ void tstr_alloc(tstr_t *t, int len);
  * @param len size to allocate
  * @return void
  */
-void tstr_zalloc(tstr_t *t, int len);
+void tstr_init_zalloc_data(tstr_t *t, int len);
 
 /** @brief Initialize a tstr_t instance, copy data content from C string
  *
