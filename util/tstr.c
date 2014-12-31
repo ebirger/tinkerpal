@@ -42,7 +42,7 @@ void tstr_init_alloc_data(tstr_t *t, int len)
     }
 }
 
-void tstr_zalloc(tstr_t *t, int len)
+void tstr_init_zalloc_data(tstr_t *t, int len)
 {
     tstr_init_alloc_data(t, len);
     memset(TPTR(t), 0, len);
