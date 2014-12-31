@@ -32,7 +32,23 @@ typedef struct tstr_list_t {
     tstr_t str;
 } tstr_list_t;
 
+/** @brief Add tstr_t instance to tstr_list_t
+ *
+ * tstr_t data content may be referenced by the list and must not be freed
+ *
+ * @param l list to add to
+ * @param s tstr_t instance to add
+ * @return void
+ */
 void tstr_list_add(tstr_list_t **l, tstr_t *s);
+
+/** @brief Free a tstr_list_t instance
+ *
+ * tstr_t instances data contents is not freed by this function
+ *
+ * @param l list to free
+ * @return void
+ */
 void tstr_list_free(tstr_list_t **l);
 
 #endif
