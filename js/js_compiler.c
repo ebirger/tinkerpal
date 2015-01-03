@@ -112,6 +112,8 @@ static void op32_prep(void)
         return -1; \
 } while (0)
 
+#define CUR_OP_ADDR (&op_buf[op_buf_index])
+
 /* ARM Thumb2 instructions encoding */
 
 /* op: 0 - push, 1 - pop
@@ -180,8 +182,17 @@ static void op32_prep(void)
 
 #define ARM_THM_B(offs) OP16(ARM_THM_B_VAL(offs))
 
+/* B instruction offset is instruction_address + 4 + offset * 2
+ * So if our pointers are u16 pointers, we need to subtract 2 to compensate
+ * for the + 4
+ */
+#define ARM_THM_B_OFFS(to, from) ((to) - (from) - 2)
+
 #define ARM_THM_CBNZ(r, offs32) \
     OP16(ARM_THM_CBZ_CBNZ(1, (offs32) >> 6, (offs32), r))
+
+#define ARM_THM_BRANCH_VAL(to, from) ARM_THM_B_VAL(ARM_THM_B_OFFS(to, from))
+#define ARM_THM_BRANCH(to, from) OP16(ARM_THM_BRANCH_VAL(to, from))
 
 #define ARM_THM_REG_SET(r, val) do { \
     tp_debug(("%s:%d\t: REG %d = %s : %x\n", __FUNCTION__, __LINE__, r, #val, \
@@ -268,11 +279,7 @@ static void code_block_chain(void)
 
     /* XXX: make sure offset does not exceed available address space */
 
-    /* B instruction offset is instruction_address + 4 + offset * 2
-     * So if our pointers are u16 pointers, we need to subtract 2 to compensate
-     * for the + 4
-     */
-    delta = next_buf - (cur_buf + op_buf_index) - 2;
+    delta = ARM_THM_B_OFFS(next_buf, cur_buf + op_buf_index);
 
     _op16(ARM_THM_B_VAL(delta));
     op_buf = next_buf;
@@ -784,15 +791,41 @@ static int compile_if(scan_t *scan)
 
     /* Add instruction to skip branch if non zero (condition is true) */
     ARM_THM_CBNZ(R0, 0);
-    post_cond = &op_buf[op_buf_index];
+    post_cond = CUR_OP_ADDR;
     ARM_THM_B(0); /* dummy branch, will be calculated later on */
 
     if (compile_statement(scan))
         return -1;
 
-    post_stmt = &op_buf[op_buf_index];
+    post_stmt = CUR_OP_ADDR;
     /* Set the real branch instruction */
-    *post_cond = ARM_THM_B_VAL(post_stmt - post_cond - 2);
+    *post_cond = ARM_THM_BRANCH_VAL(post_stmt, post_cond);
+    return 0;
+}
+
+static int compile_while(scan_t *scan)
+{
+    u16 *pre_cond, *post_cond, *post_stmt;
+
+    pre_cond = CUR_OP_ADDR;
+
+    if (compile_parenthesized_condition(scan))
+        return -1;
+
+    /* Add instruction to skip branch if non zero (condition is true) */
+    ARM_THM_CBNZ(R0, 0);
+    post_cond = CUR_OP_ADDR;
+    ARM_THM_B(0); /* dummy branch, will be calculated later on */
+
+    if (compile_statement(scan))
+        return -1;
+
+    /* Jump to loop start */
+    ARM_THM_BRANCH(pre_cond, CUR_OP_ADDR);
+
+    post_stmt = CUR_OP_ADDR;
+    /* Set the real branch instruction */
+    *post_cond = ARM_THM_BRANCH_VAL(post_stmt, post_cond);
     return 0;
 }
 
@@ -818,6 +851,12 @@ static int compile_statement(scan_t *scan)
             return -1;
 
         return compile_if(scan);
+    case TOK_WHILE:
+        js_scan_match(scan, TOK_WHILE);
+        if (CUR_TOK(scan) == TOK_END_STATEMENT)
+            return -1;
+
+        return compile_while(scan);
     default:
         if (compile_expression(scan))
             return -1;
