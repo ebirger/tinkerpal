@@ -48,6 +48,7 @@ static void code_block_chain(void);
 static int compile_expression(scan_t *scan);
 static int compile_functions(scan_t *scan);
 static int compile_statement(scan_t *scan);
+static int compile_statement_list(scan_t *scan);
 
 typedef struct {
     obj_t **lval;
@@ -829,6 +830,20 @@ static int compile_while(scan_t *scan)
     return 0;
 }
 
+static int compile_block(scan_t *scan)
+{
+    if (_js_scan_match(scan, TOK_OPEN_SCOPE))
+        return -1;
+
+    if (compile_statement_list(scan))
+        return -1;
+
+    if (_js_scan_match(scan, TOK_CLOSE_SCOPE))
+        return -1;
+
+    return 0;
+}
+
 static int compile_statement(scan_t *scan)
 {
     switch (CUR_TOK(scan))
@@ -836,6 +851,8 @@ static int compile_statement(scan_t *scan)
     case TOK_END_STATEMENT:
         js_scan_next_token(scan);
         break;
+    case TOK_OPEN_SCOPE:
+        return compile_block(scan);
     case TOK_RETURN:
         js_scan_match(scan, TOK_RETURN);
         if (CUR_TOK(scan) != TOK_END_STATEMENT)
