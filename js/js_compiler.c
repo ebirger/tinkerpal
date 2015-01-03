@@ -844,6 +844,20 @@ static int compile_block(scan_t *scan)
     return 0;
 }
 
+static int compile_expression_statement(scan_t *scan)
+{
+    if (compile_expression(scan))
+        return -1;
+
+    if (_js_scan_match(scan, TOK_END_STATEMENT))
+        return -1;
+
+    /* Free unused return value */
+    ARM_THM_MOV_REG(R0, R1);
+    ARM_THM_CALL(obj_put);
+    return 0;
+}
+
 static int compile_statement(scan_t *scan)
 {
     switch (CUR_TOK(scan))
@@ -875,10 +889,7 @@ static int compile_statement(scan_t *scan)
 
         return compile_while(scan);
     default:
-        if (compile_expression(scan))
-            return -1;
-
-        if (_js_scan_match(scan, TOK_END_STATEMENT))
+        if (compile_expression_statement(scan))
             return -1;
 
         break;
