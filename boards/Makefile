@@ -51,7 +51,7 @@ endif
 # Simulation
 ifneq ($(CONFIG_EK_LM3S6965),)
   SIMULATE_NOTE='Use CTRL-a-X to exit'
-  SIMULATE_CMD=qemu-system-arm -M lm3s6965evb -net none -kernel $(IMAGE)
+  SIMULATE_CMD=qemu-system-arm -s -M lm3s6965evb -nographic -semihosting -no-reboot -net none -kernel $(IMAGE)
 endif
 
 ifneq ($(CONFIG_X86_PLATFORM_EMULATION),)
