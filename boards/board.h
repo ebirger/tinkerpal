@@ -43,7 +43,7 @@
 #ifdef CONFIG_ENC28J60
 #include "drivers/net/enc28j60.h"
 #endif
-#ifdef CONFIG_ESP8266
+#ifdef CONFIG_NET_ESP8266
 #include "drivers/net/esp8266.h"
 #endif
 #ifdef CONFIG_GRAPHICS_SCREENS
@@ -72,13 +72,16 @@ typedef struct {
 #ifdef CONFIG_PCD8544
     pcd8544_params_t pcd8544_params;
 #endif
+#ifdef CONFIG_ST7735
+    st7735_params_t st7735_params;
+#endif
 #ifdef CONFIG_MMC
     mmc_params_t mmc_params;
 #endif
 #ifdef CONFIG_ENC28J60
     enc28j60_params_t enc28j60_params;
 #endif
-#ifdef CONFIG_ESP8266
+#ifdef CONFIG_NET_ESP8266
     esp8266_params_t esp8266_params;
 #endif
 } board_t;

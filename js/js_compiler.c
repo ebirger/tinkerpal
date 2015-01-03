@@ -47,6 +47,8 @@ static int total_blocks;
 static void code_block_chain(void);
 static int compile_expression(scan_t *scan);
 static int compile_functions(scan_t *scan);
+static int compile_statement(scan_t *scan);
+static int compile_statement_list(scan_t *scan);
 
 typedef struct {
     obj_t **lval;
@@ -111,6 +113,8 @@ static void op32_prep(void)
         return -1; \
 } while (0)
 
+#define CUR_OP_ADDR (&op_buf[op_buf_index])
+
 /* ARM Thumb2 instructions encoding */
 
 /* op: 0 - push, 1 - pop
@@ -125,6 +129,8 @@ static void op32_prep(void)
 #define ARM_THM_BLX_VAL(rm) (0x4000 | (0xf<<7) | ((rm)<<3))
 #define ARM_THM_B_PREFIX 0xe000
 #define ARM_THM_B_VAL(offs) (ARM_THM_B_PREFIX | s11_to_u16(offs))
+#define ARM_THM_CBZ_CBNZ(op, i, imm5, rn) \
+    (0xb000 | ((op)<<11) | (((i) & 1)<<9) | (1<<8) | (((imm5) & 0x7f) << 3) | rn)
 #define ARM_THM_ADD_SUB_SP_VAL(op, imm) (0xb000 | ((op)<<7) | ((imm) & 0x7f))
 #define ARM_THM_ADD_IMM_VAL(ld, imm) (0x3000 | ((ld)<<8) | ((imm) & 0xff))
 #define ARM_THM_MOVW_HI(i, imm4, imm3, rd, imm8) \
@@ -176,6 +182,18 @@ static void op32_prep(void)
 #define ARM_THM_BLX(rm) OP16(ARM_THM_BLX_VAL(rm))
 
 #define ARM_THM_B(offs) OP16(ARM_THM_B_VAL(offs))
+
+/* B instruction offset is instruction_address + 4 + offset * 2
+ * So if our pointers are u16 pointers, we need to subtract 2 to compensate
+ * for the + 4
+ */
+#define ARM_THM_B_OFFS(to, from) ((to) - (from) - 2)
+
+#define ARM_THM_CBNZ(r, offs32) \
+    OP16(ARM_THM_CBZ_CBNZ(1, (offs32) >> 6, (offs32), r))
+
+#define ARM_THM_BRANCH_VAL(to, from) ARM_THM_B_VAL(ARM_THM_B_OFFS(to, from))
+#define ARM_THM_BRANCH(to, from) OP16(ARM_THM_BRANCH_VAL(to, from))
 
 #define ARM_THM_REG_SET(r, val) do { \
     tp_debug(("%s:%d\t: REG %d = %s : %x\n", __FUNCTION__, __LINE__, r, #val, \
@@ -262,11 +280,7 @@ static void code_block_chain(void)
 
     /* XXX: make sure offset does not exceed available address space */
 
-    /* B instruction offset is instruction_address + 4 + offset * 2
-     * So if our pointers are u16 pointers, we need to subtract 2 to compensate
-     * for the + 4
-     */
-    delta = next_buf - (cur_buf + op_buf_index) - 2;
+    delta = ARM_THM_B_OFFS(next_buf, cur_buf + op_buf_index);
 
     _op16(ARM_THM_B_VAL(delta));
     op_buf = next_buf;
@@ -743,6 +757,93 @@ static int compile_expression(scan_t *scan)
     return 0;
 }
 
+static int compile_parenthesized_condition(scan_t *scan)
+{
+    if (_js_scan_match(scan, TOK_OPEN_PAREN))
+        return -1;
+
+    if (compile_expression(scan))
+        return -1;
+
+    if (_js_scan_match(scan, TOK_CLOSE_PAREN))
+        return -1;
+
+    /* Save expression return value in R1
+     * XXX: may need to save in stack if obj_true() garbles it.
+     */
+    ARM_THM_MOV_REG(R0, R1);
+    ARM_THM_CALL(obj_true);
+    /* Store obj_true return value */
+    ARM_THM_PUSH(1<<R0);
+    /* Free expression return value */
+    ARM_THM_MOV_REG(R0, R1);
+    ARM_THM_CALL(obj_put);
+    /* Restore obj_true return value */
+    ARM_THM_POP(1<<R0);
+    return 0;
+}
+
+static int compile_if(scan_t *scan)
+{
+    u16 *post_cond, *post_stmt;
+
+    if (compile_parenthesized_condition(scan))
+        return -1;
+
+    /* Add instruction to skip branch if non zero (condition is true) */
+    ARM_THM_CBNZ(R0, 0);
+    post_cond = CUR_OP_ADDR;
+    ARM_THM_B(0); /* dummy branch, will be calculated later on */
+
+    if (compile_statement(scan))
+        return -1;
+
+    post_stmt = CUR_OP_ADDR;
+    /* Set the real branch instruction */
+    *post_cond = ARM_THM_BRANCH_VAL(post_stmt, post_cond);
+    return 0;
+}
+
+static int compile_while(scan_t *scan)
+{
+    u16 *pre_cond, *post_cond, *post_stmt;
+
+    pre_cond = CUR_OP_ADDR;
+
+    if (compile_parenthesized_condition(scan))
+        return -1;
+
+    /* Add instruction to skip branch if non zero (condition is true) */
+    ARM_THM_CBNZ(R0, 0);
+    post_cond = CUR_OP_ADDR;
+    ARM_THM_B(0); /* dummy branch, will be calculated later on */
+
+    if (compile_statement(scan))
+        return -1;
+
+    /* Jump to loop start */
+    ARM_THM_BRANCH(pre_cond, CUR_OP_ADDR);
+
+    post_stmt = CUR_OP_ADDR;
+    /* Set the real branch instruction */
+    *post_cond = ARM_THM_BRANCH_VAL(post_stmt, post_cond);
+    return 0;
+}
+
+static int compile_block(scan_t *scan)
+{
+    if (_js_scan_match(scan, TOK_OPEN_SCOPE))
+        return -1;
+
+    if (compile_statement_list(scan))
+        return -1;
+
+    if (_js_scan_match(scan, TOK_CLOSE_SCOPE))
+        return -1;
+
+    return 0;
+}
+
 static int compile_statement(scan_t *scan)
 {
     switch (CUR_TOK(scan))
@@ -750,6 +851,8 @@ static int compile_statement(scan_t *scan)
     case TOK_END_STATEMENT:
         js_scan_next_token(scan);
         break;
+    case TOK_OPEN_SCOPE:
+        return compile_block(scan);
     case TOK_RETURN:
         js_scan_match(scan, TOK_RETURN);
         if (CUR_TOK(scan) != TOK_END_STATEMENT)
@@ -759,6 +862,18 @@ static int compile_statement(scan_t *scan)
         }
         compile_function_return(COMPLETION_RETURN);
         return 0;
+    case TOK_IF:
+        js_scan_match(scan, TOK_IF);
+        if (CUR_TOK(scan) == TOK_END_STATEMENT)
+            return -1;
+
+        return compile_if(scan);
+    case TOK_WHILE:
+        js_scan_match(scan, TOK_WHILE);
+        if (CUR_TOK(scan) == TOK_END_STATEMENT)
+            return -1;
+
+        return compile_while(scan);
     default:
         if (compile_expression(scan))
             return -1;

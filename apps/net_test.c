@@ -39,7 +39,7 @@
 #include "platform/arm/ti/tiva_c_emac.h"
 #elif defined(CONFIG_ENC28J60)
 #include "drivers/net/enc28j60.h"
-#elif defined(CONFIG_ESP8266)
+#elif defined(CONFIG_NET_ESP8266)
 #include "drivers/net/esp8266.h"
 #else
 #error No Network device available
@@ -109,7 +109,7 @@ void app_start(int argc, char *argv[])
     netif = tiva_c_emac_new();
 #elif defined(CONFIG_ENC28J60)
     netif = enc28j60_new(&board.enc28j60_params);
-#elif defined(CONFIG_ESP8266)
+#elif defined(CONFIG_NET_ESP8266)
     netif = esp8266_new(&board.esp8266_params);
 #endif
 

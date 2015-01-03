@@ -26,10 +26,10 @@
 
 void rect_draw(canvas_t *c, int x, int y, int w, int h, u16 color)
 {
-    line_draw(c, x, y, x + w, y, color);
-    line_draw(c, x + w, y, x + w, y + h, color);
-    line_draw(c, x + w, y + h, x, y + h, color);
-    line_draw(c, x, y + h, x, y, color);
+    canvas_hline(c, x, x + w, y, color);
+    canvas_vline(c, x + w, y, y + h, color);
+    canvas_hline(c, x + w, x, y + h, color);
+    canvas_vline(c, x, y + h, y, color);
 }
 
 void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, int type,
@@ -54,8 +54,16 @@ void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, int type,
         break;
     }
     /* Lines */
-    line_draw(c, x + r, y, x + w - r, y, color);
-    line_draw(c, x + w, y + r, x + w, y + h - r, color);
-    line_draw(c, x + w - r, y + h, x + r, y + h, color);
-    line_draw(c, x, y + h - r, x, y + r, color);
+    canvas_hline(c, x + r, x + w - r, y, color);
+    canvas_vline(c, x + w, y + r, y + h - r, color);
+    canvas_hline(c, x + w - r, x + r, y + h, color);
+    canvas_vline(c, x, y + h - r, y + r, color);
+}
+
+void rect_fill(canvas_t *c, int x, int y, int w, int h, u16 color)
+{
+    int j;
+
+    for (j = 0; j < h; j++)
+        canvas_hline(c, x, x + w, y + j, color);
 }

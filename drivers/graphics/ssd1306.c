@@ -103,7 +103,7 @@ static inline void ssd1306_write(ssd1306_t *screen, int is_cmd, const u8 *data,
     u8 len)
 {
     i2c_reg_write(screen->params.i2c_port, screen->params.i2c_addr,
-        is_cmd ? 0x0 : 0x40, (u8 *)data, len);
+        is_cmd ? 0x0 : 0x40, data, len);
 }
 
 static void chip_init(ssd1306_t *screen)

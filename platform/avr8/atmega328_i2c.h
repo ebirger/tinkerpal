@@ -27,6 +27,6 @@
 
 int avr8_i2c_init(int port);
 void avr8_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
-    unsigned char *data, int len);
+    const unsigned char *data, int len);
 
 #endif

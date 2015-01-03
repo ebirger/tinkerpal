@@ -57,6 +57,11 @@ config PCD8544
 	bool "Support for the PCD8544 LCD controller used in Nokia 5110 screens"
 	depends on GPIO && SPI && GRAPHICS
 
+config ST7735
+	bool "Support for the ST7735 LCD controller"
+	depends on GPIO && SPI && GRAPHICS
+        default y
+
 config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS

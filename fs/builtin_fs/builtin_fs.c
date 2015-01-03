@@ -61,7 +61,7 @@ int builtin_fs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
     {
         tstr_t t;
 
-        tstr_cpy_str(&t, f->name);
+        tstr_init_copy_string(&t, f->name);
         cb(&t, ctx);
         tstr_free(&t);
     }

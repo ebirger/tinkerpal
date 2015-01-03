@@ -56,7 +56,7 @@ const board_t board = {
         .intr = GPIO_RES(PF4),
     },
 #endif
-#ifdef CONFIG_ESP8266
+#ifdef CONFIG_NET_ESP8266
     .esp8266_params = {
         .serial_port = UART_RES(UART4),
     },
@@ -66,6 +66,15 @@ const board_t board = {
         .rst = GPIO_RES(PF3),
         .cs = GPIO_RES(PB6),
         .cd = GPIO_RES(PB4),
+        .spi_port = SPI_RES(SSI0),
+        .backlight = GPIO_RES(PF2),
+    },
+#endif
+#ifdef CONFIG_ST7735
+    .st7735_params = {
+        .rst = GPIO_RES(PF3),
+        .cs = GPIO_RES(PB6),
+        .cd = GPIO_RES(PA6),
         .spi_port = SPI_RES(SSI0),
         .backlight = GPIO_RES(PF2),
     },

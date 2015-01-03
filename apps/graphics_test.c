@@ -28,6 +28,7 @@
 #include "boards/board.h"
 #include "graphics/graphics.h"
 #include "graphics/colors.h"
+#include <math.h>
 
 static canvas_t *canvas;
 
@@ -58,6 +59,11 @@ static void graphics_test_process_line(tstr_t *line)
         circle_draw(canvas, canvas->width / 2, canvas->height / 2,
             canvas->width / 4, COLOR_WHITE);
     }
+    if (!tstr_cmp(line, &S("circle_fill")))
+    {
+        circle_fill(canvas, canvas->width / 2, canvas->height / 2,
+            canvas->width / 4, COLOR_GREEN);
+    }
     if (!tstr_cmp(line, &S("text")))
         string_draw(canvas, 10, 10, &S("Hello TinkerPal"), 0xffff);
     if (!tstr_cmp(line, &S("rect")))
@@ -76,6 +82,31 @@ static void graphics_test_process_line(tstr_t *line)
         round_rect_draw(canvas, canvas->width / 4, canvas->height / 4,
             canvas->width / 2, canvas->height / 2, canvas->width / 10,
             ROUND_RECT_TYPE_CORNERS_IN, COLOR_WHITE);
+    }
+    if (!tstr_cmp(line, &S("chart")))
+    {
+        chart_t *chart;
+        int i, j;
+        chart_params_t params = {
+            .npoints = canvas->width / 3,
+            .x = 0,
+            .y = 0,
+            .w = canvas->width,
+            .h = canvas->height,
+            .color = COLOR_WHITE,
+        };
+
+        chart = chart_new(canvas, &params);
+        for (j = 2; j < 50; j++)
+        {
+            for (i = 0; i < canvas->width / 3; i++)
+            {
+                s8 p = sin(i * j * 3.14 * 2) * canvas->height / 2;
+                chart_add_point(chart, p);
+            }
+            canvas_flip(canvas);
+        }
+        chart_free(chart);
     }
     canvas_flip(canvas);
     console_printf("Ok\n");
@@ -106,6 +137,8 @@ static void lcd_init(void)
     canvas = ssd1329_new(&board.ssd1329_params);
 #elif defined(CONFIG_PCD8544)
     canvas = pcd8544_new(&board.pcd8544_params);
+#elif defined(CONFIG_ST7735)
+    canvas = st7735_new(&board.st7735_params);
 #else
 #error No LCD hookup information available
 #endif

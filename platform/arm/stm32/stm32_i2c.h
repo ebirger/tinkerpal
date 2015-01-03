@@ -42,6 +42,6 @@ extern const stm32_i2c_t stm32_i2cs[];
 
 int stm32_i2c_init(int port);
 void stm32_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
-    unsigned char *data, int len);
+    const unsigned char *data, int len);
 
 #endif

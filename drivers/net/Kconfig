@@ -14,8 +14,8 @@ config ENC28J60_PHY_ACCESS
 		On some platforms, PHY access does not seem to work 
 		(probably SPI timing issues). This allows disabling it
 
-config ESP8266
-	bool "ESP8266 Wi-Fi Support"
+config NET_ESP8266
+	bool "ESP8266 Wi-Fi to Serial Bridge Support"
 	depends on PLAT_HAS_SERIAL
 	default y
 

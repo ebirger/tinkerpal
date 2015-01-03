@@ -114,7 +114,7 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
         goto Exit;
     }
 
-    tstr_alloc(content, info.fsize);
+    tstr_init_alloc_data(content, info.fsize);
     rc = tstr_fill(content, info.fsize, fat_file_read_fill_fn, &fp);
     if (rc != content->len)
     {
@@ -207,7 +207,7 @@ int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
         if (fno.fname[0] == '.') 
             continue;
 
-        tstr_cpy_str(&fn, fno.fname);
+        tstr_init_copy_string(&fn, fno.fname);
         cb(&fn, ctx);
         tstr_free(&fn);
     }

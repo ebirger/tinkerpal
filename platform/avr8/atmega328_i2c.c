@@ -65,7 +65,7 @@ static inline uint8_t avr8_i2c_status(void)
 }
 
 void avr8_i2c_reg_write(int port, unsigned char addr, unsigned char reg,
-    unsigned char *data, int len)
+    const unsigned char *data, int len)
 {
 #define EXPECT(x) if (avr8_i2c_status() != (x)) return
     avr8_i2c_start();

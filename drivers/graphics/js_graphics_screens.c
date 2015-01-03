@@ -51,6 +51,10 @@ LCD_CONSTRUCTOR(sdl_screen)
 LCD_CONSTRUCTOR(pcd8544)
 #endif
 
+#ifdef CONFIG_ST7735
+LCD_CONSTRUCTOR(st7735)
+#endif
+
 #ifdef CONFIG_ILI93XX
 LCD_CONSTRUCTOR(ili93xx)
 #endif

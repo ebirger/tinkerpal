@@ -44,7 +44,7 @@ static void serial_on_data_cb(event_t *e, u32 id, u64 timestamp)
     tstr_t data;
 
     /* XXX: read as much as possible */
-    tstr_alloc(&data, 30);
+    tstr_init_alloc_data(&data, 30);
     data.len = tstr_fill(&data, 30, serial_read_fill_fn, (void *)(int_ptr_t)id);
 
     data_obj = object_new();

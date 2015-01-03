@@ -167,7 +167,7 @@ tstr_t _int_to_tstr(int i, int base)
     tstr_t ret;
 
     tsn_itoa(buf, sizeof(buf), i, base);
-    tstr_cpy_str(&ret, buf);
+    tstr_init_copy_string(&ret, buf);
     return ret;
 }
 
@@ -177,6 +177,6 @@ tstr_t double_to_tstr(double d)
     tstr_t ret;
 
     tsnprintf(buf, sizeof(buf), "%f", d);
-    tstr_cpy_str(&ret, buf);
+    tstr_init_copy_string(&ret, buf);
     return ret;
 }

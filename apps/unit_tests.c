@@ -46,7 +46,7 @@ static void history_commit_str(const char *s)
 {
     tstr_t t;
 
-    tstr_cpy_str(&t, s);
+    tstr_init_copy_string(&t, s);
     history_commit(history, &t);
     tstr_free(&t);
 }

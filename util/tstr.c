@@ -29,7 +29,7 @@
 #include "util/tp_misc.h"
 #include "mem/tmalloc.h"
 
-void tstr_alloc(tstr_t *t, int len)
+void tstr_init_alloc_data(tstr_t *t, int len)
 {
     t->len = len;
     t->flags = 0;
@@ -42,9 +42,9 @@ void tstr_alloc(tstr_t *t, int len)
     }
 }
 
-void tstr_zalloc(tstr_t *t, int len)
+void tstr_init_zalloc_data(tstr_t *t, int len)
 {
-    tstr_alloc(t, len);
+    tstr_init_alloc_data(t, len);
     memset(TPTR(t), 0, len);
 }
 
@@ -55,11 +55,11 @@ void tstr_init(tstr_t *t, char *data, int len, unsigned short flags)
     t->flags = flags;
 }
 
-void tstr_cpy_str(tstr_t *t, const char *s)
+void tstr_init_copy_string(tstr_t *t, const char *s)
 {
     int len = strlen(s);
 
-    tstr_alloc(t, len);
+    tstr_init_alloc_data(t, len);
     memcpy(TPTR(t), s, len);
 }
 
@@ -96,7 +96,7 @@ tstr_t tstr_dup(tstr_t s)
 
     if (TSTR_IS_ALLOCATED(&s))
     {
-        tstr_alloc(&ret, s.len);
+        tstr_init_alloc_data(&ret, s.len);
         memcpy(TPTR(&ret), TPTR(&s), ret.len);
     }
     else
@@ -125,7 +125,7 @@ void tstr_free(tstr_t *s)
 
 void tstr_cat(tstr_t *dst, tstr_t *a, tstr_t *b)
 {
-    tstr_alloc(dst, a->len + b->len);
+    tstr_init_alloc_data(dst, a->len + b->len);
     memcpy(TPTR(dst), TPTR(a), a->len);
     memcpy(TPTR(dst) + a->len, TPTR(b), b->len);
 }
@@ -192,7 +192,7 @@ tstr_t tstr_to_upper_lower(tstr_t s, int is_lower)
     tstr_t ret;
     int idx = 0;
 
-    tstr_alloc(&ret, s.len);
+    tstr_init_alloc_data(&ret, s.len);
     out = TPTR(&ret);
     while (s.len - idx)
     {

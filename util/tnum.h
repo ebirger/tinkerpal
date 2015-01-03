@@ -40,17 +40,47 @@ typedef struct {
 #define NUMERIC_INT(x) ((x).value.i)
 #define NUMERIC_FP(x) ((x).value.fp)
 
+/** @brief Initialize tnum from tstr_t
+ *
+ * @param ret destination tnum_t instance
+ * @param s input tstr_t
+ * @return 0 on success, non-zero otherwise
+ */
 int tstr_to_tnum(tnum_t *ret, const tstr_t *s);
+
+/** @brief Initialize tstr_t from integer
+ *
+ * @param i input integer
+ * @param base radix to use for conversion
+ * @return tstr_t instance
+ */
 tstr_t _int_to_tstr(int i, int base);
+
+/** @brief Initialize tstr_t from integer, base 10
+ *
+ * @param i input integer
+ * @return tstr_t instance
+ */
 static inline tstr_t int_to_tstr(int i)
 {
     return _int_to_tstr(i, 10);
 }
+
+/** @brief Initialize tstr_t from floating point number
+ *
+ * @param d input number
+ * @return tstr_t instance
+ */
 tstr_t double_to_tstr(double d);
 
+/** @brief Initialize tstr_t from tnum_t instance
+ *
+ * @param n input tnum_t
+ * @return tstr_t instance
+ */
 static inline tstr_t tnum_to_tstr(const tnum_t *n)
 {
-    return NUMERIC_IS_FP(*n) ?  double_to_tstr(NUMERIC_FP(*n)) :
+    return NUMERIC_IS_FP(*n) ? double_to_tstr(NUMERIC_FP(*n)) :
         int_to_tstr(NUMERIC_INT(*n));
 }
 

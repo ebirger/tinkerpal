@@ -25,6 +25,76 @@
 #include "util/debug.h"
 #include "graphics/canvas.h"
 
+static void swap(u16 *a, u16 *b)
+{
+    u16 tmp = *a;
+
+    *a = *b;
+    *b = tmp;
+}
+
+static void cap(u16 *a, u16 lo, u16 hi)
+{
+    if (*a < lo)
+        *a = lo;
+    else if (*a > hi)
+        *a = hi;
+}
+
+void canvas_hline(canvas_t *c, u16 x0, u16 x1, u16 y, u16 val)
+{
+    u16 w = c->width - 1;
+    int i;
+
+    if (y < 0 || y > c->height - 1)
+        return;
+
+    if (x0 > x1)
+        swap(&x0, &x1);
+
+    cap(&x0, 0, w - 1);
+    cap(&x1, 0, w - 1);
+
+    if (c->ops->hline)
+    {
+        c->ops->hline(c, x0, x1, y, val);
+        return;
+    }
+
+    for (i = x0; i < x1; i++)
+    {
+        /* Skipping sanity checks */
+        c->ops->pixel_set(c, i, y, val);
+    }
+}
+
+void canvas_vline(canvas_t *c, u16 x, u16 y0, u16 y1, u16 val)
+{
+    u16 h = c->height - 1;
+    int j;
+
+    if (x < 0 || x > c->width - 1)
+        return;
+
+    if (y0 > y1)
+        swap(&y0, &y1);
+
+    cap(&y0, 0, h - 1);
+    cap(&y1, 0, h - 1);
+
+    if (c->ops->vline)
+    {
+        c->ops->vline(c, x, y0, y1, val);
+        return;
+    }
+
+    for (j = y0; j < y1; j++)
+    {
+        /* Skipping sanity checks */
+        c->ops->pixel_set(c, x, j, val);
+    }
+}
+
 void canvas_fill(canvas_t *c, u16 val)
 {
     int i, j;
