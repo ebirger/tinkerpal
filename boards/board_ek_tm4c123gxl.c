@@ -79,4 +79,23 @@ const board_t board = {
         .backlight = GPIO_RES(PF2),
     },
 #endif
+#ifdef CONFIG_ST7920
+    .st7920_params = {
+        .rs = GPIO_RES(PE3),
+        .rw = GPIO_RES(PA7),
+        .en = GPIO_RES(PE1),
+        .rst = GPIO_RES(PB1),
+        .psb = GPIO_RES(PB0),
+        .d = {
+            [0] = GPIO_RES(PF2),
+            [1] = GPIO_RES(PD6),
+            [2] = GPIO_RES(PA2),
+            [3] = GPIO_RES(PA3),
+            [4] = GPIO_RES(PD3),
+            [5] = GPIO_RES(PD2),
+            [6] = GPIO_RES(PD1),
+            [7] = GPIO_RES(PD0)
+        },
+    },
+#endif
 };
