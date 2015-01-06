@@ -43,6 +43,7 @@ endif
 
 ifneq ($(CONFIG_ST7920),)
   MK_OBJS+=st7920.o
+  MK_DESCS+=st7920.desc
 endif
 
 MODULES=$(if $(CONFIG_TEXT_LCD),text_lcd.js)
