@@ -90,7 +90,7 @@ static void st7920_write(st7920_t *screen, int iscmd, u8 data)
     gpio_digital_write(screen->params.rs, iscmd ? 0 : 1);
     gpio_digital_write(screen->params.rw, 0);
     st7920_data_out(screen, data);
-    gpio_digital_pulse(screen->params.en, 1, 0.1);
+    gpio_digital_pulse(screen->params.en, 1, 0.01);
 }
 
 static void chip_init(st7920_t *screen)
