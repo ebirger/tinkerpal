@@ -112,7 +112,9 @@ static void chip_init(st7920_t *screen)
     gpio_digital_pulse(screen->params.rst, 0, 10);
 
     st7920_write(screen, 1, ST7920_SET_8_BIT);
+    platform_msleep(0.5);
     st7920_write(screen, 1, ST7920_SET_8_BIT | ST7920_EXT_MODE);
+    platform_msleep(0.5);
     st7920_write(screen, 1, ST7920_SET_8_BIT | ST7920_EXT_MODE| ST7920_GR_ON);
     st7920_write(screen, 1, ST7920_DISP_ON);
     st7920_write(screen, 1, ST7920_ENTRY_MODE);
