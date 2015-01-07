@@ -63,7 +63,7 @@ config ST7735
         default y
 
 config ST7920
-	bool "Support for the ST7920 LCD controller (Parallel connection)"
+	bool "Support for the ST7920 LCD controller"
 	depends on GPIO && GRAPHICS
         default n
 

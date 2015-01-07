@@ -82,12 +82,20 @@ typedef struct {
 
 #ifdef CONFIG_ST7920
 typedef struct {
+    enum { ST7920_SERIAL = 0, ST7920_PARALLEL = 1 } mode;
+
+    resource_t rst;
+    resource_t psb;
+
+    /* Parallel Interface */
     resource_t rs;
     resource_t rw;
     resource_t en;
-    resource_t rst;
-    resource_t psb;
     resource_t d[8];
+
+    /* Serial Interface */
+    resource_t cs;
+    resource_t spi_port;
 } st7920_params_t;
 #endif
 

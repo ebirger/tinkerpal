@@ -81,11 +81,14 @@ const board_t board = {
 #endif
 #ifdef CONFIG_ST7920
     .st7920_params = {
+        .mode = ST7920_SERIAL,
+
+        .rst = GPIO_RES(PB1),
+        .psb = GPIO_RES(PB0),
+
         .rs = GPIO_RES(PE3),
         .rw = GPIO_RES(PA5),
         .en = GPIO_RES(PA2),
-        .rst = GPIO_RES(PB1),
-        .psb = GPIO_RES(PB0),
         .d = {
             [0] = GPIO_RES(PF2),
             [1] = GPIO_RES(PD6),
@@ -96,6 +99,10 @@ const board_t board = {
             [6] = GPIO_RES(PD1),
             [7] = GPIO_RES(PD0)
         },
+#ifdef CONFIG_SPI
+        .spi_port = SPI_RES(SSI0),
+        .cs = GPIO_RES(PE3),
+#endif
     },
 #endif
 };

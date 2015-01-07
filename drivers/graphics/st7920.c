@@ -51,6 +51,7 @@ typedef struct {
 
 static st7920_t g_st7920_screen;
 
+#define IS_PARALLEL(s) ((s)->params.mode == ST7920_PARALLEL)
 #define PIN_MODE_SET(pin, mode) do { \
     if (gpio_set_pin_mode(pin, mode)) \
         tp_crit(("st7920: unable to set mode %d for pin %x\n", mode, pin)); \
@@ -70,43 +71,78 @@ static void st7920_data_out(st7920_t *screen, u8 data)
 
 static void st7920_wait(st7920_t *screen)
 {
-    int busy = 1;
-
-    PIN_MODE_SET(screen->params.d[7], GPIO_PM_INPUT_PULLUP);
-    gpio_digital_write(screen->params.rw, 1);
-    gpio_digital_write(screen->params.rs, 0);
-    while (busy)
+    if (screen->params.mode == ST7920_PARALLEL)
     {
-        gpio_digital_write(screen->params.en, 1);
-        busy &= (gpio_digital_read(screen->params.d[7]) ? 1 : 0);
-        gpio_digital_write(screen->params.en, 0);
+        int busy = 1;
+
+        PIN_MODE_SET(screen->params.d[7], GPIO_PM_INPUT_PULLUP);
+        gpio_digital_write(screen->params.rw, 1);
+        gpio_digital_write(screen->params.rs, 0);
+        while (busy)
+        {
+            gpio_digital_write(screen->params.en, 1);
+            busy &= (gpio_digital_read(screen->params.d[7]) ? 1 : 0);
+            gpio_digital_write(screen->params.en, 0);
+        }
+        PIN_MODE_SET(screen->params.d[7], GPIO_PM_OUTPUT);
     }
-    PIN_MODE_SET(screen->params.d[7], GPIO_PM_OUTPUT);
 }
 
 static void st7920_write(st7920_t *screen, int iscmd, u8 data)
 {
-    st7920_wait(screen);
-    gpio_digital_write(screen->params.rs, iscmd ? 0 : 1);
-    gpio_digital_write(screen->params.rw, 0);
-    st7920_data_out(screen, data);
-    gpio_digital_pulse(screen->params.en, 1, 0.01);
+    if (IS_PARALLEL(screen))
+    {
+        st7920_wait(screen);
+        gpio_digital_write(screen->params.rs, iscmd ? 0 : 1);
+        gpio_digital_write(screen->params.rw, 0);
+        st7920_data_out(screen, data);
+        gpio_digital_pulse(screen->params.en, 1, 0.01);
+    }
+#ifdef CONFIG_SPI
+    else
+    {
+        u8 ser_data[] = {
+            0xf8 | (iscmd ? 0x0 : (1<<1)),
+            data & 0xf0,
+            (data & 0x0f) << 4
+        };
+        gpio_digital_write(screen->params.cs, 1);
+        spi_send_mult(screen->params.spi_port, ser_data, sizeof(ser_data));
+        gpio_digital_write(screen->params.cs, 0);
+    }
+#endif
 }
 
 static void chip_init(st7920_t *screen)
 {
-    int i;
-
-    PIN_MODE_SET(screen->params.rs, GPIO_PM_OUTPUT);
-    PIN_MODE_SET(screen->params.rw, GPIO_PM_OUTPUT);
-    PIN_MODE_SET(screen->params.en, GPIO_PM_OUTPUT);
     PIN_MODE_SET(screen->params.rst, GPIO_PM_OUTPUT);
     PIN_MODE_SET(screen->params.psb, GPIO_PM_OUTPUT);
-    for (i = 0; i < 8; i++)
-        PIN_MODE_SET(screen->params.d[i], GPIO_PM_OUTPUT);
-    
-    /* Parallel interface */
-    gpio_digital_write(screen->params.psb, 1);
+
+    if (IS_PARALLEL(screen))
+    {
+        int i;
+
+        PIN_MODE_SET(screen->params.rs, GPIO_PM_OUTPUT);
+        PIN_MODE_SET(screen->params.rw, GPIO_PM_OUTPUT);
+        PIN_MODE_SET(screen->params.en, GPIO_PM_OUTPUT);
+        for (i = 0; i < 8; i++)
+            PIN_MODE_SET(screen->params.d[i], GPIO_PM_OUTPUT);
+
+        gpio_digital_write(screen->params.psb, 1);
+    }
+    else
+    {
+#ifdef CONFIG_SPI
+        PIN_MODE_SET(screen->params.cs, GPIO_PM_OUTPUT);
+
+        gpio_digital_write(screen->params.psb, 0);
+        gpio_digital_write(screen->params.cs, 0);
+        spi_init(screen->params.spi_port);
+        spi_set_max_speed(screen->params.spi_port, 530000);
+#else
+        tp_crit(("st7920: invalid settings - serial mode without SPI support\n"));
+#endif
+    }
 
     /* Reset */
     gpio_digital_pulse(screen->params.rst, 0, 10);
