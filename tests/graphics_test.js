@@ -25,3 +25,5 @@ g.rectFill(0, 0, 5, 1, 1);
 console.log("draws " + num_draws);
 g.roundRectDraw(0, 0, 5, 1, 1, 1);
 console.log("draws " + num_draws);
+g.lineDraw(0, 0, 0, 0, 1);
+console.log("draws " + num_draws);
