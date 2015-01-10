@@ -1,0 +1,8 @@
+CONSTRUCTOR("DummyCanvas", canvas, do_dummy_canvas_constructor, {
+    .params = {
+    },
+    .description = "Dummy Canvas Constructor",
+    .return_value = "Created object",
+    .example = "var lcd = new DummyCanvas();\n"
+        "lcd.pixelDraw(10, 10, 1);",
+})
