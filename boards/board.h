@@ -78,6 +78,9 @@ typedef struct {
 #ifdef CONFIG_ST7920
     st7920_params_t st7920_params;
 #endif
+#ifdef CONFIG_DUMMY_CANVAS
+    dummy_canvas_params_t dummy_canvas_params;
+#endif
 #ifdef CONFIG_MMC
     mmc_params_t mmc_params;
 #endif

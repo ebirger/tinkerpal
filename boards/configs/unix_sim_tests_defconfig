@@ -79,6 +79,7 @@ CONFIG_MODULE_ASSERT=y
 # Graphics
 #
 CONFIG_GRAPHICS=y
+CONFIG_DUMMY_CANVAS=y
 
 #
 # Drivers

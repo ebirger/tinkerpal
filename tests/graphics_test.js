@@ -45,3 +45,9 @@ debug.assert_exception(function() { var s = g.rectDraw; s(); } );
 debug.assert_exception(function() { var s = g.rectDraw; s(0, 0, 5, 1, 1); } );
 debug.assert_exception(function() { var s = g.rectFill; s(); } );
 debug.assert_exception(function() { var s = g.rectFill; s(0, 0, 5, 1, 1); } );
+
+/* Test canvas operations */
+var d = new DummyCanvas();
+d.flip();
+d.fill(1);
+d.pixelDraw(1, 1, 1);

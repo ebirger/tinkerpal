@@ -99,6 +99,11 @@ typedef struct {
 } st7920_params_t;
 #endif
 
+#ifdef CONFIG_DUMMY_CANVAS
+typedef struct {
+} dummy_canvas_params_t;
+#endif
+
 #ifdef CONFIG_DOGS102X6
 canvas_t *dogs102x6_new(const dogs102x6_params_t *params);
 #endif
@@ -129,6 +134,10 @@ canvas_t *st7735_new(const st7735_params_t *params);
 
 #ifdef CONFIG_ST7920
 canvas_t *st7920_new(const st7920_params_t *params);
+#endif
+
+#ifdef CONFIG_DUMMY_CANVAS
+canvas_t *dummy_canvas_new(const dummy_canvas_params_t *params);
 #endif
 
 #endif

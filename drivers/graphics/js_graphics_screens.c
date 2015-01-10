@@ -66,3 +66,7 @@ LCD_CONSTRUCTOR(ili93xx)
 #ifdef CONFIG_DOGS102X6
 LCD_CONSTRUCTOR(dogs102x6)
 #endif
+
+#ifdef CONFIG_DUMMY_CANVAS
+LCD_CONSTRUCTOR(dummy_canvas)
+#endif
