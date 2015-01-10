@@ -41,5 +41,10 @@ ifneq ($(CONFIG_ST7735),)
   MK_DESCS+=st7735.desc
 endif
 
+ifneq ($(CONFIG_ST7920),)
+  MK_OBJS+=st7920.o
+  MK_DESCS+=st7920.desc
+endif
+
 MODULES=$(if $(CONFIG_TEXT_LCD),text_lcd.js)
 MK_BUILTIN_FS_INTERNAL_FILES=$(MODULES)

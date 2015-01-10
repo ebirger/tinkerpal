@@ -75,6 +75,9 @@ typedef struct {
 #ifdef CONFIG_ST7735
     st7735_params_t st7735_params;
 #endif
+#ifdef CONFIG_ST7920
+    st7920_params_t st7920_params;
+#endif
 #ifdef CONFIG_MMC
     mmc_params_t mmc_params;
 #endif

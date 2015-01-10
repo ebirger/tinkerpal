@@ -80,7 +80,7 @@ static inline void spi_receive_mult(resource_t port, u8 buf[], int len)
         *buf++ = (u8)spi_receive(port);
 }
 
-static inline void spi_send_mult(resource_t port, u8 buf[], int len)
+static inline void spi_send_mult(resource_t port, const u8 buf[], int len)
 {
     while (len--)
         spi_send(port, *buf++);

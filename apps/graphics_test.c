@@ -139,6 +139,8 @@ static void lcd_init(void)
     canvas = pcd8544_new(&board.pcd8544_params);
 #elif defined(CONFIG_ST7735)
     canvas = st7735_new(&board.st7735_params);
+#elif defined(CONFIG_ST7920)
+    canvas = st7920_new(&board.st7920_params);
 #else
 #error No LCD hookup information available
 #endif

@@ -33,14 +33,20 @@
 
 #define Scanvas S("canvas")
 
+/* Return value is not reference counted - care must be taken in order
+ * to make sure the graphics object is not freed
+ */
 static canvas_t *graphics_obj_get_canvas(obj_t *gr)
 {
+    canvas_t *ret;
     obj_t *o;
 
     if (!(o = obj_get_property(NULL, gr, &Scanvas)))
         return NULL;
 
-    return canvas_obj_get_canvas(o);
+    ret = canvas_obj_get_canvas(o);
+    obj_put(o);
+    return ret;
 }
 
 int do_graphics_rect_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])

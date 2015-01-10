@@ -62,6 +62,11 @@ config ST7735
 	depends on GPIO && SPI && GRAPHICS
         default y
 
+config ST7920
+	bool "Support for the ST7920 LCD controller"
+	depends on GPIO && GRAPHICS
+        default n
+
 config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS

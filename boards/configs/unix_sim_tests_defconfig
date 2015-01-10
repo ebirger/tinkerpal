@@ -78,7 +78,7 @@ CONFIG_MODULE_ASSERT=y
 #
 # Graphics
 #
-CONFIG_GRAPHICS=n
+CONFIG_GRAPHICS=y
 
 #
 # Drivers

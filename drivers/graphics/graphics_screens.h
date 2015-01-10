@@ -80,6 +80,25 @@ typedef struct {
 } ssd1306_params_t;
 #endif
 
+#ifdef CONFIG_ST7920
+typedef struct {
+    enum { ST7920_SERIAL = 0, ST7920_PARALLEL = 1 } mode;
+
+    resource_t rst;
+    resource_t psb;
+
+    /* Parallel Interface */
+    resource_t rs;
+    resource_t rw;
+    resource_t en;
+    resource_t d[8];
+
+    /* Serial Interface */
+    resource_t cs;
+    resource_t spi_port;
+} st7920_params_t;
+#endif
+
 #ifdef CONFIG_DOGS102X6
 canvas_t *dogs102x6_new(const dogs102x6_params_t *params);
 #endif
@@ -106,6 +125,10 @@ canvas_t *ssd1329_new(const ssd1329_params_t *params);
 
 #ifdef CONFIG_ST7735
 canvas_t *st7735_new(const st7735_params_t *params);
+#endif
+
+#ifdef CONFIG_ST7920
+canvas_t *st7920_new(const st7920_params_t *params);
 #endif
 
 #endif

@@ -4,5 +4,7 @@
 #define TpixelDraw "pixelDraw"
 #define Tfill "fill"
 #define Tflip "flip"
+#define Twidth "width"
+#define Theight "height"
 
 #endif

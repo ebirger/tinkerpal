@@ -30,6 +30,8 @@
 #define SpixelDraw S(TpixelDraw)
 #define Sfill S(Tfill)
 #define Sflip S(Tflip)
+#define Swidth S(Twidth)
+#define Sheight S(Theight)
 
 typedef struct {
     canvas_t canvas;
@@ -100,13 +102,19 @@ static const canvas_ops_t js_evaluated_canvas_ops = {
 canvas_t *js_evaluated_canvas_new(obj_t *o)
 {
     js_evaluated_canvas_t *jscanvas;
+    int width, height;
 
     if (obj_has_property(o, &SpixelDraw) == FALSE)
+        return NULL;
+    if (obj_get_property_int(&width, o, &Swidth))
+        return NULL;
+    if (obj_get_property_int(&height, o, &Sheight))
         return NULL;
 
     jscanvas = tmalloc_type(js_evaluated_canvas_t);
     jscanvas->canvas.ops = &js_evaluated_canvas_ops;
+    jscanvas->canvas.width = width;
+    jscanvas->canvas.height = height;
     jscanvas->obj = obj_get(o);
-    /* XXX: get width + height */
     return &jscanvas->canvas;
 }

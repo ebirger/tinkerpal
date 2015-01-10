@@ -74,7 +74,7 @@ static void ssd1329_write(ssd1329_t *screen, int is_cmd, const u8 *data,
     gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, !is_cmd);
 
-    spi_send_mult(screen->params.spi_port, (u8 *)data, len);
+    spi_send_mult(screen->params.spi_port, data, len);
 
     gpio_digital_write(screen->params.cs, 1);
 }
