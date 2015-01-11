@@ -51,3 +51,4 @@ var d = new DummyCanvas();
 d.flip();
 d.fill(1);
 d.pixelDraw(1, 1, 1);
+var dummy_g = new Graphics(d);
