@@ -46,7 +46,7 @@ void canvas_hline(canvas_t *c, u16 x0, u16 x1, u16 y, u16 val)
     u16 w = c->width - 1;
     int i;
 
-    if (y < 0 || y > c->height - 1)
+    if (y > c->height - 1)
         return;
 
     if (x0 > x1)
@@ -73,7 +73,7 @@ void canvas_vline(canvas_t *c, u16 x, u16 y0, u16 y1, u16 val)
     u16 h = c->height - 1;
     int j;
 
-    if (x < 0 || x > c->width - 1)
+    if (x > c->width - 1)
         return;
 
     if (y0 > y1)

@@ -71,4 +71,9 @@ config SDL_SCREEN
 	bool "LCD emulation via the SDL library"
 	depends on UNIX && GRAPHICS
 
+config DUMMY_CANVAS
+	bool "Dummy canvas used for testing"
+	depends on GRAPHICS
+        default n
+
 endif

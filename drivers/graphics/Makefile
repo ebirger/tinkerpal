@@ -46,5 +46,10 @@ ifneq ($(CONFIG_ST7920),)
   MK_DESCS+=st7920.desc
 endif
 
+ifneq ($(CONFIG_DUMMY_CANVAS),)
+  MK_OBJS+=dummy_canvas.o
+  MK_DESCS+=dummy_canvas.desc
+endif
+
 MODULES=$(if $(CONFIG_TEXT_LCD),text_lcd.js)
 MK_BUILTIN_FS_INTERNAL_FILES=$(MODULES)

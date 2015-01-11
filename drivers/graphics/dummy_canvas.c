@@ -22,51 +22,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "graphics/js_canvas.h"
-#include "boards/board.h"
-#include "js/js_obj.h"
+#include "util/tp_misc.h"
+#include "util/event.h"
+#include "util/debug.h"
+#include "drivers/resources.h"
+#include "drivers/graphics/graphics_screens.h"
+#include "graphics/colors.h"
 
-#define LCD_CONSTRUCTOR(name) \
-int do_##name##_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \
-{ \
-    canvas_t *canvas; \
-    /* TODO: allow providing pinout */ \
-    canvas = name##_new(&board.name##_params); \
-    return canvas_obj_constructor(canvas, ret, this, argc, argv); \
+static canvas_t dummy_canvas;
+
+static void dummy_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
+{
+    tp_out(("%s: (%d,%d) = %d\n", __func__, x, y, val));
 }
 
-#ifdef CONFIG_SSD1329
-LCD_CONSTRUCTOR(ssd1329)
-#endif
+static void dummy_canvas_flip(canvas_t *c)
+{
+    tp_out(("%s\n", __func__));
+}
 
-#ifdef CONFIG_SSD1306
-LCD_CONSTRUCTOR(ssd1306)
-#endif
+static void dummy_canvas_fill(canvas_t *c, u16 val)
+{
+    tp_out(("%s: val %d\n", __func__, val));
+}
 
-#ifdef CONFIG_SDL_SCREEN
-LCD_CONSTRUCTOR(sdl_screen)
-#endif
+static const canvas_ops_t dummy_canvas_ops = {
+    .pixel_set = dummy_canvas_pixel_set,
+    .fill = dummy_canvas_fill,
+    .flip = dummy_canvas_flip,
+};
 
-#ifdef CONFIG_PCD8544
-LCD_CONSTRUCTOR(pcd8544)
-#endif
-
-#ifdef CONFIG_ST7735
-LCD_CONSTRUCTOR(st7735)
-#endif
-
-#ifdef CONFIG_ST7920
-LCD_CONSTRUCTOR(st7920)
-#endif
-
-#ifdef CONFIG_ILI93XX
-LCD_CONSTRUCTOR(ili93xx)
-#endif
-
-#ifdef CONFIG_DOGS102X6
-LCD_CONSTRUCTOR(dogs102x6)
-#endif
-
-#ifdef CONFIG_DUMMY_CANVAS
-LCD_CONSTRUCTOR(dummy_canvas)
-#endif
+canvas_t *dummy_canvas_new(const dummy_canvas_params_t *params)
+{
+    dummy_canvas.width = 128;
+    dummy_canvas.height = 64;
+    dummy_canvas.ops = &dummy_canvas_ops;
+    return &dummy_canvas;
+}
