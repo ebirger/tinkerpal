@@ -74,7 +74,7 @@ IMAGE=$(BUILD)/$(IMAGE_NAME)
 _all: $(BSPS_DIR)/.fetched $(IMAGE) $(BUILD)/auto.conf
   
 clean: 
-	$(Q)rm -f $(TARGET) $(IMAGE) $(OBJS) $(AUTO_GEN_FILES) $(OBJS:.o=.d) $(LINK_DEPS)
+	$(Q)rm -f $(TARGET) $(IMAGE) $(OBJS) $(AUTO_GEN_FILES) $(OBJS:.o=.d)
 
 endif
 
