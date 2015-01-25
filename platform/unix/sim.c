@@ -37,7 +37,6 @@
 #include "platform/platform.h"
 #include "platform/unix/unix.h"
 
-static int tty_fd = -1;
 static int pty_fd = -1;
 static int ext_tty_fd = -1;
 
@@ -45,6 +44,9 @@ static int unix_sim_event_fd_count;
 static unix_fd_event_map_t unix_sim_event_fd_map[NUM_IDS + 1] = { 
     [0 ... NUM_IDS] = { .event = -1 }
 };
+
+#define STDIN_FD 0
+#define STDOUT_FD 1
 
 FILE *block_disk;
 #define SEC_SIZE 512
@@ -68,19 +70,6 @@ void unix_sim_remove_fd_event_from_map(int event)
     while (to->event != -1)
         *to++ = *++from;
     unix_sim_event_fd_count--;
-}
-
-static int tty_open(void)
-{
-    int fd;
-
-    if ((fd = open("/dev/tty", O_RDWR) < 0))
-    {
-        perror("tty open\n");
-        return -1;
-    }
-
-    return fd;
 }
 
 #ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
@@ -159,7 +148,8 @@ static int sim_unix_serial_enable(int id, int enabled)
     switch (id)
     {
     case STDIO_ID:
-        in_fd = out_fd = tty_fd = tty_open();
+        in_fd = STDIN_FD;
+        out_fd = STDOUT_FD;
         break;
 #ifdef CONFIG_PLATFORM_EMULATION_PTY_TERM
     case PTY_ID:
@@ -279,11 +269,6 @@ static void set_sigint_handler(void (*cb)(int))
 static void sim_unix_uninit(void)
 {
     printf("Unix Platform Simulator Uninit\n");
-    if (tty_fd != -1)
-    {
-        unix_set_term_raw(tty_fd, 0);
-        close(tty_fd);
-    }
     if (pty_fd != -1)
     {
         unix_set_term_raw(pty_fd, 0);
@@ -297,6 +282,7 @@ static void sim_unix_uninit(void)
     if (block_disk)
         fclose(block_disk);
     set_sigint_handler(SIG_DFL);
+    unix_set_term_raw(STDIN_FD, 0);
     unix_uninit();
 }
 
