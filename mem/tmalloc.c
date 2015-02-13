@@ -99,7 +99,7 @@ static void obj_registry_stats(void)
 
     for (rec = obj_registry; rec; rec = rec->next)
     {
-        int sz = *(((int *)rec->p) - 1);
+        int sz = *(((unsigned long *)rec->p) - 1);
 
         tp_out(("%p size %d type %s\n", rec->p, sz, rec->type));
     }
