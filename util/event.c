@@ -349,7 +349,7 @@ void event_loop(void)
 
         get_next_timeout(&timeout);
 
-        if (timeout >= 0 && !more_watches)
+        if ((!timers || timeout > 0) && !more_watches)
             platform.select(timeout);
 
         timeout_process();
