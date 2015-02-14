@@ -241,6 +241,34 @@ Exit:
     return rc;
 }
 
+int do_array_prototype_concat(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    obj_t *new_arr;
+    array_iter_t iter;
+    int new_arr_idx = 0, n;
+
+    *ret = new_arr = array_new();
+
+    array_iter_init(&iter, this, 0);
+    while (array_iter_next(&iter))
+        _array_set_item(new_arr, new_arr_idx++, obj_get(iter.obj));
+    array_iter_uninit(&iter);
+
+    for (n = 1; n < argc; n++)
+    {
+        if (is_array(argv[n]))
+        {
+            array_iter_init(&iter, argv[n], 0);
+            while (array_iter_next(&iter))
+                _array_set_item(new_arr, new_arr_idx++, obj_get(iter.obj));
+            array_iter_uninit(&iter);
+        }
+        else
+            _array_set_item(new_arr, new_arr_idx++, obj_get(argv[n]));
+    }
+    return 0;
+}
+
 int do_array_prototype_slice(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *new_arr;

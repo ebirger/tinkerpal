@@ -155,3 +155,13 @@ filtered_obj = [1, 1, 3].filter(function(x, k) { return this[k] > 1; }, [ 2, 2, 
 console.log(filtered_obj);
 debug.assert(filtered_obj[0], 1);
 debug.assert(filtered_obj.length, 2);
+
+var carr = [1, 2, 3].concat([4, 5, 6]);
+for (var i = 0; i < 6; i++)
+    debug.assert(carr[i], i + 1);
+carr = carr.concat("hello");
+console.log(carr);
+carr = carr.concat([8, 9, 10]);
+debug.assert(carr[7], 8);
+debug.assert(carr[8], 9);
+debug.assert(carr.length, 10);
