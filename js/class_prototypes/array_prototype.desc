@@ -132,3 +132,28 @@ FUNCTION("sort", array_prototype, do_array_prototype_sort, {
     .return_value = "The sorted array",
     .example = "[3, 1, 2].sort(); // [1, 2, 3]"
 })
+
+FUNCTION("filter", array_prototype, do_array_prototype_filter, {
+    .params = {
+        {
+            .name = "cb",
+            .description = "function that accepts three arguments:\n"
+ 	        "Value of the element, \n"
+ 	        "Index of the element, \n"
+ 	        "The object being traversed"
+        },
+        {
+            .name = "this",
+	    .description = "[optional] if provided, used as the "
+                "'this' value for each invocation of 'cb'. If not provided, "
+	        "'undefined' is used"
+        },
+    },
+    .description = "Calls cb once for each element present in the array, "
+        "in ascending order, and constructs a new Array from any element "
+	"for which cb returned 'true'",
+    .return_value = "The constructed array",
+    .example = "var a = [1, 2, 3];\n"
+	"var b = a.filter(function(value) { return value > 1 });\n"
+	"debug.assert(b, [2, 3]);",
+})

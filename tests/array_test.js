@@ -147,3 +147,11 @@ debug.assert_exception(function() { a.indexOf(); });
 debug.assert_exception(function() { a.map(); });
 debug.assert_exception(function() { var x = new Array(-3); });
 debug.assert(a.indexOf(2,1,2,3,4,5), 1);
+
+debug.assert([1, 2, 3].filter(function(x) { return x > 1; })[0], 2);
+debug.assert([1, 2, 3].filter(function(x) { return x > 1; }).length, 2);
+debug.assert([].filter(function(x) { return x > 1; }).length, 0);
+filtered_obj = [1, 1, 3].filter(function(x, k) { return this[k] > 1; }, [ 2, 2, 1]);
+console.log(filtered_obj);
+debug.assert(filtered_obj[0], 1);
+debug.assert(filtered_obj.length, 2);
