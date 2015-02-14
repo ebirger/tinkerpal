@@ -28,7 +28,7 @@ FUNCTION("pop", array_prototype, do_array_prototype_pop, {
     .params = { },
     .description = "The last element of the array is removed from the array and returned",
     .return_value = "Popped object",
-    .example = "var a = [ 2, 1 ];\n"
+    .example = "var a = [2, 1];\n"
         "var one = a.pop();",
 })
 
@@ -51,7 +51,7 @@ FUNCTION("forEach", array_prototype, do_array_prototype_foreach, {
     .description = "Calls cb once for each element present in the "
           "array, in ascending order",
     .return_value = "undefined",
-    .example = "var a = [ 1, 2, 3 ];\n"
+    .example = "var a = [1, 2, 3];\n"
 	"a.forEach(function(value, k, obj) { console.log(value + ' [' + k + '] ' + ' @ ' + obj); });",
 })
 
@@ -63,7 +63,7 @@ FUNCTION("indexOf", array_prototype, do_array_prototype_indexof, {
     .description = "Searches for searchElement in the elements of the array",
     .return_value = "if found at one or more positions, returns the index of "
          "the first such position (zero based); otherwise, -1 is returned",
-    .example = "var a = [ 1, 2, 3 ];\n"
+    .example = "var a = [1, 2, 3];\n"
 	"var one = a.indexOf(2);\n",
 })
 
@@ -75,7 +75,7 @@ FUNCTION("join", array_prototype, do_array_prototype_join, {
     .description = "Joins the string coversions of the elements of the array "
         "separated by occurrences of the separator",
     .return_value = "The resulted string",
-    .example = "var a = [ 1, 2, 3 ];\n"
+    .example = "var a = [1, 2, 3];\n"
 	"debug.assert(a.join('-'), '1-2-3');\n",
 })
 
@@ -98,9 +98,9 @@ FUNCTION("map", array_prototype, do_array_prototype_map, {
     .description = "Calls cb once for each element present in the array, "
         "in ascending order, and constructs a new Array from the results",
     .return_value = "The constructed array",
-    .example = "var a = [ 1, 2, 3 ];\n"
+    .example = "var a = [1, 2, 3];\n"
 	"var b = a.map(function(value, k, obj) { return value + 1 });\n"
-	"debug.assert(b, [ 2, 3, 4 ]);",
+	"debug.assert(b, [2, 3, 4]);",
 })
 
 FUNCTION("slice", array_prototype, do_array_prototype_slice, {
@@ -117,7 +117,7 @@ FUNCTION("slice", array_prototype, do_array_prototype_slice, {
     .description = "Creates a new array with elements from the specified array "
         "starting from index 'start' up to index 'end'",
     .return_value = "The constructed array",
-    .example = "[ 1, 2, 3].slice(1); // [2, 3]"
+    .example = "[1, 2, 3].slice(1); // [2, 3]"
 })
 
 FUNCTION("sort", array_prototype, do_array_prototype_sort, {
@@ -130,5 +130,5 @@ FUNCTION("sort", array_prototype, do_array_prototype_sort, {
     },
     .description = "Sorts the array elements",
     .return_value = "The sorted array",
-    .example = "[ 3, 1, 2 ].sort(); // [1, 2, 3]"
+    .example = "[3, 1, 2].sort(); // [1, 2, 3]"
 })
