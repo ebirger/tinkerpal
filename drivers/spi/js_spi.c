@@ -28,6 +28,9 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "drivers/spi/spi.h"
+#ifdef CONFIG_GPIO
+#include "drivers/gpio/gpio.h"
+#endif
 
 #define Sspi_id S("spi_id")
 
@@ -49,14 +52,45 @@ int do_spi_receive(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
 int do_spi_send(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
-    unsigned long data;
+#ifdef CONFIG_GPIO
+    resource_t cs = 0;
+#endif
 
-    if (argc != 2)
+    if (argc < 2)
         return js_invalid_args(ret);
 
-    data = obj_get_int(argv[1]);
+#ifdef CONFIG_GPIO
+    if (argc == 3)
+    {
+        cs = obj_get_int(argv[2]);
 
-    spi_send(get_spi_id(this), data);
+        if (gpio_set_pin_mode(cs, GPIO_PM_OUTPUT))
+            return js_invalid_args(ret);
+    }
+
+    if (cs)
+        gpio_digital_write(cs, 0);
+#endif
+
+    if (is_num(argv[1]))
+        spi_send(get_spi_id(this), obj_get_int(argv[1]));
+    else if (is_array(argv[1]))
+    {
+        array_iter_t iter;
+
+        array_iter_init(&iter, argv[1], 0);
+        while (array_iter_next(&iter))
+            spi_send(get_spi_id(this), obj_get_int(iter.obj));
+        array_iter_uninit(&iter);
+    }
+    else
+        return js_invalid_args(ret);
+
+#ifdef CONFIG_GPIO
+    if (cs)
+        gpio_digital_write(cs, 1);
+#endif
+
     *ret = UNDEF;
     return 0;
 }
