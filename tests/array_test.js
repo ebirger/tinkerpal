@@ -173,3 +173,5 @@ carr = carr.concat([8, 9, 10]);
 debug.assert(carr[7], 8);
 debug.assert(carr[8], 9);
 debug.assert(carr.length, 10);
+
+debug.assert_exception(function() { [1, 3, ;]; });

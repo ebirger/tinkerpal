@@ -488,7 +488,12 @@ static int eval_array(obj_t **po, scan_t *scan)
     }
 
 Exit:
-    js_scan_match(scan, TOK_CLOSE_MEMBER);
+    if (_js_scan_match(scan, TOK_CLOSE_MEMBER))
+    {
+        obj_put(o);
+        return parse_error(po);
+    }
+
     *po = o;
     return 0;
 }
