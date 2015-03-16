@@ -15,4 +15,7 @@ config MODULE_THERMAL_PRINTER
         help
                 Module for a mini thermal printer (e.g. https://learn.adafruit.com/mini-thermal-receipt-printer/)
 
+config MODULE_MAX7219
+	bool "MAX7219 8-Digit LED Display Driver"
+
 endif
