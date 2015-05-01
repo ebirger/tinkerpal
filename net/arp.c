@@ -36,7 +36,6 @@
 #define ARP_TIMEOUT (2 * 1000)
 #define ARP_RETRIES 4
 
-static ether_proto_t arp_proto;
 static arp_resolve_t *pending_resolve;
 static int arp_timeout_event_id;
 static int arp_retries;
@@ -161,6 +160,11 @@ int arp_resolve(arp_resolve_t *resolve)
     return 0;
 }
 
+static ether_proto_t arp_proto = {
+    .eth_type = htons(ETHER_PROTOCOL_ARP),
+    .recv = arp_recv,
+};
+
 void arp_uninit(void)
 {
     event_timer_del(arp_timeout_event_id);
@@ -169,7 +173,5 @@ void arp_uninit(void)
 
 void arp_init(void)
 {
-    arp_proto.eth_type = htons(ETHER_PROTOCOL_ARP);
-    arp_proto.recv = arp_recv;
     ethernet_register_proto(&arp_proto);
 }

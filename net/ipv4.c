@@ -126,6 +126,11 @@ void ipv4_register_proto(ipv4_proto_t *proto)
     ipv4_protocols = proto;
 }
 
+static ether_proto_t ipv4_proto = {
+    .eth_type = htons(ETHER_PROTOCOL_IP),
+    .recv = ipv4_recv,
+};
+
 void ipv4_uninit(void)
 {
     ethernet_unregister_proto(&ipv4_proto);
@@ -133,7 +138,5 @@ void ipv4_uninit(void)
 
 void ipv4_init(void)
 {
-    ipv4_proto.eth_type = htons(ETHER_PROTOCOL_IP);
-    ipv4_proto.recv = ipv4_recv;
     ethernet_register_proto(&ipv4_proto);
 }
