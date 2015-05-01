@@ -57,7 +57,7 @@ typedef struct {
 static u32 xid_seed = 0x453a939a;
 static const u8 requested_options[] = { 0x1, 0x3 };
 
-static int opt_put(u8 opt_num, const u8 opt[], u8 opt_len)
+static int __opt_put(u8 opt_num, const u8 opt[], u8 opt_len)
 {
     u8 *p;
 
@@ -70,10 +70,12 @@ static int opt_put(u8 opt_num, const u8 opt[], u8 opt_len)
     return 0;
 }
 
+#define opt_put(opt_num, val) __opt_put(opt_num, val, sizeof(val))
+
 #define DECL_PUT_OPT(type) \
 static int opt_put_##type(u8 opt_num, type val) \
 { \
-    return opt_put(opt_num, (u8 *)&val, sizeof(type)); \
+    return opt_put(opt_num, (u8 *)&(val)); \
 }
 
 DECL_PUT_OPT(u8)
@@ -127,7 +129,7 @@ static int dhcp_discover(dhcpc_t *dhcpc)
 
     /* Add options in reverse */
     if (opt_put_u8(0xff, 0) ||
-        opt_put(55, requested_options, sizeof(requested_options)) ||
+        opt_put(55, requested_options) ||
         opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
         opt_put_u8(53, DHCP_MSG_DISCOVER))
     {
@@ -147,7 +149,7 @@ static int dhcp_request(dhcpc_t *dhcpc)
 
     /* Add options in reverse */
     if (opt_put_u8(0xff, 0) ||
-        opt_put(55, requested_options, sizeof(requested_options)) ||
+        opt_put(55, requested_options) ||
         opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
         opt_put_u32(50, htonl(dhcpc->ip_info.ip)) ||
         opt_put_u8(53, DHCP_MSG_REQUEST))
