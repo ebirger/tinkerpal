@@ -170,9 +170,9 @@ static int dhcpc_options_iter(int (*cb)(dhcpc_t *dhcpc, u8 opt, u8 len),
     {
         u8 opt, len;
 
-        opt = *(u8 *)g_packet.ptr;
+        opt = *g_packet.ptr;
         packet_pull(&g_packet, 1);
-        len = *(u8 *)g_packet.ptr;
+        len = *g_packet.ptr;
         packet_pull(&g_packet, 1);
 
         if  (opt == 0xFF)
