@@ -36,7 +36,7 @@ typedef enum {
     NETIF_EVENT_PACKET_RECEIVED = 2,
     NETIF_EVENT_PACKET_XMITTED = 3,
     NETIF_EVENT_IPV4_CONNECTED = 4,
-    NETIF_EVENT_TCP_CONNECTED = 5,
+    NETIF_EVENT_L4_CONNECTED = 5,
     NETIF_EVENT_TCP_DATA_AVAIL = 6,
     NETIF_EVENT_TCP_DISCONNECTED = 7,
     NETIF_EVENT_COUNT
@@ -44,6 +44,11 @@ typedef enum {
 
 #define NETIF_RES(netif, event) \
     RES(NETIF_RESOURCE_ID_BASE, (netif)->id, event)
+
+typedef struct {
+    u32 ip;
+    u16 port;
+} tcp_udp_connect_params_t;
 
 typedef struct netif_t netif_t;
 
@@ -53,10 +58,10 @@ typedef struct {
     int (*ip_connect)(netif_t *netif);
     void (*ip_disconnect)(netif_t *netif);
     /* Addresses in host order */
-    int (*tcp_connect)(netif_t *netif, u32 ip, u16 port);
+    int (*connect)(netif_t *netif, u8 proto, void *params);
     int (*tcp_read)(netif_t *netif, char *buf, int size);
     int (*tcp_write)(netif_t *netif, char *buf, int size);
-    int (*tcp_disconnect)(netif_t *netif);
+    int (*disconnect)(netif_t *netif);
     u32 (*ip_addr_get)(netif_t *netif);
     void (*free)(netif_t *netif);
 } netif_ops_t;
@@ -89,7 +94,11 @@ static inline void netif_ip_disconnect(netif_t *netif)
 
 static inline int netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
 {
-    return netif->ops->tcp_connect(netif, ip, port);
+    tcp_udp_connect_params_t conn;
+
+    conn.ip = ip;
+    conn.port = port;
+    return netif->ops->connect(netif, IP_PROTOCOL_TCP, &conn);
 }
 
 static inline int netif_tcp_read(netif_t *netif, char *buf, int size)
@@ -104,7 +113,7 @@ static inline int netif_tcp_write(netif_t *netif, char *buf, int size)
 
 static inline int netif_tcp_disconnect(netif_t *netif)
 {
-    return netif->ops->tcp_disconnect(netif);
+    return netif->ops->disconnect(netif);
 }
 
 static inline u32 netif_ip_addr_get(netif_t *netif)

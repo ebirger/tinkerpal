@@ -184,7 +184,7 @@ int do_netif_tcp_connect(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     e = js_event_new(argv[3], this, js_event_gen_trigger);
 
-    _event_watch_set(NETIF_RES(netif, NETIF_EVENT_TCP_CONNECTED), e, 0, 1);
+    _event_watch_set(NETIF_RES(netif, NETIF_EVENT_L4_CONNECTED), e, 0, 1);
 
     if (netif_tcp_connect(netif, ip, port))
         return throw_exception(ret, &S("Failed to connect"));

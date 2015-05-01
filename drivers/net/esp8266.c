@@ -404,7 +404,7 @@ static void esp8266_tcp_connect(esp8266_t *e)
     MATCH(e, "Linked");
     sm_wait(e, 5000);
     e->tcp_connected = 1;
-    netif_event_trigger(&e->netif, NETIF_EVENT_TCP_CONNECTED);
+    netif_event_trigger(&e->netif, NETIF_EVENT_L4_CONNECTED);
     esp8266_wait_for_data(e);
     sm_uninit(e);
 }
@@ -418,9 +418,16 @@ static void esp8266_tcp_disconnect(esp8266_t *e)
     sm_uninit(e);
 }
 
-static int esp8266_netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
+static int esp8266_netif_connect(netif_t *netif, u8 proto, void *params)
 {
     esp8266_t *e = netif_to_esp8266(netif);
+    tcp_udp_connect_params_t *conn = params;
+
+    if (proto != IP_PROTOCOL_TCP)
+    {
+        tp_err(("Protocol %d not supported\n", proto));
+        return -1;
+    }
 
     if (e->tcp_connected)
     {
@@ -428,8 +435,8 @@ static int esp8266_netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
         return -1;
     }
 
-    e->ip = ip;
-    e->port = port;
+    e->ip = conn->ip;
+    e->port = conn->port;
     sm_reset(e);
     esp8266_tcp_connect(e);
     return 0;
@@ -484,7 +491,7 @@ static int esp8266_netif_tcp_write(netif_t *netif, char *buf, int size)
     return 0;
 }
 
-static int esp8266_netif_tcp_disconnect(netif_t *netif)
+static int esp8266_netif_disconnect(netif_t *netif)
 {
     esp8266_t *e = netif_to_esp8266(netif);
 
@@ -519,10 +526,10 @@ static const netif_ops_t esp8266_netif_ops = {
     .link_status = NULL,
     .ip_connect = esp8266_netif_ip_connect,
     .ip_disconnect = NULL,
-    .tcp_connect = esp8266_netif_tcp_connect,
+    .connect = esp8266_netif_connect,
     .tcp_read = esp8266_netif_tcp_read,
     .tcp_write = esp8266_netif_tcp_write,
-    .tcp_disconnect = esp8266_netif_tcp_disconnect,
+    .disconnect = esp8266_netif_disconnect,
     .ip_addr_get = esp8266_netif_ip_addr_get,
     .free = esp8266_netif_free,
 };
