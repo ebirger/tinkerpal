@@ -1953,7 +1953,7 @@ int js_eval_rank(tstr_t code)
         char c = tstr_peek(&code, idx++);
         if (is_open_char(c))
             PUSH(open_char_recip(c));
-        if (is_close_char(c))
+	else if (is_close_char(c))
         {
             POP();
             if (popped != c)
