@@ -113,7 +113,7 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
     return freed;
 }
 
-mem_cache_t *mem_cache_create(int item_size, char *name)
+mem_cache_t *__mem_cache_create(int item_size, char *name)
 {
     mem_cache_t *cache = tmalloc_type(mem_cache_t);
 
