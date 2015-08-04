@@ -64,7 +64,7 @@ static int stellaris_eth_packet_recv(etherif_t *ethif, u8 *buf, int size)
     length = MAP_EthernetPacketGetNonBlocking(ETH_BASE, buf, size);
     MAP_EthernetIntEnable(ETH_BASE, ETH_INT_RX);
     if (length < 0)
-        tp_err(("Buffer too small (%d). Packet length %d\n", size, -length));
+        tp_err("Buffer too small (%d). Packet length %d\n", size, -length);
     return (int)length;
 }
 
@@ -74,7 +74,7 @@ static void stellaris_eth_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 
     length = MAP_EthernetPacketPut(ETH_BASE, buf, size);
     if (length < 0)
-        tp_err(("No space for packet (%d). Space left %d\n", size, -length));
+        tp_err("No space for packet (%d). Space left %d\n", size, -length);
 }
 
 static void stellaris_eth_free(etherif_t *ethif)
@@ -96,10 +96,10 @@ static void phy_info(void)
     
     mr2 = MAP_EthernetPHYRead(ETH_BASE, PHY_MR2);
     mr3 = MAP_EthernetPHYRead(ETH_BASE, PHY_MR3);
-    tp_out(("PHY OUI %x:%x\n", (mr2 & PHY_MR2_OUI_M) >> PHY_MR2_OUI_S,
-        (mr3 & PHY_MR3_OUI_M) >> PHY_MR3_OUI_S));
-    tp_out(("Model Number %x\n", (mr3 & PHY_MR3_MN_M) >> PHY_MR3_MN_S));
-    tp_out(("Revision Number %x\n", (mr3 & PHY_MR3_RN_M) >> PHY_MR3_RN_S));
+    tp_out("PHY OUI %x:%x\n", (mr2 & PHY_MR2_OUI_M) >> PHY_MR2_OUI_S,
+        (mr3 & PHY_MR3_OUI_M) >> PHY_MR3_OUI_S);
+    tp_out("Model Number %x\n", (mr3 & PHY_MR3_MN_M) >> PHY_MR3_MN_S);
+    tp_out("Revision Number %x\n", (mr3 & PHY_MR3_RN_M) >> PHY_MR3_RN_S);
 }
 
 static void phy_cfg(void)
@@ -158,7 +158,7 @@ void stellaris_ethernet_isr(void)
     /* Clear interrupt status */
     MAP_EthernetIntClear(ETH_BASE, istat);
 
-    tp_debug(("Stellaris Ethernet ISR %x\n", istat));
+    tp_debug("Stellaris Ethernet ISR %x\n", istat);
 
     g_eth.istat |= istat;
 }

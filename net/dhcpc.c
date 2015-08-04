@@ -57,7 +57,7 @@ typedef struct {
 static u32 xid_seed = 0x453a939a;
 static const u8 requested_options[] = { 0x1, 0x3 };
 
-static int opt_put(u8 opt_num, const u8 opt[], u8 opt_len)
+static int __opt_put(u8 opt_num, const u8 opt[], u8 opt_len)
 {
     u8 *p;
 
@@ -70,10 +70,12 @@ static int opt_put(u8 opt_num, const u8 opt[], u8 opt_len)
     return 0;
 }
 
+#define opt_put(opt_num, val) __opt_put(opt_num, val, sizeof(val))
+
 #define DECL_PUT_OPT(type) \
 static int opt_put_##type(u8 opt_num, type val) \
 { \
-    return opt_put(opt_num, (u8 *)&val, sizeof(type)); \
+    return opt_put(opt_num, (u8 *)&(val)); \
 }
 
 DECL_PUT_OPT(u8)
@@ -127,7 +129,7 @@ static int dhcp_discover(dhcpc_t *dhcpc)
 
     /* Add options in reverse */
     if (opt_put_u8(0xff, 0) ||
-        opt_put(55, requested_options, sizeof(requested_options)) ||
+        opt_put(55, requested_options) ||
         opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
         opt_put_u8(53, DHCP_MSG_DISCOVER))
     {
@@ -147,7 +149,7 @@ static int dhcp_request(dhcpc_t *dhcpc)
 
     /* Add options in reverse */
     if (opt_put_u8(0xff, 0) ||
-        opt_put(55, requested_options, sizeof(requested_options)) ||
+        opt_put(55, requested_options) ||
         opt_put_u16(57, htons(NET_PACKET_SIZE)) ||
         opt_put_u32(50, htonl(dhcpc->ip_info.ip)) ||
         opt_put_u8(53, DHCP_MSG_REQUEST))
@@ -168,9 +170,9 @@ static int dhcpc_options_iter(int (*cb)(dhcpc_t *dhcpc, u8 opt, u8 len),
     {
         u8 opt, len;
 
-        opt = *(u8 *)g_packet.ptr;
+        opt = *g_packet.ptr;
         packet_pull(&g_packet, 1);
-        len = *(u8 *)g_packet.ptr;
+        len = *g_packet.ptr;
         packet_pull(&g_packet, 1);
 
         if  (opt == 0xFF)
@@ -181,7 +183,7 @@ static int dhcpc_options_iter(int (*cb)(dhcpc_t *dhcpc, u8 opt, u8 len),
 
         if (!packet_pull(&g_packet, len))
         {
-            tp_err(("Invalid DHCP option %d\n", opt));
+            tp_err("Invalid DHCP option %d\n", opt);
             return -1;
         }
     }
@@ -200,8 +202,8 @@ static int dhcpc_options_cb(dhcpc_t *dhcpc, u8 opt, u8 len)
     case 53:
         if (VAL_U8(g_packet.ptr) != dhcpc->waited_message)
         {
-            tp_err(("Expected %d, got %d\n",dhcpc->waited_message,
-                VAL_U8(g_packet.ptr)));
+            tp_err("Expected %d, got %d\n",dhcpc->waited_message,
+                VAL_U8(g_packet.ptr));
             return -1;
         }
         break;
@@ -219,13 +221,13 @@ static int dhcpc_options_process(dhcpc_t *dhcpc)
 {
     if (!packet_pull(&g_packet, sizeof(dhcp_msg_t)))
     {
-        tp_err(("Not enough packet room for DHCP options"));
+        tp_err("Not enough packet room for DHCP options");
         return -1;
     }
 
     if (dhcpc_options_iter(dhcpc_options_cb, dhcpc))
     {
-        tp_err(("DHCP options processing failed\n"));
+        tp_err("DHCP options processing failed\n");
         return -1;
     }
 
@@ -238,7 +240,7 @@ static void dhcpc_recv(udp_socket_t *sock)
     dhcp_msg_t *msg = (dhcp_msg_t *)g_packet.ptr;
     eth_mac_t mac;
 
-    tp_debug(("DHCP Received\n"));
+    tp_debug("DHCP Received\n");
 
     if (msg->op != DHCP_OP_REPLY || msg->htype != DHCP_HW_TYPE_ETH ||
         msg->hlen != 6 || msg->hops || msg->xid != dhcpc->xid)
@@ -255,19 +257,19 @@ static void dhcpc_recv(udp_socket_t *sock)
     if (dhcpc_options_process(dhcpc))
         return;
 
-    tp_out(("Address: %s\n", ip_addr_serialize(dhcpc->ip_info.ip)));
-    tp_out(("Netmask: %s\n", ip_addr_serialize(dhcpc->ip_info.netmask)));
-    tp_out(("Router: %s\n", ip_addr_serialize(dhcpc->ip_info.router)));
+    tp_out("Address: %s\n", ip_addr_serialize(dhcpc->ip_info.ip));
+    tp_out("Netmask: %s\n", ip_addr_serialize(dhcpc->ip_info.netmask));
+    tp_out("Router: %s\n", ip_addr_serialize(dhcpc->ip_info.router));
 
     switch (dhcpc->waited_message)
     {
     case DHCP_MSG_OFFER:
-        tp_debug(("DHCP OFFER\n"));
+        tp_debug("DHCP OFFER\n");
         dhcpc->waited_message = DHCP_MSG_ACK;
         dhcp_request(dhcpc);
         break;
     case DHCP_MSG_ACK:
-        tp_debug(("DHCP ACK\n"));
+        tp_debug("DHCP ACK\n");
         etherif_ipv4_info_set(dhcpc->ethif, &dhcpc->ip_info); 
         break;
     }

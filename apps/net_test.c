@@ -55,7 +55,7 @@ static void net_test_quit(void)
 
 void got_ip(event_t *e, u32 resource_id, u64 timestamp)
 {
-    tp_out(("IP address aquired\n"));
+    tp_out("IP address aquired\n");
     netif_on_event_clear(netif, NETIF_EVENT_IPV4_CONNECTED);
 }
 
@@ -91,16 +91,16 @@ void app_start(int argc, char *argv[])
 {
     eth_mac_t mac;
 
-    tp_out(("TinkerPal Application - Net Test\n"));
+    tp_out("TinkerPal Application - Net Test\n");
 
 #if defined(CONFIG_LINUX_ETH)
     if (argc != 2)
-        tp_crit(("Usage: %s <network interface>\n", argv[0]));
+        tp_crit("Usage: %s <network interface>\n", argv[0]);
 
     netif = linux_eth_new(argv[1]);
 #elif defined(CONFIG_NETIF_INET)
     if (argc != 2)
-        tp_crit(("Usage: %s <network interface>\n", argv[0]));
+        tp_crit("Usage: %s <network interface>\n", argv[0]);
 
     netif = netif_inet_new(argv[1]);
 #elif defined(CONFIG_STELLARIS_ETH)
@@ -116,6 +116,6 @@ void app_start(int argc, char *argv[])
     tp_assert(netif);
 
     netif_mac_addr_get(netif, &mac);
-    tp_out(("Interface MAC address: %s\n", eth_mac_serialize(&mac)));
+    tp_out("Interface MAC address: %s\n", eth_mac_serialize(&mac));
     cli_start(&net_test_cli_client);
 }

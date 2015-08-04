@@ -85,12 +85,12 @@ static void phy_info(void)
     
     id1 = MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_ID1);
     id2 = MAP_EMACPHYRead(EMAC0_BASE, 0, EPHY_ID2);
-    tp_out(("PHY OUI %x:%x\n", (id1 & EPHY_ID1_OUIMSB_M) >> EPHY_ID1_OUIMSB_S,
-        (id2 & EPHY_ID2_OUILSB_M) >> EPHY_ID2_OUILSB_S));
-    tp_out(("Model Number %x\n",
-        (id2 & EPHY_ID2_VNDRMDL_M) >> EPHY_ID2_VNDRMDL_S));
-    tp_out(("Revision Number %x\n", 
-        (id2 & EPHY_ID2_MDLREV_M) >> EPHY_ID2_MDLREV_S));
+    tp_out("PHY OUI %x:%x\n", (id1 & EPHY_ID1_OUIMSB_M) >> EPHY_ID1_OUIMSB_S,
+        (id2 & EPHY_ID2_OUILSB_M) >> EPHY_ID2_OUILSB_S);
+    tp_out("Model Number %x\n",
+        (id2 & EPHY_ID2_VNDRMDL_M) >> EPHY_ID2_VNDRMDL_S);
+    tp_out("Revision Number %x\n", 
+        (id2 & EPHY_ID2_MDLREV_M) >> EPHY_ID2_MDLREV_S);
 }
 
 static void phy_cfg(void)
@@ -145,7 +145,7 @@ void tiva_c_emac_isr(void)
     /* Clear interrupt status */
     MAP_EMACIntClear(EMAC0_BASE, istat);
 
-    tp_out(("Tiva C EMAC ISR %x\n", istat));
+    tp_out("Tiva C EMAC ISR %x\n", istat);
 
     g_eth.istat |= istat;
 }

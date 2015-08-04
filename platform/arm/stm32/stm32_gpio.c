@@ -171,7 +171,7 @@ int stm32_gpio_set_pin_mode(int pin, gpio_pin_mode_t mode)
         GPIO_Init(GPIO_PORT(pin), &GPIO_InitStructure);
         break;
     default:
-        tp_err(("Pinmode %d is not supported yet\n", mode));
+        tp_err("Pinmode %d is not supported yet\n", mode);
         return -1;
     }
     return 0;

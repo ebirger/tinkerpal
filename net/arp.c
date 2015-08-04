@@ -36,7 +36,6 @@
 #define ARP_TIMEOUT (2 * 1000)
 #define ARP_RETRIES 4
 
-static ether_proto_t arp_proto;
 static arp_resolve_t *pending_resolve;
 static int arp_timeout_event_id;
 static int arp_retries;
@@ -102,7 +101,7 @@ static void arp_timeout(event_t *e, u32 resource_id, u64 timestamp)
         return;
     }
 
-    tp_err(("ARP request timed out\n"));
+    tp_err("ARP request timed out\n");
     arp_resolve_complete(-1, bcast_mac);
 }
 
@@ -129,13 +128,13 @@ static void arp_recv(etherif_t *ethif)
 {
     arp_packet_t *arp = (arp_packet_t *)g_packet.ptr;
 
-    tp_debug(("ARP packet received\n"));
+    tp_debug("ARP packet received\n");
 
     if (arp->htype != htons(ARP_HTYPE_ETHERNET) ||
         arp->ptype != htons(ETHER_PROTOCOL_IP) ||
         arp->hlen != 6 || arp->plen != 4)
     {
-        tp_info(("Only IP Ethernet ARP packets are supported\n"));
+        tp_info("Only IP Ethernet ARP packets are supported\n");
         return;
     }
 
@@ -144,14 +143,14 @@ static void arp_recv(etherif_t *ethif)
     else if (arp->oper == htons(ARP_OPER_REQUEST))
         arp_request_recv(ethif, arp);
     else
-        tp_info(("Unsupported ARP oper %d\n", ntohs(arp->oper)));
+        tp_info("Unsupported ARP oper %d\n", ntohs(arp->oper));
 }
 
 int arp_resolve(arp_resolve_t *resolve)
 {
     if (pending_resolve)
     {
-        tp_err(("An ARP resolve request is already pending\n"));
+        tp_err("An ARP resolve request is already pending\n");
         return -1;
     }
 
@@ -161,6 +160,11 @@ int arp_resolve(arp_resolve_t *resolve)
     return 0;
 }
 
+static ether_proto_t arp_proto = {
+    .eth_type = htons(ETHER_PROTOCOL_ARP),
+    .recv = arp_recv,
+};
+
 void arp_uninit(void)
 {
     event_timer_del(arp_timeout_event_id);
@@ -169,7 +173,5 @@ void arp_uninit(void)
 
 void arp_init(void)
 {
-    arp_proto.eth_type = htons(ETHER_PROTOCOL_ARP);
-    arp_proto.recv = arp_recv;
     ethernet_register_proto(&arp_proto);
 }

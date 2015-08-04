@@ -30,7 +30,7 @@
 
 void net_uninit(void)
 {
-    tp_out(("NET Uninit\n"));
+    tp_out("NET Uninit\n");
 #ifdef CONFIG_UDP
     udp_uninit();
 #endif
@@ -47,7 +47,7 @@ void net_uninit(void)
 
 void net_init(void)
 {
-    tp_out(("NET Init\n"));
+    tp_out("NET Init\n");
 #ifdef CONFIG_ARP
     arp_init();
 #endif

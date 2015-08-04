@@ -43,10 +43,10 @@ static int x86_serial_write(int u, char *buf, int size)
 
 static void x86_meminfo(void)
 {
-    tp_out(("Heap: Total %d Allocated %d Remaining %d\n", 
+    tp_out("Heap: Total %d Allocated %d Remaining %d\n", 
         (&_heap_top - &_heap_bottom) * 4,
         ((unsigned long *)heap_end - &_heap_bottom) * 4,
-        (&_heap_top - (unsigned long *)heap_end) * 4));
+        (&_heap_top - (unsigned long *)heap_end) * 4);
 }
 
 static void x86_init(void)

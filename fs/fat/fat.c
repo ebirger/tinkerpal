@@ -110,7 +110,7 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
 
     if (f_open(&fp, file_n, FA_READ|FA_OPEN_EXISTING) != FR_OK)
     {
-        tp_err(("file_read: could not open %S\n", file_name));
+        tp_err("file_read: could not open %S\n", file_name);
         goto Exit;
     }
 
@@ -118,7 +118,7 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
     rc = tstr_fill(content, info.fsize, fat_file_read_fill_fn, &fp);
     if (rc != content->len)
     {
-        tp_err(("failed reading from file %S rc %d\n", file_name, rc));
+        tp_err("failed reading from file %S rc %d\n", file_name, rc);
         tstr_free(content);
         goto Exit;
     }
@@ -154,14 +154,14 @@ static int fat_file_write(tstr_t *content, tstr_t *file_name)
 
     if (f_open(&fp, file_n, FA_WRITE|FA_CREATE_ALWAYS) != FR_OK)
     {
-        tp_err(("file_write: could not open %S\n", file_name));
+        tp_err("file_write: could not open %S\n", file_name);
         goto Exit;
     }
 
     rc = __tstr_dump(content, 0, content->len, fat_file_write_tstr_dump, &fp);
     if (rc < 0 || rc != content->len)
     {
-        tp_err(("Error writing to filefile %S rc %d\n", file_name, rc));
+        tp_err("Error writing to filefile %S rc %d\n", file_name, rc);
         goto Exit;
     }
 

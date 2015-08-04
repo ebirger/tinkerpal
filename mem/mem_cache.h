@@ -31,7 +31,12 @@
 
 typedef struct mem_cache_t mem_cache_t;
 
-mem_cache_t *mem_cache_create(int item_size, char *name);
+#define mem_cache_create(sz, name) ({ \
+	COMPILE_TIME_ASSERT((sz) >= sizeof(void *)); \
+	__mem_cache_create(sz, name); \
+})
+
+mem_cache_t *__mem_cache_create(int item_size, char *name);
 void mem_cache_destroy(mem_cache_t *cache);
 
 void *mem_cache_alloc(mem_cache_t *cache);
@@ -42,12 +47,13 @@ void mem_cache_stats(void);
 
 #include "mem/tmalloc.h"
 #include "util/tp_types.h"
+#include "util/debug.h"
 
 typedef void mem_cache_t;
 
 static inline mem_cache_t *mem_cache_create(int item_size, char *name) 
 { 
-    return (mem_cache_t *)item_size; 
+    return (mem_cache_t *)(uint_ptr_t)item_size;
 }
 
 static inline void mem_cache_destroy(mem_cache_t *cache) { }

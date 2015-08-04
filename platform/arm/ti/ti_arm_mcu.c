@@ -104,7 +104,7 @@ void ti_arm_mcu_msleep(double ms)
 #if defined(CONFIG_STELLARIS) || defined(CONFIG_TIVA_C)
     MAP_SysCtlDelay(SYSTEM_CLOCK() * ms / 3040);
 #elif defined(CONFIG_CC3200)
-    tp_crit(("%s not implemented yet\n", __FUNCTION__));
+    tp_crit("%s not implemented yet\n", __FUNCTION__);
 #endif
 }
 

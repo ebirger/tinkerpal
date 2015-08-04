@@ -31,8 +31,6 @@
 #define UDP_FREE_PORT_START 1024
 #define UDP_FREE_PORT_END 65535
 
-static ipv4_proto_t udp_proto;
-
 static int udp_is_port_taken(etherif_t *ethif, u16 port)
 {
     udp_socket_t *sock;
@@ -107,7 +105,7 @@ static void udp_recv(etherif_t *ethif)
     udp_socket_t *sock;
     u16 dst_port, src_port;
 
-    tp_debug(("UDP packet received\n"));
+    tp_debug("UDP packet received\n");
 
     src_port = ntohs(udph->src_port);
     dst_port = ntohs(udph->dst_port);
@@ -128,7 +126,7 @@ static void udp_recv(etherif_t *ethif)
 
     if (!sock)
     {
-        tp_info(("No matching socket found\n"));
+        tp_info("No matching socket found\n");
         return;
     }
 
@@ -153,6 +151,11 @@ void udp_register_socket(etherif_t *ethif, udp_socket_t *sock)
     ethif->udp = sock;
 }
 
+static ipv4_proto_t udp_proto = {
+    .protocol = IP_PROTOCOL_UDP,
+    .recv = udp_recv,
+};
+
 void udp_uninit(void)
 {
     ipv4_unregister_proto(&udp_proto);
@@ -160,7 +163,5 @@ void udp_uninit(void)
 
 void udp_init(void)
 {
-    udp_proto.protocol = IP_PROTOCOL_UDP;
-    udp_proto.recv = udp_recv;
     ipv4_register_proto(&udp_proto);
 }

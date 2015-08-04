@@ -70,11 +70,13 @@ $(call include_deps)
 
 TARGET=$(BUILD)/$(TARGET_NAME)
 IMAGE=$(BUILD)/$(IMAGE_NAME)
+COVERAGE_INFO=$(BUILD)/cov.info
 
 _all: $(BSPS_DIR)/.fetched $(IMAGE) $(BUILD)/auto.conf
   
 clean: 
-	$(Q)rm -f $(TARGET) $(IMAGE) $(OBJS) $(AUTO_GEN_FILES) $(OBJS:.o=.d) $(LINK_DEPS)
+	$(Q)rm -f $(TARGET) $(IMAGE) $(OBJS) $(AUTO_GEN_FILES) $(OBJS:.o=.d) \
+	  $(COVERAGE_INFO)
 
 endif
 
@@ -89,6 +91,12 @@ endif
 
 docs:
 	@make BUILD=$(BUILD) -f doc/Makefile
+
+gen_cov_info:
+	@lcov --capture --directory $(BUILD) --output-file $(COVERAGE_INFO)
+
+coverage: gen_cov_info
+	@genhtml $(COVERAGE_INFO) --output-directory $(BUILD)/coverage
 
 # Build rules
 
@@ -188,4 +196,4 @@ else
 	$(error simulate command not available)
 endif
 
-.PHONY: build_dir _all docs burn help
+.PHONY: build_dir _all docs burn help gen_cov_info coverage

@@ -198,6 +198,77 @@ Exit:
     return rc;
 }
 
+int do_array_prototype_filter(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    function_t *cb;
+    obj_t *cb_this, *new_arr;
+    array_iter_t iter;
+    int rc = 0, new_arr_idx = 0;
+
+    if (argc < 2)
+        return js_invalid_args(ret);
+
+    cb = to_function(argv[1]);
+    cb_this = argc > 2 ? argv[2] : UNDEF;
+
+    *ret = new_arr = array_new();
+
+    array_iter_init(&iter, this, 0);
+    if (iter.len == 0)
+        goto Exit;
+
+    while (array_iter_next(&iter))
+    {
+        obj_t *cb_rc = UNDEF;
+
+        rc = array_cb_call(&cb_rc, cb, cb_this, iter.obj, iter.k, this);
+        if (rc == COMPLETION_THROW)
+        {
+            obj_put(new_arr);
+            *ret = cb_rc;
+            goto Exit;
+        }
+        if (rc == COMPLETION_RETURN)
+            rc = 0;
+
+        if (obj_true(cb_rc))
+            _array_set_item(new_arr, new_arr_idx++, obj_get(iter.obj));
+        obj_put(cb_rc);
+    }
+
+Exit:
+    array_iter_uninit(&iter);
+    return rc;
+}
+
+int do_array_prototype_concat(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    obj_t *new_arr;
+    array_iter_t iter;
+    int new_arr_idx = 0, n;
+
+    *ret = new_arr = array_new();
+
+    array_iter_init(&iter, this, 0);
+    while (array_iter_next(&iter))
+        _array_set_item(new_arr, new_arr_idx++, obj_get(iter.obj));
+    array_iter_uninit(&iter);
+
+    for (n = 1; n < argc; n++)
+    {
+        if (is_array(argv[n]))
+        {
+            array_iter_init(&iter, argv[n], 0);
+            while (array_iter_next(&iter))
+                _array_set_item(new_arr, new_arr_idx++, obj_get(iter.obj));
+            array_iter_uninit(&iter);
+        }
+        else
+            _array_set_item(new_arr, new_arr_idx++, obj_get(argv[n]));
+    }
+    return 0;
+}
+
 int do_array_prototype_slice(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {
     obj_t *new_arr;

@@ -162,7 +162,7 @@ static int sim_unix_serial_enable(int id, int enabled)
         break;
 #endif
     default:
-        tp_err(("Unsupported Serial ID %d\n", id));
+        tp_err("Unsupported Serial ID %d\n", id);
         return -1;
     }
 
@@ -178,7 +178,7 @@ int sim_unix_block_disk_init(void)
     block_disk = fopen(CONFIG_PLATFORM_EMULATION_BLOCK_DISK_PATH, "r+");
     if (!block_disk)
     {
-        tp_err(("Could not open block disk file\n"));
+        tp_err("Could not open block disk file\n");
         return -1;
     }
 
@@ -216,17 +216,17 @@ int sim_unix_block_disk_read(unsigned char *buf, int sector, int count)
 
     if (fseek(block_disk, sector * SEC_SIZE, SEEK_SET) < 0)
     {
-        tp_err(("failed seek @ %d\n", sector * SEC_SIZE));
+        tp_err("failed seek @ %d\n", sector * SEC_SIZE);
         return -1;
     }
 
     n = fread(buf, count, SEC_SIZE, block_disk);
     if (n != count * SEC_SIZE)
     {
-        tp_err(("read %d/%d bytes\n", n, count * SEC_SIZE));
+        tp_err("read %d/%d bytes\n", n, count * SEC_SIZE);
         return -1;
     }
-    tp_info(("sector %d count %d read %d bytes\n", sector, count, n));
+    tp_info("sector %d count %d read %d bytes\n", sector, count, n);
     return 0;
 }
 
@@ -236,17 +236,17 @@ int sim_unix_block_disk_write(const unsigned char *buf, int sector, int count)
 
     if (fseek(block_disk, sector * SEC_SIZE, SEEK_SET))
     {
-        tp_err(("failed seek @ %d\n", sector * SEC_SIZE));
+        tp_err("failed seek @ %d\n", sector * SEC_SIZE);
         return -1;
     }
 
     n = fwrite(buf, count, SEC_SIZE, block_disk);
     if (n != count * SEC_SIZE)
     {
-        tp_err(("wrote %d/%d bytes\n", n, count * SEC_SIZE));
+        tp_err("wrote %d/%d bytes\n", n, count * SEC_SIZE);
         return -1;
     }
-    tp_info(("sector %d count %d wrote %d bytes\n", sector, count, n));
+    tp_info("sector %d count %d wrote %d bytes\n", sector, count, n);
     return 0;
 }
 #endif

@@ -13,7 +13,8 @@ CONSTRUCTOR("SPI", spi, do_spi_constructor, {
 
 FUNCTION("send", spi, do_spi_send, {
     .params = {
-        { .name = "data" , .description = "Data to be sent on SPI (integer)" }
+        { .name = "data" , .description = "Data to be sent on SPI (integer/array)" },
+        { .name = "cs" , .description = "Chip select pin (optional)" }
     },
     .description = "Sends data via SPI bus",
     .return_value = "None",

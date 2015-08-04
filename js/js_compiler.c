@@ -99,13 +99,13 @@ static void op32_prep(void)
 #define SP 13
 
 #define OP16(val) do { \
-    tp_debug(("%s:%d\t: %x : %s\n", __FUNCTION__, __LINE__, val, #val)); \
+    tp_debug("%s:%d\t: %x : %s\n", __FUNCTION__, __LINE__, val, #val); \
     if (op16(val)) \
         return -1; \
 } while (0)
 
 #define OP32(hi, lo) do { \
-    tp_debug(("%s:%d\t: %x,%x\n", __FUNCTION__, __LINE__, hi, lo)); \
+    tp_debug("%s:%d\t: %x,%x\n", __FUNCTION__, __LINE__, hi, lo); \
     op32_prep(); \
     if (op16(hi)) \
         return -1; \
@@ -196,8 +196,8 @@ static void op32_prep(void)
 #define ARM_THM_BRANCH(to, from) OP16(ARM_THM_BRANCH_VAL(to, from))
 
 #define ARM_THM_REG_SET(r, val) do { \
-    tp_debug(("%s:%d\t: REG %d = %s : %x\n", __FUNCTION__, __LINE__, r, #val, \
-        (u32)val)); \
+    tp_debug("%s:%d\t: REG %d = %s : %x\n", __FUNCTION__, __LINE__, r, #val, \
+        (u32)val); \
     ARM_THM_MOVW(r, (val) & 0xffff); \
     ARM_THM_MOVT(r, ((val)>>16) & 0xffff); \
 } while(0)
@@ -964,9 +964,9 @@ static int compile_function(function_t *f)
     f->code = buffer;
     f->code_free_cb = compiled_function_code_free;
     f->call = call_compiled_function;
-    tp_out(("Compilation status: Success\n"));
-    tp_out(("ops %d, bytes %d, code blocks %d\n", total_ops,
-        total_ops * sizeof(u16), total_blocks));
+    tp_out("Compilation status: Success\n");
+    tp_out("ops %d, bytes %d, code blocks %d\n", total_ops,
+        total_ops * sizeof(u16), total_blocks);
     return 0;
 
 Error:

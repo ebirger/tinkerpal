@@ -101,6 +101,7 @@ x = [ 1, 2, 3, 4, 5, 6 ].slice(-5, -3);
 debug.assert(x.join(), "2,3");
 x = [ 1, 2, 3, 4, 5, 6 ].slice(-3, -5);
 debug.assert(x.join(), "");
+[].slice(1, 2);
 
 /* Sort */
 x = [3, 1, 2].sort().join();
@@ -116,6 +117,10 @@ try {
 } catch(one) {
     debug.assert(one, 1);
 }
+
+debug.assert([].sort().length, 0);
+debug.assert_exception(function() { [].sort(function() { return 1; }, 1); });
+
 debug.assert(y, 0);
 x = [3,undefined,1].sort().join();
 debug.assert(x, "1,3,undefined");
@@ -147,3 +152,26 @@ debug.assert_exception(function() { a.indexOf(); });
 debug.assert_exception(function() { a.map(); });
 debug.assert_exception(function() { var x = new Array(-3); });
 debug.assert(a.indexOf(2,1,2,3,4,5), 1);
+debug.assert_exception(function() { [1].map(function() { throw "error"; }); });
+
+debug.assert([1, 2, 3].filter(function(x) { return x > 1; })[0], 2);
+debug.assert([1, 2, 3].filter(function(x) { return x > 1; }).length, 2);
+debug.assert([].filter(function(x) { return x > 1; }).length, 0);
+filtered_obj = [1, 1, 3].filter(function(x, k) { return this[k] > 1; }, [ 2, 2, 1]);
+console.log(filtered_obj);
+debug.assert(filtered_obj[0], 1);
+debug.assert(filtered_obj.length, 2);
+debug.assert_exception(function() { [1].filter(function() { throw "error"; }); });
+debug.assert_exception(function() { [].filter(); });
+
+var carr = [1, 2, 3].concat([4, 5, 6]);
+for (var i = 0; i < 6; i++)
+    debug.assert(carr[i], i + 1);
+carr = carr.concat("hello");
+console.log(carr);
+carr = carr.concat([8, 9, 10]);
+debug.assert(carr[7], 8);
+debug.assert(carr[8], 9);
+debug.assert(carr.length, 10);
+
+debug.assert_exception(function() { [1, 3, ;]; });

@@ -295,8 +295,8 @@ static void ti_arm_mcu_gpio_pwm_timer_start(int pin, int freq, int duty_cycle)
 
     MAP_TimerDisable(base, half_timer);
     match = load * (100 - duty_cycle) / 100;
-    tp_info(("freq %d, duty %d prescale %d load %d match %d\n", freq, duty_cycle,
-        prescale, load, match));
+    tp_info("freq %d, duty %d prescale %d load %d match %d\n", freq, duty_cycle,
+        prescale, load, match);
     MAP_TimerPrescaleSet(base, half_timer, prescale);
     MAP_TimerLoadSet(base, half_timer, load);
     MAP_TimerMatchSet(base, half_timer, match);

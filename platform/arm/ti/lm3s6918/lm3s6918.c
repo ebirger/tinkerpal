@@ -89,7 +89,7 @@ static void lm3s6918_set_locked_pin_as_gpio(int pin)
 {
     unsigned long base = ti_arm_mcu_gpio_base(pin);
 
-    tp_warn(("Setting locked JTAG pin as GPIO\n"));
+    tp_warn("Setting locked JTAG pin as GPIO\n");
 
     HWREG(base + GPIO_O_LOCK) = GPIO_LOCK_KEY;
     HWREG(base + GPIO_O_CR) = GPIO_BIT(pin);

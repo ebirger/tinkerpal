@@ -53,7 +53,7 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
     fseek(fp, 0L, SEEK_END);
     if ((fsize = ftell(fp)) < 0)
     {
-        tp_err(("Failed ftell() on file %s\n", file_n));
+        tp_err("Failed ftell() on file %s\n", file_n);
         goto Exit;
     }
 
@@ -63,7 +63,7 @@ static int local_file_read(tstr_t *content, tstr_t *file_name)
     nread = tstr_fill(content, fsize, local_file_read_fill_fn, fp);
     if (nread != fsize)
     {
-        tp_err(("Read %d/%d from file %S\n", nread, content->len, file_name));
+        tp_err("Read %d/%d from file %S\n", nread, content->len, file_name);
         tstr_free(content);
         goto Exit;
     }
@@ -102,7 +102,7 @@ static int local_file_write(tstr_t *content, tstr_t *file_name)
     nwrote = __tstr_dump(content, 0, content->len, local_file_wrt_tstr_dump, fp);
     if (nwrote != content->len)
     {
-        tp_err(("Wrote %d/%d to file %S\n", nwrote, content->len, file_name));
+        tp_err("Wrote %d/%d to file %S\n", nwrote, content->len, file_name);
         goto Exit;
     }
 
@@ -117,7 +117,7 @@ Exit:
 
 int local_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 {
-    tp_err(("Readdir not implemented yet...\n"));
+    tp_err("Readdir not implemented yet...\n");
     return -1;
 }
 

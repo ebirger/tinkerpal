@@ -92,7 +92,7 @@ static void ipv4_recv(etherif_t *ethif)
     ip_hdr_t *iph = (ip_hdr_t *)g_packet.ptr;
     ipv4_proto_t *proto;
 
-    tp_debug(("IPv4 packet received\n"));
+    tp_debug("IPv4 packet received\n");
 
     if (!ipv4_filter(ethif, iph))
         return;
@@ -101,7 +101,7 @@ static void ipv4_recv(etherif_t *ethif)
         proto = proto->next);
     if (!proto)
     {
-        tp_debug(("Unsupported IPv4 Protocol %02x\n", iph->protocol));
+        tp_debug("Unsupported IPv4 Protocol %02x\n", iph->protocol);
         return;
     }
 
@@ -126,6 +126,11 @@ void ipv4_register_proto(ipv4_proto_t *proto)
     ipv4_protocols = proto;
 }
 
+static ether_proto_t ipv4_proto = {
+    .eth_type = htons(ETHER_PROTOCOL_IP),
+    .recv = ipv4_recv,
+};
+
 void ipv4_uninit(void)
 {
     ethernet_unregister_proto(&ipv4_proto);
@@ -133,7 +138,5 @@ void ipv4_uninit(void)
 
 void ipv4_init(void)
 {
-    ipv4_proto.eth_type = htons(ETHER_PROTOCOL_IP);
-    ipv4_proto.recv = ipv4_recv;
     ethernet_register_proto(&ipv4_proto);
 }

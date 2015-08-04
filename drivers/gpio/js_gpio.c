@@ -161,7 +161,7 @@ int do_analog_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     pin = obj_get_int(argv[1]);
     value = obj_get_fp(argv[2]);
 
-    tp_info(("%s: pin %d value %lf freq %d\n", __FUNCTION__, pin, value, freq));
+    tp_info("%s: pin %d value %lf freq %d\n", __FUNCTION__, pin, value, freq);
 
     if (gpio_set_pin_mode(pin, GPIO_PM_OUTPUT_ANALOG))
         return throw_exception(ret, &Sexception_gpio_pin_mode_unavail);
@@ -186,7 +186,7 @@ int do_analog_read(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     value = gpio_analog_read(pin);
 
-    tp_info(("%s: pin %d value %lf\n", __FUNCTION__, pin, value));
+    tp_info("%s: pin %d value %lf\n", __FUNCTION__, pin, value);
 
     *ret = num_new_fp(value);
     return 0;
@@ -202,7 +202,7 @@ static int do_pinmode(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     pin = obj_get_int(argv[1]);
     mode = obj_get_int(argv[2]);
 
-    tp_info(("%s: pin %d mode %d\n", __FUNCTION__, pin, mode));
+    tp_info("%s: pin %d mode %d\n", __FUNCTION__, pin, mode);
 
     /* XXX: validity check on pin mode - pass the enum to the platform function
      */

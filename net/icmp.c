@@ -32,8 +32,6 @@
 #define ICMP_ECHO_REPLY 0
 #define ICMP_ECHO_REQUEST 8
 
-static ipv4_proto_t icmp_proto;
-
 static void icmp_echo_req_recv(etherif_t *ethif)
 {
     icmp_hdr_t *icmph = (icmp_hdr_t *)g_packet.ptr;
@@ -69,7 +67,7 @@ static void icmp_recv(etherif_t *ethif)
 {
     icmp_hdr_t *icmph = (icmp_hdr_t *)g_packet.ptr;
 
-    tp_debug(("ICMP packet received\n"));
+    tp_debug("ICMP packet received\n");
 
     switch (icmph->type)
     {
@@ -77,10 +75,15 @@ static void icmp_recv(etherif_t *ethif)
         icmp_echo_req_recv(ethif);
         break;
     default:
-        tp_warn(("unsupported ICMP message type %d\n", icmph->type));
+        tp_warn("unsupported ICMP message type %d\n", icmph->type);
         break;
     }
 }
+
+static ipv4_proto_t icmp_proto = {
+    .protocol = IP_PROTOCOL_ICMP,
+    .recv = icmp_recv,
+};
 
 void icmp_uninit(void)
 {
@@ -89,7 +92,5 @@ void icmp_uninit(void)
 
 void icmp_init(void)
 {
-    icmp_proto.protocol = IP_PROTOCOL_ICMP;
-    icmp_proto.recv = icmp_recv;
     ipv4_register_proto(&icmp_proto);
 }

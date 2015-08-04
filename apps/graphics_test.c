@@ -148,7 +148,7 @@ static void lcd_init(void)
 
 void app_start(int argc, char *argv[])
 {
-    tp_out(("TinkerPal Application - Graphics Test\n"));
+    tp_out("TinkerPal Application - Graphics Test\n");
 
     lcd_init();
 

@@ -106,7 +106,7 @@ static inline void platform_meminfo(void)
 {
     if (!platform.meminfo)
     {
-        tp_warn(("No platform meminfo available\n"));
+        tp_warn("No platform meminfo available\n");
         return;
     }
     platform.meminfo();

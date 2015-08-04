@@ -103,9 +103,9 @@ static void probe_helper(u16 chip_id)
         if (!delta || MORE_THAN_ONE_SET_BIT(delta))
             continue;
 
-        tp_out(("Note: %x is supported, and is one bit away.\n"
+        tp_out("Note: %x is supported, and is one bit away.\n"
             "You may have missed a connection - check D%d\n",
-            c->chip_id, find_bit(delta)));
+            c->chip_id, find_bit(delta));
     }
 }
 
@@ -118,22 +118,22 @@ static const ili93xx_cmd_t *ili93xx_probe(ili93xx_t *i)
 
     if (!chip_id)
     {
-        tp_err(("No ILI93xx controllers found\n"));
+        tp_err("No ILI93xx controllers found\n");
         return NULL;
     }
 
-    tp_info(("Probing chip ID: %x\n", chip_id));
+    tp_info("Probing chip ID: %x\n", chip_id);
 
     /* Process init sequence */
     for (c = controllers; c->chip_id && c->chip_id != chip_id; c++);
     if (!c->chip_id)
     {
-        tp_out(("Chip ID %x is not supported\n", chip_id));
+        tp_out("Chip ID %x is not supported\n", chip_id);
         probe_helper(chip_id);
         return NULL;
     }
 
-    tp_out(("Found ILI93xx controller %x\n", chip_id));
+    tp_out("Found ILI93xx controller %x\n", chip_id);
     return c->sequence;
 }
 
@@ -145,13 +145,13 @@ static int chip_init(ili93xx_t *i)
     if (gpio_set_pin_mode(RST(i), GPIO_PM_OUTPUT) ||
         gpio_set_pin_mode(BL(i), GPIO_PM_OUTPUT))
     {
-        tp_err(("Unable to set pin mode for control pins\n"));
+        tp_err("Unable to set pin mode for control pins\n");
         return -1;
     }
 
     if (TRNS(i)->ops->db_init(TRNS(i)))
     {
-        tp_err(("Unable to init DB transport\n"));
+        tp_err("Unable to init DB transport\n");
         return -1;
     }
 

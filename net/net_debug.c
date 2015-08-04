@@ -36,7 +36,7 @@ char *eth_mac_serialize(eth_mac_t *m)
     return buf;
 }
 
-#define D(field, fmt, args...) tp_out((field ": " fmt "\n", ##args))
+#define D(field, fmt, args...) tp_out(field ": " fmt "\n", ##args)
 
 void eth_hdr_dump(eth_hdr_t *hdr)
 {

@@ -32,7 +32,7 @@
 
 static int fat_mmc_test_readdir_cb(tstr_t *file_name, void *ctx)
 {
-    tp_out(("%S\n", file_name));
+    tp_out("%S\n", file_name);
     return 0;
 }
 
@@ -50,7 +50,7 @@ static cli_client_t fat_mmc_test_cli_client = {
 
 void app_start(int argc, char *argv[])
 {
-    tp_out(("TinkerPal Application - FAT MMC Test\n"));
+    tp_out("TinkerPal Application - FAT MMC Test\n");
 
     mmc_init(&board.mmc_params);
 

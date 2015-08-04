@@ -67,6 +67,7 @@
 #define ETHER_PROTOCOL_IP 0x0800
 
 #define IP_PROTOCOL_ICMP 1
+#define IP_PROTOCOL_TCP 6
 #define IP_PROTOCOL_UDP 17
 
 typedef struct {

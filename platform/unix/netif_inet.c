@@ -108,7 +108,7 @@ static void netif_inet_ip_disconnect(netif_t *netif)
     /* Nothing to do */
 }
 
-static int netif_inet_tcp_disconnect(netif_t *netif)
+static int netif_inet_disconnect(netif_t *netif)
 {
     netif_inet_t *inet = netif_to_inet(netif);
 
@@ -127,16 +127,23 @@ static u32 netif_inet_ip_addr_get(netif_t *netif)
     return ntohl(dev_ip_addr_get(netif_to_inet(netif)->dev_name));
 }
 
-static int netif_inet_tcp_connect(netif_t *netif, u32 ip, u16 port)
+static int netif_inet_connect(netif_t *netif, u8 proto, void *params)
 {
     netif_inet_t *inet = netif_to_inet(netif);
     struct sockaddr_in addr;
+    tcp_udp_connect_params_t *conn = params;
     long on = 1;
     int rc;
 
+    if (proto != IP_PROTOCOL_TCP)
+    {
+        tp_err("Protocol %d not supported\n", proto);
+        return -1;
+    }
+
     if (inet->socket > 0)
     {
-        tp_err(("netif_inet: only one socket at a time for now\n"));
+        tp_err("netif_inet: only one socket at a time for now\n");
         return -1;
     }
 
@@ -181,8 +188,8 @@ static int netif_inet_tcp_connect(netif_t *netif, u32 ip, u16 port)
 
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = htonl(ip);
+    addr.sin_port = htons(conn->port);
+    addr.sin_addr.s_addr = htonl(conn->ip);
     rc = connect(inet->socket, (struct sockaddr *)&addr, sizeof(addr));
     if (rc < 0 && errno != EINPROGRESS)
     {
@@ -190,11 +197,11 @@ static int netif_inet_tcp_connect(netif_t *netif, u32 ip, u16 port)
         goto Error;
     }
 
-    netif_event_trigger(netif, NETIF_EVENT_TCP_CONNECTED);
+    netif_event_trigger(netif, NETIF_EVENT_L4_CONNECTED);
     return 0;
 
 Error:
-    netif_inet_tcp_disconnect(netif);
+    netif_inet_disconnect(netif);
     return -1;
 }
 
@@ -235,10 +242,10 @@ static const netif_ops_t netif_inet_ops = {
     .link_status = netif_inet_link_status,
     .ip_connect = netif_inet_ip_connect,
     .ip_disconnect = netif_inet_ip_disconnect,
-    .tcp_connect = netif_inet_tcp_connect,
+    .connect = netif_inet_connect,
     .tcp_read = netif_inet_tcp_read ,
     .tcp_write = netif_inet_tcp_write,
-    .tcp_disconnect = netif_inet_tcp_disconnect,
+    .disconnect = netif_inet_disconnect,
     .ip_addr_get = netif_inet_ip_addr_get,
     .free = netif_inet_free,
 };
@@ -255,7 +262,7 @@ netif_t *netif_inet_new(char *dev_name)
 
     if (dev_name && strlen(dev_name) >= IFNAMSIZ)
     {
-        tp_err(("netif_inet: invalid device name\n"));
+        tp_err("netif_inet: invalid device name\n");
         return NULL;
     }
 

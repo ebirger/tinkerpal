@@ -46,39 +46,39 @@ extern debugfn_t debugfn;
 void debug_init(debugfn_t *fn);
 
 #define tp_out_bin(buf, len) debugfn.write(buf, len)
-#define tp_out(x) debugfn.print x
+#define tp_out(args...) debugfn.print(args)
 
-#define tp_log(level, x) do { \
-    tp_out(("%s: ", level)); \
-    tp_out(x); \
+#define tp_log(level, args...) do { \
+    tp_out("%s: ", level); \
+    tp_out(args); \
 } while(0)
 
-#define tp_crit(x) do { tp_log("CRIT", x); debugfn.panic(); } while(0)
+#define tp_crit(args...) do { tp_log("CRIT", args); debugfn.panic(); } while(0)
 
 #if LOG_LEVEL >= L_ERR
-#define tp_err(x) tp_log("ERROR", x)
+#define tp_err(args...) tp_log("ERROR", args)
 #else
-#define tp_err(x)
+#define tp_err(args...)
 #endif
 #if LOG_LEVEL >= L_WARN
-#define tp_warn(x) tp_log("WARN", x)
+#define tp_warn(args...) tp_log("WARN", args)
 #else
-#define tp_warn(x)
+#define tp_warn(args...)
 #endif
 #if LOG_LEVEL >= L_INFO
-#define tp_info(x) tp_log("INFO", x)
+#define tp_info(args...) tp_log("INFO", args)
 #else
-#define tp_info(x)
+#define tp_info(args...)
 #endif
 #if LOG_LEVEL >= L_DEBUG
-#define tp_debug(x) tp_log("DEBUG", x)
+#define tp_debug(args...) tp_log("DEBUG", args)
 #else
-#define tp_debug(x)
+#define tp_debug(args...)
 #endif
 
 #define tp_assert(x) do { \
     if (!(x)) \
-        tp_crit(("%s: assertion %s failed\n", __FUNCTION__, #x)); \
+        tp_crit("%s: assertion %s failed\n", __FUNCTION__, #x); \
 } while (0)
 
 void hexdump(const unsigned char *buf, int len);

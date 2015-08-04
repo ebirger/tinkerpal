@@ -191,7 +191,7 @@ static inline int ti_arm_mcu_pin_mode_adc(int pin)
     MAP_GPIOPinTypeADC(ti_arm_mcu_gpio_base(pin), GPIO_BIT(pin));
     return 0;
 #elif defined(CONFIG_CC3200)
-    tp_crit(("%s not implemented yet\n", __FUNCTION__));
+    tp_crit("%s not implemented yet\n", __FUNCTION__);
     return -1;
 #endif
 }
@@ -208,7 +208,7 @@ static inline void ti_arm_mcu_pin_mode_timer(int pin)
     if ((timer_function = ti_arm_mcu_gpio_pins[pin].timer_function) != -1)
         MAP_GPIOPinConfigure(timer_function);
 #elif defined(CONFIG_CC3200)
-    tp_crit(("%s not implemented yet\n", __FUNCTION__));
+    tp_crit("%s not implemented yet\n", __FUNCTION__);
 #endif
 }
 
