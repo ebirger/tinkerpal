@@ -46,14 +46,14 @@ static inline void tp_banner(void)
 
 static void validate_types(void)
 {
-    tp_assert(sizeof(s8) == 1);
-    tp_assert(sizeof(u8) == 1);
-    tp_assert(sizeof(s16) == 2);
-    tp_assert(sizeof(u16) == 2);
-    tp_assert(sizeof(s32) == 4);
-    tp_assert(sizeof(u32) == 4);
-    tp_assert(sizeof(s64) == 8);
-    tp_assert(sizeof(u64) == 8);
+    COMPILE_TIME_ASSERT(sizeof(s8) == 1);
+    COMPILE_TIME_ASSERT(sizeof(u8) == 1);
+    COMPILE_TIME_ASSERT(sizeof(s16) == 2);
+    COMPILE_TIME_ASSERT(sizeof(u16) == 2);
+    COMPILE_TIME_ASSERT(sizeof(s32) == 4);
+    COMPILE_TIME_ASSERT(sizeof(u32) == 4);
+    COMPILE_TIME_ASSERT(sizeof(s64) == 8);
+    COMPILE_TIME_ASSERT(sizeof(u64) == 8);
 }
 
 int tp_main(int argc, char *argv[])
