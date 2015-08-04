@@ -120,13 +120,14 @@ static int fat_file_read(tstr_t *content, tstr_t *file_name)
     {
         tp_err("failed reading from file %S rc %d\n", file_name, rc);
         tstr_free(content);
-        goto Exit;
+        goto Exit_Close;
     }
 
     rc = 0;
 
-Exit:
+Exit_Close:
     f_close(&fp);
+Exit:
     tfree(file_n);
     return rc;
 }
@@ -162,13 +163,14 @@ static int fat_file_write(tstr_t *content, tstr_t *file_name)
     if (rc < 0 || rc != content->len)
     {
         tp_err("Error writing to filefile %S rc %d\n", file_name, rc);
-        goto Exit;
+        goto Exit_Close;
     }
 
     rc = 0;
 
-Exit:
+Exit_Close:
     f_close(&fp);
+Exit:
     tfree(file_n);
     return rc;
 }
