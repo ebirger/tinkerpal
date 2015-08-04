@@ -57,7 +57,7 @@ int do_canvas_pixel_draw(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     if (!(c = canvas_obj_get_canvas(this)))
     {
-        tp_err(("'this' is not a valid canvas object\n"));
+        tp_err("'this' is not a valid canvas object\n");
         return js_invalid_args(ret);
     }
 
@@ -80,7 +80,7 @@ int do_canvas_flip(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     if (!(c = canvas_obj_get_canvas(this)))
     {
-        tp_err(("'this' is not a valid canvas object\n"));
+        tp_err("'this' is not a valid canvas object\n");
         return js_invalid_args(ret);
     }
 
@@ -100,7 +100,7 @@ int do_canvas_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     if (!(c = canvas_obj_get_canvas(this)))
     {
-        tp_err(("'this' is not a valid canvas object\n"));
+        tp_err("'this' is not a valid canvas object\n");
         return js_invalid_args(ret);
     }
 

@@ -35,11 +35,11 @@ void app_start(int argc, char *argv[])
     obj_t *o;
     tstr_t code;
     
-    tp_out(("TinkerPal Application - static file\n"));
+    tp_out("TinkerPal Application - static file\n");
 
     tstr_init(&code, static_file, strlen(static_file), 0);
     if (js_eval(&o, &code) == COMPLETION_THROW)
-        tp_crit(("Evaluation resulted in exception %o\n", o));
+        tp_crit("Evaluation resulted in exception %o\n", o);
 
     obj_put(o);
     tstr_free(&code);

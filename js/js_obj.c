@@ -99,7 +99,7 @@ static inline int var_key_is_internal(tstr_t *key)
 
 static void var_free(var_t *v)
 {
-    tp_debug(("freeing %p\n", v));
+    tp_debug("freeing %p\n", v);
     obj_put(v->obj);
     var_key_free(&v->key);
     mem_cache_free(var_cache, v);
@@ -158,7 +158,7 @@ void _obj_put(obj_t *o)
     if (CLASS(o)->free)
         CLASS(o)->free(o);
     vars_free(&o->properties);
-    tp_debug(("%s: freeing %p\n", __FUNCTION__, o));
+    tp_debug("%s: freeing %p\n", __FUNCTION__, o);
     if (!(o->flags & OBJ_STATIC))
         mem_cache_free(obj_cache[OBJ_CLASS(o) - 1], o);
 }
@@ -167,7 +167,7 @@ obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)
 {
     obj_t **ref = NULL, *val = NULL, *proto;
 
-    tp_debug(("Lookup %S in obj %p\n", &property, o));
+    tp_debug("Lookup %S in obj %p\n", &property, o);
     if ((val = obj_get_own_property(&ref, o, property)))
         goto Exit;
 
@@ -536,7 +536,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     ob = CLASS(ob)->cast(ob, NUM_CLASS);
     b = to_num(ob);
 
-    tp_info(("%s: op %x:%c oa %p ob %p\n", __FUNCTION__, op, op, oa, ob));
+    tp_info("%s: op %x:%c oa %p ob %p\n", __FUNCTION__, op, op, oa, ob);
 
     nan = oa == NAN_OBJ || ob == NAN_OBJ;
 
@@ -564,7 +564,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         case TOK_NOT_EQ: ret = nan || !fp_is_eq(va, vb) ? TRUE : FALSE; break;
         default:
             ret = UNDEF;
-            tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
+            tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
         }
     }
     else
@@ -596,7 +596,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         case TOK_SHL: ret = nan ? NAN_OBJ : num_new_int(va << vb); break;
         default:
             ret = UNDEF;
-            tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
+            tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
         }
     }
     obj_put(ob);
@@ -763,7 +763,7 @@ static obj_t *bool_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         /* assuming there are not bool_t instances other than TRUE/FALSE */
         return oa == ob ? TRUE : FALSE;
     default:
-        tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
+        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
     }
     return UNDEF;
 }
@@ -840,7 +840,7 @@ static obj_t *function_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         ret = oa == ob ? TRUE : FALSE;
         break;
     default:
-        tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
+        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
     }
     return ret;
 }
@@ -948,7 +948,7 @@ static obj_t *object_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_IS_EQ:
         return oa == ob ? TRUE : FALSE;
     default:
-        tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
+        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
     }
     return UNDEF;
 }
@@ -1155,7 +1155,7 @@ obj_t *array_pop(obj_t *arr)
     tstr_free(&idx_id);
 
     if (!*iter)
-        tp_crit(("Last element in array not found, this is weird...\n"));
+        tp_crit("Last element in array not found, this is weird...\n");
 
     /* Keep reference to obj as we are returning it */
     ret = obj_get((*iter)->obj);
@@ -1341,7 +1341,7 @@ static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         }
         break;
     default:
-        tp_crit(("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob));
+        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
     }
     obj_put(ob);
     return ret;

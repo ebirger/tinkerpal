@@ -183,7 +183,7 @@ static int dhcpc_options_iter(int (*cb)(dhcpc_t *dhcpc, u8 opt, u8 len),
 
         if (!packet_pull(&g_packet, len))
         {
-            tp_err(("Invalid DHCP option %d\n", opt));
+            tp_err("Invalid DHCP option %d\n", opt);
             return -1;
         }
     }
@@ -202,8 +202,8 @@ static int dhcpc_options_cb(dhcpc_t *dhcpc, u8 opt, u8 len)
     case 53:
         if (VAL_U8(g_packet.ptr) != dhcpc->waited_message)
         {
-            tp_err(("Expected %d, got %d\n",dhcpc->waited_message,
-                VAL_U8(g_packet.ptr)));
+            tp_err("Expected %d, got %d\n",dhcpc->waited_message,
+                VAL_U8(g_packet.ptr));
             return -1;
         }
         break;
@@ -221,13 +221,13 @@ static int dhcpc_options_process(dhcpc_t *dhcpc)
 {
     if (!packet_pull(&g_packet, sizeof(dhcp_msg_t)))
     {
-        tp_err(("Not enough packet room for DHCP options"));
+        tp_err("Not enough packet room for DHCP options");
         return -1;
     }
 
     if (dhcpc_options_iter(dhcpc_options_cb, dhcpc))
     {
-        tp_err(("DHCP options processing failed\n"));
+        tp_err("DHCP options processing failed\n");
         return -1;
     }
 
@@ -240,7 +240,7 @@ static void dhcpc_recv(udp_socket_t *sock)
     dhcp_msg_t *msg = (dhcp_msg_t *)g_packet.ptr;
     eth_mac_t mac;
 
-    tp_debug(("DHCP Received\n"));
+    tp_debug("DHCP Received\n");
 
     if (msg->op != DHCP_OP_REPLY || msg->htype != DHCP_HW_TYPE_ETH ||
         msg->hlen != 6 || msg->hops || msg->xid != dhcpc->xid)
@@ -257,19 +257,19 @@ static void dhcpc_recv(udp_socket_t *sock)
     if (dhcpc_options_process(dhcpc))
         return;
 
-    tp_out(("Address: %s\n", ip_addr_serialize(dhcpc->ip_info.ip)));
-    tp_out(("Netmask: %s\n", ip_addr_serialize(dhcpc->ip_info.netmask)));
-    tp_out(("Router: %s\n", ip_addr_serialize(dhcpc->ip_info.router)));
+    tp_out("Address: %s\n", ip_addr_serialize(dhcpc->ip_info.ip));
+    tp_out("Netmask: %s\n", ip_addr_serialize(dhcpc->ip_info.netmask));
+    tp_out("Router: %s\n", ip_addr_serialize(dhcpc->ip_info.router));
 
     switch (dhcpc->waited_message)
     {
     case DHCP_MSG_OFFER:
-        tp_debug(("DHCP OFFER\n"));
+        tp_debug("DHCP OFFER\n");
         dhcpc->waited_message = DHCP_MSG_ACK;
         dhcp_request(dhcpc);
         break;
     case DHCP_MSG_ACK:
-        tp_debug(("DHCP ACK\n"));
+        tp_debug("DHCP ACK\n");
         etherif_ipv4_info_set(dhcpc->ethif, &dhcpc->ip_info); 
         break;
     }

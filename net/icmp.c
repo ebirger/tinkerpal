@@ -67,7 +67,7 @@ static void icmp_recv(etherif_t *ethif)
 {
     icmp_hdr_t *icmph = (icmp_hdr_t *)g_packet.ptr;
 
-    tp_debug(("ICMP packet received\n"));
+    tp_debug("ICMP packet received\n");
 
     switch (icmph->type)
     {
@@ -75,7 +75,7 @@ static void icmp_recv(etherif_t *ethif)
         icmp_echo_req_recv(ethif);
         break;
     default:
-        tp_warn(("unsupported ICMP message type %d\n", icmph->type));
+        tp_warn("unsupported ICMP message type %d\n", icmph->type);
         break;
     }
 }

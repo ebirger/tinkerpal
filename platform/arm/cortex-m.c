@@ -75,9 +75,9 @@ void cortex_m_oops(unsigned char *fault_sp)
     } *regs = (struct regs *)fault_sp;
     unsigned char *real_sp = (unsigned char *)(regs + 1);
 
-    tp_out(("Cortex-M Hard Fault\n"));
+    tp_out("Cortex-M Hard Fault\n");
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
-#define P(reg) tp_out(("%s = 0x%08x\n", #reg, regs->reg))
+#define P(reg) tp_out("%s = 0x%08x\n", #reg, regs->reg)
     P(r0);
     P(r1);
     P(r2);
@@ -86,7 +86,7 @@ void cortex_m_oops(unsigned char *fault_sp)
     P(lr);
     P(pc);
     P(psr);
-    tp_out(("Stack:\n"));
+    tp_out("Stack:\n");
     hexdump(real_sp, MIN(256, (int)((unsigned char *)&_stack_top - real_sp)));
     while(1);
 }
@@ -100,10 +100,10 @@ void cortex_m_fault_isr(void)
 void cortex_m_meminfo(void)
 {
 #ifdef CONFIG_GCC
-    tp_out(("Heap: Total %d Allocated %d Remaining %d\n", 
+    tp_out("Heap: Total %d Allocated %d Remaining %d\n", 
         (&_heap_top - &_heap_bottom) * 4,
         ((unsigned long *)heap_end - &_heap_bottom) * 4,
-        (&_heap_top - (unsigned long *)heap_end) * 4));
+        (&_heap_top - (unsigned long *)heap_end) * 4);
 #endif
 }
 

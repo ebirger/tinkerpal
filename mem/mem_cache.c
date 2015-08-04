@@ -64,7 +64,7 @@ static mem_cache_block_t *mem_cache_block_create(int item_size)
     char *item;
     int i;
 
-    tp_debug(("Created mem cache block %p, item size %d\n", block, item_size));
+    tp_debug("Created mem cache block %p, item size %d\n", block, item_size);
     block->next = NULL;
     block->free_list = item = (char *)(block + 1);
     for (i = 0; i < NUM_ITEMS; i++)
@@ -73,7 +73,7 @@ static mem_cache_block_t *mem_cache_block_create(int item_size)
 
         next = i < NUM_ITEMS - 1 ? item + item_size : NULL;
         *((uint_ptr_t *)item) = (uint_ptr_t)next;
-        tp_debug(("current item %p, next %p\n", item, next));
+        tp_debug("current item %p, next %p\n", item, next);
         item = next;
     }
     return block;
@@ -94,7 +94,7 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
     mem_cache_block_t *block = cache->head, *next;
     int freed = 0;
 
-    tp_info(("mem_cache_squeeze: requested to free %d bytes\n", size));
+    tp_info("mem_cache_squeeze: requested to free %d bytes\n", size);
     while ((next = block->next))
     {
         if (mem_cache_block_num_free(next) != NUM_ITEMS)
@@ -109,7 +109,7 @@ static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
         freed += BLOCK_SZ(cache->item_size);
     }
 
-    tp_info(("mem_cache_squeeze: freed %d bytes\n", freed));
+    tp_info("mem_cache_squeeze: freed %d bytes\n", freed);
     return freed;
 }
 
@@ -158,7 +158,7 @@ void *mem_cache_alloc(mem_cache_t *cache)
 
     next = (char *)*((uint_ptr_t *)item);
     block->free_list = next;
-    tp_debug(("Allocated %p\n", item));
+    tp_debug("Allocated %p\n", item);
     return (void *)item;
 }
 
@@ -184,7 +184,7 @@ void mem_cache_free(mem_cache_t *cache, void *ptr)
     mem_cache_block_t *block;
 
     block = mem_cache_block_find(cache->head, ptr, cache->item_size);
-    tp_debug(("freeing %p from cache %p\n", item, cache));
+    tp_debug("freeing %p from cache %p\n", item, cache);
     *((uint_ptr_t *)item) = (uint_ptr_t)block->free_list;
     block->free_list = item;
 }
@@ -214,11 +214,11 @@ void mem_cache_stats(void)
             size = used * cache->item_size;
             used_size += size;
 
-            tp_debug(("\t[%d] block %p used %d, size %d\n", n, block, used,
-                size));
+            tp_debug("\t[%d] block %p used %d, size %d\n", n, block, used,
+                size);
         }
-        tp_out(("%s:\nsz %d, item sz %d, num blocks %d, full blocks %d, "
+        tp_out("%s:\nsz %d, item sz %d, num blocks %d, full blocks %d, "
             "empty blocks %d, free slots %d\n", cache->name, used_size,
-            cache->item_size, n, full, empty, free_slots));
+            cache->item_size, n, full, empty, free_slots);
     }
 }

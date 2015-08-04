@@ -125,7 +125,7 @@ static void _get_char(scan_t *scan)
         SET_EOF(scan);
         return;
     }
-    tp_debug(("[%x:%c] ", scan->look, scan->look));
+    tp_debug("[%x:%c] ", scan->look, scan->look);
 }
 
 static void skip_white(scan_t *scan)
@@ -181,7 +181,7 @@ static inline tstr_t extract_string(scan_t *scan)
     while (scan->look != delim && !IS_EOF(scan))
     {
         if (is_newline(scan->look))
-            tp_crit(("Newlines are not allowed in strings\n"));
+            tp_crit("Newlines are not allowed in strings\n");
 
         if (scan->look == '\\')
         {
@@ -472,17 +472,17 @@ void js_scan_trace(scan_t *scan)
         if (c == '\n' || c == '\r')
             break;
 
-        tp_out(("%c", c));
+        tp_out("%c", c);
     }
-    tp_out(("\n"));
+    tp_out("\n");
     for (p = scan->trace_point; p < scan->last_token_start; p++)
-        tp_out((" ", tstr_peek(&scan->code, p)));
-    tp_out(("^\n"));
+        tp_out(" ", tstr_peek(&scan->code, p));
+    tp_out("^\n");
 }
 
 static int scan_failure(scan_t *scan, token_type_t expected)
 {
-    tp_out(("ERROR: expected %s\n", tok_to_str(expected)));
+    tp_out("ERROR: expected %s\n", tok_to_str(expected));
     js_scan_trace(scan);
     return -1;
 }

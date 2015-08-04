@@ -92,7 +92,7 @@ static void ipv4_recv(etherif_t *ethif)
     ip_hdr_t *iph = (ip_hdr_t *)g_packet.ptr;
     ipv4_proto_t *proto;
 
-    tp_debug(("IPv4 packet received\n"));
+    tp_debug("IPv4 packet received\n");
 
     if (!ipv4_filter(ethif, iph))
         return;
@@ -101,7 +101,7 @@ static void ipv4_recv(etherif_t *ethif)
         proto = proto->next);
     if (!proto)
     {
-        tp_debug(("Unsupported IPv4 Protocol %02x\n", iph->protocol));
+        tp_debug("Unsupported IPv4 Protocol %02x\n", iph->protocol);
         return;
     }
 

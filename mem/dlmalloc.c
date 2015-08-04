@@ -3564,9 +3564,9 @@ static void internal_malloc_stats(mstate m) {
     }
     POSTACTION(m); /* drop lock */
 #ifdef CONFIG_TINKERPAL
-    tp_out(("max system bytes = %lu\n", (unsigned long)(maxfp)));
-    tp_out(("system bytes     = %lu\n", (unsigned long)(fp)));
-    tp_out(("in use bytes     = %lu\n", (unsigned long)(used)));
+    tp_out("max system bytes = %lu\n", (unsigned long)(maxfp));
+    tp_out("system bytes     = %lu\n", (unsigned long)(fp));
+    tp_out("in use bytes     = %lu\n", (unsigned long)(used));
 #else
     fprintf(stderr, "max system bytes = %10lu\n", (unsigned long)(maxfp));
     fprintf(stderr, "system bytes     = %10lu\n", (unsigned long)(fp));

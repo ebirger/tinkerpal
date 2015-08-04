@@ -39,7 +39,7 @@ void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color)
 {
     int end = (str->len * 8) - 1, i, j;
     
-    tp_info(("Printing %S at (%d,%d)\n", str, x, y));
+    tp_info("Printing %S at (%d,%d)\n", str, x, y);
 
     for (i = 0; i < end; i++)
     {

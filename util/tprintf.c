@@ -257,7 +257,7 @@ void tprintf_register_handler(char c, tprintf_handler_t h)
     if (num_tprintf_handlers == sizeof(tprintf_handlers) / 
         sizeof(tprintf_handlers[0]))
     {
-        tp_crit(("Number of tprintf handlers exceeded\n"));
+        tp_crit("Number of tprintf handlers exceeded\n");
     }
 
     tprintf_handlers[num_tprintf_handlers].c = c;

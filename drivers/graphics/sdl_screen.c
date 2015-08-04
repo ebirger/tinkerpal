@@ -52,7 +52,7 @@ static void sdl_screen_init(sdl_screen_t *screen)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
-        tp_err(("Unable to init SDL: %s\n", SDL_GetError()));
+        tp_err("Unable to init SDL: %s\n", SDL_GetError());
         return;
     }
 
@@ -63,7 +63,7 @@ static void sdl_screen_init(sdl_screen_t *screen)
 
     if (!screen->surface)
     {
-        tp_err(("Unable to set resolution:  %s\n", SDL_GetError()));
+        tp_err("Unable to set resolution:  %s\n", SDL_GetError());
         return;
     }
 

@@ -176,7 +176,7 @@ static void get_next_timeout(int *timeout)
         return;
     }
     *timeout = timers->expire - platform_get_ticks_from_boot();
-    tp_debug(("Next timeout: %d ms\n", *timeout));
+    tp_debug("Next timeout: %d ms\n", *timeout);
 }
 
 static inline void event_ts_enqueue(event_internal_t *e, u64 ts)

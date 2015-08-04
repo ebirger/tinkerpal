@@ -36,7 +36,7 @@ static int builtin_fs_file_read(tstr_t *content, tstr_t *file_name)
         f++);
     if (!f->name)
     {
-        tp_err(("Builtin FS: File %S not found\n", file_name));
+        tp_err("Builtin FS: File %S not found\n", file_name);
         return -1;
     }
 

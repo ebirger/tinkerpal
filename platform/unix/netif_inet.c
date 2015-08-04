@@ -137,13 +137,13 @@ static int netif_inet_connect(netif_t *netif, u8 proto, void *params)
 
     if (proto != IP_PROTOCOL_TCP)
     {
-        tp_err(("Protocol %d not supported\n", proto));
+        tp_err("Protocol %d not supported\n", proto);
         return -1;
     }
 
     if (inet->socket > 0)
     {
-        tp_err(("netif_inet: only one socket at a time for now\n"));
+        tp_err("netif_inet: only one socket at a time for now\n");
         return -1;
     }
 
@@ -262,7 +262,7 @@ netif_t *netif_inet_new(char *dev_name)
 
     if (dev_name && strlen(dev_name) >= IFNAMSIZ)
     {
-        tp_err(("netif_inet: invalid device name\n"));
+        tp_err("netif_inet: invalid device name\n");
         return NULL;
     }
 

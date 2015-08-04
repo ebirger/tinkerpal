@@ -100,7 +100,7 @@ void history_dump(history_t *h)
     int i = 0;
 
     for (iter = h->items; iter->next != iter; iter = iter->next)
-        tp_out(("%d: %S\n", i++, &iter->str));
+        tp_out("%d: %S\n", i++, &iter->str);
 }
 
 static void history_item_free(history_item_t *i)
@@ -115,7 +115,7 @@ static int history_squeeze(mem_squeezer_t *squeezer, int size)
     history_item_t *item = h->items;
     int orig_size = size;
 
-    tp_debug(("history squeeze: asked to squeeze %d\n", size));
+    tp_debug("history squeeze: asked to squeeze %d\n", size);
     while (item->next != item && size > 0)
     {
         history_item_t *tmp = item;

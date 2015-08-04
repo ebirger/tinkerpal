@@ -35,17 +35,17 @@ void app_start(int argc, char *argv[])
     tstr_t code, file;
     
     if (argc != 2)
-        tp_crit(("Usage %s <file>\n", argv[0]));
+        tp_crit("Usage %s <file>\n", argv[0]);
 
     tstr_init(&file, argv[1], strlen(argv[1]), 0);
     if (vfs_file_read(&code, &file, VFS_FLAGS_ANY_FS))
-        tp_crit(("Error reading file %s\n", argv[1]));
+        tp_crit("Error reading file %s\n", argv[1]);
 
     if (js_eval_rank(code))
-        tp_crit(("Invalid code, cannot execute\n"));
+        tp_crit("Invalid code, cannot execute\n");
 
     if (js_eval(&o, &code) == COMPLETION_THROW)
-        tp_crit(("Evaluation resulted in exception %o\n", o));
+        tp_crit("Evaluation resulted in exception %o\n", o);
 
     obj_put(o);
     tstr_free(&code);

@@ -92,16 +92,16 @@ static void obj_registry_stats(void)
 {
     obj_reg_rec_t *rec;
 
-    tp_out(("Max allocated size %db = %dKb\n", 
+    tp_out("Max allocated size %db = %dKb\n", 
         obj_registry_max_allocated_size, 
-        obj_registry_max_allocated_size >> 10));
-    tp_out(("Current registry objects:\n"));
+        obj_registry_max_allocated_size >> 10);
+    tp_out("Current registry objects:\n");
 
     for (rec = obj_registry; rec; rec = rec->next)
     {
         int sz = *(((unsigned long *)rec->p) - 1);
 
-        tp_out(("%p size %d type %s\n", rec->p, sz, rec->type));
+        tp_out("%p size %d type %s\n", rec->p, sz, rec->type);
     }
 }
 
@@ -120,8 +120,8 @@ static void obj_registry_uninit(void)
 
 void tmalloc_stats(void)
 {
-    tp_out(("Total allocated size %db = %dKb\n", allocated_size, 
-        allocated_size >> 10));
+    tp_out("Total allocated size %db = %dKb\n", allocated_size, 
+        allocated_size >> 10);
 #ifdef CONFIG_DLMALLOC_STATISTICS
     dlmalloc_stats();
 #endif
@@ -149,10 +149,10 @@ static inline void *_tmalloc(int sz, char *type)
 #ifdef CONFIG_MEM_ALLOCATION_LIMIT
     if (allocated_size > CONFIG_MEM_ALLOCATION_LIMIT_BYTES)
     {
-        tp_err(("Reached maximal allowed allocation limit:\n"
+        tp_err("Reached maximal allowed allocation limit:\n"
             "Currently allocated: %d\n"
             "Limit: %d\n", allocated_size,
-            CONFIG_MEM_ALLOCATION_LIMIT_BYTES));
+            CONFIG_MEM_ALLOCATION_LIMIT_BYTES);
         goto Error;
     }
 #endif
@@ -198,7 +198,7 @@ static inline void *_tmalloc(int sz, char *type)
     if (!(p = tmalloc_real(sz)))
         return NULL;
 
-    tp_debug(("Allocated %p %d %s\n", p, sz, type));
+    tp_debug("Allocated %p %d %s\n", p, sz, type);
     return p;
 }
 
@@ -207,7 +207,7 @@ void tfree(void *data)
     if (!data)
         return;
 
-    tp_debug(("freeing %p\n", data));
+    tp_debug("freeing %p\n", data);
     tfree_real(data);
 }
 
@@ -231,15 +231,15 @@ void *tmalloc(int sz, char *type)
         return p;
 
     need_squeeze = sz;
-    tp_debug(("Squeezing, need %d\n", sz));
+    tp_debug("Squeezing, need %d\n", sz);
     for (s = squeezers; s; s = s->next)
     {
         need_squeeze -= s->squeeze(s, need_squeeze >= 0 ? need_squeeze : 0);
-        tp_debug(("Squeezed %d so far\n", sz - need_squeeze));
+        tp_debug("Squeezed %d so far\n", sz - need_squeeze);
     }
 
     if (need_squeeze > 0 || !(p = _tmalloc(sz, type)))
-        tp_crit(("allocation error\n"));
+        tp_crit("allocation error\n");
     
     return p;
 }

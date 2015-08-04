@@ -124,7 +124,7 @@ static void linux_eth_packet_event(event_t *ev, u32 resource_id, u64 timestamp)
     linux_eth_t *eth = container_of(ev, linux_eth_t,
         packet_event);
 
-    tp_debug(("Packet received\n"));
+    tp_debug("Packet received\n");
     etherif_packet_received(&eth->ethif);
 }
 
@@ -163,8 +163,8 @@ static int linux_eth_sock_init(linux_eth_t *eth)
     ifr = linux_eth_ioctl(eth, SIOCGIFHWADDR);
     if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER) 
     {
-        tp_err(("%s is not an Ethernet device (%d)\n", eth->dev_name,
-            (int)ifr.ifr_hwaddr.sa_family));
+        tp_err("%s is not an Ethernet device (%d)\n", eth->dev_name,
+            (int)ifr.ifr_hwaddr.sa_family);
         close(eth->packet_socket);
         eth->packet_socket = -1;
         return -1;
@@ -192,7 +192,7 @@ netif_t *linux_eth_new(char *dev_name)
 
     if (eth->packet_socket != -1)
     {
-        tp_warn(("Only one device at a time. Removing old one\n"));
+        tp_warn("Only one device at a time. Removing old one\n");
         etherif_free(&eth->ethif);
     }
 

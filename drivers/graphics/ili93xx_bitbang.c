@@ -47,14 +47,14 @@ static int ili93xx_bitbang_db_init(const ili93xx_db_transport_t *trns)
         gpio_set_pin_mode(WR(t), GPIO_PM_OUTPUT) ||
         gpio_set_pin_mode(RD(t), GPIO_PM_OUTPUT))
     {
-        tp_err(("Unable to set pin mode for control pins\n"));
+        tp_err("Unable to set pin mode for control pins\n");
         return -1;
     }
 
     if (gpio_set_port_mode(DL(t), DL_MASK(t), GPIO_PM_OUTPUT) ||
         gpio_set_port_mode(DH(t), DH_MASK(t), GPIO_PM_OUTPUT))
     {
-        tp_err(("Unable to set pin mode for data ports\n"));
+        tp_err("Unable to set pin mode for data ports\n");
         return -1;
     }
 

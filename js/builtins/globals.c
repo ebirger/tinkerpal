@@ -96,7 +96,7 @@ int do_assert(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     failed = !obj_true(cond);
     obj_put(cond);
     if (failed)
-        tp_crit(("assertion failed %o != %o\n", lv, rv));
+        tp_crit("assertion failed %o != %o\n", lv, rv);
 
     *ret = UNDEF;
     return 0;
@@ -113,7 +113,7 @@ int do_assert_cond(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     cond = argv[1];
     failed = !obj_true(cond);
     if (failed)
-        tp_crit(("assertion failed: cond: %o\n", cond));
+        tp_crit("assertion failed: cond: %o\n", cond);
 
     *ret = UNDEF;
     return 0;
@@ -128,10 +128,10 @@ int do_assert_exception(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         return js_invalid_args(ret);
 
     failed = function_call(&o, this, argc - 1, argv + 1) != COMPLETION_THROW;
-    tp_out(("output: %o\n", o));
+    tp_out("output: %o\n", o);
     obj_put(o);
     if (failed)
-        tp_crit(("Calling function did not result in exception\n"));
+        tp_crit("Calling function did not result in exception\n");
 
     *ret = UNDEF;
     return 0;
@@ -144,7 +144,7 @@ int do_dump_env(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 1)
         return js_invalid_args(ret);
 
-    tp_out(("%o\n", global_env));
+    tp_out("%o\n", global_env);
     *ret = UNDEF;
     return 0;
 }
@@ -162,7 +162,7 @@ int do_describe(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     if (argc != 2)
         return js_invalid_args(ret);
 
-    tp_out(("%D\n", argv[1]));
+    tp_out("%D\n", argv[1]);
     *ret = UNDEF;
     return 0;
 }

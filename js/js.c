@@ -112,8 +112,8 @@ void js_init(void)
     js_event_init();
     js_builtins_init();
     js_compiler_init();
-    tp_info(("Object sizes:\n"));
-#define OSIZE(o) tp_info((#o ": %d\n", sizeof(o)))
+    tp_info("Object sizes:\n");
+#define OSIZE(o) tp_info(#o ": %d\n", sizeof(o))
     OSIZE(obj_t);
     OSIZE(function_t);
     OSIZE(num_t);

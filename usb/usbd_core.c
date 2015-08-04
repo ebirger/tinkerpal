@@ -83,7 +83,7 @@ static usbd_ep_t usbd_eps[NUM_EPS];
 
 static void usb_req_def_handler(usb_setup_t *setup)
 {
-    tp_out(("No handler for bRequest %d\n", setup->bRequest));
+    tp_out("No handler for bRequest %d\n", setup->bRequest);
 }
 
 void usbd_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
@@ -133,7 +133,7 @@ void usbd_ep_wait_for_data(int ep, u8 *data, int len, data_ready_cb_t cb)
 
 static void set_configuration_handler(usb_setup_t *setup)
 {
-    tp_out(("SET_CONFIGURATION\n"));
+    tp_out("SET_CONFIGURATION\n");
     /* Just ack for now */
     platform.usb.ep_data_ack(USBD_EP0, 0);
     usbd_ep_send(USBD_EP0, NULL, 0); /* Status ack */
@@ -151,7 +151,7 @@ static void get_descriptor_handler(usb_setup_t *setup)
     switch (setup->wValue >> 8)
     {
     case USB_DESC_DEVICE:
-        tp_out(("GET_DESCRIPTOR: DEVICE\n"));
+        tp_out("GET_DESCRIPTOR: DEVICE\n");
         len = MIN(setup->wLength, sizeof(usb_device_desc));
         usbd_ep_send(USBD_EP0, (const u8 *)&usb_device_desc, len);
         break;
@@ -160,12 +160,12 @@ static void get_descriptor_handler(usb_setup_t *setup)
             const usb_cfg_desc_t *cfg_header =
                 (const usb_cfg_desc_t *)&usb_full_cfg_desc;
 
-            tp_out(("GET_DESCRIPTOR: CONFIGURATION\n"));
+            tp_out("GET_DESCRIPTOR: CONFIGURATION\n");
             /* XXX: validate index, stall if necessary */
             len = MIN(setup->wLength, cfg_header->wTotalLength);
-            tp_out(("---------------------------------\n"));
+            tp_out("---------------------------------\n");
             hexdump((const u8 *)&usb_full_cfg_desc, len);
-            tp_out(("---------------------------------\n"));
+            tp_out("---------------------------------\n");
             usbd_ep_send(USBD_EP0, (const u8 *)&usb_full_cfg_desc, len);
         }
         break;
@@ -199,7 +199,7 @@ static void set_addr_handler(usb_setup_t *setup)
     }
 
     g_addr = setup->wValue;
-    tp_out(("Set Address: %d\n", g_addr));
+    tp_out("Set Address: %d\n", g_addr);
     platform.usb.ep_data_ack(USBD_EP0, 0);
 #ifdef CONFIG_USB_DEVICE_QUIRK_SET_ADDR_IMM
     /* USB spec mandates address can't be set before the end of the status
@@ -230,7 +230,7 @@ static const usb_req_handler_t std_req_handlers[] = {
 
 void usbd_dump_setup(usb_setup_t *setup)
 {
-#define P(field) tp_out(("%s = %x\n", #field, setup->field))
+#define P(field) tp_out("%s = %x\n", #field, setup->field)
     P(bmRequestType);
     P(bRequest);
     P(wValue);
@@ -245,7 +245,7 @@ static void handle_setup(int data_len)
 
     if (data_len != sizeof(usb_setup_t))
     {
-        tp_err(("Invalid setup packet of size %d\n", data_len));
+        tp_err("Invalid setup packet of size %d\n", data_len);
         return;
     }
 
@@ -271,7 +271,7 @@ static void handle_setup(int data_len)
 
 Error:
     /* XXX: stall EP0 */
-    tp_err(("Unsupported request:\n"));
+    tp_err("Unsupported request:\n");
     usbd_dump_setup(setup);
     return;
 }
@@ -294,13 +294,13 @@ static void ep_data_recv(int ep)
     if (len < 0)
     {
         /* XXX: stall, signal upper layer */
-        tp_err(("Failed to fetch EP %d data\n", ep));
+        tp_err("Failed to fetch EP %d data\n", ep);
         return;
     }
     uep->recv_data_remaining -= len;
     if (uep->recv_data_remaining < 0)
     {
-        tp_err(("Unexpected data on ep %d\n", ep));
+        tp_err("Unexpected data on ep %d\n", ep);
         return;
     }
 

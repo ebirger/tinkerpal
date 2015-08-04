@@ -33,17 +33,17 @@ static canvas_t dummy_canvas;
 
 static void dummy_canvas_pixel_set(canvas_t *c, u16 x, u16 y, u16 val)
 {
-    tp_out(("%s: (%d,%d) = %d\n", __func__, x, y, val));
+    tp_out("%s: (%d,%d) = %d\n", __func__, x, y, val);
 }
 
 static void dummy_canvas_flip(canvas_t *c)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
 }
 
 static void dummy_canvas_fill(canvas_t *c, u16 val)
 {
-    tp_out(("%s: val %d\n", __func__, val));
+    tp_out("%s: val %d\n", __func__, val);
 }
 
 static const canvas_ops_t dummy_canvas_ops = {

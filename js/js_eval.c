@@ -54,7 +54,7 @@ static volatile u32 g_flags;
 #define EXECUTION_STOPPED() (g_flags & JS_EVAL_FLAG_SIGNALLED)
 #define EXECUTION_STOPPED_SET() do { \
     g_flags |= JS_EVAL_FLAG_SIGNALLED; \
-    tp_out(("Execution Stopped\n")); \
+    tp_out("Execution Stopped\n"); \
 } while(0)
 
 #define EXECUTION_STOPPED_RESET() g_flags &= ~JS_EVAL_FLAG_SIGNALLED
@@ -1565,7 +1565,7 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
     object_iter_t iter = {};
     int rc = 0;
 
-    tp_info(("Iterating over %o\n", rh_exp));
+    tp_info("Iterating over %o\n", rh_exp);
     
     /* Body */
     loop = js_scan_save(scan);
@@ -1579,7 +1579,7 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
         reference_t ref = {};
         obj_t *lhs = UNDEF, **dst;
 
-        tp_info(("key %S\n", iter.key));
+        tp_info("key %S\n", iter.key);
         js_scan_restore(scan, in_lhs);
         if ((rc = eval_expression_ref(&lhs, scan, &ref)))
         {
@@ -1587,7 +1587,7 @@ static int eval_for_in(obj_t **ret, scan_t *scan, scan_t *in_lhs, obj_t *rh_exp)
             goto Exit;
         }
         
-        tp_info(("lhs %o\n", lhs));
+        tp_info("lhs %o\n", lhs);
         
         /* Replace lhs with current key */
         if (valid_lval(&ref))
@@ -1694,7 +1694,7 @@ static int eval_for(obj_t **ret, scan_t *scan)
     {
         int rc;
 
-        tp_info(("For-in loop detected\n"));
+        tp_info("For-in loop detected\n");
         rc = eval_for_in(ret, scan, in_lhs, rh_exp);
         js_scan_free(in_lhs);
         obj_put(rh_exp);

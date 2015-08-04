@@ -100,7 +100,7 @@ static const fs_t *get_fs(const tstr_t *fs_name)
             return *fs;
     }
 
-    tp_err(("VFS: wrong FS type or no FS path given\n"));
+    tp_err("VFS: wrong FS type or no FS path given\n");
     return NULL;
 }
 
@@ -167,21 +167,21 @@ void vfs_init(void)
 {
     const fs_t **fs;
 
-    tp_out(("VFS Init\n"));
+    tp_out("VFS Init\n");
     foreach_fs(fs)
     {
         (*fs)->init();
-        tp_out(("Initialized %s FS\n", (*fs)->name));
+        tp_out("Initialized %s FS\n", (*fs)->name);
     }
 }
 
 void vfs_uninit(void)
 {
     const fs_t **fs;
-    tp_out(("VFS Uninit\n"));
+    tp_out("VFS Uninit\n");
     foreach_fs(fs)
     {
         (*fs)->uninit();
-        tp_out(("Uninitialized %s FS\n", (*fs)->name));
+        tp_out("Uninitialized %s FS\n", (*fs)->name);
     }
 }

@@ -45,7 +45,7 @@ void app_start(int argc, char *argv[])
 {
     const resource_t *led;
 
-    tp_out(("TinkerPal Application - Blinky\n"));
+    tp_out("TinkerPal Application - Blinky\n");
 
     tp_assert(board.leds);
 

@@ -462,7 +462,7 @@ static int chip_reset(enc28j60_t *e)
     u32 start = ticks();
     int ready;
 
-    tp_info(("Resetting ENC28J60\n"));
+    tp_info("Resetting ENC28J60\n");
 
     write_op(e, ENC28J60_OPCODE_SRC, 0, 0);
 
@@ -522,16 +522,16 @@ static void enc28j60_mac_addr_get(etherif_t *ethif, eth_mac_t *mac)
 
 static void chip_init(enc28j60_t *e)
 {
-    tp_out(("ENC28J60 Init\n"));
+    tp_out("ENC28J60 Init\n");
     if (chip_reset(e))
     {
-        tp_err(("ENC28J60 Reset failed. Is it connected?\n"));
+        tp_err("ENC28J60 Reset failed. Is it connected?\n");
         return;
     }
 
-    tp_out(("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f));
+    tp_out("Ethernet Rev ID: %d\n", ctrl_reg_read(e, EREVID) & 0x1f);
 #ifdef CONFIG_ENC28J60_PHY_ACCESS
-    tp_out(("PHY ID %x:%x\n", phy_reg_read(e, PHID1), phy_reg_read(e, PHID2)));
+    tp_out("PHY ID %x:%x\n", phy_reg_read(e, PHID1), phy_reg_read(e, PHID2));
 #endif
 
     /* Enable auto increment of the ERDPT/EWRPT pointers */
@@ -596,7 +596,7 @@ static int enc28j60_packet_recv(etherif_t *ethif, u8 *buf, int size)
     stat = MK_U16(header[5], header[4]);
     if (!(stat & RX_STAT_OK))
     {
-        tp_info(("Invalid packet received\n"));
+        tp_info("Invalid packet received\n");
         goto Exit;
     }
 
@@ -633,14 +633,14 @@ static void enc28j60_packet_xmit(etherif_t *ethif, u8 *buf, int size)
 
 static void packet_received(enc28j60_t *e)
 {
-    tp_info(("ENC28J60 packet received\n"));
+    tp_info("ENC28J60 packet received\n");
 
     etherif_packet_received(&e->ethif);
 }
 
 static void packet_xmitted(enc28j60_t *e)
 {
-    tp_info(("ENC28J60 packet transmitted\n"));
+    tp_info("ENC28J60 packet transmitted\n");
 
     /* TODO: read packet xmit status */
 
@@ -649,8 +649,8 @@ static void packet_xmitted(enc28j60_t *e)
 
 static void link_status_changed(enc28j60_t *e)
 {
-    tp_info(("ENC28J60 Link state change - state %d\n", 
-        enc28j60_link_status(e)));
+    tp_info("ENC28J60 Link state change - state %d\n", 
+        enc28j60_link_status(e));
     etherif_port_changed(&e->ethif);
 }
 
@@ -660,7 +660,7 @@ static void enc28j60_isr(event_t *ev, u32 resource_id, u64 timestamp)
     u8 eir;
 
     eir = ctrl_reg_read(e, EIR);
-    tp_debug(("ENC28J60 ISR %x\n", eir));
+    tp_debug("ENC28J60 ISR %x\n", eir);
 
     if (eir & LINKIF)
     {

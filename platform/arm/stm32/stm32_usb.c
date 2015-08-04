@@ -78,7 +78,7 @@ int stm32_usb_event_process(void)
 
 uint8_t stm32_DataOutStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     if (dev.dev.device_state == USB_OTG_EP0_DATA_OUT)
         g_events |= STM32_USB_EVENT_OUT;
     return USBD_OK;
@@ -86,7 +86,7 @@ uint8_t stm32_DataOutStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
 
 uint8_t stm32_DataInStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     usbd_event(epnum, USB_DEVICE_EVENT_EP_WRITE_ACK);
     if (epnum == 0)
     {
@@ -101,7 +101,7 @@ uint8_t stm32_DataInStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
 
 uint8_t stm32_SetupStage(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     g_events |= STM32_USB_EVENT_SETUP;
     dev.dev.device_state = USB_OTG_EP0_SETUP;
     return USBD_OK;
@@ -109,50 +109,50 @@ uint8_t stm32_SetupStage(USB_OTG_CORE_HANDLE *pdev)
 
 uint8_t stm32_SOF(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     return USBD_OK;
 }
 
 uint8_t stm32_Reset(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     g_events |= STM32_USB_EVENT_RESET;
     return USBD_OK;
 }
 
 uint8_t stm32_Suspend(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     return USBD_OK;
 }
 
 uint8_t stm32_Resume(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     return USBD_OK;
 }
 
 uint8_t stm32_IsoINIncomplete(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     return USBD_OK;
 }
 
 uint8_t stm32_IsoOUTIncomplete(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     return USBD_OK;
 }
 
 uint8_t stm32_DevConnected(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     return USBD_OK;
 }
 
 uint8_t stm32_DevDisconnected(USB_OTG_CORE_HANDLE *pdev)
 {
-    tp_out(("%s\n", __func__));
+    tp_out("%s\n", __func__);
     return USBD_OK;
 }
   
@@ -221,7 +221,7 @@ static void mask_sof_intr(void)
 
 int stm32_usb_init(void)
 {
-    tp_out(("STM32 USB Init\n"));
+    tp_out("STM32 USB Init\n");
     usb_board_cfg(&dev);
     DCD_Init(&dev, USB_OTG_FS_CORE_ID);
     mask_sof_intr();
@@ -231,7 +231,7 @@ int stm32_usb_init(void)
 
 void stm32_usb_connect(void)
 {
-    tp_out(("STM32 USB Connect\n"));
+    tp_out("STM32 USB Connect\n");
     DCD_DevConnect(&dev);
 }
 
@@ -252,7 +252,7 @@ void stm32_usb_ep_cfg(int ep, int max_pkt_size_in, int max_pkt_size_out,
 {
     uint8_t ep_type;
 
-    tp_out(("STM32 Cfg EP %d\n", ep));
+    tp_out("STM32 Cfg EP %d\n", ep);
 
     ep_type = usb_ep_type_to_stm32_ep_type(type);
     if (max_pkt_size_out)
@@ -289,7 +289,7 @@ int stm32_usb_ep_data_wait(int ep, unsigned char *data, unsigned long len)
 
 int stm32_usb_ep_data_get(int ep, unsigned char *data, unsigned long len)
 {
-    tp_out(("%s: len %d\n", __func__, len));
+    tp_out("%s: len %d\n", __func__, len);
     if (ep == USBD_EP0 && dev.dev.device_state == USB_OTG_EP0_SETUP)
     {
         memcpy(data, dev.dev.setup_packet, 8);
@@ -307,7 +307,7 @@ int stm32_usb_ep_data_send(int ep, const unsigned char *data, unsigned long len,
 {
     int rc = -1;
 
-    tp_out(("%s: buf %p len %d\n", __func__, data, len));
+    tp_out("%s: buf %p len %d\n", __func__, data, len);
     hexdump(data, len);
     if (ep == USBD_EP0)
     {

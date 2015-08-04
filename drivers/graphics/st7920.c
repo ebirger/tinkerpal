@@ -54,7 +54,7 @@ static st7920_t g_st7920_screen;
 #define IS_PARALLEL(s) ((s)->params.mode == ST7920_PARALLEL)
 #define PIN_MODE_SET(pin, mode) do { \
     if (gpio_set_pin_mode(pin, mode)) \
-        tp_crit(("st7920: unable to set mode %d for pin %x\n", mode, pin)); \
+        tp_crit("st7920: unable to set mode %d for pin %x\n", mode, pin); \
 } while(0)
 
 static void st7920_data_out(st7920_t *screen, u8 data)
@@ -140,7 +140,7 @@ static void chip_init(st7920_t *screen)
         spi_init(screen->params.spi_port);
         spi_set_max_speed(screen->params.spi_port, 530000);
 #else
-        tp_crit(("st7920: invalid settings - serial mode without SPI support\n"));
+        tp_crit("st7920: invalid settings - serial mode without SPI support\n");
 #endif
     }
 

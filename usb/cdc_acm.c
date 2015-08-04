@@ -54,8 +54,8 @@ static cdc_acm_line_coding_t g_line_coding = {
 
 static void set_line_coding_data_ready(int data_len)
 {
-    tp_out(("Data ready\n"));
-#define PLE(field) tp_out(("%s = %d\n", #field, g_line_coding.field))
+    tp_out("Data ready\n");
+#define PLE(field) tp_out("%s = %d\n", #field, g_line_coding.field)
     PLE(dwDTERate);
     PLE(bCharFormat);
     PLE(bParityType);
@@ -65,12 +65,12 @@ static void set_line_coding_data_ready(int data_len)
 
 static void set_line_coding_handler(usb_setup_t *setup)
 {
-    tp_out(("CDC ACM: SET_LINE_CODING\n"));
+    tp_out("CDC ACM: SET_LINE_CODING\n");
 
     if (setup->wValue != 0 || setup->wIndex != 0 || setup->wLength != 7)
     {
         /* XXX: stall */
-        tp_err(("Malformed request\n"));
+        tp_err("Malformed request\n");
         usbd_dump_setup(setup);
         return;
     }
@@ -82,12 +82,12 @@ static void set_line_coding_handler(usb_setup_t *setup)
 
 static void get_line_coding_handler(usb_setup_t *setup)
 {
-    tp_out(("CDC ACM: GET_LINE_CODING\n"));
+    tp_out("CDC ACM: GET_LINE_CODING\n");
 
     if (setup->wValue != 0 || setup->wIndex != 0 || setup->wLength != 7)
     {
         /* XXX: stall */
-        tp_err(("Malformed request\n"));
+        tp_err("Malformed request\n");
         usbd_dump_setup(setup);
         platform.usb.ep_data_ack(USBD_EP0, 0);
         return;
@@ -99,7 +99,7 @@ static void get_line_coding_handler(usb_setup_t *setup)
 
 static void set_ctrl_line_state_handler(usb_setup_t *setup)
 {
-    tp_out(("CDC ACM: SET_CONTROL_LINE_STATE\n"));
+    tp_out("CDC ACM: SET_CONTROL_LINE_STATE\n");
 
     platform.usb.ep_data_ack(USBD_EP0, 0);
     /* Do nothing for now */
@@ -124,7 +124,7 @@ void usbd_class_req_do(usb_setup_t *setup)
         set_ctrl_line_state_handler(setup);
         break;
     default:
-        tp_out(("Unknown class request\n"));
+        tp_out("Unknown class request\n");
         usbd_dump_setup(setup);
         break;
     }

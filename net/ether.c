@@ -63,13 +63,13 @@ static void ethernet_packet_received(event_t *e, u32 resource_id, u64 timestamp)
 
     ethif = etherif_get_by_id(RES_MAJ(resource_id));
 
-    tp_debug(("Packet received\n"));
+    tp_debug("Packet received\n");
 
     packet_reset(&g_packet, PACKET_RESET_HEAD);
     len = etherif_packet_recv(ethif, g_packet.ptr, g_packet.length);
     if (len < 0)
     {
-        tp_err(("Error receiving packet %d\n", len));
+        tp_err("Error receiving packet %d\n", len);
         return;
     }
 
@@ -80,7 +80,7 @@ static void ethernet_packet_received(event_t *e, u32 resource_id, u64 timestamp)
         proto = proto->next);
     if (!proto)
     {
-        tp_debug(("Unsupported Ethernet Protocol %04x\n", ntohs(eth_type)));
+        tp_debug("Unsupported Ethernet Protocol %04x\n", ntohs(eth_type));
         return;
     }
 
