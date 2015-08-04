@@ -37,6 +37,8 @@
 
 #define ARRAY_SIZE(a) ((sizeof(a)) / sizeof((a)[0]))
 
+#define COMPILE_TIME_ASSERT(c) ((void)(sizeof(char[1-2*(!(c))])))
+
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
