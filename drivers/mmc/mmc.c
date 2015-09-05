@@ -87,17 +87,17 @@ static void xmit_spi(u8 dat)
 
 static void xmit_spi_multi(const u8 *data, int cnt)
 {
-    while (cnt)
-    {
-        xmit_spi(*data++);
-        xmit_spi(*data++);
-        cnt -= 2;
-    }
+    spi_send_mult(g_mmc.spi_port, data, cnt);
 }
 
 static u8 rcvr_spi(void)
 {
     return (u8)spi_receive(g_mmc.spi_port);
+}
+
+static void rcvr_spi_multi(u8 *data, int cnt)
+{
+    spi_receive_mult(g_mmc.spi_port, data, cnt);
 }
 
 static u8 wait_ready(void)
@@ -172,12 +172,8 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
     if (token != 0xFE)
         return -1;
 
-    do 
-    {
-        /* Receive the data block into buffer */
-        *buff++ = rcvr_spi();
-        *buff++ = rcvr_spi();
-    } while (byte_count -= 2);
+    rcvr_spi_multi(buff, byte_count);
+
     rcvr_spi(); /* Discard CRC */
     rcvr_spi();
     return 0;
@@ -305,11 +301,10 @@ int mmc_spi_disk_init(void)
     expiry = TICKS() + 1000; /* Initialization timeout of 1000 msec */
     if (send_cmd(CMD_SEND_IF_COND, 0x1AA) == 1) 
     {
-        u8 n, ocr[4];
+        u8 ocr[4];
 
         /* SDC Ver2+ */
-        for (n = 0; n < 4; n++)
-            ocr[n] = rcvr_spi();
+	rcvr_spi_multi(ocr, 4);
         if (ocr[2] == 0x01 && ocr[3] == 0xAA)
         {
             /* The card can work at vdd range of 2.7-3.6V */
@@ -326,8 +321,7 @@ int mmc_spi_disk_init(void)
                 goto Exit;
 
             /* Check CCS bit */
-            for (n = 0; n < 4; n++)
-                ocr[n] = rcvr_spi();
+	    rcvr_spi_multi(ocr, 4);
             ty = CARD_SDC | ((ocr[0] & 0x40) ? CARD_BLOCK_ADDRESSING : 0);
         }
     }
