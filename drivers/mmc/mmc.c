@@ -159,7 +159,7 @@ static void power_on(void)
 /* Common MMC API */
 
 /* Note: Byte count must be even number */
-static int rcvr_datablock(u8 *buff, u32 byte_count)
+static int rcvr_datablock(u8 *buf, u32 byte_count)
 {
     u8 token;
     int expiry;
@@ -172,7 +172,7 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
     if (token != 0xFE)
         return -1;
 
-    rcvr_spi_multi(buff, byte_count);
+    rcvr_spi_multi(buf, byte_count);
 
     rcvr_spi(); /* Discard CRC */
     rcvr_spi();
@@ -180,10 +180,10 @@ static int rcvr_datablock(u8 *buff, u32 byte_count)
 }
 
 #ifndef MMC_READONLY
-/* buff: 512 byte data block to be transmitted
+/* buf: 512 byte data block to be transmitted
  * token: Data/Stop token
  */
-static int xmit_datablock(const u8 *buff, u8 token)
+static int xmit_datablock(const u8 *buf, u8 token)
 {
     if (wait_ready() != 0xFF) 
         return -1;
@@ -196,7 +196,7 @@ static int xmit_datablock(const u8 *buff, u8 token)
     }
 
     /* Data token */
-    xmit_spi_multi(buff, 512);
+    xmit_spi_multi(buf, 512);
     xmit_spi(0xFF); /* CRC (Dummy) */
     xmit_spi(0xFF);
     return ((rcvr_spi() & 0x1F) == 0x05) ? 0 : -1;
@@ -369,7 +369,7 @@ int mmc_spi_disk_status(void)
     return g_mmc.disc_status ? -1 : 0;
 }
 
-int mmc_spi_disk_read(u8 *buff, int sector, int count)
+int mmc_spi_disk_read(u8 *buf, int sector, int count)
 {
     if (!count) 
         return -1;
@@ -389,7 +389,7 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
     {
         /* Single block read */
         if (send_cmd(CMD_READ_SINGLE_BLOCK, sector) ||
-           rcvr_datablock(buff, 512))
+           rcvr_datablock(buf, 512))
         {
            goto Exit;
         }
@@ -403,7 +403,7 @@ int mmc_spi_disk_read(u8 *buff, int sector, int count)
             goto Exit;
 
         /* Do the actual reading */
-        while (count-- && !rcvr_datablock(buff += 512, 512));
+        while (count-- && !rcvr_datablock(buf += 512, 512));
 
         send_cmd_stop_transmission();
     }
@@ -416,7 +416,7 @@ Exit:
 }
 
 #ifndef MMC_READONLY
-int mmc_spi_disk_write(const u8 *buff, int sector, int count)
+int mmc_spi_disk_write(const u8 *buf, int sector, int count)
 {
     if (!count || g_mmc.disc_status & BLOCK_DISK_STATUS_NO_INIT ||
         g_mmc.disc_status & BLOCK_DISK_STATUS_PROTECTED)
@@ -435,7 +435,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
     if (count == 1) 
     {
         /* WRITE_BLOCK */
-        if (send_cmd(CMD_WRITE_BLOCK, sector) || xmit_datablock(buff, 0xFE))
+        if (send_cmd(CMD_WRITE_BLOCK, sector) || xmit_datablock(buf, 0xFE))
             goto Exit;
 
         count = 0;
@@ -453,7 +453,7 @@ int mmc_spi_disk_write(const u8 *buff, int sector, int count)
             goto Exit;
 
         /* WRITE_MULTIPLE_BLOCK */
-        while (count-- && !xmit_datablock(buff += 512, 0xFC));
+        while (count-- && !xmit_datablock(buf += 512, 0xFC));
 
         /* STOP_TRAN token */
         if (xmit_datablock(0, 0xFD))
@@ -468,7 +468,7 @@ Exit:
 }
 #endif
 
-static int mmc_spi_ioctl_get_sector_count(void *buff)
+static int mmc_spi_ioctl_get_sector_count(void *buf)
 {
     u8 csd[16];
     u16 csize;
@@ -481,7 +481,7 @@ static int mmc_spi_ioctl_get_sector_count(void *buff)
     {
         /* SDC ver 2.00 */
         csize = csd[9] + ((u16)csd[8] << 8) + 1;
-        *(u32 *)buff = (u32)csize << 10;
+        *(u32 *)buf = (u32)csize << 10;
     }
     else 
     {
@@ -491,12 +491,12 @@ static int mmc_spi_ioctl_get_sector_count(void *buff)
         n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
         csize = (csd[8] >> 6) + ((u16)csd[7] << 2) + 
             ((u16)(csd[6] & 3) << 10) + 1;
-        *(u32 *)buff = (u32)csize << (n - 9);
+        *(u32 *)buf = (u32)csize << (n - 9);
     }
     return 0;
 }
 
-int mmc_spi_disk_ioctl(int cmd, void *buff)
+int mmc_spi_disk_ioctl(int cmd, void *buf)
 {
     int res = -1;
 
@@ -508,11 +508,11 @@ int mmc_spi_disk_ioctl(int cmd, void *buff)
     switch (cmd) 
     {
     case BLOCK_IOCTL_GET_SECTOR_COUNT:
-        res = mmc_spi_ioctl_get_sector_count(buff);
+        res = mmc_spi_ioctl_get_sector_count(buf);
         break;
     case BLOCK_IOCTL_GET_SECTOR_SIZE:
         /* Get sectors on the disk (u16) */
-        *(u16 *)buff = 512;
+        *(u16 *)buf = 512;
         res = 0;
         break;
     case BLOCK_IOCTL_SYNC:
