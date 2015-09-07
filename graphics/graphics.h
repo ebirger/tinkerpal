@@ -41,7 +41,12 @@ static inline void circle_draw(canvas_t *c, int x0, int y0, int radius,
     _circle_draw(c, x0, y0, radius, CIRC_ALL, color);
 }
 
-void circle_fill(canvas_t *c, int x0, int y0, int radius, u16 color);
+void _circle_fill(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color);
+static inline void circle_fill(canvas_t *c, int x0, int y0, int radius,
+    u16 color)
+{
+    _circle_fill(c, x0, y0, radius, CIRC_ALL, color);
+}
 
 void string_draw(canvas_t *c, int x, int y, tstr_t *str, u16 color);
 void line_draw(canvas_t *c, int x0, int y0, int x1, int y1, u16 color);
