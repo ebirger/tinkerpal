@@ -56,6 +56,7 @@ void rect_fill(canvas_t *c, int x, int y, int w, int h, u16 color);
 #define ROUND_RECT_TYPE_CORNERS_IN 1
 void round_rect_draw(canvas_t *c, int x, int y, int w, int h, int r, int type,
     u16 color);
+void round_rect_fill(canvas_t *c, int x, int y, int w, int h, int r, u16 color);
 void bitmap_draw(canvas_t *c, int x, int y, int w, int h, const u8 *image);
 
 typedef struct chart_t chart_t;

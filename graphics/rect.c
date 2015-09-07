@@ -65,3 +65,38 @@ void rect_fill(canvas_t *c, int x, int y, int w, int h, u16 color)
     for (j = 0; j < h; j++)
         canvas_hline(c, x, x + w, y + j, color);
 }
+
+void round_rect_fill(canvas_t *c, int x, int y, int w, int h, int r, u16 color)
+{
+    int j;
+
+    /* Corners */
+    _circle_fill(c, x + r, y + r, r, CIRC_270_0, color);
+    _circle_fill(c, x + w - r, y + r, r, CIRC_0_90, color);
+    _circle_fill(c, x + r, y + h - r, r, CIRC_180_270, color);
+    _circle_fill(c, x + w - r, y + h - r, r, CIRC_90_180, color);
+
+    /* Fill */
+
+    /*  /------------\
+     * /              \
+     * |xxxxxxxxxxxxxx|
+     * |xxxxxxxxxxxxxx|
+     * \              /
+     *  \------------/
+     */
+    for (j = r; j <= h - r; j++)
+        canvas_hline(c, x, x + w, y + j, color);
+    /*  /------------\
+     * / xxxxxxxxxxxx \
+     * |              |
+     * |              |
+     * \ xxxxxxxxxxxx /
+     *  \------------/
+     */
+    for (j = 0; j < r; j++)
+    {
+        canvas_hline(c, x + r, x + w - r, y + j, color);
+        canvas_hline(c, x + r, x + w - r, y + (h + 1) - r + j, color);
+    }
+}
