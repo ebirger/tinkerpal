@@ -35,13 +35,13 @@ void _circle_draw(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color)
     int errorX = -2 * radius;
     int x = radius, y = 0;
 
-    if (quad & CIRC_180_225 || quad & CIRC_135_180)
+    if (quad & CIRC_180_270 || quad & CIRC_90_180)
         canvas_pixel_set(c, x0, y0 + radius, color);
-    if (quad & CIRC_0_45 || quad & CIRC_315_0)
+    if (quad & CIRC_0_90 || quad & CIRC_270_0)
         canvas_pixel_set(c, x0, y0 - radius, color);
-    if (quad & CIRC_45_90 || quad & CIRC_90_135)
+    if (quad & CIRC_0_90 || quad & CIRC_90_180)
         canvas_pixel_set(c, x0 + radius, y0, color);
-    if (quad & CIRC_225_270 || quad & CIRC_270_315)
+    if (quad & CIRC_180_270 || quad & CIRC_270_0)
         canvas_pixel_set(c, x0 - radius, y0, color);
 
     while (y < x)
@@ -58,22 +58,26 @@ void _circle_draw(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color)
         y++;
         errorY += 2;
         error += errorY;
-        if (quad & CIRC_90_135)
-            canvas_pixel_set(c, x0 + x, y0 + y, color);
-        if (quad & CIRC_225_270)
-            canvas_pixel_set(c, x0 - x, y0 + y, color);
-        if (quad & CIRC_45_90)
+        if (quad & CIRC_0_90)
+        {
             canvas_pixel_set(c, x0 + x, y0 - y, color);
-        if (quad & CIRC_270_315)
-            canvas_pixel_set(c, x0 - x, y0 - y, color);
-        if (quad & CIRC_135_180)
-            canvas_pixel_set(c, x0 + y, y0 + x, color);
-        if (quad & CIRC_180_225)
-            canvas_pixel_set(c, x0 - y, y0 + x, color);
-        if (quad & CIRC_0_45)
             canvas_pixel_set(c, x0 + y, y0 - x, color);
-        if (quad & CIRC_315_0)
+        }
+        if (quad & CIRC_90_180)
+        {
+            canvas_pixel_set(c, x0 + x, y0 + y, color);
+            canvas_pixel_set(c, x0 + y, y0 + x, color);
+        }
+        if (quad & CIRC_180_270)
+        {
+            canvas_pixel_set(c, x0 - x, y0 + y, color);
+            canvas_pixel_set(c, x0 - y, y0 + x, color);
+        }
+        if (quad & CIRC_270_0)
+        {
+            canvas_pixel_set(c, x0 - x, y0 - y, color);
             canvas_pixel_set(c, x0 - y, y0 - x, color);
+        }
     }
 }
 

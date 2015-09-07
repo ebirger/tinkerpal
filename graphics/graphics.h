@@ -29,14 +29,10 @@
 #include "util/tstr.h"
 #include "graphics/canvas.h"
 
-#define CIRC_0_45 (1<<0)
-#define CIRC_45_90 (1<<1)
-#define CIRC_90_135 (1<<2)
-#define CIRC_135_180 (1<<3)
-#define CIRC_180_225 (1<<4)
-#define CIRC_225_270 (1<<5)
-#define CIRC_270_315 (1<<6)
-#define CIRC_315_0 (1<<7)
+#define CIRC_0_90 (1<<0)
+#define CIRC_90_180 (1<<1)
+#define CIRC_180_270 (1<<2)
+#define CIRC_270_0 (1<<3)
 #define CIRC_ALL 0xff
 void _circle_draw(canvas_t *c, int x0, int y0, int radius, u8 quad, u16 color);
 static inline void circle_draw(canvas_t *c, int x0, int y0, int radius,
