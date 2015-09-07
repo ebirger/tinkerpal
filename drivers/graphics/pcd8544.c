@@ -68,12 +68,8 @@ static u8 pcd8544_init_seq[] = {
 
 static void pcd8544_write(pcd8544_t *screen, int iscmd, u8 *data, int len)
 {
-    gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, !iscmd);
-
-    spi_send_mult(screen->params.spi_port, data, len);
-
-    gpio_digital_write(screen->params.cs, 1);
+    spi_send_mult_nss(screen->params.spi_port, screen->params.cs, data, len);
 }
 
 static void chip_init(pcd8544_t *screen)

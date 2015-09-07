@@ -80,12 +80,8 @@ static st7735_t g_st7735_screen;
 
 static void st7735_write(st7735_t *screen, int iscmd, u8 *data, int len)
 {
-    gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, !iscmd);
-
-    spi_send_mult(screen->params.spi_port, data, len);
-
-    gpio_digital_write(screen->params.cs, 1);
+    spi_send_mult_nss(screen->params.spi_port, screen->params.cs, data, len);
 }
 
 static void st7735_cmd(st7735_t *screen, u8 op, int num_params, u8 *params)
