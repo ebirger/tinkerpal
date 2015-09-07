@@ -39,8 +39,8 @@ void mmc_init(const mmc_params_t *params);
 
 int mmc_spi_disk_init(void);
 int mmc_spi_disk_status(void);
-int mmc_spi_disk_read(unsigned char *buff, int sector, int count);
-int mmc_spi_disk_write(const unsigned char *buff, int sector, int count);
-int mmc_spi_disk_ioctl(int cmd, void *buff);
+int mmc_spi_disk_read(unsigned char *buf, int sector, int count);
+int mmc_spi_disk_write(const unsigned char *buf, int sector, int count);
+int mmc_spi_disk_ioctl(int cmd, void *buf);
 
 #endif

@@ -25,6 +25,8 @@ g.rectFill(0, 0, 5, 1, 1);
 console.log("draws " + num_draws);
 g.roundRectDraw(0, 0, 5, 1, 1, 1);
 console.log("draws " + num_draws);
+g.roundRectFill(0, 0, 5, 1, 1, 1);
+console.log("draws " + num_draws);
 g.lineDraw(0, 0, 0, 0, 1);
 console.log("draws " + num_draws);
 
@@ -41,6 +43,8 @@ debug.assert_exception(function() { g.lineDraw(); } );
 debug.assert_exception(function() { var s = g.lineDraw; s(0, 0, 5, 1, 1); } );
 debug.assert_exception(function() { g.roundRectDraw(); } );
 debug.assert_exception(function() { var s = g.roundRectDraw; s(0, 0, 5, 1, 1, 1); } );
+debug.assert_exception(function() { g.roundRectFill(); } );
+debug.assert_exception(function() { var s = g.roundRectFill; s(0, 0, 5, 1, 1, 1); } );
 debug.assert_exception(function() { g.rectDraw(); } );
 debug.assert_exception(function() { var s = g.rectDraw; s(0, 0, 5, 1, 1); } );
 debug.assert_exception(function() { g.rectFill(); } );

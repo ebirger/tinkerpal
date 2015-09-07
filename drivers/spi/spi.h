@@ -28,6 +28,9 @@
 #include "drivers/resources.h"
 #include "platform/platform.h"
 #include "util/tstr.h"
+#ifdef CONFIG_GPIO
+#include "drivers/gpio/gpio.h"
+#endif
 
 #define SPI_RES(port) RES(SPI_RESOURCE_ID_BASE, port, 0)
 
@@ -85,6 +88,16 @@ static inline void spi_send_mult(resource_t port, const u8 buf[], int len)
     while (len--)
         spi_send(port, *buf++);
 }
+
+#ifdef CONFIG_GPIO
+static inline void spi_send_mult_nss(resource_t port, resource_t nss,
+    const u8 buf[], int len)
+{
+    gpio_digital_write(nss, 0);
+    spi_send_mult(port, buf, len);
+    gpio_digital_write(nss, 1);
+}
+#endif
 
 static inline int spi_get_constant(int *constant, tstr_t t)
 {

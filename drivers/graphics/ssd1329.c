@@ -71,12 +71,8 @@ static ssd1329_t g_ssd1329_screen;
 static void ssd1329_write(ssd1329_t *screen, int is_cmd, const u8 *data,
     int len)
 {
-    gpio_digital_write(screen->params.cs, 0);
     gpio_digital_write(screen->params.cd, !is_cmd);
-
-    spi_send_mult(screen->params.spi_port, data, len);
-
-    gpio_digital_write(screen->params.cs, 1);
+    spi_send_mult_nss(screen->params.spi_port, screen->params.cs, data, len);
 }
 
 static void chip_init(ssd1329_t *screen)
