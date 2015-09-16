@@ -29,7 +29,7 @@ build_dir:
 
 $(BSPS_DIR)/.fetched:
 	@echo "Fetching BSPs"
-	@git clone git://github.com/ebirger/tinkerpal_bsps.git $(BSPS_DIR)
+	@git clone https://github.com/ebirger/tinkerpal_bsps.git $(BSPS_DIR)
 	@touch $(BSPS_DIR)/.fetched
 
 FETCH_BSPS:=$(BSPS_DIR)/.fetched
