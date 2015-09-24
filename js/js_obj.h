@@ -353,10 +353,12 @@ typedef struct {
     obj_t *obj; /* The current iterated item */
     int k; /* Index of the current iterated item */
     int len; /* Array length */
-    int reverse; /* Iterate from length-1 to 0 */
+#define ARRAY_ITER_FLAG_REVERSE 0x01 /* Iterate from length-1 to 0 */
+#define ARRAY_ITER_FLAG_INCLUDE_EMPTY 0x02 /* Iterate over empty cells */
+    u8 flags;
 } array_iter_t;
 
-void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse);
+void array_iter_init(array_iter_t *iter, obj_t *arr, u8 flags);
 /* Returns 0 upon on the last element */
 int array_iter_next(array_iter_t *iter);
 void array_iter_uninit(array_iter_t *iter);

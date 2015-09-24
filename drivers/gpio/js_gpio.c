@@ -42,7 +42,7 @@ int do_digital_write(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         int value = obj_get_int(argv[2]);
         array_iter_t iter;
 
-        array_iter_init(&iter, argv[1], 1);
+        array_iter_init(&iter, argv[1], ARRAY_ITER_FLAG_REVERSE);
         while (array_iter_next(&iter))
         {
             resource_t pin = obj_get_int(iter.obj);

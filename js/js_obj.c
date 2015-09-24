@@ -1183,27 +1183,29 @@ obj_t *array_lookup(obj_t *arr, int index)
     return ret;
 }
 
-void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
+void array_iter_init(array_iter_t *iter, obj_t *arr, u8 flags)
 {
     int len = 0;
 
     len = array_length_get(arr);
     iter->len = len;
-    iter->reverse = reverse;
-    iter->k = reverse ? iter->len : -1;
+    iter->flags = flags;
+    iter->k = flags & ARRAY_ITER_FLAG_REVERSE ? iter->len : -1;
     iter->arr = arr;
     iter->obj = NULL;
 }
 
 int array_iter_next(array_iter_t *iter)
 {
+    int reverse = iter->flags & ARRAY_ITER_FLAG_REVERSE;
+
     /* Release previous reference */
     if (iter->obj)
     {
         obj_put(iter->obj);
         iter->obj = NULL;
     }
-    if (iter->reverse)
+    if (reverse)
     {
         for (iter->k--; iter->k >= 0; iter->k--)
         {
@@ -1215,12 +1217,15 @@ int array_iter_next(array_iter_t *iter)
     {
         for (iter->k++; iter->k < iter->len; iter->k++)
         {
-            if ((iter->obj = array_lookup(iter->arr, iter->k)))
+            if ((iter->obj = array_lookup(iter->arr, iter->k)) ||
+                iter->flags & ARRAY_ITER_FLAG_INCLUDE_EMPTY)
+            {
                 break;
+            }
         }
     }
 
-    return iter->reverse ? iter->k != -1 : iter->k != iter->len;
+    return reverse ? iter->k != -1 : iter->k != iter->len;
 }
 
 void array_iter_uninit(array_iter_t *iter)
