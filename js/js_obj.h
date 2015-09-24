@@ -44,12 +44,12 @@ typedef struct {
     /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
      *   saves space.
      */
-#define OBJ_STATIC 0x0001
-#define OBJ_NUM_FP 0x0002
+#define OBJ_STATIC 0x01
+#define OBJ_NUM_FP 0x02
     /* Use 'call' as a construct routine instead of the default
      * 'construct' function
      */
-#define OBJ_FUNCTION_CONSTRUCTOR 0x0004
+#define OBJ_FUNCTION_CONSTRUCTOR 0x04
     unsigned char flags;
     unsigned char class;
     short ref_count;
