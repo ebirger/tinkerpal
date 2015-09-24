@@ -75,7 +75,6 @@ num_t nan_obj = STATIC_NUM(0xfeed); /* No meaning to value of the NaN object */
 bool_t true_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 1 };
 bool_t false_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 0 };
 
-static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 double num_fp_value(num_t *n);
 static obj_t *_function_new(tstr_list_t *params, void *code,
     code_free_cb_t code_free, obj_t *scope, obj_t *prototype, call_t call);
