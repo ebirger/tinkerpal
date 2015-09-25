@@ -47,6 +47,7 @@ typedef struct {
     int (*describe)(printer_t *printer, obj_t *o);
 #endif
     void (*free)(obj_t *o);
+    void (*free_gc)(obj_t *o);
     obj_t *(*do_op)(token_type_t op, obj_t *oa, obj_t *ob);
     int (*is_true)(obj_t *o);
     obj_t *(*cast)(obj_t *o, unsigned char class);
@@ -104,6 +105,24 @@ static void var_free(var_t *v)
     mem_cache_free(var_cache, v);
 }
 
+/* Variant that frees the vars containers, but does
+ * not free the objects even though releasing their
+ * ref-counts
+ */
+static void vars_free_gc(var_t **vars)
+{
+    var_t *temp;
+
+    while ((temp = *vars))
+    {
+        *vars = (*vars)->next;
+        var_key_free(&temp->key);
+        if (temp->obj && temp->obj != UNDEF && !OBJ_IS_INT_VAL(temp->obj))
+            temp->obj->ref_count--;
+        mem_cache_free(var_cache, temp);
+    }
+}
+
 static void vars_free(var_t **vars)
 {
     var_t *temp;
@@ -152,14 +171,32 @@ static obj_t **var_create(var_t **vars, const tstr_t *key)
 
 /*** Generic obj methods ***/
 
+void _obj_put_gc(obj_t *o)
+{
+    if (CLASS(o)->free_gc)
+        CLASS(o)->free_gc(o);
+    else if (CLASS(o)->free)
+        CLASS(o)->free(o);
+    /* Free the properties containers and release the reference taken
+     * without freeing the objects
+     */
+    vars_free_gc(&o->properties);
+    /* Object itself will be freed later on */
+}
+
+void obj_free(obj_t *o)
+{
+    tp_debug("%s: freeing %p\n", __FUNCTION__, o);
+    if (!(o->flags & OBJ_STATIC))
+        mem_cache_free(obj_cache[OBJ_CLASS(o) - 1], o);
+}
+
 void _obj_put(obj_t *o)
 {
     if (CLASS(o)->free)
         CLASS(o)->free(o);
     vars_free(&o->properties);
-    tp_debug("%s: freeing %p\n", __FUNCTION__, o);
-    if (!(o->flags & OBJ_STATIC))
-        mem_cache_free(obj_cache[OBJ_CLASS(o) - 1], o);
+    obj_free(o);
 }
 
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)
@@ -831,13 +868,20 @@ static int function_describe(printer_t *printer, obj_t *o)
 }
 #endif
 
-static void function_free(obj_t *o)
+static void function_free_gc(obj_t *o)
 {
     function_t *func = to_function(o);
 
     tstr_list_free(&func->formal_params);
     if (func->code_free_cb)
         func->code_free_cb(func->code);
+}
+
+static void function_free(obj_t *o)
+{
+    function_t *func = to_function(o);
+
+    function_free_gc(o);
     obj_put(func->scope);
 }
 

@@ -40,7 +40,7 @@ typedef struct var_t var_t;
 
 #define Sprototype INTERNAL_S("prototype")
 
-typedef struct {
+typedef struct obj_t {
     /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
      *   saves space.
      */
@@ -50,10 +50,15 @@ typedef struct {
      * 'construct' function
      */
 #define OBJ_FUNCTION_CONSTRUCTOR 0x04
+#define OBJ_GC_MARK1 0x08
+#define OBJ_GC_MARK2 0x10
     unsigned char flags;
     unsigned char class;
     short ref_count;
-    var_t *properties;
+    union {
+        var_t *properties;
+        struct obj_t *next;
+    };
 } obj_t;
 
 typedef int (*call_t)(obj_t **ret, obj_t *this, int argc, obj_t *argv[]);
