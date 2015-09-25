@@ -1847,6 +1847,7 @@ const obj_class_t classes[] = {
         .describe = function_describe,
 #endif
         .free = function_free,
+        .free_gc = function_free_gc,
         .do_op = function_do_op,
         .cast = function_cast,
     },
