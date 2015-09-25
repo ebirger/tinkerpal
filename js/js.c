@@ -46,10 +46,17 @@
 #include "drivers/i2c/i2c.h"
 #endif
 
+extern void _obj_put_gc(obj_t *o);
+extern void obj_free(obj_t *o);
+
 /* Global environment for user objects */
 obj_t *global_env;
 /* Full environment including timers, watches, ... */
 obj_t *meta_env;
+
+/* Local globals */
+static obj_t *gc_del_list;
+static u8 gc_mark_flag = OBJ_GC_MARK1;
 
 static int js_get_constants_cb(int *constant, tstr_t *s)
 {
@@ -83,6 +90,52 @@ static void obj_tprintf_handler(printer_t *printer, void *o)
 static void obj_desc_tprintf_handler(printer_t *printer, void *o)
 {
     obj_describe(printer, (obj_t *)o);
+}
+
+static u8 gc_other_mark_flag(u8 mark_flag)
+{
+    return mark_flag == OBJ_GC_MARK1 ? OBJ_GC_MARK2 : OBJ_GC_MARK1;
+}
+
+static void gc_mark(obj_t *o)
+{
+    o->flags |= gc_mark_flag;
+    /* Clear the other mark flag for next run */
+    o->flags &= ~gc_other_mark_flag(gc_mark_flag);
+}
+
+void gc_sweep(void *obj)
+{
+    obj_t *o = obj;
+
+    if (!(o->flags & gc_mark_flag))
+    {
+        _obj_put_gc(o);
+        /* This didn't free the object, only its properties.
+         * It can't be freed at this point -- while iterating over the
+         * object list.
+         * Save it for later release.
+         */
+        o->next = gc_del_list;
+        gc_del_list = o;
+    }
+}
+
+void js_gc_run(void)
+{
+    obj_t *delme;
+
+    /* Keep two mark flags and alternate between them on each run. That way the
+     * mark doesn't need to be cleared after each run.
+     */
+    gc_mark_flag = gc_other_mark_flag(gc_mark_flag);
+    obj_walk(meta_env, gc_mark);
+    js_obj_foreach_alloced_obj(gc_sweep);
+    while ((delme = gc_del_list))
+    {
+        gc_del_list = gc_del_list->next;
+        obj_free(delme);
+    }
 }
 
 void js_uninit(void)
