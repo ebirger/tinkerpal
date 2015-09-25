@@ -286,6 +286,18 @@ obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)
     return NULL;
 }
 
+void obj_walk(obj_t *o, void (*cb)(obj_t *o))
+{
+    var_t *iter;
+
+    if (!o || OBJ_IS_INT_VAL(o))
+        return;
+
+    cb(o);
+    for (iter = o->properties; iter; iter = iter->next)
+        obj_walk(iter->obj, cb);
+}
+
 obj_t *obj_cast(obj_t *o, unsigned char class)
 {
     return CLASS(o)->cast(o, class);
