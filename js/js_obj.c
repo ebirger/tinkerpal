@@ -1743,6 +1743,18 @@ static void pointer_dump(printer_t *printer, obj_t *o)
     tprintf(printer, "[0x%p]", p->ptr);
 }
 
+/*** General Utility Functions ***/
+void js_obj_foreach_alloced_obj(void (*cb)(void *obj))
+{
+    int i;
+
+    for (i = 0; i < CLASS_LAST; i++)
+    {
+        if (obj_cache[i])
+            mem_cache_foreach_alloced(obj_cache[i], cb);
+    }
+}
+
 /*** Initialization Sequence Functions ***/
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {

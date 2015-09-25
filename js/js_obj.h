@@ -481,6 +481,7 @@ static inline int obj_eq(obj_t *a, obj_t *b)
     return ret;
 }
 
+void js_obj_foreach_alloced_obj(void (*cb)(void *obj));
 void js_obj_uninit(void);
 void js_obj_init(void);
 
