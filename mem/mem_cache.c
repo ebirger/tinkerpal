@@ -88,6 +88,19 @@ static inline int mem_cache_block_num_free(mem_cache_block_t *block)
     return num_free;
 }
 
+static inline int mem_cache_block_ptr_is_free(mem_cache_block_t *block,
+    void *ptr)
+{
+    uint_ptr_t *next;
+
+    if (!ptr)
+        return 1;
+
+    for (next = (uint_ptr_t *)block->free_list; next && next != ptr;
+        next = (uint_ptr_t *)*next);
+    return next == ptr ? 1 : 0;
+}
+
 static int mem_cache_squeeze(mem_squeezer_t *squeezer, int size)
 {
     mem_cache_t *cache = (mem_cache_t *)squeezer;
@@ -220,5 +233,24 @@ void mem_cache_stats(void)
         tp_out("%s:\nsz %d, item sz %d, num blocks %d, full blocks %d, "
             "empty blocks %d, free slots %d\n", cache->name, used_size,
             cache->item_size, n, full, empty, free_slots);
+    }
+}
+
+void mem_cache_foreach_alloced(mem_cache_t *cache, void (*cb)(void *ptr))
+{
+    mem_cache_block_t *block;
+
+    for (block = cache->head; block; block = block->next)
+    {
+        char *ptr, *start, *end;
+
+        start = (char *)(block + 1);
+        end = start + cache->item_size * NUM_ITEMS;
+
+        for (ptr = start; ptr < end; ptr += cache->item_size)
+        {
+            if (!mem_cache_block_ptr_is_free(block, ptr))
+                cb(ptr);
+        }
     }
 }

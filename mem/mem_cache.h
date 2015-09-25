@@ -42,6 +42,7 @@ void mem_cache_destroy(mem_cache_t *cache);
 void *mem_cache_alloc(mem_cache_t *cache);
 void mem_cache_free(mem_cache_t *cache, void *ptr);
 void mem_cache_stats(void);
+void mem_cache_foreach_alloced(mem_cache_t *cache, void (*cb)(void *ptr));
 
 #else
 
@@ -69,6 +70,11 @@ static inline void mem_cache_free(mem_cache_t *cache, void *ptr)
 }
 
 static inline void mem_cache_stats(void) { }
+
+static inline void mem_cache_foreach_alloced(mem_cache_t *cache,
+    void (*cb)(void *ptr))
+{
+}
 
 #endif
 
