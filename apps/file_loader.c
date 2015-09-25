@@ -48,6 +48,7 @@ void app_start(int argc, char *argv[])
         tp_crit("Evaluation resulted in exception %o\n", o);
 
     obj_put(o);
+    js_gc_run();
     tstr_free(&code);
     tstr_free(&file);
 }

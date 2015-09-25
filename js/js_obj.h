@@ -40,20 +40,25 @@ typedef struct var_t var_t;
 
 #define Sprototype INTERNAL_S("prototype")
 
-typedef struct {
+typedef struct obj_t {
     /* Trick : We use flags in obj_t for subclasses purposes - ugly, but
      *   saves space.
      */
-#define OBJ_STATIC 0x0001
-#define OBJ_NUM_FP 0x0002
+#define OBJ_STATIC 0x01
+#define OBJ_NUM_FP 0x02
     /* Use 'call' as a construct routine instead of the default
      * 'construct' function
      */
-#define OBJ_FUNCTION_CONSTRUCTOR 0x0004
+#define OBJ_FUNCTION_CONSTRUCTOR 0x04
+#define OBJ_GC_MARK1 0x08
+#define OBJ_GC_MARK2 0x10
     unsigned char flags;
     unsigned char class;
     short ref_count;
-    var_t *properties;
+    union {
+        var_t *properties;
+        struct obj_t *next;
+    };
 } obj_t;
 
 typedef int (*call_t)(obj_t **ret, obj_t *this, int argc, obj_t *argv[]);
@@ -196,6 +201,7 @@ extern bool_t false_obj;
     .value.fp = v }
 
 /* Generic obj methods */
+void obj_walk(obj_t *o, void (*cb)(obj_t *o));
 obj_t *obj_cast(obj_t *o, unsigned char class);
 obj_t **obj_var_create(obj_t *o, const tstr_t *str);
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *str);
@@ -353,10 +359,12 @@ typedef struct {
     obj_t *obj; /* The current iterated item */
     int k; /* Index of the current iterated item */
     int len; /* Array length */
-    int reverse; /* Iterate from length-1 to 0 */
+#define ARRAY_ITER_FLAG_REVERSE 0x01 /* Iterate from length-1 to 0 */
+#define ARRAY_ITER_FLAG_INCLUDE_EMPTY 0x02 /* Iterate over empty cells */
+    u8 flags;
 } array_iter_t;
 
-void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse);
+void array_iter_init(array_iter_t *iter, obj_t *arr, u8 flags);
 /* Returns 0 upon on the last element */
 int array_iter_next(array_iter_t *iter);
 void array_iter_uninit(array_iter_t *iter);
@@ -478,6 +486,7 @@ static inline int obj_eq(obj_t *a, obj_t *b)
     return ret;
 }
 
+void js_obj_foreach_alloced_obj(void (*cb)(void *obj));
 void js_obj_uninit(void);
 void js_obj_init(void);
 

@@ -47,6 +47,7 @@ typedef struct {
     int (*describe)(printer_t *printer, obj_t *o);
 #endif
     void (*free)(obj_t *o);
+    void (*free_gc)(obj_t *o);
     obj_t *(*do_op)(token_type_t op, obj_t *oa, obj_t *ob);
     int (*is_true)(obj_t *o);
     obj_t *(*cast)(obj_t *o, unsigned char class);
@@ -75,7 +76,6 @@ num_t nan_obj = STATIC_NUM(0xfeed); /* No meaning to value of the NaN object */
 bool_t true_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 1 };
 bool_t false_obj = { .obj = STATIC_OBJ(BOOL_CLASS), .is_true = 0 };
 
-static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob);
 double num_fp_value(num_t *n);
 static obj_t *_function_new(tstr_list_t *params, void *code,
     code_free_cb_t code_free, obj_t *scope, obj_t *prototype, call_t call);
@@ -103,6 +103,24 @@ static void var_free(var_t *v)
     obj_put(v->obj);
     var_key_free(&v->key);
     mem_cache_free(var_cache, v);
+}
+
+/* Variant that frees the vars containers, but does
+ * not free the objects even though releasing their
+ * ref-counts
+ */
+static void vars_free_gc(var_t **vars)
+{
+    var_t *temp;
+
+    while ((temp = *vars))
+    {
+        *vars = (*vars)->next;
+        var_key_free(&temp->key);
+        if (temp->obj && temp->obj != UNDEF && !OBJ_IS_INT_VAL(temp->obj))
+            temp->obj->ref_count--;
+        mem_cache_free(var_cache, temp);
+    }
 }
 
 static void vars_free(var_t **vars)
@@ -153,14 +171,32 @@ static obj_t **var_create(var_t **vars, const tstr_t *key)
 
 /*** Generic obj methods ***/
 
+void _obj_put_gc(obj_t *o)
+{
+    if (CLASS(o)->free_gc)
+        CLASS(o)->free_gc(o);
+    else if (CLASS(o)->free)
+        CLASS(o)->free(o);
+    /* Free the properties containers and release the reference taken
+     * without freeing the objects
+     */
+    vars_free_gc(&o->properties);
+    /* Object itself will be freed later on */
+}
+
+void obj_free(obj_t *o)
+{
+    tp_debug("%s: freeing %p\n", __FUNCTION__, o);
+    if (!(o->flags & OBJ_STATIC))
+        mem_cache_free(obj_cache[OBJ_CLASS(o) - 1], o);
+}
+
 void _obj_put(obj_t *o)
 {
     if (CLASS(o)->free)
         CLASS(o)->free(o);
     vars_free(&o->properties);
-    tp_debug("%s: freeing %p\n", __FUNCTION__, o);
-    if (!(o->flags & OBJ_STATIC))
-        mem_cache_free(obj_cache[OBJ_CLASS(o) - 1], o);
+    obj_free(o);
 }
 
 obj_t *obj_get_property(obj_t ***lval, obj_t *o, const tstr_t *property)
@@ -285,6 +321,18 @@ obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)
         return CLASS(o)->get_own_property(lval, o, key);
 
     return NULL;
+}
+
+void obj_walk(obj_t *o, void (*cb)(obj_t *o))
+{
+    var_t *iter;
+
+    if (!o || OBJ_IS_INT_VAL(o))
+        return;
+
+    cb(o);
+    for (iter = o->properties; iter; iter = iter->next)
+        obj_walk(iter->obj, cb);
 }
 
 obj_t *obj_cast(obj_t *o, unsigned char class)
@@ -820,13 +868,20 @@ static int function_describe(printer_t *printer, obj_t *o)
 }
 #endif
 
-static void function_free(obj_t *o)
+static void function_free_gc(obj_t *o)
 {
     function_t *func = to_function(o);
 
     tstr_list_free(&func->formal_params);
     if (func->code_free_cb)
         func->code_free_cb(func->code);
+}
+
+static void function_free(obj_t *o)
+{
+    function_t *func = to_function(o);
+
+    function_free_gc(o);
     obj_put(func->scope);
 }
 
@@ -1183,27 +1238,29 @@ obj_t *array_lookup(obj_t *arr, int index)
     return ret;
 }
 
-void array_iter_init(array_iter_t *iter, obj_t *arr, int reverse)
+void array_iter_init(array_iter_t *iter, obj_t *arr, u8 flags)
 {
     int len = 0;
 
     len = array_length_get(arr);
     iter->len = len;
-    iter->reverse = reverse;
-    iter->k = reverse ? iter->len : -1;
+    iter->flags = flags;
+    iter->k = flags & ARRAY_ITER_FLAG_REVERSE ? iter->len : -1;
     iter->arr = arr;
     iter->obj = NULL;
 }
 
 int array_iter_next(array_iter_t *iter)
 {
+    int reverse = iter->flags & ARRAY_ITER_FLAG_REVERSE;
+
     /* Release previous reference */
     if (iter->obj)
     {
         obj_put(iter->obj);
         iter->obj = NULL;
     }
-    if (iter->reverse)
+    if (reverse)
     {
         for (iter->k--; iter->k >= 0; iter->k--)
         {
@@ -1215,12 +1272,15 @@ int array_iter_next(array_iter_t *iter)
     {
         for (iter->k++; iter->k < iter->len; iter->k++)
         {
-            if ((iter->obj = array_lookup(iter->arr, iter->k)))
+            if ((iter->obj = array_lookup(iter->arr, iter->k)) ||
+                iter->flags & ARRAY_ITER_FLAG_INCLUDE_EMPTY)
+            {
                 break;
+            }
         }
     }
 
-    return iter->reverse ? iter->k != -1 : iter->k != iter->len;
+    return reverse ? iter->k != -1 : iter->k != iter->len;
 }
 
 void array_iter_uninit(array_iter_t *iter)
@@ -1725,6 +1785,18 @@ static void pointer_dump(printer_t *printer, obj_t *o)
     pointer_t *p = to_pointer(o);
 
     tprintf(printer, "[0x%p]", p->ptr);
+}
+
+/*** General Utility Functions ***/
+void js_obj_foreach_alloced_obj(void (*cb)(void *obj))
+{
+    int i;
+
+    for (i = 0; i < CLASS_LAST; i++)
+    {
+        if (obj_cache[i])
+            mem_cache_foreach_alloced(obj_cache[i], cb);
+    }
 }
 
 /*** Initialization Sequence Functions ***/

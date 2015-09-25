@@ -175,3 +175,7 @@ debug.assert(carr[8], 9);
 debug.assert(carr.length, 10);
 
 debug.assert_exception(function() { [1, 3, ;]; });
+
+debug.assert(Array(0).join("k"), "");
+debug.assert(Array(1).join("k"), "");
+debug.assert(Array(5).join("k"), "kkkk");

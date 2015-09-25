@@ -125,7 +125,7 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     obj_t *o = NULL;
     array_iter_t iter;
 
-    array_iter_init(&iter, this, 0);
+    array_iter_init(&iter, this, ARRAY_ITER_FLAG_INCLUDE_EMPTY);
     if (iter.len == 0)
     {
         tstr_t empty = S("");
@@ -139,7 +139,7 @@ int do_array_prototype_join(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
     {
         obj_t *s;
 
-        s = obj_cast(iter.obj, STRING_CLASS);
+        s = iter.obj ? obj_cast(iter.obj, STRING_CLASS) : string_new(S(""));
 
         if (o)
         {
