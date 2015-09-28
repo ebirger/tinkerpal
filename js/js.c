@@ -97,7 +97,7 @@ static u8 gc_other_mark_flag(u8 mark_flag)
     return mark_flag == OBJ_GC_MARK1 ? OBJ_GC_MARK2 : OBJ_GC_MARK1;
 }
 
-static int gc_mark(obj_t *o)
+static int gc_mark_cb(obj_t *o)
 {
     if (o->flags & gc_mark_flag)
         return 1;
@@ -108,7 +108,7 @@ static int gc_mark(obj_t *o)
     return 0;
 }
 
-void gc_sweep(void *obj)
+void gc_sweep_cb(void *obj)
 {
     obj_t *o = obj;
 
@@ -125,16 +125,11 @@ void gc_sweep(void *obj)
     }
 }
 
-void js_gc_run(void)
+void gc_sweep(void)
 {
     obj_t *delme;
 
-    /* Keep two mark flags and alternate between them on each run. That way the
-     * mark doesn't need to be cleared after each run.
-     */
-    gc_mark_flag = gc_other_mark_flag(gc_mark_flag);
-    obj_walk(meta_env, gc_mark);
-    js_obj_foreach_alloced_obj(gc_sweep);
+    js_obj_foreach_alloced_obj(gc_sweep_cb);
     while ((delme = gc_del_list))
     {
         gc_del_list = gc_del_list->next;
@@ -142,17 +137,30 @@ void js_gc_run(void)
     }
 }
 
+static void __js_gc_run(int sweep_all)
+{
+    /* Keep two mark flags and alternate between them on each run. That way the
+     * mark doesn't need to be cleared after each run.
+     */
+    gc_mark_flag = gc_other_mark_flag(gc_mark_flag);
+    if (!sweep_all)
+        obj_walk(meta_env, gc_mark_cb);
+    gc_sweep();
+}
+
+void js_gc_run(void)
+{
+    __js_gc_run(0);
+}
+
 void js_uninit(void)
 {
-    obj_put(meta_env);
-    /* Release the global env without regarding reference counting since we
-     * want to tear it down.
-     */
-    _obj_put(global_env);
     js_compiler_uninit();
     js_builtins_uninit();
     js_event_uninit();
     js_eval_uninit();
+    /* Time to mop */
+    __js_gc_run(1);
     js_obj_uninit();
 }
 
