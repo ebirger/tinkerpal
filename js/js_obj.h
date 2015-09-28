@@ -149,6 +149,7 @@ typedef struct {
 typedef struct {
     obj_t obj;
     void *ptr;
+    obj_t *related_obj;
     void (*free)(void *ptr);
 } pointer_t;
 
@@ -201,7 +202,8 @@ extern bool_t false_obj;
     .value.fp = v }
 
 /* Generic obj methods */
-void obj_walk(obj_t *o, void (*cb)(obj_t *o));
+ /* obj_walk: cb returns true when object had already been walked */
+void obj_walk(obj_t *o, int (*cb)(obj_t *o));
 obj_t *obj_cast(obj_t *o, unsigned char class);
 obj_t **obj_var_create(obj_t *o, const tstr_t *str);
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *str);
@@ -417,7 +419,7 @@ static inline arguments_t *to_arguments(obj_t *o)
 }
 
 /* "pointer" objects methods */
-obj_t *pointer_new(void *ptr, void (*free)(void *ptr));
+obj_t *pointer_new(void *ptr, obj_t *related_obj, void (*free)(void *ptr));
 
 static inline int is_pointer(obj_t *o)
 {

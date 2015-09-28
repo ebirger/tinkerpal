@@ -237,7 +237,7 @@ int do_graphics_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
         if (!(canvas = js_evaluated_canvas_new(o)))
             return js_invalid_args(ret);
 
-        canvas_obj_constructor(canvas, &canvas_obj, NULL, 1, &argv);
+        canvas_obj_constructor(canvas, &canvas_obj, o, 1, &argv);
     }
     else
         obj_get(canvas_obj);
