@@ -323,16 +323,20 @@ obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)
     return NULL;
 }
 
-void obj_walk(obj_t *o, void (*cb)(obj_t *o))
+void obj_walk(obj_t *o, int (*cb)(obj_t *o))
 {
     var_t *iter;
 
     if (!o || OBJ_IS_INT_VAL(o))
         return;
 
-    cb(o);
+    if (cb(o))
+        return; /* Already walked */
+
     for (iter = o->properties; iter; iter = iter->next)
         obj_walk(iter->obj, cb);
+    if (is_function(o))
+        obj_walk(to_function(o)->scope, cb);
 }
 
 obj_t *obj_cast(obj_t *o, unsigned char class)

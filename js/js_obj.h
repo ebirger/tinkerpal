@@ -201,7 +201,8 @@ extern bool_t false_obj;
     .value.fp = v }
 
 /* Generic obj methods */
-void obj_walk(obj_t *o, void (*cb)(obj_t *o));
+ /* obj_walk: cb returns true when object had already been walked */
+void obj_walk(obj_t *o, int (*cb)(obj_t *o));
 obj_t *obj_cast(obj_t *o, unsigned char class);
 obj_t **obj_var_create(obj_t *o, const tstr_t *str);
 obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *str);

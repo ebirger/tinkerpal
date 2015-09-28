@@ -97,11 +97,15 @@ static u8 gc_other_mark_flag(u8 mark_flag)
     return mark_flag == OBJ_GC_MARK1 ? OBJ_GC_MARK2 : OBJ_GC_MARK1;
 }
 
-static void gc_mark(obj_t *o)
+static int gc_mark(obj_t *o)
 {
+    if (o->flags & gc_mark_flag)
+        return 1;
+
     o->flags |= gc_mark_flag;
     /* Clear the other mark flag for next run */
     o->flags &= ~gc_other_mark_flag(gc_mark_flag);
+    return 0;
 }
 
 void gc_sweep(void *obj)
