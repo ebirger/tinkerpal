@@ -37,7 +37,7 @@ static void netif_pointer_free(void *ptr)
 int netif_obj_constructor(netif_t *netif, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
-    *ret = pointer_new(netif, netif_pointer_free);
+    *ret = pointer_new(netif, this, netif_pointer_free);
     obj_inherit(*ret, argv[0]);
     return 0;
 }

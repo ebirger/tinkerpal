@@ -115,7 +115,7 @@ int do_canvas_fill(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 int canvas_obj_constructor(canvas_t *canvas, obj_t **ret, obj_t *this,
     int argc, obj_t *argv[])
 {
-    *ret = pointer_new(canvas, canvas_obj_free);
+    *ret = pointer_new(canvas, this, canvas_obj_free);
     obj_inherit(*ret, argv[0]);
     return 0;
 }

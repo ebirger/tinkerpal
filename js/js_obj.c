@@ -337,6 +337,8 @@ void obj_walk(obj_t *o, int (*cb)(obj_t *o))
         obj_walk(iter->obj, cb);
     if (is_function(o))
         obj_walk(to_function(o)->scope, cb);
+    if (is_pointer(o))
+        obj_walk(to_pointer(o)->related_obj, cb);
 }
 
 obj_t *obj_cast(obj_t *o, unsigned char class)
@@ -1767,21 +1769,30 @@ static obj_t *arguments_get_own_property(obj_t ***lval, obj_t *o,
 }
 
 /*** "pointer" Class ***/
-obj_t *pointer_new(void *ptr, void (*free)(void *ptr))
+obj_t *pointer_new(void *ptr, obj_t *related_obj, void (*free)(void *ptr))
 {
     pointer_t *ret = (pointer_t *)obj_new(POINTER_CLASS);
     
     ret->ptr = ptr;
+    ret->related_obj = obj_get(related_obj);
     ret->free = free;
     return (obj_t *)ret;
+}
+
+static void pointer_free_gc(obj_t *o)
+{
+    pointer_t *p = to_pointer(o);
+
+    if (p->free)
+        p->free(p->ptr);
 }
 
 static void pointer_free(obj_t *o)
 {
     pointer_t *p = to_pointer(o);
 
-    if (p->free)
-        p->free(p->ptr);
+    pointer_free_gc(o);
+    obj_put(p->related_obj);
 }
 
 static void pointer_dump(printer_t *printer, obj_t *o)
@@ -1919,6 +1930,7 @@ const obj_class_t classes[] = {
     [ POINTER_CLASS ] = {
         .dump = pointer_dump,
         .free = pointer_free,
+        .free_gc = pointer_free_gc,
         .do_op = object_do_op,
     },
 };

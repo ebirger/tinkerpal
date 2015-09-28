@@ -149,6 +149,7 @@ typedef struct {
 typedef struct {
     obj_t obj;
     void *ptr;
+    obj_t *related_obj;
     void (*free)(void *ptr);
 } pointer_t;
 
@@ -418,7 +419,7 @@ static inline arguments_t *to_arguments(obj_t *o)
 }
 
 /* "pointer" objects methods */
-obj_t *pointer_new(void *ptr, void (*free)(void *ptr));
+obj_t *pointer_new(void *ptr, obj_t *related_obj, void (*free)(void *ptr));
 
 static inline int is_pointer(obj_t *o)
 {
