@@ -309,7 +309,7 @@ obj_t *obj_get_own_property(obj_t ***lval, obj_t *o, const tstr_t *key)
     {
         if (!ref)
         {
-            ref = obj_var_create(o, key);
+            ref = obj_var_create(o, tmpl->name);
             *ref = obj_get(obj_gen_from_templ(tmpl));
         }
         if (lval)
