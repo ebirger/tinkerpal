@@ -42,6 +42,7 @@ struct var_t {
 };
 
 typedef struct {
+    char *name;
     void (*dump)(printer_t *printer, obj_t *o);
 #ifdef CONFIG_OBJ_DOC
     int (*describe)(printer_t *printer, obj_t *o);
@@ -1851,12 +1852,14 @@ void js_obj_init(void)
 
 const obj_class_t classes[] = {
     [ NUM_CLASS ] = {
+        .name = "number",
         .dump = num_dump,
         .do_op = num_do_op,
         .is_true = num_is_true,
         .cast = num_cast,
     },
     [ FUNCTION_CLASS ] = {
+        .name = "function",
         .dump = function_dump,
 #ifdef CONFIG_OBJ_DOC
         .describe = function_describe,
@@ -1867,24 +1870,28 @@ const obj_class_t classes[] = {
         .cast = function_cast,
     },
     [ UNDEFINED_CLASS ] = {
+        .name = "undefined",
         .dump = undefined_dump,
         .do_op = undefined_do_op,
         .is_true = undefined_is_true,
         .cast = undefined_cast,
     },
     [ NULL_CLASS ] = {
+        .name = "null",
         .dump = null_dump,
         .do_op = null_do_op,
         .is_true = null_is_true,
         .cast = null_cast,
     },
     [ BOOL_CLASS ] = {
+        .name = "boolean",
         .dump = bool_dump,
         .do_op = bool_do_op,
         .is_true = bool_is_true,
         .cast = bool_cast,
     },
     [ STRING_CLASS ] = {
+        .name = "string",
         .dump = string_dump,
         .free = string_free,
         .do_op = string_do_op,
@@ -1893,20 +1900,24 @@ const obj_class_t classes[] = {
         .get_own_property = string_get_own_property,
     },
     [ OBJECT_CLASS ] = {
+        .name = "object",
         .dump = object_dump,
         .cast = object_cast,
         .do_op = object_do_op,
     },
     [ ARRAY_CLASS] = {
+        .name = "array",
         .dump = array_dump,
         .cast = array_cast,
         .do_op = array_do_op,
         .pre_var_create = array_pre_var_create,
     },
     [ ENV_CLASS ] = {
+        .name = "env",
         .dump = env_dump,
     },
     [ ARRAY_BUFFER_CLASS ] = {
+        .name = "array buffer",
         .dump = array_buffer_dump,
         .cast = array_buffer_cast,
         .free = array_buffer_free,
@@ -1914,6 +1925,7 @@ const obj_class_t classes[] = {
         .do_op = object_do_op,
     },
     [ ARRAY_BUFFER_VIEW_CLASS ] = {
+        .name = "array buffer view",
         .dump = array_dump,
         .cast = array_buffer_view_cast,
         .free = array_buffer_view_free,
@@ -1922,12 +1934,14 @@ const obj_class_t classes[] = {
         .do_op = object_do_op,
     },
     [ ARGUMENTS_CLASS ] = {
+        .name = "arguments",
         .dump = array_dump,
         .free = arguments_free,
         .get_own_property = arguments_get_own_property,
         .do_op = object_do_op,
     },
     [ POINTER_CLASS ] = {
+        .name = "pointer",
         .dump = pointer_dump,
         .free = pointer_free,
         .free_gc = pointer_free_gc,
