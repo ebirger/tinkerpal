@@ -1815,6 +1815,47 @@ void js_obj_foreach_alloced_obj(void (*cb)(void *obj))
     }
 }
 
+#define GRAPH_OUT(fmt, args...) tp_out(fmt, ## args)
+
+static void js_obj_graph_cb(void *obj)
+{
+    var_t *prop;
+    obj_t *o = obj;
+
+    if (!o)
+        return;
+
+    if (OBJ_IS_INT_VAL(o))
+        GRAPH_OUT("\"%p\" [label=\"%p INT VAL\"]\n", o, o);
+    else
+    {
+        GRAPH_OUT("\"%p\" [label=\"%p class=%s ref=%d flags=%x\"]\n", o, o,
+                CLASS(o)->name, o->ref_count, o->flags);
+    }
+
+    for (prop = o->properties; prop; prop = prop->next)
+    {
+        if (!prop->obj || OBJ_IS_INT_VAL(prop->obj))
+            continue;
+
+        GRAPH_OUT("\"%p\" -> \"%p\" [label=%S]\n", o, prop->obj, &prop->key);
+        if (prop->obj->flags & OBJ_STATIC)
+            js_obj_graph_cb(prop->obj);
+    }
+    if (is_function(o))
+    {
+        GRAPH_OUT("\"%p\" -> \"%p\" [label=%s]\n", o, to_function(o)->scope,
+            "scope");
+    }
+}
+
+void js_obj_graph(void)
+{
+    GRAPH_OUT("digraph objs {\n");
+    js_obj_foreach_alloced_obj(js_obj_graph_cb);
+    GRAPH_OUT("}\n");
+}
+
 /*** Initialization Sequence Functions ***/
 void obj_class_set_prototype(unsigned char class, obj_t *proto)
 {

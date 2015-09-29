@@ -180,3 +180,9 @@ int do_compile(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 
     return 0;
 }
+
+int do_objgraph(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
+{
+    js_obj_graph();
+    return 0;
+}

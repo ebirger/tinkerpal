@@ -90,3 +90,10 @@ FUNCTION("compile", global_env, do_compile, {
     .return_value = "The compiled function",
     .example = "var f = compile(function() { return 1 + 1; });",
 })
+
+FUNCTION("objGraph", global_env, do_objgraph, {
+    .params = { },
+    .description = "Create a DOT graph of allocated objects",
+    .return_value = "None",
+    .example = "objGraph()",
+})
