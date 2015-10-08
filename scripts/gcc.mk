@@ -28,7 +28,7 @@ calc_deps=$(CC) $(CFLAGS) -MM  -MT $@ -MF $(@:.o=.d) $<
 include_deps=$(eval -include $(OBJS:.o=.d)) \
   $(if $(LINKER_SCRIPT),$(eval -include $(LINKER_SCRIPT:.ld=.ld.d)))
 link=$(LD) $(LDFLAGS) $(if $(LINKER_SCRIPT),-T $(LINKER_SCRIPT)) -o $@ $(OBJS) $(LIBS)
-obj_to_bin=$(OBJCOPY) -O binary $< $@
+gen_image=$(OBJCOPY) -O binary $< $(IMAGE)
 
 # Targets
 TARGET_NAME:=tp
