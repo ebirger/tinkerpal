@@ -56,7 +56,7 @@ static void validate_types(void)
     COMPILE_TIME_ASSERT(sizeof(u64) == 8);
 }
 
-int tp_main(int argc, char *argv[])
+void tp_init(void)
 {
     debugfn_t dbg = {};
 
@@ -78,11 +78,10 @@ int tp_main(int argc, char *argv[])
     usbd_init();
 
     platform_meminfo();
+}
 
-    app_start(argc, argv);
-    
-    event_loop();
-
+void tp_uninit(void)
+{
     usbd_uninit();
     net_uninit();
     js_uninit();
@@ -90,5 +89,16 @@ int tp_main(int argc, char *argv[])
 
     tmalloc_uninit();
     platform_uninit();
+}
+
+int tp_main(int argc, char *argv[])
+{
+    tp_init();
+
+    app_start(argc, argv);
+
+    event_loop();
+
+    tp_uninit();
     return 0;
 }
