@@ -3,6 +3,9 @@ menu "Memory Allocation Tuning"
 config PLAT_HAS_MALLOC
 	bool
 
+config PLAT_HAS_OWN_MALLOC
+	bool
+
 choice
 	prompt "Memory allocation mode"
 	default MALLOC
@@ -14,6 +17,10 @@ config MALLOC
 config DLMALLOC
 	bool "Use Doug Lea malloc"
 	depends on !TI_CCS5
+
+config PLAT_MALLOC
+	bool "Platform Provided Allocation"
+	depends on PLAT_HAS_OWN_MALLOC
 
 endchoice
 

@@ -41,6 +41,14 @@ static mem_squeezer_t *squeezers;
 #define tmalloc_real malloc
 #define tfree_real free
 
+#elif defined(CONFIG_PLAT_MALLOC)
+
+#include <stdlib.h>
+#include "platform/platform.h"
+
+#define tmalloc_real platform_mem_alloc
+#define tfree_real platform_mem_free
+
 #else
 
 #error malloc type must be defined!
