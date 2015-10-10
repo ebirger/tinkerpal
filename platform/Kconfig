@@ -42,6 +42,7 @@ source "platform/msp430/Kconfig"
 source "platform/unix/Kconfig"
 source "platform/x86/Kconfig"
 source "platform/avr8/Kconfig"
+source "platform/esp8266/Kconfig"
 
 source "platform/Kconfig.toolchain"
 

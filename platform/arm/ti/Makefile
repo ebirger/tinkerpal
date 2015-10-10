@@ -34,7 +34,7 @@ ifneq ($(CONFIG_TI_CCS5),)
   TI_OBJ2BIN_PATH:=$(TI_CCS5)/utils/tiobj2bin
   OBJ2BIN=$(shell cygpath -u "$(TI_OBJ2BIN_PATH)/tiobj2bin.bat")
 
-  obj_to_bin=$(OBJ2BIN) $< $@ "$(TI_COMPILER)/bin/ofd470" \
+  gen_image=$(OBJ2BIN) $< $(IMAGE) "$(TI_COMPILER)/bin/ofd470" \
     "$(TI_COMPILER)/bin/hex470" "$(TI_OBJ2BIN_PATH)/mkhex4bin"
   CFLAGS+=--abi=eabi -me --ual --include_path=$(TI_ARM_MCU_BSP_DIR)
   LDFLAGS+=--abi=eabi -me --ual

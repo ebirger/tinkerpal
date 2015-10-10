@@ -20,7 +20,7 @@ ADDITIONAL_LDFLAGS=-O2 -g --gcc --define=ccs="ccs" --diag_warning=225 \
 # Build commands
 compile=$(CC) $(CFLAGS) $(MK_CFLAGS_$@) $(INC) --output_file $@ $<
 link=$(CC) $(LDFLAGS) $(ADDITIONAL_LDFLAGS) -i=$(BUILD) --output_file $@ $(OBJS) $(LIBS) $(LINKER_SCRIPT)
-obj_to_bin=
+gen_image=
 
 # Dependencies - alas, no automatic header dependency generation yet, 
 # have all objs rely on all headers

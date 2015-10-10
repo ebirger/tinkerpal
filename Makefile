@@ -46,8 +46,8 @@ else
 
 include $(BUILD)/auto.conf
 
+include scripts/defaults.mk
 include scripts/Makefile.toolchain
-
 include scripts/text_to_c.mk
 
 d=.
@@ -69,7 +69,7 @@ include scripts/footer.mk
 $(call include_deps)
 
 TARGET=$(BUILD)/$(TARGET_NAME)
-IMAGE=$(BUILD)/$(IMAGE_NAME)
+IMAGE=$(addprefix $(BUILD)/,$(IMAGE_NAME))
 COVERAGE_INFO=$(BUILD)/cov.info
 
 _all: $(BSPS_DIR)/.fetched $(IMAGE) $(BUILD)/auto.conf
@@ -106,7 +106,7 @@ coverage: gen_cov_info
 quiet_compile= CC $@
 quiet_asm= AS $@
 quiet_link= LD $@
-quiet_obj_to_bin= GEN $@
+quiet_gen_image= GEN $(IMAGE)
 
 $(BUILD)/version_data.h :
 	@echo "GEN $@"
@@ -144,12 +144,15 @@ $(BUILD)/%.o : %.s $(ALL_DEPS)
 	@$(call asm)
 
 $(TARGET) : $(OBJS) $(LINK_DEPS)
-	@echo $($(quiet_)link)
-	@$(call link)
+	$(call target_link)
 
-$(IMAGE) : $(TARGET)
-	@echo $($(quiet_)obj_to_bin)
-	@$(call obj_to_bin)
+# Use .INTERMEDIATE target as a trick for supporting
+# an atomic generation of multiple IMAGE files
+$(IMAGE) : $(TARGET).interm
+.INTERMEDIATE: $(TARGET).interm
+$(TARGET).interm : $(TARGET)
+	@echo $($(quiet_)gen_image)
+	@$(call gen_image)
 
 help:
 	@echo 'Cleaning targets:'

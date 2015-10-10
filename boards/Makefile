@@ -15,6 +15,7 @@ MK_OBJS+=$(if $(CONFIG_MSP430F5529_LAUNCHPAD),board_msp430f5529.o)
 MK_OBJS+=$(if $(CONFIG_PLATFORM_EMULATION),board_unix_sim.o)
 MK_OBJS+=$(if $(CONFIG_X86_PLATFORM_EMULATION),board_x86_sim.o)
 MK_OBJS+=$(if $(CONFIG_TRINKET_PRO),board_trinket_pro.o)
+MK_OBJS+=$(if $(CONFIG_ESP8266_512KB),board_esp8266.o)
 
 include boards/burners.mk
 

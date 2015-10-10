@@ -53,6 +53,8 @@
 #include "platform/msp430/msp430f5529.h"
 #elif defined(CONFIG_ATMEGA328)
 #include "platform/avr8/atmega328.h"
+#elif defined(CONFIG_ESP8266)
+#include "platform/esp8266/esp8266.h"
 #elif defined(CONFIG_X86_PLATFORM_EMULATION)
 #else
 #error Platform constants not defined

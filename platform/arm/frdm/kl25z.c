@@ -198,8 +198,10 @@ const platform_t platform = {
         .write = kl25z_serial_write,
         .irq_enable = kl25z_serial_irq_enable,
     },
+    .mem = {
+        .info = cortex_m_meminfo,
+    },
     .init = kl25z_init,
-    .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = kl25z_select,
     .get_time_from_boot = gen_get_time_from_boot,

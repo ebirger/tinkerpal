@@ -22,50 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __EVENT_H__
-#define __EVENT_H__
+#ifndef __ESP8266_CONSTS_H__
+#define __ESP8266_CONSTS_H__
 
-#include "util/tp_types.h"
+#define NUM_UARTS 1
+#define UART0 0
 
-typedef struct event_t event_t;
-
-struct event_t {
-    /* Trigger is called from the event loop */
-    void (*trigger)(event_t *e, u32 resource_id, u64 timestamp);
-    /* Signal may be called from interrupts */
-    void (*signal)(event_t *e, u32 resource_id, u64 timestamp);
-    void (*free)(event_t *e);
-};
-
-/* num_timestamps must be a power of 2 */
-int _event_watch_set(u32 resource_id, event_t *e, u8 num_timestamps,
-    int is_one_shot);
-
-static inline int event_watch_set_once(u32 resource_id, event_t *e)
-{
-    return _event_watch_set(resource_id, e, 0, 1);
-}
-
-static inline int event_watch_set(u32 resource_id, event_t *e)
-{
-    return _event_watch_set(resource_id, e, 0, 0);
-}
-
-void event_watch_del(int watch_id);
-void event_watch_del_by_resource(u32 resource_id);
-void event_watch_del_all(void);
-void event_watch_trigger(u32 resource_id);
-void event_watch_signal(u32 resource_id);
-
-int event_timer_set(int ms, event_t *e);
-int event_timer_set_period(int ms, event_t *e);
-void event_timer_del(int id);
-void event_timer_del_all(void);
-
-int event_loop_single(int *next_timeout);
-void event_loop(void);
-
-void event_loop_uninit(void);
+#define NUM_GPIO_PORTS 0
 
 #endif
-

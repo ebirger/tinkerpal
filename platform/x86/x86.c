@@ -76,8 +76,10 @@ const platform_t platform = {
         .enable = x86_serial_enable,
         .write = x86_serial_write,
     },
+    .mem = {
+        .info = x86_meminfo,
+    },
     .init = x86_init,
-    .meminfo = x86_meminfo,
 };
 
 void kernel_main(int argc, char *argv[])

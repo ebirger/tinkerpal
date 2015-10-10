@@ -78,4 +78,8 @@ config TRINKET_PRO
 	bool "Trinket Pro ATMEGA328"
 	select ATMEGA328
 
+config ESP8266_512KB
+	bool "ESP8266 512KB flash"
+	select ESP8266
+
 endchoice

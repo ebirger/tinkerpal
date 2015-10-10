@@ -64,6 +64,11 @@ static inline s64 exp_power(int exp)
     return pow;
 }
 
+static inline double simple_fabs(double x)
+{
+    return x < 0 ? x * -1 : x;
+}
+
 static inline char digit_value(char c)
 {
     if (isdigit((int)c))

@@ -84,8 +84,12 @@ typedef struct {
             unsigned long len, int last);
         void (*set_addr)(unsigned short addr);
     } usb;
+    struct {
+        void *(*malloc)(int sz);
+        void (*free)(void *ptr);
+        void (*info)(void);
+    } mem;
     void (*init)(void);
-    void (*meminfo)(void);
     void (*get_time_from_boot)(uint32_t *sec, uint32_t *usec);
     unsigned long (*get_system_clock)(void);
     void (*msleep)(double ms);
@@ -104,12 +108,12 @@ extern const platform_t platform;
 
 static inline void platform_meminfo(void)
 {
-    if (!platform.meminfo)
+    if (!platform.mem.info)
     {
         tp_warn("No platform meminfo available\n");
         return;
     }
-    platform.meminfo();
+    platform.mem.info();
 }
 
 static inline void platform_get_time_from_boot(uint32_t *sec, uint32_t *usec)
@@ -130,6 +134,16 @@ static inline void platform_msleep(double ms)
 {
     tp_assert(platform.msleep);
     platform.msleep(ms);
+}
+
+static inline void *platform_mem_alloc(int sz)
+{
+    return platform.mem.malloc(sz);
+}
+
+static inline void platform_mem_free(void *ptr)
+{
+    platform.mem.free(ptr);
 }
 
 #endif
