@@ -18,8 +18,13 @@ CFLAGS+=-I. -I$(BUILD) -include $(BUILD)/autoconf.h \
   $(if $(CONFIG_GCC_GCOV),--coverage) $(if $(CONFIG_GCC_CAST_QUAL),-Wcast-qual)
 LDFLAGS+=$(if $(CONFIG_GCC_LTO),-flto) $(if $(CONFIG_GCC_GCOV),--coverage)
 AUTO_GEN_FILES+=$(if $(CONFIG_GCC_GCOV),$(OBJS:.o=.gcno) $(OBJS:.o=.gcda))
+
+define get_lib_dir
+  $(shell dirname $(shell $(CC) $(CFLAGS) -print-file-name=lib$1.a))
+endef
+
 get_libgcc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-libgcc-file-name))
-get_libc_dir=$(shell dirname $(shell $(CC) $(CFLAGS) -print-file-name=libc.a))
+get_libc_dir=$(call get_lib_dir,c)
 
 # Build commands
 compile=$(CC) $(CFLAGS) $(CFLAGS_$@) $(MK_CFLAGS_$@) -c -o $@ $<
