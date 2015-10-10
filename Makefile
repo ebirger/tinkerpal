@@ -46,8 +46,8 @@ else
 
 include $(BUILD)/auto.conf
 
+include scripts/defaults.mk
 include scripts/Makefile.toolchain
-
 include scripts/text_to_c.mk
 
 d=.
@@ -144,8 +144,7 @@ $(BUILD)/%.o : %.s $(ALL_DEPS)
 	@$(call asm)
 
 $(TARGET) : $(OBJS) $(LINK_DEPS)
-	@echo $($(quiet_)link)
-	@$(call link)
+	$(call target_link)
 
 # Use .INTERMEDIATE target as a trick for supporting
 # an atomic generation of multiple IMAGE files
