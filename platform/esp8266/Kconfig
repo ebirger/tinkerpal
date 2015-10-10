@@ -1,0 +1,7 @@
+config ESP8266
+        bool
+	select PLAT_HAS_GCC
+	select PLAT_HAS_OWN_MALLOC
+	select PLAT_HAS_SERIAL
+	select BUFFERED_SERIAL
+        select PLAT_TICKS
