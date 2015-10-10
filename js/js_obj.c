@@ -30,7 +30,6 @@
 #include "mem/mem_cache.h"
 #include "js/js_obj.h"
 #include "js/js_types.h"
-#include <math.h>
 #include <float.h>
 
 #define Slength INTERNAL_S("length")
@@ -570,9 +569,9 @@ static int fp_is_eq(double a, double b)
 {
     double aa, bb, diff;
 
-    aa = fabs(a);
-    bb = fabs(b);
-    diff = fabs(a - b);
+    aa = simple_fabs(a);
+    bb = simple_fabs(b);
+    diff = simple_fabs(a - b);
     return diff <= MAX(aa, bb) * FLT_EPSILON ? 1 : 0;
 }
 
