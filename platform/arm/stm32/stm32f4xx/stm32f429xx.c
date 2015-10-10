@@ -189,6 +189,9 @@ const platform_t platform = {
         .write = stm32_usart_write,
         .irq_enable = stm32_usart_irq_enable,
     },
+    .mem = {
+        .info = cortex_m_meminfo,
+    },
 #ifdef CONFIG_GPIO
     .gpio = {
         .digital_write = stm32_gpio_digital_write,
@@ -208,7 +211,6 @@ const platform_t platform = {
     },
 #endif
     .init = stm32_init,
-    .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = stm32_select,
     .get_time_from_boot = gen_get_time_from_boot,

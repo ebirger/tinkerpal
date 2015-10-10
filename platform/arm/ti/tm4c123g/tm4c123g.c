@@ -338,6 +338,9 @@ const platform_t platform = {
         .write = ti_arm_mcu_serial_write,
         .irq_enable = ti_arm_mcu_serial_irq_enable,
     },
+    .mem = {
+        .info = cortex_m_meminfo,
+    },
 #ifdef CONFIG_GPIO
     .gpio = {
         .digital_write = ti_arm_mcu_gpio_digital_write,
@@ -376,7 +379,6 @@ const platform_t platform = {
     },
 #endif
     .init = tm4c123g_init,
-    .meminfo = cortex_m_meminfo,
     .panic = cortex_m_panic,
     .select = ti_arm_mcu_select,
     .get_time_from_boot = gen_get_time_from_boot,
