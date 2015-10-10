@@ -339,27 +339,46 @@ static int watches_process(void)
     return more;
 }
 
-void event_loop(void)
+int event_loop_single(int *next_timeout)
 {
-    while (watches || timers) 
+    int timeout, more_watches;
+
+    if (!watches && !timers)
+        return 0;
+
+    more_watches = watches_process();
+
+    get_next_timeout(&timeout);
+
+    if ((!timers || timeout > 0) && !more_watches)
+        platform.select(timeout);
+
+    timeout_process();
+
+    event_purge_deleted(&timers);
+    event_purge_deleted(&watches);
+
+    if (next_timeout)
     {
-        int timeout, more_watches;
-
-        more_watches = watches_process();
-
-        get_next_timeout(&timeout);
-
-        if ((!timers || timeout > 0) && !more_watches)
-            platform.select(timeout);
-
-        timeout_process();
-
-        event_purge_deleted(&timers);
-        event_purge_deleted(&watches);
+        /* timeout_process() may have scheduled a new timer,
+         * re-calculate the sleep time.
+         */
+        get_next_timeout(next_timeout);
     }
+    return 1;
+}
 
+void event_loop_uninit(void)
+{
     event_timer_del_all();
     event_watch_del_all();
     event_purge_deleted(&timers);
     event_purge_deleted(&watches);
+}
+
+void event_loop(void)
+{
+    while (event_loop_single(NULL));
+
+    event_loop_uninit();
 }

@@ -62,7 +62,10 @@ int event_timer_set_period(int ms, event_t *e);
 void event_timer_del(int id);
 void event_timer_del_all(void);
 
+int event_loop_single(int *next_timeout);
 void event_loop(void);
+
+void event_loop_uninit(void);
 
 #endif
 
