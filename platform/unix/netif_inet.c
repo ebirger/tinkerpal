@@ -273,7 +273,7 @@ netif_t *netif_inet_new(char *dev_name)
         inet->dev_name[0] = '\0';
     inet->socket = -1;
 
-    netif_register(&inet->netif, &netif_inet_ops);
+    netif_register(&inet->netif, "INET", &netif_inet_ops);
     printf("Created INET Interface\n");
     return &inet->netif;
 }

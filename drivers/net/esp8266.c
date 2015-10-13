@@ -547,7 +547,8 @@ netif_t *esp8266_new(const esp8266_params_t *params)
     e->params = *params;
     sm_reset(e);
     e->tcp_connected = 0;
-    netif_register(&e->netif, &esp8266_netif_ops);
+    netif_register(&e->netif, "ESP8266 Wi-Fi to Serial Bridge",
+        &esp8266_netif_ops);
     esp8266_init(e);
     return &e->netif;
 }

@@ -47,7 +47,8 @@ struct etherif_t {
 };
 
 void etherif_destruct(etherif_t *ethif);
-void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops);
+void etherif_construct(etherif_t *ethif, const char *name,
+    const etherif_ops_t *ops);
 
 etherif_t *etherif_get_by_id(int id);
 etherif_t *netif_to_etherif(netif_t *netif);

@@ -69,6 +69,7 @@ typedef struct {
 struct netif_t {
     netif_t *next;
     int id;
+    const char *name;
     const netif_ops_t *ops;
 };
 
@@ -143,7 +144,7 @@ static inline void netif_event_trigger(netif_t *netif, netif_event_t event)
 }
 
 netif_t *netif_get_by_id(int id);
-void netif_register(netif_t *netif, const netif_ops_t *ops);
+void netif_register(netif_t *netif, const char *name, const netif_ops_t *ops);
 void netif_unregister(netif_t *netif);
 
 #endif

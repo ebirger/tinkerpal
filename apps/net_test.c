@@ -115,6 +115,8 @@ void app_start(int argc, char *argv[])
 
     tp_assert(netif);
 
+    tp_out("Network Interface: %s\n", netif->name);
+
     netif_mac_addr_get(netif, &mac);
     tp_out("Interface MAC address: %s\n", eth_mac_serialize(&mac));
     cli_start(&net_test_cli_client);

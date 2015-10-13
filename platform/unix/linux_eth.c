@@ -202,7 +202,7 @@ netif_t *linux_eth_new(char *dev_name)
         return NULL;
 
     eth->packet_event.trigger = linux_eth_packet_event;
-    etherif_construct(&eth->ethif, &linux_eth_ops);
+    etherif_construct(&eth->ethif, "Packet", &linux_eth_ops);
     unix_sim_add_fd_event_to_map(NET_ID, eth->packet_socket,
         eth->packet_socket);
     eth->packet_event_id = event_watch_set(NET_RES, &eth->packet_event);

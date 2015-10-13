@@ -174,7 +174,7 @@ static void hw_init(void)
 netif_t *tiva_c_emac_new(void)
 {
     g_eth.istat = 0;
-    etherif_construct(&g_eth.ethif, &tiva_c_emac_etherif_ops);
+    etherif_construct(&g_eth.ethif, "Tiva C", &tiva_c_emac_etherif_ops);
 
     hw_init();
     phy_cfg();
