@@ -32,6 +32,7 @@
 #define IP_ADDR_BCAST 0xffffffff
 
 typedef struct {
+    /* All in HOST order */
     u32 ip;
     u32 netmask;
     u32 router;
