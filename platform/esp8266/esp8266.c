@@ -177,6 +177,11 @@ static void system_init_done(void)
     extern void tp_init(void);
 
     tp_init();
+
+    tp_out("SDK Version: %s\n", system_get_sdk_version());
+    tp_out("CPU Frequency: %d MHz\n", system_get_cpu_freq());
+    tp_out("Max TCP Connections: %d\n", espconn_tcp_get_max_con());
+
     app_start(0, 0);
     system_os_task(loop, 0, task_queue, ARRAY_SIZE(task_queue));
     system_os_post(0, 0, 0);
