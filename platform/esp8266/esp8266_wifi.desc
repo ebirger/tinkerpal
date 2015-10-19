@@ -1,0 +1,8 @@
+CONSTRUCTOR("ESP8266_WIFI", netif, do_esp8266_wifi_constructor, {
+    .params = {
+    },
+    .description = "ESP8266 Wi-Fi Constructor",
+    .return_value = "Created object",
+    .example = "var esp = new ESP8266_WIFI();\n"
+        "esp.IPConnect();\n"
+})

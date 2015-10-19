@@ -189,5 +189,6 @@ static void system_init_done(void)
 
 void user_init(void)
 {
+    wifi_station_set_auto_connect(0);
     system_init_done_cb(system_init_done);
 }

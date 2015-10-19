@@ -5,6 +5,10 @@ endif
 ESPTOOL=esptool.py
 
 MK_OBJS+=esp8266.o
+ifneq ($(CONFIG_ESP8266_WIFI),)
+  MK_OBJS+=esp8266_wifi.o $(if $(CONFIG_JS),js_esp8266_wifi.o)
+  MK_DESCS=esp8266_wifi.desc
+endif
 
 CFLAGS+=-fno-builtin -fno-strict-aliasing -mlongcalls \
   -mtext-section-literals  -D__ets__ -DICACHE_FLASH -Wl,EL \

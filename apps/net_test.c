@@ -41,6 +41,8 @@
 #include "drivers/net/enc28j60.h"
 #elif defined(CONFIG_NET_ESP8266)
 #include "drivers/net/esp8266.h"
+#elif defined(CONFIG_ESP8266_WIFI)
+#include "platform/esp8266/esp8266_wifi.h"
 #else
 #error No Network device available
 #endif
@@ -111,6 +113,8 @@ void app_start(int argc, char *argv[])
     netif = enc28j60_new(&board.enc28j60_params);
 #elif defined(CONFIG_NET_ESP8266)
     netif = esp8266_new(&board.esp8266_params);
+#elif defined(CONFIG_ESP8266_WIFI)
+    netif = esp8266_wifi_new();
 #endif
 
     tp_assert(netif);
