@@ -8,4 +8,4 @@ config ESP8266
 
 config ESP8266_WIFI
         bool "Wi-Fi Support"
-        depends on NET
+        depends on ESP8266 && NET
