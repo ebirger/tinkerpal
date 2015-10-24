@@ -418,7 +418,7 @@ static void esp8266_tcp_disconnect(esp8266_t *e)
     sm_uninit(e);
 }
 
-static int esp8266_netif_connect(netif_t *netif, u8 proto, void *params)
+static int esp8266_netif_proto_connect(netif_t *netif, u8 proto, void *params)
 {
     esp8266_t *e = netif_to_esp8266(netif);
     tcp_udp_connect_params_t *conn = params;
@@ -526,7 +526,7 @@ static const netif_ops_t esp8266_netif_ops = {
     .link_status = NULL,
     .ip_connect = esp8266_netif_ip_connect,
     .ip_disconnect = NULL,
-    .connect = esp8266_netif_connect,
+    .proto_connect = esp8266_netif_proto_connect,
     .tcp_read = esp8266_netif_tcp_read,
     .tcp_write = esp8266_netif_tcp_write,
     .disconnect = esp8266_netif_disconnect,

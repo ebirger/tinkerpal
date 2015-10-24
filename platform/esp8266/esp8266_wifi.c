@@ -141,7 +141,7 @@ static int esp8266_wifi_disconnect(netif_t *netif)
     return 0;
 }
 
-static int esp8266_wifi_connect(netif_t *netif, u8 proto, void *params)
+static int esp8266_wifi_proto_connect(netif_t *netif, u8 proto, void *params)
 {
     static struct espconn *conn = &connection;
     tcp_udp_connect_params_t *conn_params = params;
@@ -223,7 +223,7 @@ static const netif_ops_t esp8266_wifi_ops = {
     .link_status = esp8266_wifi_link_status,
     .ip_connect = esp8266_wifi_ip_connect,
     .ip_disconnect = esp8266_wifi_ip_disconnect,
-    .connect = esp8266_wifi_connect,
+    .proto_connect = esp8266_wifi_proto_connect,
     .tcp_read = esp8266_wifi_tcp_read ,
     .tcp_write = esp8266_wifi_tcp_write,
     .disconnect = esp8266_wifi_disconnect,
