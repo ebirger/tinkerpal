@@ -299,9 +299,9 @@ static void esp8266_init(esp8266_t *e)
 #define SSID "dummy"
 #define PSK "psk"
 
-static void esp8266_connect(esp8266_t *e)
+static void esp8266_ip_connect(esp8266_t *e)
 {
-    sm_init(e, esp8266_connect);
+    sm_init(e, esp8266_ip_connect);
     AT_MATCH(e, "AT+CWMODE=1", "no change");
     sm_wait(e, 100);
     /* TODO: receive connection params */
@@ -338,7 +338,7 @@ static int esp8266_netif_ip_connect(netif_t *netif)
     esp8266_t *e = netif_to_esp8266(netif);
 
     sm_reset(e);
-    esp8266_connect(e);
+    esp8266_ip_connect(e);
     return 0;
 }
 
