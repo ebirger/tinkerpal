@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "doc/tdocs.h"
+#include "doc/gen_js_api.h"
 #include "version_data.h"
 
 static FILE *fp;

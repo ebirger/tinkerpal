@@ -16,13 +16,13 @@ $(DOCS_DIR)/doc.h: $(DESCS)
 	@mkdir -p $(DOCS_DIR)
 	@cat $^ > $@
 
-$(DOCS_DIR)/tdocs: doc/tdocs.c $(DOCS_DIR)/doc.h doc/tdocs.h $(BUILD)/autoconf.h
+$(DOCS_DIR)/gen_js_api: doc/gen_js_api.c $(DOCS_DIR)/doc.h doc/gen_js_api.h $(BUILD)/autoconf.h
 	@gcc -I. -I$(BUILD) -include $(BUILD)/autoconf.h -o $@ $<
 
 $(DOCS_DIR)/manual.html: doc/manual.txt
 	@asciidoc -b html5 -o $@ $<
 
-$(DOCS_DIR)/api.restdown: $(BUILD)/doc/tdocs
+$(DOCS_DIR)/api.restdown: $(BUILD)/doc/gen_js_api
 	@$< $@
 
 $(DOCS_DIR)/api.html: $(DOCS_DIR)/api.restdown | $(RESTDOWN_EXEC)
