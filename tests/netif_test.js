@@ -38,7 +38,7 @@ function do_weather() {
         }
         full += s;
     });
-    n.TCPConnect('173.194.116.144', 80, function() {
+    n.TCPConnect('77.154.221.186', 80, function() {
         console.log("TCP Connected");
         n.TCPWrite('GET / HTTP/1.0\r\n' +
             '\r\n\r\n');
