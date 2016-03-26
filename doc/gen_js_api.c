@@ -177,6 +177,7 @@ static void print_object(doc_object_t *o)
             (*f)->flags & FUNCTION_FLAG_CONSTRUCTOR ? " (constructor)" : "");
         P("");
         P("%s", (*f)->description);
+        P("");
         print_subsubsection("Example");
         print_code_block((*f)->example);
         print_function_params(*f);
