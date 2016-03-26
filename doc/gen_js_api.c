@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "util/tp_misc.h"
 #include "doc/gen_js_api.h"
 #include "version_data.h"
 
@@ -110,6 +111,43 @@ static void print_replace(const char *str, char replaceme, const char *with)
     }
 }
 
+static void __print_table_header(int n, const char *labels[])
+{
+    int i;
+
+    for (i = 0; i < n; i++)
+      _P("||**%s**", *labels++);
+    P("||");
+}
+#define print_table_header(args...) \
+    SPLAT(__print_table_header, const char *, args)
+
+static void __print_table_row(int n, const char *labels[])
+{
+    int i;
+
+    for (i = 0; i < n; i++)
+    {
+        _P("||");
+        print_replace(*labels++, '\n', "<br>");
+    }
+    P("||");
+}
+#define print_table_row(args...) \
+    SPLAT(__print_table_row, const char *, args)
+
+#define print_section(fmt, args...) P("# " fmt, ##args)
+#define print_subsection(fmt, args...) P("## " fmt, ##args)
+#define print_subsubsection(fmt, args...) P("### " fmt, ##args)
+
+static void print_code_block(const char *code)
+{
+    _P("    ");
+    print_replace(code, '\n', "\n    ");
+    P("");
+    P("");
+}
+
 static void print_function_params(doc_function_t *f)
 {
     const doc_function_param_t *p;
@@ -117,34 +155,27 @@ static void print_function_params(doc_function_t *f)
     if (!f->params->name)
         return;
 
-    P("||**Parameter Name**||**Description**||");
+    print_table_header("Parameter Name", "Description");
     for (p = f->params; p->name; p++)
-    {
-        _P("||%s||", p->name);
-        print_replace(p->description, '\n', "<br>");
-        P("||");
-    }
+        print_table_row(p->name, p->description);
 }
 
 static void print_object(doc_object_t *o)
 {
     doc_function_t **f;
 
-    P("# %s", o->display_name);
+    print_section("%s", o->display_name);
     for (f = funcs; *f; f++)
     {
         if ((*f)->parent != o)
             continue;
 
-        P("## %s%s", (*f)->display_name,
+        print_subsection("%s%s", (*f)->display_name,
             (*f)->flags & FUNCTION_FLAG_CONSTRUCTOR ? " (constructor)" : "");
         P("");
         P("%s", (*f)->description);
-        P("### Example");
-        _P("    ");
-        print_replace((*f)->example, '\n', "\n    ");
-        P("");
-        P("");
+        print_subsubsection("Example");
+        print_code_block((*f)->example);
         print_function_params(*f);
         P("");
     }
