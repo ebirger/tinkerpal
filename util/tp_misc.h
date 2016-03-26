@@ -37,6 +37,9 @@
 
 #define ARRAY_SIZE(a) ((sizeof(a)) / sizeof((a)[0]))
 
+#define SPLAT(fn, type, args...) (fn)(ARRAY_SIZE(((type[]){ args })), \
+    (type[]){ args })
+
 #define COMPILE_TIME_ASSERT(c) ((void)(sizeof(char[1-2*(!(c))])))
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
