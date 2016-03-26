@@ -116,8 +116,11 @@ static void __print_table_header(int n, const char *labels[])
     int i;
 
     for (i = 0; i < n; i++)
-      _P("||**%s**", *labels++);
-    P("||");
+      _P("|%s", *labels++);
+    P("|");
+    for (i = 0; i < n; i++)
+      _P("|---");
+    P("|");
 }
 #define print_table_header(args...) \
     SPLAT(__print_table_header, const char *, args)
@@ -128,10 +131,10 @@ static void __print_table_row(int n, const char *labels[])
 
     for (i = 0; i < n; i++)
     {
-        _P("||");
+        _P("|");
         print_replace(*labels++, '\n', "<br>");
     }
-    P("||");
+    P("|");
 }
 #define print_table_row(args...) \
     SPLAT(__print_table_row, const char *, args)
@@ -260,7 +263,7 @@ static void print_header(void)
 {
     P("---");
     P("title: API Guide | Tinkerpal " TINKERPAL_VERSION);
-    P("markdown2extras: wiki-tables, code-friendly");
+    P("markdown2extras: tables, wiki-tables, code-friendly");
     P("---");
     P("#API");
     P("Objects and methods detailed below");
