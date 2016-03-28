@@ -45,6 +45,8 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
 
+#define PLATFORM_CHIPSET_H "platform/arm/ti/lm4f120xl/chipset.h"
+
 const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
     [GPIO_PORT_A] = { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, INT_GPIOA },
     [GPIO_PORT_B] = { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, INT_GPIOB },
@@ -64,15 +66,9 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
         .txpin = tx, \
         .rx_af = GPIO_##rx##_U##num##RX, \
         .tx_af = GPIO_##tx##_U##num##TX, \
-    }
-    UART_DEF(0, PA0, PA1),
-    UART_DEF(1, PB0, PB1),
-    UART_DEF(2, PD6, PD7),
-    UART_DEF(3, PC6, PC7),
-    UART_DEF(4, PC4, PC5),
-    UART_DEF(5, PE4, PE5),
-    UART_DEF(6, PD4, PD5),
-    UART_DEF(7, PE0, PE1),
+    },
+
+#include "platform/chipset.h"
 };
 
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
@@ -88,9 +84,9 @@ const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
         .fss_af = GPIO_##fsspin##_SSI##num##FSS, \
         .rx_af = GPIO_##rxpin##_SSI##num##RX, \
         .tx_af = GPIO_##txpin##_SSI##num##TX, \
-    }
-    SSI_DEF(0, PA2, PA3, PA4, PA5),
-    SSI_DEF(1, PD0, PD1, PD2, PD3),
+    },
+
+#include "platform/chipset.h"
 };
 
 const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
@@ -117,11 +113,9 @@ const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[] = {
         .sda = sdapin, \
         .scl_af = GPIO_##sclpin##_I2C##num##SCL, \
         .sda_af = GPIO_##sdapin##_I2C##num##SDA, \
-    }
-    I2C_DEF(0, PB2, PB3),
-    I2C_DEF(1, PA6, PA7),
-    I2C_DEF(2, PE4, PE5),
-    I2C_DEF(3, PD0, PD1),
+    },
+
+#include "platform/chipset.h"
 };
 
 /* Notes:

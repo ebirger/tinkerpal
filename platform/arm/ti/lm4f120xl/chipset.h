@@ -1,0 +1,23 @@
+CHIPSET_START(lm4f120xl)
+
+/* UART (num, rx, tx) */
+UART_DEF(0, PA0, PA1)
+UART_DEF(1, PB0, PB1)
+UART_DEF(2, PD6, PD7)
+UART_DEF(3, PC6, PC7)
+UART_DEF(4, PC4, PC5)
+UART_DEF(5, PE4, PE5)
+UART_DEF(6, PD4, PD5)
+UART_DEF(7, PE0, PE1)
+
+/* SSI (num, clkpin, fsspin, rxpin, txpin) */
+SSI_DEF(0, PA2, PA3, PA4, PA5)
+SSI_DEF(1, PD0, PD1, PD2, PD3)
+
+/* I2C (num, sclpin, sdapin) */
+I2C_DEF(0, PB2, PB3)
+I2C_DEF(1, PA6, PA7)
+I2C_DEF(2, PE4, PE5)
+I2C_DEF(3, PD0, PD1)
+
+CHIPSET_END()
