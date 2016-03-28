@@ -25,11 +25,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "doc/print.h"
 #include "util/tp_misc.h"
 #include "doc/gen_js_api.h"
 #include "version_data.h"
-
-static FILE *fp;
 
 #define CONST(...)
 #define CONST_INT_VAL(...)
@@ -89,67 +88,10 @@ static doc_function_t *funcs[] = {
     NULL
 };
 
-#define _P(fmt, args...) fprintf(fp, fmt, ##args)
-#define P(fmt, args...) fprintf(fp, fmt "\n", ##args)
-
 static doc_element_t main_de = { 
     .name = "index", 
     .display_name = "TinkerPal " TINKERPAL_VERSION " API" 
 };
-
-static void print_replace(const char *str, char replaceme, const char *with)
-{
-    int n = strlen(str);
-
-    while (n--)
-    {
-        if (*str == replaceme)
-            _P("%s", with);
-        else
-            _P("%c", *str);
-        str++;
-    }
-}
-
-static void __print_table_header(int n, const char *labels[])
-{
-    int i;
-
-    for (i = 0; i < n; i++)
-      _P("|%s", *labels++);
-    P("|");
-    for (i = 0; i < n; i++)
-      _P("|---");
-    P("|");
-}
-#define print_table_header(args...) \
-    SPLAT(__print_table_header, const char *, args)
-
-static void __print_table_row(int n, const char *labels[])
-{
-    int i;
-
-    for (i = 0; i < n; i++)
-    {
-        _P("|");
-        print_replace(*labels++, '\n', "<br>");
-    }
-    P("|");
-}
-#define print_table_row(args...) \
-    SPLAT(__print_table_row, const char *, args)
-
-#define print_section(fmt, args...) P("# " fmt, ##args)
-#define print_subsection(fmt, args...) P("## " fmt, ##args)
-#define print_subsubsection(fmt, args...) P("### " fmt, ##args)
-
-static void print_code_block(const char *code)
-{
-    _P("    ");
-    print_replace(code, '\n', "\n    ");
-    P("");
-    P("");
-}
 
 static void print_function_params(doc_function_t *f)
 {
