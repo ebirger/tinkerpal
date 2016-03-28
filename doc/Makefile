@@ -28,6 +28,9 @@ $(DOCS_DIR)/api.restdown: $(BUILD)/doc/gen_js_api
 $(DOCS_DIR)/api.html: $(DOCS_DIR)/api.restdown | $(RESTDOWN_EXEC)
 	$(RESTDOWN) $(RESTDOWN_FLAGS) -m $(DOCS_DIR) $<
 
-docs: $(DOCS_DIR)/api.html $(DOCS_DIR)/manual.html
+$(DOCS_DIR)/api.rst: $(DOCS_DIR)/api.restdown
+	@pandoc --from=markdown --to=rst --output=$@ $<
+
+docs: $(DOCS_DIR)/api.html $(DOCS_DIR)/manual.html $(DOCS_DIR)/api.rst
 
 .PHONY: docs
