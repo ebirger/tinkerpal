@@ -46,7 +46,7 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/tm4c123g/tm4c123g.h"
 
-#define PLATFORM_CHIPSET_H "platform/arm/ti/tm4c123g/chipset.h"
+#define PLATFORM_CHIPSET_H "platform/arm/ti/tm4c123g/tm4c123g.chip"
 
 const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
     [GPIO_PORT_A] = { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, INT_GPIOA },

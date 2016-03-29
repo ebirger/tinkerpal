@@ -3,7 +3,7 @@ all: docs
 export DOCS_DIR:=$(BUILD)/doc
 
 DESCS=$(shell find . -name "*.desc")
-CHIPS=$(filter-out ./platform/chipset.h,$(shell find . -name "chipset.h"))
+CHIPS=$(shell find . -name "*.chip")
 
 RESTDOWN_DIR=$(STAGING)/restdown
 RESTDOWN_EXEC=$(RESTDOWN_DIR)/bin/restdown

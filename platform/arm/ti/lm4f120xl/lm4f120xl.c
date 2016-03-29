@@ -45,7 +45,7 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/lm4f120xl/lm4f120xl.h"
 
-#define PLATFORM_CHIPSET_H "platform/arm/ti/lm4f120xl/chipset.h"
+#define PLATFORM_CHIPSET_H "platform/arm/ti/lm4f120xl/lm4f120xl.chip"
 
 const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
     [GPIO_PORT_A] = { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, INT_GPIOA },

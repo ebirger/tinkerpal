@@ -33,7 +33,7 @@
 #include "platform/arm/stm32/stm32_spi.h"
 #include "platform/arm/stm32/stm32.h"
 
-#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f3xx/chipset.h"
+#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f3xx/stm32f3xx.chip"
 
 const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_A] = { RCC_AHBPeriph_GPIOA, GPIOA },
