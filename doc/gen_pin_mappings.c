@@ -45,11 +45,12 @@ static void print_header(void)
 struct chip {
     const char *name;
     struct res {
-        enum {
+        enum res_type {
             RES_NONE = 0,
             RES_UART = 1,
             RES_I2C = 2,
             RES_SSI = 3,
+            RES_LAST,
         } type;
         union {
             struct {
@@ -100,45 +101,88 @@ struct chip {
     {}
 };
 
+static void uart_print_headers(void)
+{
+    print_table_header("UART", "RX Pin", "TX Pin");
+}
+
+static void uart_print_row(struct res *r)
+{
+    print_table_row(r->uart_name, r->uart_rx, r->uart_tx);
+}
+
+static void i2c_print_headers(void)
+{
+    print_table_header("I2C", "SCL Pin", "SDA Pin");
+}
+
+static void i2c_print_row(struct res *r)
+{
+    print_table_row(r->i2c_name, r->i2c_scl, r->i2c_sda);
+}
+
+static void ssi_print_headers(void)
+{
+    print_table_header("SSI", "FSS Pin", "CLK Pin", "RX Pin", "TX Pin");
+}
+
+static void ssi_print_row(struct res *r)
+{
+    print_table_row(r->ssi_name, r->ssi_fss, r->ssi_clk, r->ssi_rx,
+        r->ssi_tx);
+}
+
+static struct res_ops {
+    const char *name;
+    void (*print_headers)(void);
+    void (*print_row)(struct res *res);
+} res_ops[] = {
+    [RES_UART] = {
+        .name = "UART",
+        .print_headers = uart_print_headers,
+        .print_row = uart_print_row
+    },
+    [RES_I2C] = {
+        .name = "I2C",
+        .print_headers = i2c_print_headers,
+        .print_row = i2c_print_row
+    },
+    [RES_SSI] = {
+        .name = "SSI",
+        .print_headers = ssi_print_headers,
+        .print_row = ssi_print_row
+    }
+};
+
+static void print_res_by_type(struct res *list, enum res_type type)
+{
+    struct res_ops *ops = &res_ops[type];
+    struct res *r;
+
+    print_subsection("%s", ops->name);
+
+    ops->print_headers();
+    for (r = list; r->type; r++)
+    {
+        if (r->type != type)
+            continue;
+
+        ops->print_row(r);
+    }
+}
+
 static void print_pin_mappings(void)
 {
     struct chip *c;
 
     for (c = chips; c->name; c++)
     {
-        struct res *r;
+        enum res_type t;
 
         print_section("%s", c->name);
 
-        print_subsection("UARTS");
-        print_table_header("UART", "RX Pin", "TX Pin");
-        for (r = c->res; r->type; r++)
-        {
-            if (r->type != RES_UART)
-                continue;
-
-            print_table_row(r->uart_name, r->uart_rx, r->uart_tx);
-        }
-
-        print_subsection("I2C");
-        print_table_header("I2C", "SCL Pin", "SDA Pin");
-        for (r = c->res; r->type; r++)
-        {
-            if (r->type != RES_I2C)
-                continue;
-
-            print_table_row(r->i2c_name, r->i2c_scl, r->i2c_sda);
-        }
-        print_subsection("SSI");
-        print_table_header("SSI", "FSS Pin", "CLK Pin", "RX Pin", "TX Pin");
-        for (r = c->res; r->type; r++)
-        {
-            if (r->type != RES_SSI)
-                continue;
-
-            print_table_row(r->ssi_name, r->ssi_fss, r->ssi_clk, r->ssi_rx,
-                r->ssi_tx);
-        }
+        for (t = RES_NONE + 1; t != RES_LAST; t++)
+            print_res_by_type(c->res, t);
     }
 }
 
