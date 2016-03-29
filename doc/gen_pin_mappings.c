@@ -159,6 +159,10 @@ static void print_res_by_type(struct res *list, enum res_type type)
     struct res_ops *ops = &res_ops[type];
     struct res *r;
 
+    for (r = list; r->type && r->type != type; r++);
+    if (!r->type)
+        return;
+
     print_subsection("%s", ops->name);
 
     ops->print_headers();
