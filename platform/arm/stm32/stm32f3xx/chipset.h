@@ -1,0 +1,15 @@
+CHIPSET_START(stm32f303xx)
+
+/* USART (num, type, rxpin, txpin, afsig, apb) */
+USART_DEF(1, USART, PB7, PB6, GPIO_AF_7, 2)
+USART_DEF(2, USART, PA3, PA2, GPIO_AF_7, 1)
+USART_DEF(3, USART, PB11, PB10, GPIO_AF_7, 1)
+USART_DEF(4, UART, PB11, PB10, GPIO_AF_5, 1)
+USART_DEF(5, UART, PD2, PC12, GPIO_AF_5, 1)
+
+/* SPI (num, apb, clkpin, misopin, mosipin, afsig) */
+SPI_DEF(1, 2, PA5, PA6, PA7, GPIO_AF_5)
+SPI_DEF(2, 1, PB13, PB14, PB15, GPIO_AF_5)
+SPI_DEF(3, 1, PC10, PC11, PC12, GPIO_AF_6)
+
+CHIPSET_END()
