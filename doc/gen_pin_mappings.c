@@ -50,6 +50,7 @@ struct chip {
             RES_UART = 1,
             RES_I2C = 2,
             RES_SSI = 3,
+            RES_SPI = 4,
             RES_LAST,
         } type;
         union {
@@ -70,6 +71,12 @@ struct chip {
                 const char *ssi_rx;
                 const char *ssi_tx;
             };
+            struct {
+                const char *spi_name;
+                const char *spi_clk;
+                const char *spi_miso;
+                const char *spi_mosi;
+            };
         };
     } *res;
 } chips[] = {
@@ -78,6 +85,12 @@ struct chip {
 #define UART_DEF(num, rx, tx) { \
     .type = RES_UART, \
     .uart_name = "UART" #num, \
+    .uart_rx = #rx, \
+    .uart_tx = #tx \
+},
+#define USART_DEF(num, type_name, rx, tx, afsig, apb) { \
+    .type = RES_UART, \
+    .uart_name = #type_name #num, \
     .uart_rx = #rx, \
     .uart_tx = #tx \
 },
@@ -94,6 +107,13 @@ struct chip {
     .ssi_fss = #fsspin, \
     .ssi_rx = #rxpin, \
     .ssi_tx = #txpin \
+},
+#define SPI_DEF(num, apb, clkpin, misopin, mosipin, afsig) { \
+    .type = RES_SPI, \
+    .spi_name = "SPI" #num, \
+    .spi_clk = #clkpin, \
+    .spi_miso = #misopin, \
+    .spi_mosi = #mosipin, \
 },
 
 #include "platform/chipset.h"
@@ -132,6 +152,16 @@ static void ssi_print_row(struct res *r)
         r->ssi_tx);
 }
 
+static void spi_print_headers(void)
+{
+    print_table_header("SPI", "CLK Pin", "MISO Pin", "MOSI Pin");
+}
+
+static void spi_print_row(struct res *r)
+{
+    print_table_row(r->spi_name, r->spi_clk, r->spi_miso, r->spi_mosi);
+}
+
 static struct res_ops {
     const char *name;
     void (*print_headers)(void);
@@ -151,6 +181,11 @@ static struct res_ops {
         .name = "SSI",
         .print_headers = ssi_print_headers,
         .print_row = ssi_print_row
+    },
+    [RES_SPI] = {
+        .name = "SPI",
+        .print_headers = spi_print_headers,
+        .print_row = spi_print_row
     }
 };
 
