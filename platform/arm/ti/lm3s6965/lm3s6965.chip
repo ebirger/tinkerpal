@@ -1,0 +1,9 @@
+CHIPSET_START(lm3s6965)
+
+/* UART (num, rx, tx) */
+TI_UART_DEF(0, PA0, PA1)
+
+/* SSI (num, clkpin, fsspin, rxpin, txpin) */
+TI_SSI_DEF(0, PA2, PA2, PA4, PA5)
+
+CHIPSET_END()
