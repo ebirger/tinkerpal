@@ -80,30 +80,17 @@ const stm32_spi_t stm32_spis[] = {
 
 #ifdef CONFIG_I2C
 const stm32_i2c_t stm32_i2cs[] = {
-    [I2C_PORT1] = {
-        .i2cx = I2C1,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .clk = RCC_APB1Periph_I2C1,
-        .scl = PB8,
-        .sda = PB9,
-        .af = GPIO_AF_I2C1,
+#define STM32_I2C_DEF(num, apb, sclpin, sdapin) \
+    [I2C_PORT##num] = { \
+        .i2cx = I2C##num, \
+        .periph_enable = RCC_APB##apb##PeriphClockCmd, \
+        .clk = RCC_APB##apb##Periph_I2C##num, \
+        .scl = sclpin, \
+        .sda = sdapin, \
+        .af = GPIO_AF_I2C ## num, \
     },
-    [I2C_PORT2] = {
-        .i2cx = I2C2,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .clk = RCC_APB1Periph_I2C2,
-        .scl = PB10,
-        .sda = PB11,
-        .af = GPIO_AF_I2C2,
-    },
-    [I2C_PORT3] = {
-        .i2cx = I2C3,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .clk = RCC_APB1Periph_I2C3,
-        .scl = PA8,
-        .sda = PC9,
-        .af = GPIO_AF_I2C3,
-    },
+
+#include "platform/chipset.h"
 };
 #endif
 

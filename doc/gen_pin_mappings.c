@@ -100,6 +100,12 @@ struct chip {
     .i2c_scl = #scl, \
     .i2c_sda = #sda \
 },
+#define STM32_I2C_DEF(num, apb, sclpin, sdapin) { \
+    .type = RES_I2C, \
+    .i2c_name = "I2C" #num, \
+    .i2c_scl = #sclpin, \
+    .i2c_sda = #sdapin \
+},
 #define TI_SSI_DEF(num, clkpin, fsspin, rxpin, txpin) { \
     .type = RES_SSI, \
     .ssi_name = "SSI" #num, \

@@ -22,6 +22,9 @@
 #ifndef TI_I2C_DEF
 #define TI_I2C_DEF(...)
 #endif
+#ifndef STM32_I2C_DEF
+#define STM32_I2C_DEF(...)
+#endif
 
 /* PWM */
 #ifndef TI_PWM_DEF
@@ -40,5 +43,6 @@
 #undef TI_SSI_DEF
 #undef STM32_SPI_DEF
 #undef TI_I2C_DEF
+#undef STM32_I2C_DEF
 #undef TI_PWM_DEF
 #undef CHIPSET_END
