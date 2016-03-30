@@ -51,6 +51,7 @@ struct chip {
             RES_I2C = 2,
             RES_SSI = 3,
             RES_SPI = 4,
+            RES_USCI = 5,
             RES_LAST,
         } type;
         union {
@@ -76,6 +77,12 @@ struct chip {
                 const char *spi_clk;
                 const char *spi_miso;
                 const char *spi_mosi;
+            };
+            struct {
+                const char *usci_name;
+                const char *usci_rx;
+                const char *usci_tx;
+                const char *usci_clk;
             };
         };
     } *res;
@@ -121,6 +128,13 @@ struct chip {
     .spi_miso = #misopin, \
     .spi_mosi = #mosipin, \
 },
+#define MSP430_USCI_DEF(id, rx, tx, clk) { \
+    .type = RES_USCI, \
+    .usci_name = "USCI" #id, \
+    .usci_rx = #rx, \
+    .usci_tx = #tx, \
+    .usci_clk = #clk, \
+},
 
 #include "platform/chipset.h"
 
@@ -158,6 +172,16 @@ static void ssi_print_row(struct res *r)
         r->ssi_tx);
 }
 
+static void usci_print_headers(void)
+{
+    print_table_header("USCI", "RX Pin", "TX Pin", "CLK Pin");
+}
+
+static void usci_print_row(struct res *r)
+{
+    print_table_row(r->usci_name, r->usci_rx, r->usci_tx, r->usci_clk);
+}
+
 static void spi_print_headers(void)
 {
     print_table_header("SPI", "CLK Pin", "MISO Pin", "MOSI Pin");
@@ -187,6 +211,11 @@ static struct res_ops {
         .name = "SSI",
         .print_headers = ssi_print_headers,
         .print_row = ssi_print_row
+    },
+    [RES_USCI] = {
+        .name = "USCI",
+        .print_headers = usci_print_headers,
+        .print_row = usci_print_row
     },
     [RES_SPI] = {
         .name = "SPI",

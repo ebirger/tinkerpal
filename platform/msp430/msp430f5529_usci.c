@@ -27,32 +27,32 @@
 #include "platform/msp430/msp430f5529_gpio.h"
 #include "platform/msp430/msp430f5529_usci.h"
 
+#define PLATFORM_CHIPSET_H "platform/msp430/msp430f5529.chip"
+
 static unsigned char dummy_reg;
 
 #define UCB0MCTL dummy_reg /* No modulation on USCI_B */
 #define UCB1MCTL dummy_reg /* No modulation on USCI_B */
 
 const msp430f5529_usci_t msp430f5529_uscis[] = {
-#define U(uc, tx, rx, clk) { \
-    .ctl0 = &uc##CTL0, \
-    .ctl1 = &uc##CTL1, \
-    .br0 = &uc##BR0, \
-    .br1 = &uc##BR1, \
-    .mctl = &uc##MCTL, \
-    .ie = &uc##IE, \
-    .stat = &uc##STAT, \
-    .txbuf = &uc##TXBUF, \
-    .rxbuf = &uc##RXBUF, \
-    .ifg = &uc##IFG, \
-    .txpin = tx, \
-    .rxpin = rx, \
-    .clkpin = clk \
-}
-    [USCIA0] = U(UCA0, PC3, PC4, PB7),
-    [USCIA1] = U(UCA1, PD4, PD5, PD0),
-    [USCIB0] = U(UCB0, PC0, PC1, PC2),
-    [USCIB1] = U(UCB1, PD1, PD2, PD3),
-#undef U
+#define MSP430_USCI_DEF(id, rx, tx, clk) \
+    [USCI##id] = { \
+        .ctl0 = &UC##id##CTL0, \
+        .ctl1 = &UC##id##CTL1, \
+        .br0 = &UC##id##BR0, \
+        .br1 = &UC##id##BR1, \
+        .mctl = &UC##id##MCTL, \
+        .ie = &UC##id##IE, \
+        .stat = &UC##id##STAT, \
+        .txbuf = &UC##id##TXBUF, \
+        .rxbuf = &UC##id##RXBUF, \
+        .ifg = &UC##id##IFG, \
+        .txpin = tx, \
+        .rxpin = rx, \
+        .clkpin = clk \
+    },
+
+#include "platform/chipset.h"
 };
 
 void msp430f5529_usci_set_speed(int port, unsigned long speed)

@@ -9,6 +9,9 @@
 #ifndef STM32_USART_DEF
 #define STM32_USART_DEF(...)
 #endif
+#ifndef MSP430_USCI_DEF
+#define MSP430_USCI_DEF(...)
+#endif
 
 /* SPI */
 #ifndef TI_SSI_DEF
@@ -40,6 +43,7 @@
 #undef CHIPSET_START
 #undef TI_UART_DEF
 #undef STM32_USART_DEF
+#undef MSP430_USCI_DEF
 #undef TI_SSI_DEF
 #undef STM32_SPI_DEF
 #undef TI_I2C_DEF
