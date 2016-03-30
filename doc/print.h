@@ -73,9 +73,9 @@ static inline void __print_table_row(int n, const char *labels[])
 #define print_table_row(args...) \
     SPLAT(__print_table_row, const char *, args)
 
-#define print_section(fmt, args...) P("# " fmt, ##args)
-#define print_subsection(fmt, args...) P("## " fmt, ##args)
-#define print_subsubsection(fmt, args...) P("### " fmt, ##args)
+#define print_section(fmt, args...) P("## " fmt, ##args)
+#define print_subsection(fmt, args...) P("### " fmt, ##args)
+#define print_subsubsection(fmt, args...) P("#### " fmt, ##args)
 
 static inline void print_code_block(const char *code)
 {

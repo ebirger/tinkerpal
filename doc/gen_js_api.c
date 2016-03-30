@@ -208,7 +208,7 @@ static void print_header(void)
     P("title: API Guide | Tinkerpal " TINKERPAL_VERSION);
     P("markdown2extras: tables, wiki-tables, code-friendly");
     P("---");
-    P("#API");
+    P("#JavaScript API");
     P("Objects and methods detailed below");
     P("");
 }
