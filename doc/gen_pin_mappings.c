@@ -52,6 +52,7 @@ struct chip {
             RES_SSI = 3,
             RES_SPI = 4,
             RES_USCI = 5,
+            RES_USBD = 6,
             RES_LAST,
         } type;
         union {
@@ -83,6 +84,10 @@ struct chip {
                 const char *usci_rx;
                 const char *usci_tx;
                 const char *usci_clk;
+            };
+            struct {
+                const char *usbd_dp;
+                const char *usbd_dm;
             };
         };
     } *res;
@@ -134,6 +139,11 @@ struct chip {
     .usci_rx = #rx, \
     .usci_tx = #tx, \
     .usci_clk = #clk, \
+},
+#define TI_USBD_DEF(dp, dm) { \
+    .type = RES_USBD, \
+    .usbd_dp = #dp, \
+    .usbd_dm = #dm, \
 },
 
 #include "platform/chipset.h"
@@ -192,6 +202,16 @@ static void spi_print_row(struct res *r)
     print_table_row(r->spi_name, r->spi_clk, r->spi_miso, r->spi_mosi);
 }
 
+static void usbd_print_headers(void)
+{
+    print_table_header("DP Pin", "DM Pin");
+}
+
+static void usbd_print_row(struct res *r)
+{
+    print_table_row(r->usbd_dp, r->usbd_dm);
+}
+
 static struct res_ops {
     const char *name;
     void (*print_headers)(void);
@@ -221,6 +241,11 @@ static struct res_ops {
         .name = "SPI",
         .print_headers = spi_print_headers,
         .print_row = spi_print_row
+    },
+    [RES_USBD] = {
+        .name = "USBD",
+        .print_headers = usbd_print_headers,
+        .print_row = usbd_print_row
     }
 };
 

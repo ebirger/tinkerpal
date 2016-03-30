@@ -38,4 +38,7 @@ TI_PWM_DEF(PF1, 1, 2, 5)
 TI_PWM_DEF(PF2, 1, 3, 6)
 TI_PWM_DEF(PF3, 1, 3, 7)
 
+/* USBD (dp, dm) */
+TI_USBD_DEF(PD5, PD4)
+
 CHIPSET_END()

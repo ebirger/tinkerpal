@@ -34,6 +34,11 @@
 #define TI_PWM_DEF(...)
 #endif
 
+/* USBD */
+#ifndef TI_USBD_DEF
+#define TI_USBD_DEF(...)
+#endif
+
 #ifndef CHIPSET_END
 #define CHIPSET_END(...)
 #endif
@@ -49,4 +54,5 @@
 #undef TI_I2C_DEF
 #undef STM32_I2C_DEF
 #undef TI_PWM_DEF
+#undef TI_USBD_DEF
 #undef CHIPSET_END

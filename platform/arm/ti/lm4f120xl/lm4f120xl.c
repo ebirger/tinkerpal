@@ -175,8 +175,11 @@ const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
 };
 
 const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params = {
-    .dp_pin = PD5,
-    .dm_pin = PD4,
+#define TI_USBD_DEF(dp, dm) \
+    .dp_pin = dp, \
+    .dm_pin = dm,
+
+#include "platform/chipset.h"
 };
 
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */

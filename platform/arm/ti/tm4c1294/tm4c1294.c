@@ -135,8 +135,11 @@ const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
 };
 
 const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params = {
-    .dp_pin = PL6,
-    .dm_pin = PL7,
+#define TI_USBD_DEF(dp, dm) \
+    .dp_pin = dp, \
+    .dm_pin = dm,
+
+#include "platform/chipset.h"
 };
 
 static unsigned long system_clock;
