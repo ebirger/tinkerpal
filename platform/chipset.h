@@ -3,29 +3,29 @@
 #endif
 
 /* UARTS */
-#ifndef UART_DEF
-#define UART_DEF(...)
+#ifndef TI_UART_DEF
+#define TI_UART_DEF(...)
 #endif
-#ifndef USART_DEF
-#define USART_DEF(...)
+#ifndef STM32_USART_DEF
+#define STM32_USART_DEF(...)
 #endif
 
 /* SPI */
-#ifndef SSI_DEF
-#define SSI_DEF(...)
+#ifndef TI_SSI_DEF
+#define TI_SSI_DEF(...)
 #endif
-#ifndef SPI_DEF
-#define SPI_DEF(...)
+#ifndef STM32_SPI_DEF
+#define STM32_SPI_DEF(...)
 #endif
 
 /* I2C */
-#ifndef I2C_DEF
-#define I2C_DEF(...)
+#ifndef TI_I2C_DEF
+#define TI_I2C_DEF(...)
 #endif
 
 /* PWM */
-#ifndef PWM_DEF
-#define PWM_DEF(...)
+#ifndef TI_PWM_DEF
+#define TI_PWM_DEF(...)
 #endif
 
 #ifndef CHIPSET_END
@@ -35,10 +35,10 @@
 #include PLATFORM_CHIPSET_H
 
 #undef CHIPSET_START
-#undef UART_DEF
-#undef USART_DEF
-#undef SSI_DEF
-#undef SPI_DEF
-#undef I2C_DEF
-#undef PWM_DEF
+#undef TI_UART_DEF
+#undef STM32_USART_DEF
+#undef TI_SSI_DEF
+#undef STM32_SPI_DEF
+#undef TI_I2C_DEF
+#undef TI_PWM_DEF
 #undef CHIPSET_END

@@ -58,7 +58,7 @@ const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
 };
 
 const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
-#define UART_DEF(num, rx, tx) \
+#define TI_UART_DEF(num, rx, tx) \
     [UART##num] = { \
         .periph = SYSCTL_PERIPH_UART##num, \
         .base = UART##num##_BASE, \
@@ -73,7 +73,7 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
 };
 
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
-#define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
+#define TI_SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
     [SSI##num] = { \
         .periph = SYSCTL_PERIPH_SSI##num, \
         .base = SSI##num##_BASE, \
@@ -91,7 +91,7 @@ const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
 };
 
 const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[] = {
-#define I2C_DEF(num, sclpin, sdapin) \
+#define TI_I2C_DEF(num, sclpin, sdapin) \
     [I2C##num] = { \
         .periph = SYSCTL_PERIPH_I2C##num, \
         .base = I2C##num##_BASE, \
@@ -176,7 +176,7 @@ const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
 };
 
 const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
-#define PWM_DEF(_pin, _base, _gen, _bit) \
+#define TI_PWM_DEF(_pin, _base, _gen, _bit) \
     { \
         .periph = SYSCTL_PERIPH_PWM##_base, \
         .base = PWM##_base##_BASE, \

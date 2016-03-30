@@ -45,7 +45,7 @@ const stm32_gpio_port_t stm32_gpio_ports[] = {
 };
 
 const stm32_usart_t stm32_usarts[] = {
-#define USART_DEF(num, type, rxpin, txpin, afsig, apb) \
+#define STM32_USART_DEF(num, type, rxpin, txpin, afsig, apb) \
     [type##_PORT##num] = { \
         .usartx = type##num, \
         .periph_enable = RCC_APB##apb##PeriphClockCmd, \
@@ -61,7 +61,7 @@ const stm32_usart_t stm32_usarts[] = {
 
 #ifdef CONFIG_SPI
 const stm32_spi_t stm32_spis[] = {
-#define SPI_DEF(num, apb, clkpin, misopin, mosipin, afsig) \
+#define STM32_SPI_DEF(num, apb, clkpin, misopin, mosipin, afsig) \
     [SPI_PORT##num] = { \
         .spix = SPI##num, \
         .periph_enable = RCC_APB##apb##PeriphClockCmd, \

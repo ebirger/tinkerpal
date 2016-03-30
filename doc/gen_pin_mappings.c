@@ -82,25 +82,25 @@ struct chip {
 } chips[] = {
 #define CHIPSET_START(chip) { .name = #chip, .res = (struct res []){
 #define CHIPSET_END() {} } },
-#define UART_DEF(num, rx, tx) { \
+#define TI_UART_DEF(num, rx, tx) { \
     .type = RES_UART, \
     .uart_name = "UART" #num, \
     .uart_rx = #rx, \
     .uart_tx = #tx \
 },
-#define USART_DEF(num, type_name, rx, tx, afsig, apb) { \
+#define STM32_USART_DEF(num, type_name, rx, tx, afsig, apb) { \
     .type = RES_UART, \
     .uart_name = #type_name #num, \
     .uart_rx = #rx, \
     .uart_tx = #tx \
 },
-#define I2C_DEF(num, scl, sda) { \
+#define TI_I2C_DEF(num, scl, sda) { \
     .type = RES_I2C, \
     .i2c_name = "I2C" #num, \
     .i2c_scl = #scl, \
     .i2c_sda = #sda \
 },
-#define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) { \
+#define TI_SSI_DEF(num, clkpin, fsspin, rxpin, txpin) { \
     .type = RES_SSI, \
     .ssi_name = "SSI" #num, \
     .ssi_clk = #clkpin, \
@@ -108,7 +108,7 @@ struct chip {
     .ssi_rx = #rxpin, \
     .ssi_tx = #txpin \
 },
-#define SPI_DEF(num, apb, clkpin, misopin, mosipin, afsig) { \
+#define STM32_SPI_DEF(num, apb, clkpin, misopin, mosipin, afsig) { \
     .type = RES_SPI, \
     .spi_name = "SPI" #num, \
     .spi_clk = #clkpin, \
