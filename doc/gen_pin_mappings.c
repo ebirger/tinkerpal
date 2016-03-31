@@ -151,103 +151,59 @@ struct chip {
     {}
 };
 
-static void uart_print_headers(void)
-{
-    print_table_header("UART", "RX Pin", "TX Pin");
-}
-
-static void uart_print_row(struct res *r)
-{
-    print_table_row(r->uart_name, r->uart_rx, r->uart_tx);
-}
-
-static void i2c_print_headers(void)
-{
-    print_table_header("I2C", "SCL Pin", "SDA Pin");
-}
-
-static void i2c_print_row(struct res *r)
-{
-    print_table_row(r->i2c_name, r->i2c_scl, r->i2c_sda);
-}
-
-static void ssi_print_headers(void)
-{
-    print_table_header("SSI", "FSS Pin", "CLK Pin", "RX Pin", "TX Pin");
-}
-
-static void ssi_print_row(struct res *r)
-{
-    print_table_row(r->ssi_name, r->ssi_fss, r->ssi_clk, r->ssi_rx,
-        r->ssi_tx);
-}
-
-static void usci_print_headers(void)
-{
-    print_table_header("USCI", "RX Pin", "TX Pin", "CLK Pin");
-}
-
-static void usci_print_row(struct res *r)
-{
-    print_table_row(r->usci_name, r->usci_rx, r->usci_tx, r->usci_clk);
-}
-
-static void spi_print_headers(void)
-{
-    print_table_header("SPI", "CLK Pin", "MISO Pin", "MOSI Pin");
-}
-
-static void spi_print_row(struct res *r)
-{
-    print_table_row(r->spi_name, r->spi_clk, r->spi_miso, r->spi_mosi);
-}
-
-static void usbd_print_headers(void)
-{
-    print_table_header("DP Pin", "DM Pin");
-}
-
-static void usbd_print_row(struct res *r)
-{
-    print_table_row(r->usbd_dp, r->usbd_dm);
-}
-
 static struct res_ops {
     const char *name;
-    void (*print_headers)(void);
-    void (*print_row)(struct res *res);
+    int nfields;
+    const char **headers;
+    const size_t *offsets;
 } res_ops[] = {
-    [RES_UART] = {
-        .name = "UART",
-        .print_headers = uart_print_headers,
-        .print_row = uart_print_row
-    },
-    [RES_I2C] = {
-        .name = "I2C",
-        .print_headers = i2c_print_headers,
-        .print_row = i2c_print_row
-    },
-    [RES_SSI] = {
-        .name = "SSI",
-        .print_headers = ssi_print_headers,
-        .print_row = ssi_print_row
-    },
-    [RES_USCI] = {
-        .name = "USCI",
-        .print_headers = usci_print_headers,
-        .print_row = usci_print_row
-    },
-    [RES_SPI] = {
-        .name = "SPI",
-        .print_headers = spi_print_headers,
-        .print_row = spi_print_row
-    },
-    [RES_USBD] = {
-        .name = "USBD",
-        .print_headers = usbd_print_headers,
-        .print_row = usbd_print_row
+#define OFS(f) (offsetof(struct res, f))
+#define HDRS(args...) (const char *[]){ args }
+#define OFSTS(args...) (const size_t[]){ args }
+#define RS(res, nm, hdrs, ofsts) \
+    [res] = { \
+        .name = nm, \
+        .nfields = PP_NARG hdrs, \
+        .headers = HDRS hdrs, \
+        .offsets = OFSTS ofsts \
     }
+    RS(RES_UART, "UART",
+        ("UART",         "RX Pin",     "TX Pin"),
+        (OFS(uart_name), OFS(uart_rx), OFS(uart_tx))),
+    RS(RES_I2C, "I2C",
+        ("I2C",          "SCL Pin",    "SDA Pin"),
+        (OFS(i2c_name),  OFS(i2c_scl), OFS(i2c_sda))),
+    RS(RES_SSI, "SSI",
+        ("SSI",          "FSS Pin",    "CLK Pin",     "RX Pin",    "TX Pin"),
+        (OFS(ssi_name),  OFS(ssi_fss), OFS(ssi_clk),  OFS(ssi_rx), OFS(ssi_tx))),
+    RS(RES_USCI, "USCI",
+        ("USCI",         "RX Pin",     "TX Pin",      "CLK Pin"),
+        (OFS(usci_name), OFS(usci_rx), OFS(usci_tx),  OFS(usci_clk))),
+    RS(RES_SPI, "SPI",
+        ("SPI",          "CLK Pin",    "MISO Pin",    "MOSI Pin"),
+        (OFS(spi_name),  OFS(spi_clk), OFS(spi_miso), OFS(spi_mosi))),
+    RS(RES_USBD, "USBD",
+        ("DP Pin",       "DM Pin"),
+        (OFS(usbd_dp),   OFS(usbd_dm)))
 };
+
+static void res_ops_print_headers(struct res_ops *ops)
+{
+    __print_table_header(ops->nfields, ops->headers);
+}
+
+static void res_ops_print_row(struct res_ops *ops, struct res *r)
+{
+    const char **ptrs = malloc(ops->nfields * sizeof(char *));
+    int i;
+
+    for (i = 0; i < ops->nfields; i++)
+        ptrs[i] = *((const char **)((unsigned long)r + ops->offsets[i]));
+
+    __print_table_row(ops->nfields, ptrs);
+
+    free(ptrs);
+}
 
 static void print_res_by_type(struct res *list, enum res_type type)
 {
@@ -260,13 +216,13 @@ static void print_res_by_type(struct res *list, enum res_type type)
 
     print_subsection("%s", ops->name);
 
-    ops->print_headers();
+    res_ops_print_headers(ops);
     for (r = list; r->type; r++)
     {
         if (r->type != type)
             continue;
 
-        ops->print_row(r);
+        res_ops_print_row(ops, r);
     }
 }
 
