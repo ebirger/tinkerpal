@@ -33,6 +33,8 @@
 #include "platform/arm/stm32/stm32_spi.h"
 #include "platform/arm/stm32/stm32.h"
 
+#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f3xx/stm32f3xx.chip"
+
 const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_A] = { RCC_AHBPeriph_GPIOA, GPIOA },
     [GPIO_PORT_B] = { RCC_AHBPeriph_GPIOB, GPIOB },
@@ -43,82 +45,34 @@ const stm32_gpio_port_t stm32_gpio_ports[] = {
 };
 
 const stm32_usart_t stm32_usarts[] = {
-    [USART_PORT1] = {
-        .usartx = USART1,
-        .periph_enable = RCC_APB2PeriphClockCmd,
-        .usart_clk = RCC_APB2Periph_USART1,
-        .tx = PB6,
-        .rx = PB7,
-        .af = GPIO_AF_7,
-        .irqn = USART1_IRQn,
+#define STM32_USART_DEF(num, type, rxpin, txpin, afsig, apb) \
+    [type##_PORT##num] = { \
+        .usartx = type##num, \
+        .periph_enable = RCC_APB##apb##PeriphClockCmd, \
+        .usart_clk = RCC_APB##apb##Periph_##type##num, \
+        .tx = txpin, \
+        .rx = rxpin, \
+        .af = afsig, \
+        .irqn = type##num##_IRQn, \
     },
-    [USART_PORT2] = {
-        .usartx = USART2,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .usart_clk = RCC_APB1Periph_USART2,
-        .tx = PA2,
-        .rx = PA3,
-        .af = GPIO_AF_7,
-        .irqn = USART2_IRQn,
-    },
-    [USART_PORT3] = {
-        .usartx = USART3,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .usart_clk = RCC_APB1Periph_USART3,
-        .tx = PB10,
-        .rx = PB11,
-        .af = GPIO_AF_7,
-        .irqn = USART3_IRQn,
-    },
-    [UART_PORT4] = {
-        .usartx = UART4,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .usart_clk = RCC_APB1Periph_UART4,
-        .tx = PB10,
-        .rx = PB11,
-        .af = GPIO_AF_5,
-        .irqn = UART4_IRQn,
-    },
-    [UART_PORT5] = {
-        .usartx = UART5,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .usart_clk = RCC_APB1Periph_UART5,
-        .tx = PC12,
-        .rx = PD2,
-        .af = GPIO_AF_5,
-        .irqn = UART5_IRQn,
-    },
+
+#include "platform/chipset.h"
 };
 
 #ifdef CONFIG_SPI
 const stm32_spi_t stm32_spis[] = {
-    [SPI_PORT1] = {
-        .spix = SPI1,
-        .periph_enable = RCC_APB2PeriphClockCmd,
-        .spi_clk = RCC_APB2Periph_SPI1,
-        .clk = PA5,
-        .miso = PA6,
-        .mosi = PA7,
-        .af = GPIO_AF_5
+#define STM32_SPI_DEF(num, apb, clkpin, misopin, mosipin, afsig) \
+    [SPI_PORT##num] = { \
+        .spix = SPI##num, \
+        .periph_enable = RCC_APB##apb##PeriphClockCmd, \
+        .spi_clk = RCC_APB##apb##Periph_SPI##num, \
+        .clk = clkpin, \
+        .miso = misopin, \
+        .mosi = mosipin, \
+        .af = afsig, \
     },
-    [SPI_PORT2] = {
-        .spix = SPI2,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .spi_clk = RCC_APB1Periph_SPI2,
-        .clk = PB13,
-        .miso = PB14,
-        .mosi = PB15,
-        .af = GPIO_AF_5 
-    },
-    [SPI_PORT3] = {
-        .spix = SPI3,
-        .periph_enable = RCC_APB1PeriphClockCmd,
-        .spi_clk = RCC_APB1Periph_SPI3,
-        .clk = PC10,
-        .miso = PC11,
-        .mosi = PC12,
-        .af = GPIO_AF_6
-    }
+
+#include "platform/chipset.h"
 };
 #endif
 

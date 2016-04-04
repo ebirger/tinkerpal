@@ -299,9 +299,9 @@ static void esp8266_init(esp8266_t *e)
 #define SSID "dummy"
 #define PSK "psk"
 
-static void esp8266_connect(esp8266_t *e)
+static void esp8266_ip_connect(esp8266_t *e)
 {
-    sm_init(e, esp8266_connect);
+    sm_init(e, esp8266_ip_connect);
     AT_MATCH(e, "AT+CWMODE=1", "no change");
     sm_wait(e, 100);
     /* TODO: receive connection params */
@@ -338,7 +338,7 @@ static int esp8266_netif_ip_connect(netif_t *netif)
     esp8266_t *e = netif_to_esp8266(netif);
 
     sm_reset(e);
-    esp8266_connect(e);
+    esp8266_ip_connect(e);
     return 0;
 }
 
@@ -418,7 +418,7 @@ static void esp8266_tcp_disconnect(esp8266_t *e)
     sm_uninit(e);
 }
 
-static int esp8266_netif_connect(netif_t *netif, u8 proto, void *params)
+static int esp8266_netif_proto_connect(netif_t *netif, u8 proto, void *params)
 {
     esp8266_t *e = netif_to_esp8266(netif);
     tcp_udp_connect_params_t *conn = params;
@@ -526,7 +526,7 @@ static const netif_ops_t esp8266_netif_ops = {
     .link_status = NULL,
     .ip_connect = esp8266_netif_ip_connect,
     .ip_disconnect = NULL,
-    .connect = esp8266_netif_connect,
+    .proto_connect = esp8266_netif_proto_connect,
     .tcp_read = esp8266_netif_tcp_read,
     .tcp_write = esp8266_netif_tcp_write,
     .disconnect = esp8266_netif_disconnect,
@@ -547,7 +547,8 @@ netif_t *esp8266_new(const esp8266_params_t *params)
     e->params = *params;
     sm_reset(e);
     e->tcp_connected = 0;
-    netif_register(&e->netif, &esp8266_netif_ops);
+    netif_register(&e->netif, "ESP8266 Wi-Fi to Serial Bridge",
+        &esp8266_netif_ops);
     esp8266_init(e);
     return &e->netif;
 }

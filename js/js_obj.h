@@ -33,7 +33,7 @@
 #include "mem/tmalloc.h"
 
 #ifdef CONFIG_OBJ_DOC
-#include "doc/tdocs.h"
+#include "doc/gen_js_api.h"
 #endif
 
 typedef struct var_t var_t;

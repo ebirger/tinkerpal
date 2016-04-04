@@ -119,15 +119,15 @@ $(BUILD)/version_data.h :
 	@echo "#define TINKERPAL_PATCH_VERSION $(PATCH_VERSION)" >> $@
 	@echo "#endif" >> $@
 
-$(BUILD)/descs.h: $(DESCS) $(BUILD)/autoconf.h
+$(BUILD)/jsapi.h: $(JSAPIS) $(BUILD)/autoconf.h
 	@echo "GEN $@"
 	@echo "/* Automatically generated file, DO NOT MANUALLY EDIT */" > $@
-	@cat $(DESCS) >> $@
+	@cat $(JSAPIS) >> $@
 
-AUTO_GEN_FILES+=$(BUILD)/descs.h
+AUTO_GEN_FILES+=$(BUILD)/jsapi.h
 
 ALL_DEPS:=$(BUILD)/autoconf.h $(BUILD)/version_data.h \
-  $(if $(CONFIG_JS),$(BUILD)/descs.h)
+  $(if $(CONFIG_JS),$(BUILD)/jsapi.h)
 
 $(BUILD)/%.o : %.c $(ALL_DEPS)
 	@echo $($(quiet_)compile)

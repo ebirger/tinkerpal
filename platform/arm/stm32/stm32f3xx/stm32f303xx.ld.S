@@ -1,10 +1,5 @@
 _stack_size = 4K;
 
-/* XXX: platform has in fact 48K RAM */
-MEMORY
-{
-    FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 256K
-    SRAM (rwx) : ORIGIN = 0x20000000, LENGTH = 40K
-}
+#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f3xx/stm32f3xx.chip"
 
 #include "platform/arm/cortex-m.ld.S"

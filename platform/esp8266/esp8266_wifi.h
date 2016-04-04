@@ -22,42 +22,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
-#include "drivers/gpio/gpio.h"
-#include "drivers/spi/spi.h"
+#ifndef __ESP8266_WIFI_H__
+#define __ESP8266_WIFI_H__
 
-const board_t board = {
-    .desc = "TI MSP430F5529",
-    .default_console_id = UART_RES(USCIA1),
-#ifdef CONFIG_MSP430F5529_LAUNCHPAD
-    .leds = (resource_t []){
-        GPIO_RES(PA0),
-        GPIO_RES(PD7),
-        0
-    },
+netif_t *esp8266_wifi_new(void);
+
 #endif
-#ifdef CONFIG_DOGS102X6
-    .dogs102x6_params = {
-        .rst = GPIO_RES(PE7),
-        .cs = GPIO_RES(PG4),
-        .cd = GPIO_RES(PE6),
-        .spi_port = SPI_RES(USCIB1),
-        .backlight = GPIO_RES(PG6),
-    },
-#endif
-#ifdef CONFIG_MMC
-    .mmc_params = {
-        .spi_port = SPI_RES(USCIB1),
-        .mosi = GPIO_RES(PD1),
-        .cs = GPIO_RES(PC7),
-    },
-#endif
-#ifdef CONFIG_ENC28J60
-    .enc28j60_params = {
-        .spi_port = SPI_RES(USCIA0),
-        .cs = GPIO_RES(PC5),
-        .intr = GPIO_RES(PA4),
-    },
-#endif
-};

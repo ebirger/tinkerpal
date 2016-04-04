@@ -51,8 +51,9 @@ void netif_unregister(netif_t *netif)
         event_watch_del_by_resource(NETIF_RES(netif, event));
 }
 
-void netif_register(netif_t *netif, const netif_ops_t *ops)
+void netif_register(netif_t *netif, const char *name, const netif_ops_t *ops)
 {
+    netif->name = name;
     netif->ops = ops;
     netif->id = netifs_last_id++;
     netif->next = netifs;

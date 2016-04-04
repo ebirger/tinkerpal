@@ -1,9 +1,5 @@
 _stack_size = 4K;
 
-MEMORY
-{
-    FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 256K
-    SRAM (rwx) : ORIGIN = 0x20000000, LENGTH = 32K
-}
+#define PLATFORM_CHIPSET_H "platform/arm/ti/lm4f120xl/lm4f120xl.chip"
 
 #include "platform/arm/cortex-m.ld.S"

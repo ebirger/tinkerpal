@@ -22,16 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
+#include "js/js_obj.h"
+#include "js/js_utils.h"
+#include "js/js_event.h"
+#include "net/js_netif.h"
+#include "platform/esp8266/esp8266_wifi.h"
 
-const board_t board = {
-    .desc = "Unix based simulator",
-    .default_console_id = UART_RES(STDIO_ID),
-#ifdef CONFIG_SDL_SCREEN
-    .sdl_screen_params = {
-        .width = 320,
-        .height = 200,
-    },
-#endif
-};
+int do_esp8266_wifi_constructor(obj_t **ret, obj_t *this, int argc,
+    obj_t *argv[])
+{
+    netif_t *netif;
+
+    netif = esp8266_wifi_new();
+    return netif_obj_constructor(netif, ret, this, argc, argv);
+}

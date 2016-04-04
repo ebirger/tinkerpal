@@ -89,7 +89,8 @@ void etherif_destruct(etherif_t *ethif)
     netif_unregister(&ethif->netif);
 }
 
-void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
+void etherif_construct(etherif_t *ethif, const char *name,
+    const etherif_ops_t *ops)
 {
     ethif->ops = ops;
     ethif->ipv4_info = NULL;
@@ -97,5 +98,5 @@ void etherif_construct(etherif_t *ethif, const etherif_ops_t *ops)
     ethif->udp = NULL;
 
     ethernet_attach_etherif(ethif);
-    netif_register(&ethif->netif, &etherif_netif_ops);
+    netif_register(&ethif->netif, name, &etherif_netif_ops);
 }

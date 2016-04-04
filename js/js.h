@@ -29,13 +29,11 @@
 
 void js_uninit(void);
 void js_init(void);
-void js_gc_run(void);
 
 #else
 
 static inline void js_uninit(void) { }
 static inline void js_init(void) { }
-static inline void js_gc_run(void) { }
 
 #endif
 

@@ -1,3 +1,10 @@
+MEMORY
+{
+#define ARM_MEMORY_AREA(name, perm, origin, length) \
+    name (perm) : ORIGIN = origin, LENGTH = length
+#include "platform/chipset.h"
+}
+
 SECTIONS
 {
 #ifdef INTERRUPT_SECTION

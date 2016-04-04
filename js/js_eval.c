@@ -27,6 +27,7 @@
 #include "util/debug.h"
 #include "js/js_eval.h"
 #include "js/js_eval_common.h"
+#include "js/js_gc.h"
 #include "js/js_scan.h"
 #include "js/js_types.h"
 #include "js/js_obj.h"
@@ -1909,6 +1910,17 @@ int js_eval_obj(obj_t **ret, obj_t *obj)
     obj_put(cur_env);
     cur_env = saved_env;
     return rc;
+}
+
+void js_eval_noret(tstr_t *code)
+{
+    obj_t *o = NULL;
+
+    if (js_eval(&o, code) == COMPLETION_THROW)
+        tp_err("Evaluation resulted in exception %o\n", o);
+
+    obj_put(o);
+    js_gc_run();
 }
 
 static inline char open_char_recip(char c)

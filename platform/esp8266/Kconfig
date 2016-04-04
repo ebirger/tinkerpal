@@ -5,3 +5,7 @@ config ESP8266
 	select PLAT_HAS_SERIAL
 	select BUFFERED_SERIAL
         select PLAT_TICKS
+
+config ESP8266_WIFI
+        bool "Wi-Fi Support"
+        depends on ESP8266 && NET

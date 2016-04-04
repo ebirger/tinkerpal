@@ -48,6 +48,8 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/lm3s6918/lm3s6918.h"
 
+#define PLATFORM_CHIPSET_H "platform/arm/ti/lm3s6918/lm3s6918.chip"
+
 const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
     [GPIO_PORT_A] = { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, INT_GPIOA },
     [GPIO_PORT_B] = { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, INT_GPIOB },
@@ -59,12 +61,20 @@ const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
 };
 
 const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
-    [UART0] = { SYSCTL_PERIPH_UART0, UART0_BASE, INT_UART0, PA0, PA1 },
-    [UART1] = { SYSCTL_PERIPH_UART1, UART1_BASE, INT_UART1, PD2, PD3 },
+#define TI_UART_DEF(num, rx, tx) \
+    [UART##num] = { \
+        .periph = SYSCTL_PERIPH_UART##num, \
+        .base = UART##num##_BASE, \
+        .irq = INT_UART##num, \
+        .rxpin = rx, \
+        .txpin = tx, \
+    },
+
+#include "platform/chipset.h"
 };
 
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
-#define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
+#define TI_SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
     [SSI##num] = { \
         .periph = SYSCTL_PERIPH_SSI##num, \
         .base = SSI##num##_BASE, \
@@ -72,9 +82,9 @@ const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
         .fss = fsspin, \
         .rx = rxpin, \
         .tx = txpin, \
-    }
-    SSI_DEF(0, PA2, PA3, PA4, PA5),
-    SSI_DEF(1, PE0, PE1, PE2, PE3)
+    },
+
+#include "platform/chipset.h"
 };
 
 const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {

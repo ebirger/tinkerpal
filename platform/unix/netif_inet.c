@@ -127,7 +127,7 @@ static u32 netif_inet_ip_addr_get(netif_t *netif)
     return ntohl(dev_ip_addr_get(netif_to_inet(netif)->dev_name));
 }
 
-static int netif_inet_connect(netif_t *netif, u8 proto, void *params)
+static int netif_inet_proto_connect(netif_t *netif, u8 proto, void *params)
 {
     netif_inet_t *inet = netif_to_inet(netif);
     struct sockaddr_in addr;
@@ -242,7 +242,7 @@ static const netif_ops_t netif_inet_ops = {
     .link_status = netif_inet_link_status,
     .ip_connect = netif_inet_ip_connect,
     .ip_disconnect = netif_inet_ip_disconnect,
-    .connect = netif_inet_connect,
+    .proto_connect = netif_inet_proto_connect,
     .tcp_read = netif_inet_tcp_read ,
     .tcp_write = netif_inet_tcp_write,
     .disconnect = netif_inet_disconnect,
@@ -273,7 +273,7 @@ netif_t *netif_inet_new(char *dev_name)
         inet->dev_name[0] = '\0';
     inet->socket = -1;
 
-    netif_register(&inet->netif, &netif_inet_ops);
+    netif_register(&inet->netif, "INET", &netif_inet_ops);
     printf("Created INET Interface\n");
     return &inet->netif;
 }

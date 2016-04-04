@@ -22,21 +22,81 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
-
-const board_t board = {
-    .desc = "Trinket Pro",
-    .default_console_id = UART_RES(USART0),
-    .leds = (resource_t []){
-        GPIO_RES(_PB5),
-        GPIO_RES(_PB6),
-        0
-    },
-#ifdef CONFIG_SSD1306
-    .ssd1306_params = {
-        .i2c_port = I2C_RES(0),
-	.i2c_addr = 0x78,
-    },
+#ifndef BOARD_START
+#define BOARD_START(...)
 #endif
-};
+
+#ifndef DEFAULT_CONSOLE
+#define DEFAULT_CONSOLE(...)
+#endif
+
+#ifndef LED
+#define LED(...)
+#endif
+
+#ifndef SSD1306_PARAMS
+#define SSD1306_PARAMS(...)
+#endif
+
+#ifndef MMC_PARAMS
+#define MMC_PARAMS(...)
+#endif
+
+#ifndef ENC28J60_PARAMS
+#define ENC28J60_PARAMS(...)
+#endif
+
+#ifndef ESP8266_PARAMS
+#define ESP8266_PARAMS(...)
+#endif
+
+#ifndef PCD8544_PARAMS
+#define PCD8544_PARAMS(...)
+#endif
+
+#ifndef ST7735_PARAMS
+#define ST7735_PARAMS(...)
+#endif
+
+#ifndef DOGS102X6_PARAMS
+#define DOGS102X6_PARAMS(...)
+#endif
+
+#ifndef SSD1329_PARAMS
+#define SSD1329_PARAMS(...)
+#endif
+
+#ifndef ST7920_PRARMS
+#define ST7920_PRARMS(...)
+#endif
+
+#ifndef ILI93XX_PARAMS
+#define ILI93XX_PARAMS(...)
+#endif
+
+#ifndef SDL_SCREEN_PARAMS
+#define SDL_SCREEN_PARAMS(...)
+#endif
+
+#ifndef BOARD_END
+#define BOARD_END(...)
+#endif
+
+#include BOARD_FILE
+
+#undef BOARD_START
+#undef DEFAULT_CONSOLE
+#undef LED
+#undef SSD1306_PARAMS
+#undef MMC_PARAMS
+#undef ENC28J60_PARAMS
+#undef ESP8266_PARAMS
+#undef PCD8544_PARAMS
+#undef ST7735_PARAMS
+#undef DOGS102X6_PARAMS
+#undef SSD1306_PARAMS
+#undef SSD1329_PARAMS
+#undef ST7920_PRARMS
+#undef ILI93XX_PARAMS
+#undef SDL_SCREEN_PARAMS
+#undef BOARD_END

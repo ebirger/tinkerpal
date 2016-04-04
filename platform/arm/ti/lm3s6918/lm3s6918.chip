@@ -1,0 +1,15 @@
+CHIPSET_START(lm3s6918)
+
+/* MEMORY */
+ARM_MEMORY_AREA(FLASH, rx, 0x00000000, 256K)
+ARM_MEMORY_AREA(SRAM, rwx, 0x20000000, 64K)
+
+/* UART (num, rx, tx) */
+TI_UART_DEF(0, PA0, PA1)
+TI_UART_DEF(1, PD2, PD3)
+
+/* SSI (num, clkpin, fsspin, rxpin, txpin) */
+TI_SSI_DEF(0, PA2, PA3, PA4, PA5)
+TI_SSI_DEF(1, PE0, PE1, PE2, PE3)
+
+CHIPSET_END()

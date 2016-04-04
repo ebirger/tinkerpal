@@ -22,10 +22,67 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
+#ifndef __PRINT_H__
+#define __PRINT_H__
 
-const board_t board = {
-    .desc = "ESP8266",
-    .default_console_id = UART_RES(UART0),
-};
+static FILE *fp;
+
+#define _P(fmt, args...) fprintf(fp, fmt, ##args)
+#define P(fmt, args...) fprintf(fp, fmt "\n", ##args)
+
+static inline void print_replace(const char *str, char replaceme,
+    const char *with)
+{
+    int n = strlen(str);
+
+    while (n--)
+    {
+        if (*str == replaceme)
+            _P("%s", with);
+        else
+            _P("%c", *str);
+        str++;
+    }
+}
+
+static inline void __print_table_header(int n, const char *labels[])
+{
+    int i;
+
+    for (i = 0; i < n; i++)
+      _P("|%s", *labels++);
+    P("|");
+    for (i = 0; i < n; i++)
+      _P("|---");
+    P("|");
+}
+#define print_table_header(args...) \
+    SPLAT(__print_table_header, const char *, args)
+
+static inline void __print_table_row(int n, const char *labels[])
+{
+    int i;
+
+    for (i = 0; i < n; i++)
+    {
+        _P("|");
+        print_replace(*labels++, '\n', "<br>");
+    }
+    P("|");
+}
+#define print_table_row(args...) \
+    SPLAT(__print_table_row, const char *, args)
+
+#define print_section(fmt, args...) P("## " fmt, ##args)
+#define print_subsection(fmt, args...) P("### " fmt, ##args)
+#define print_subsubsection(fmt, args...) P("#### " fmt, ##args)
+
+static inline void print_code_block(const char *code)
+{
+    _P("    ");
+    print_replace(code, '\n', "\n    ");
+    P("");
+    P("");
+}
+
+#endif

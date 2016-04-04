@@ -1,9 +1,5 @@
 _stack_size = 4K;
 
-MEMORY
-{
-    FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 256K
-    SRAM (rwx) : ORIGIN = 0x20000000, LENGTH = 48K
-}
+#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f1xx/stm32f103rct6.chip"
 
 #include "platform/arm/cortex-m.ld.S"

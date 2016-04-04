@@ -58,7 +58,7 @@ typedef struct {
     int (*ip_connect)(netif_t *netif);
     void (*ip_disconnect)(netif_t *netif);
     /* Addresses in host order */
-    int (*connect)(netif_t *netif, u8 proto, void *params);
+    int (*proto_connect)(netif_t *netif, u8 proto, void *params);
     int (*tcp_read)(netif_t *netif, char *buf, int size);
     int (*tcp_write)(netif_t *netif, char *buf, int size);
     int (*disconnect)(netif_t *netif);
@@ -69,6 +69,7 @@ typedef struct {
 struct netif_t {
     netif_t *next;
     int id;
+    const char *name;
     const netif_ops_t *ops;
 };
 
@@ -98,7 +99,7 @@ static inline int netif_tcp_connect(netif_t *netif, u32 ip, u16 port)
 
     conn.ip = ip;
     conn.port = port;
-    return netif->ops->connect(netif, IP_PROTOCOL_TCP, &conn);
+    return netif->ops->proto_connect(netif, IP_PROTOCOL_TCP, &conn);
 }
 
 static inline int netif_tcp_read(netif_t *netif, char *buf, int size)
@@ -143,7 +144,7 @@ static inline void netif_event_trigger(netif_t *netif, netif_event_t event)
 }
 
 netif_t *netif_get_by_id(int id);
-void netif_register(netif_t *netif, const netif_ops_t *ops);
+void netif_register(netif_t *netif, const char *name, const netif_ops_t *ops);
 void netif_unregister(netif_t *netif);
 
 #endif

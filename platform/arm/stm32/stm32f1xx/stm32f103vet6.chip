@@ -1,0 +1,16 @@
+CHIPSET_START(stm32f103vet6)
+
+/* MEMORY */
+ARM_MEMORY_AREA(FLASH, rx, 0x08000000, 512K)
+ARM_MEMORY_AREA(SRAM, rwx, 0x20000000, 64K)
+
+/* USART (num, type, rxpin, txpin, afsig, apb) */
+STM32_USART_DEF(1, USART, PA10, PA9, NA, 2)
+STM32_USART_DEF(2, USART, PA3, PA2, NA, 1)
+STM32_USART_DEF(3, USART, PB11, PB10, NA, 1)
+
+/* SPI (num, apb, clkpin, misopin, mosipin, afsig) */
+STM32_SPI_DEF(1, 2, PA5, PA6, PA7, GPIO_Remap_SPI1)
+STM32_SPI_DEF(2, 1, PB13, PB14, PB15, 0)
+
+CHIPSET_END()

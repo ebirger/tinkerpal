@@ -1,0 +1,14 @@
+/* BOARD_START(_desc) */
+BOARD_START("Trinket Pro")
+
+/* DEFAULT_CONSOLE */
+DEFAULT_CONSOLE(UART_RES(USART0))
+
+/* LED(gpio) */
+LED(GPIO_RES(_PB5))
+LED(GPIO_RES(_PB6))
+
+/* SSD1306_PARAMS(_i2c_port, _i2c_addr) */
+SSD1306_PARAMS(I2C_RES(0), 0x78)
+
+BOARD_END()

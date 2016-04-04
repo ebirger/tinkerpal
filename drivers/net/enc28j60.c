@@ -710,7 +710,7 @@ netif_t *enc28j60_new(const enc28j60_params_t *params)
     e->intr = params->intr;
     e->irq_event.trigger = enc28j60_isr;
     e->bank = 255; /* make sure bank is selected on the first register access */
-    etherif_construct(&e->ethif, &enc28j60_etherif_ops);
+    etherif_construct(&e->ethif, "ENC28J60", &enc28j60_etherif_ops);
 
     spi_init(e->spi_port);
     spi_set_max_speed(e->spi_port, 8000000);

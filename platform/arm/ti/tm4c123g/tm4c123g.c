@@ -46,6 +46,8 @@
 #include "platform/arm/ti/ti_arm_mcu.h"
 #include "platform/arm/ti/tm4c123g/tm4c123g.h"
 
+#define PLATFORM_CHIPSET_H "platform/arm/ti/tm4c123g/tm4c123g.chip"
+
 const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
     [GPIO_PORT_A] = { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, INT_GPIOA },
     [GPIO_PORT_B] = { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, INT_GPIOB },
@@ -56,7 +58,7 @@ const ti_arm_mcu_gpio_port_t ti_arm_mcu_gpio_ports[] = {
 };
 
 const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
-#define UART_DEF(num, rx, tx) \
+#define TI_UART_DEF(num, rx, tx) \
     [UART##num] = { \
         .periph = SYSCTL_PERIPH_UART##num, \
         .base = UART##num##_BASE, \
@@ -65,19 +67,13 @@ const ti_arm_mcu_uart_t ti_arm_mcu_uarts[] = {
         .txpin = tx, \
         .rx_af = GPIO_##rx##_U##num##RX, \
         .tx_af = GPIO_##tx##_U##num##TX, \
-    }
-    UART_DEF(0, PA0, PA1),
-    UART_DEF(1, PB0, PB1),
-    UART_DEF(2, PD6, PD7),
-    UART_DEF(3, PC6, PC7),
-    UART_DEF(4, PC4, PC5),
-    UART_DEF(5, PE4, PE5),
-    UART_DEF(6, PD4, PD5),
-    UART_DEF(7, PE0, PE1),
+    },
+
+#include "platform/chipset.h"
 };
 
 const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
-#define SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
+#define TI_SSI_DEF(num, clkpin, fsspin, rxpin, txpin) \
     [SSI##num] = { \
         .periph = SYSCTL_PERIPH_SSI##num, \
         .base = SSI##num##_BASE, \
@@ -89,13 +85,13 @@ const ti_arm_mcu_ssi_t ti_arm_mcu_ssis[] = {
         .fss_af = GPIO_##fsspin##_SSI##num##FSS, \
         .rx_af = GPIO_##rxpin##_SSI##num##RX, \
         .tx_af = GPIO_##txpin##_SSI##num##TX, \
-    }
-    SSI_DEF(0, PA2, PA3, PA4, PA5),
-    SSI_DEF(1, PD0, PD1, PD2, PD3),
+    },
+
+#include "platform/chipset.h"
 };
 
 const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[] = {
-#define I2C_DEF(num, sclpin, sdapin) \
+#define TI_I2C_DEF(num, sclpin, sdapin) \
     [I2C##num] = { \
         .periph = SYSCTL_PERIPH_I2C##num, \
         .base = I2C##num##_BASE, \
@@ -103,11 +99,9 @@ const ti_arm_mcu_i2c_t ti_arm_mcu_i2cs[] = {
         .sda = sdapin, \
         .scl_af = GPIO_##sclpin##_I2C##num##SCL, \
         .sda_af = GPIO_##sdapin##_I2C##num##SDA, \
-    }
-    I2C_DEF(0, PB2, PB3),
-    I2C_DEF(1, PA6, PA7),
-    I2C_DEF(2, PE4, PE5),
-    I2C_DEF(3, PD0, PD1),
+    },
+
+#include "platform/chipset.h"
 };
 
 const ti_arm_mcu_timer_t ti_arm_mcu_timers[] = {
@@ -182,7 +176,7 @@ const ti_arm_mcu_gpio_pin_t ti_arm_mcu_gpio_pins[] = {
 };
 
 const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
-#define PWM_DEF(_pin, _base, _gen, _bit) \
+#define TI_PWM_DEF(_pin, _base, _gen, _bit) \
     { \
         .periph = SYSCTL_PERIPH_PWM##_base, \
         .base = PWM##_base##_BASE, \
@@ -191,29 +185,17 @@ const ti_arm_mcu_pwm_t ti_arm_mcu_pwms[] = {
         .out_bit = PWM_OUT_##_bit##_BIT, \
         .pin = _pin, \
         .af = GPIO_##_pin##_M##_base##PWM##_bit \
-    }
-    PWM_DEF(PB6, 0, 0, 0),
-    PWM_DEF(PB7, 0, 0, 1),
-    PWM_DEF(PB4, 0, 1, 2),
-    PWM_DEF(PB5, 0, 1, 3),
-    PWM_DEF(PE4, 0, 2, 4),
-    PWM_DEF(PE5, 0, 2, 5),
-    PWM_DEF(PC4, 0, 3, 6),
-    PWM_DEF(PC5, 0, 3, 7),
-    PWM_DEF(PD0, 1, 0, 0),
-    PWM_DEF(PD1, 1, 0, 1),
-    PWM_DEF(PA6, 1, 1, 2),
-    PWM_DEF(PA7, 1, 1, 3),
-    PWM_DEF(PF0, 1, 2, 4),
-    PWM_DEF(PF1, 1, 2, 5),
-    PWM_DEF(PF2, 1, 3, 6),
-    PWM_DEF(PF3, 1, 3, 7),
+    },
+#include "platform/chipset.h"
     {}
 };
 
 const ti_arm_mcu_usbd_params_t ti_arm_mcu_usbd_params = {
-    .dp_pin = PD5,
-    .dm_pin = PD4,
+#define TI_USBD_DEF(dp, dm) \
+    .dp_pin = dp, \
+    .dm_pin = dm,
+
+#include "platform/chipset.h"
 };
 
 #define HALF_TIMER(p) ((p) & 0x1 ? TIMER_B : TIMER_A) /* even pins use TIMER_A, odd pins use TIMER_B */

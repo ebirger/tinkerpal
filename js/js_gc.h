@@ -22,16 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
+#ifndef __JS_GC_H__
+#define __JS_GC_H__
 
-static const resource_t leds[] = {
-    GPIO_RES(PG13),
-    GPIO_RES(PG14),
-    0
-};
-const board_t board = {
-    .desc = "STM32F429IDiscovery",
-    .default_console_id = UART_RES(USART_PORT3),
-    .leds = leds,
-};
+void js_gc_run(void);
+void __js_gc_run(int sweep_all);
+
+#endif

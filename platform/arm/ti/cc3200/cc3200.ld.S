@@ -1,9 +1,6 @@
 _stack_size = 4K;
 
-MEMORY
-{
-    SRAM (rwx) : ORIGIN = 0x20004000, LENGTH = 192K
-}
+#define PLATFORM_CHIPSET_H "platform/arm/ti/cc3200/cc3200.chip"
 
 /* No Flash for now */
 #define FLASH SRAM
