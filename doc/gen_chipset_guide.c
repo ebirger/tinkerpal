@@ -47,12 +47,13 @@ struct chip {
     struct res {
         enum res_type {
             RES_NONE = 0,
-            RES_UART = 1,
-            RES_I2C = 2,
-            RES_SSI = 3,
-            RES_SPI = 4,
-            RES_USCI = 5,
-            RES_USBD = 6,
+            RES_ARM_MEM_AREA = 1,
+            RES_UART = 2,
+            RES_I2C = 3,
+            RES_SSI = 4,
+            RES_SPI = 5,
+            RES_USCI = 6,
+            RES_USBD = 7,
             RES_LAST,
         } type;
         union {
@@ -88,6 +89,12 @@ struct chip {
             struct {
                 const char *usbd_dp;
                 const char *usbd_dm;
+            };
+            struct {
+                const char *arm_mem_area_name;
+                const char *arm_mem_area_perms;
+                const char *arm_mem_area_addr;
+                const char *arm_mem_area_size;
             };
         };
     } *res;
@@ -145,6 +152,13 @@ struct chip {
     .usbd_dp = #dp, \
     .usbd_dm = #dm, \
 },
+#define ARM_MEMORY_AREA(name, perms, addr, size) { \
+    .type = RES_ARM_MEM_AREA, \
+    .arm_mem_area_name = #name, \
+    .arm_mem_area_perms = #perms, \
+    .arm_mem_area_addr = #addr, \
+    .arm_mem_area_size = #size, \
+},
 
 #include "platform/chipset.h"
 
@@ -184,7 +198,10 @@ static struct res_ops {
         (OFS(spi_name),  OFS(spi_clk), OFS(spi_miso), OFS(spi_mosi))),
     RS(RES_USBD, "USBD",
         ("DP Pin",       "DM Pin"),
-        (OFS(usbd_dp),   OFS(usbd_dm)))
+        (OFS(usbd_dp),   OFS(usbd_dm))),
+    RS(RES_ARM_MEM_AREA, "Memory Areas",
+        ("Name",                 "Permissions",           "Address",              "Size"),
+        (OFS(arm_mem_area_name), OFS(arm_mem_area_perms), OFS(arm_mem_area_addr), OFS(arm_mem_area_size)))
 };
 
 static void res_ops_print_headers(struct res_ops *ops)
