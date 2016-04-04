@@ -1,0 +1,39 @@
+/* BOARD_START(_desc) */
+BOARD_START("HY 24'' STM32F103VET6 based board")
+
+/* DEFAULT_CONSOLE */
+DEFAULT_CONSOLE(UART_RES(USART_PORT2))
+
+/* LED(gpio) */
+LED(GPIO_RES(PC6))
+LED(GPIO_RES(PC7))
+LED(GPIO_RES(PD13))
+LED(GPIO_RES(PD6))
+
+/* LCD daughter board connections:
+ *
+ * LEDK:GND  | MISO:PA6
+ * LEDA:5V   | SCK:PA5
+ * NC:PB11   | MOSI:PA7
+ * RST:PE1   | CS:PD6
+ * NC:PB10   | NC:PC4
+ * CS:PD7    | NC:PC5
+ * DB17:PD10 | DB7:PE10
+ * DB16:PD9  | DB6:PE9
+ * DB15:PD8  | DB5:PE8
+ * DB14:PE15 | DB4:PE7
+ * DB13:PE14 | DB3:PD1
+ * DB12:PE13 | DB2:PD0
+ * DB11:PE12 | DB1:PD15
+ * DB10:PE11 | DB0:PD14
+ * RD:PD4    | IRQ:PB6
+ * RW:PD5    | DOUT:PA6
+ * RS:PD11   | BUSY:PC13
+ * NC:PC6    | DIN:PA7
+ * VCC:3V    | CS:PB7
+ * GND:GND   | DCLK:PA5
+ */
+/* ILI93XX_PARAMS(_rst, _backlight, _trns) */
+ILI93XX_PARAMS(GPIO_RES(PE1), GPIO_RES(PB10), &stm32_fsmc_ili93xx_trns)
+
+BOARD_END()

@@ -1,0 +1,10 @@
+/* BOARD_START(_desc) */
+BOARD_START("Unix based simulator")
+
+/* DEFAULT_CONSOLE */
+DEFAULT_CONSOLE(UART_RES(STDIO_ID))
+
+/* SDL_SCREEN_PARAMS(_width, _height) */
+SDL_SCREEN_PARAMS(320, 200)
+
+BOARD_END()

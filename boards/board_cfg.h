@@ -22,42 +22,81 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "boards/board.h"
-#include "platform/platform.h"
-#include "drivers/gpio/gpio.h"
-#include "drivers/spi/spi.h"
+#ifndef BOARD_START
+#define BOARD_START(...)
+#endif
 
-const board_t board = {
-    .desc = "TI MSP430F5529",
-    .default_console_id = UART_RES(USCIA1),
-#ifdef CONFIG_MSP430F5529_LAUNCHPAD
-    .leds = (resource_t []){
-        GPIO_RES(PA0),
-        GPIO_RES(PD7),
-        0
-    },
+#ifndef DEFAULT_CONSOLE
+#define DEFAULT_CONSOLE(...)
 #endif
-#ifdef CONFIG_DOGS102X6
-    .dogs102x6_params = {
-        .rst = GPIO_RES(PE7),
-        .cs = GPIO_RES(PG4),
-        .cd = GPIO_RES(PE6),
-        .spi_port = SPI_RES(USCIB1),
-        .backlight = GPIO_RES(PG6),
-    },
+
+#ifndef LED
+#define LED(...)
 #endif
-#ifdef CONFIG_MMC
-    .mmc_params = {
-        .spi_port = SPI_RES(USCIB1),
-        .mosi = GPIO_RES(PD1),
-        .cs = GPIO_RES(PC7),
-    },
+
+#ifndef SSD1306_PARAMS
+#define SSD1306_PARAMS(...)
 #endif
-#ifdef CONFIG_ENC28J60
-    .enc28j60_params = {
-        .spi_port = SPI_RES(USCIA0),
-        .cs = GPIO_RES(PC5),
-        .intr = GPIO_RES(PA4),
-    },
+
+#ifndef MMC_PARAMS
+#define MMC_PARAMS(...)
 #endif
-};
+
+#ifndef ENC28J60_PARAMS
+#define ENC28J60_PARAMS(...)
+#endif
+
+#ifndef ESP8266_PARAMS
+#define ESP8266_PARAMS(...)
+#endif
+
+#ifndef PCD8544_PARAMS
+#define PCD8544_PARAMS(...)
+#endif
+
+#ifndef ST7735_PARAMS
+#define ST7735_PARAMS(...)
+#endif
+
+#ifndef DOGS102X6_PARAMS
+#define DOGS102X6_PARAMS(...)
+#endif
+
+#ifndef SSD1329_PARAMS
+#define SSD1329_PARAMS(...)
+#endif
+
+#ifndef ST7920_PRARMS
+#define ST7920_PRARMS(...)
+#endif
+
+#ifndef ILI93XX_PARAMS
+#define ILI93XX_PARAMS(...)
+#endif
+
+#ifndef SDL_SCREEN_PARAMS
+#define SDL_SCREEN_PARAMS(...)
+#endif
+
+#ifndef BOARD_END
+#define BOARD_END(...)
+#endif
+
+#include BOARD_FILE
+
+#undef BOARD_START
+#undef DEFAULT_CONSOLE
+#undef LED
+#undef SSD1306_PARAMS
+#undef MMC_PARAMS
+#undef ENC28J60_PARAMS
+#undef ESP8266_PARAMS
+#undef PCD8544_PARAMS
+#undef ST7735_PARAMS
+#undef DOGS102X6_PARAMS
+#undef SSD1306_PARAMS
+#undef SSD1329_PARAMS
+#undef ST7920_PRARMS
+#undef ILI93XX_PARAMS
+#undef SDL_SCREEN_PARAMS
+#undef BOARD_END

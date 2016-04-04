@@ -1,0 +1,19 @@
+/* BOARD_START(_desc) */
+BOARD_START("RDK-IDM (LM3S6918)")
+
+/* DEFAULT_CONSOLE */
+DEFAULT_CONSOLE(UART_RES(UART1))
+
+/* MMC_PARAMS(_spi_port, _mosi, _cs) */
+MMC_PARAMS(SPI_RES(SSI1), GPIO_RES(PE3), GPIO_RES(PE1))
+
+/* ILI93XX_PARAMS(_rst, _backlight, _trns) */
+ILI93XX_PARAMS(GPIO_RES(PG0), GPIO_RES(PC6), ILI93XX_BITBANG_TRNS({
+    .rs = GPIO_RES(PF2),
+    .wr = GPIO_RES(PF1),
+    .rd = GPIO_RES(PF0),
+    .data_port_low = GPIO_RES(GPIO_PORT_B),
+    .data_port_high = GPIO_RES(GPIO_PORT_A),
+}))
+
+BOARD_END()
