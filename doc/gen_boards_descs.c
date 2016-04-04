@@ -200,7 +200,7 @@ static struct res_ops {
     RS(RES_CONSOLE, "Console",
         ("Console"),
         (OFS(console_name))),
-    RS(RES_SSD1306, "SSD1308",
+    RS(RES_SSD1306, "SSD1306",
         ("I2C Port",            "I2C Address"),
         (OFS(ssd1306_i2c_port), OFS(ssd1306_i2c_addr))),
     RS(RES_MMC, "MMC",
