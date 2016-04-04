@@ -37,8 +37,8 @@ static void print_header(void)
     P("title: Chipset Guide | Tinkerpal " TINKERPAL_VERSION);
     P("markdown2extras: tables, wiki-tables, code-friendly");
     P("---");
-    P("#Pin Mappings");
-    P("Chipsets Pin mappings detailed below");
+    P("#Chipset Guide");
+    P("Chipsets preperties detailed below");
     P("");
 }
 
