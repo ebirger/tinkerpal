@@ -2,6 +2,11 @@
 #define CHIPSET_START(...)
 #endif
 
+/* MEMORY */
+#ifndef ARM_MEMORY_AREA
+#define ARM_MEMORY_AREA(...)
+#endif
+
 /* UARTS */
 #ifndef TI_UART_DEF
 #define TI_UART_DEF(...)
@@ -46,6 +51,7 @@
 #include PLATFORM_CHIPSET_H
 
 #undef CHIPSET_START
+#undef ARM_MEMORY_AREA
 #undef TI_UART_DEF
 #undef STM32_USART_DEF
 #undef MSP430_USCI_DEF
