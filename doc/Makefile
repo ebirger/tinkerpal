@@ -2,7 +2,7 @@ all: docs
 
 export DOCS_DIR:=$(BUILD)/doc
 
-DESCS=$(shell find . -name "*.desc")
+JSAPIS=$(shell find . -name "*.jsapi")
 CHIPS=$(shell find . -name "*.chip")
 BOARDS=$(shell find . -name "*.board")
 
@@ -20,7 +20,7 @@ $(DOCS_DIR)/boards.h: $(BOARDS)
 $(DOCS_DIR)/chips.h: $(CHIPS)
 	@cat $^ > $@
 
-$(DOCS_DIR)/doc.h: $(DESCS)
+$(DOCS_DIR)/doc.h: $(JSAPIS)
 	@mkdir -p $(DOCS_DIR)
 	@cat $^ > $@
 

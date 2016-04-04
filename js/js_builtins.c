@@ -43,7 +43,7 @@ extern obj_t *global_env;
     extern void init(void); \
     extern void uninit(void);
 
-#include "descs.h"
+#include "jsapi.h"
 
 #undef FUNCTION
 #undef OBJECT
@@ -83,7 +83,7 @@ extern obj_t *global_env;
 #endif
 
 const function_template_t function_templates[] = {
-#include "descs.h"
+#include "jsapi.h"
     {}
 };
 
@@ -112,7 +112,7 @@ void js_builtins_uninit(void)
 #define CATEGORY_INIT(init, uninit, ...) \
     uninit();
 
-#include "descs.h"
+#include "jsapi.h"
 
 #undef FUNCTION
 #undef OBJECT
@@ -164,7 +164,7 @@ void js_builtins_init(void)
 #define CATEGORY_INIT(init, uninit, ...) \
     init();
 
-#include "descs.h"
+#include "jsapi.h"
 
 #undef FUNCTION
 #undef OBJECT

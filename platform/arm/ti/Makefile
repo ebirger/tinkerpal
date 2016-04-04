@@ -17,7 +17,7 @@ MK_OBJS+=$(if $(CONFIG_I2C),ti_arm_mcu_i2c.o)
 MK_OBJS+=$(if $(CONFIG_USB),ti_arm_mcu_usb.o)
 ifneq ($(CONFIG_STELLARIS_ETH),)
   MK_OBJS+=stellaris_eth.o $(if $(CONFIG_JS),js_stellaris_eth.o)
-  MK_DESCS+=stellaris_eth.desc
+  MK_JSAPIS+=stellaris_eth.jsapi
 endif
 MK_OBJS+=$(if $(CONFIG_TIVA_C_EMAC),tiva_c_emac.o)
 

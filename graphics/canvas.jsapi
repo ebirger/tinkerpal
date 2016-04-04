@@ -1,4 +1,4 @@
-#include "graphics/painter.desc"
+#include "graphics/painter.jsapi"
 
 PROTOTYPE("Canvas", canvas, {
 })
