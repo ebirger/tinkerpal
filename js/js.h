@@ -30,13 +30,10 @@
 void js_uninit(void);
 void js_init(void);
 
-#include "js/js_gc.h"
-
 #else
 
 static inline void js_uninit(void) { }
 static inline void js_init(void) { }
-static inline void js_gc_run(void) { }
 
 #endif
 

@@ -32,6 +32,8 @@
 int js_eval(obj_t **ret, tstr_t *code);
 int js_eval_module(obj_t **ret, tstr_t *code);
 int js_eval_obj(obj_t **ret, obj_t *obj);
+void js_eval_noret(tstr_t *code);
+
 /* Return 'rank' of code - used for multiline edit:
  * Examples:
  *    function f() { => 1

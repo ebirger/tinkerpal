@@ -25,13 +25,10 @@
 #include "util/tstr.h"
 #include "util/debug.h"
 #include "fs/vfs.h"
-#include "js/js_types.h"
 #include "js/js_eval.h"
-#include "js/js.h"
 
 void app_start(int argc, char *argv[])
 {
-    obj_t *o = NULL;
     tstr_t code, file;
     
     if (argc != 2)
@@ -44,11 +41,8 @@ void app_start(int argc, char *argv[])
     if (js_eval_rank(code))
         tp_crit("Invalid code, cannot execute\n");
 
-    if (js_eval(&o, &code) == COMPLETION_THROW)
-        tp_crit("Evaluation resulted in exception %o\n", o);
+    js_eval_noret(&code);
 
-    obj_put(o);
-    js_gc_run();
     tstr_free(&code);
     tstr_free(&file);
 }
