@@ -4,6 +4,7 @@ export DOCS_DIR:=$(BUILD)/doc
 
 DESCS=$(shell find . -name "*.desc")
 CHIPS=$(shell find . -name "*.chip")
+BOARDS=$(shell find . -name "*.board")
 
 RESTDOWN_DIR=$(STAGING)/restdown
 RESTDOWN_EXEC=$(RESTDOWN_DIR)/bin/restdown
@@ -12,6 +13,9 @@ $(RESTDOWN_DIR)/.git:
 	@git clone https://github.com/trentm/restdown.git $(RESTDOWN_DIR)
 
 $(RESTDOWN_EXEC): | $(RESTDOWN_DIR)/.git
+
+$(DOCS_DIR)/boards.h: $(BOARDS)
+	@cat $^ > $@
 
 $(DOCS_DIR)/chips.h: $(CHIPS)
 	@cat $^ > $@
@@ -24,6 +28,9 @@ $(DOCS_DIR)/gen_js_api: doc/gen_js_api.c $(DOCS_DIR)/doc.h doc/gen_js_api.h $(BU
 	@gcc -I. -I$(BUILD) -include $(BUILD)/autoconf.h -o $@ $<
 
 $(DOCS_DIR)/gen_pin_mappings: doc/gen_pin_mappings.c $(DOCS_DIR)/chips.h $(BUILD)/autoconf.h
+	@gcc -I. -I$(BUILD) -include $(BUILD)/autoconf.h -o $@ $<
+
+$(DOCS_DIR)/gen_boards_descs: doc/gen_boards_descs.c $(DOCS_DIR)/boards.h $(BUILD)/autoconf.h
 	@gcc -I. -I$(BUILD) -include $(BUILD)/autoconf.h -o $@ $<
 
 $(DOCS_DIR)/manual.html: doc/manual.txt
@@ -41,6 +48,13 @@ $(DOCS_DIR)/%.rst: $(DOCS_DIR)/%.restdown
 $(DOCS_DIR)/pin_mappings.restdown: $(DOCS_DIR)/gen_pin_mappings
 	@$< $@
 
-docs: $(DOCS_DIR)/api.html $(DOCS_DIR)/manual.html $(DOCS_DIR)/api.rst $(DOCS_DIR)/pin_mappings.html $(DOCS_DIR)/pin_mappings.rst
+$(DOCS_DIR)/boards_descs.restdown: $(DOCS_DIR)/gen_boards_descs
+	@$< $@
+
+DOC_LIST=$(DOCS_DIR)/api.html $(DOCS_DIR)/manual.html $(DOCS_DIR)/api.rst \
+  $(DOCS_DIR)/pin_mappings.html $(DOCS_DIR)/pin_mappings.rst \
+  $(DOCS_DIR)/boards_descs.html $(DOCS_DIR)/boards_descs.rst
+
+docs: $(DOC_LIST)
 
 .PHONY: docs
