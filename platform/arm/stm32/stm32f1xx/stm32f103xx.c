@@ -33,7 +33,15 @@
 #include "platform/arm/stm32/stm32_spi.h"
 #include "platform/arm/stm32/stm32.h"
 
-#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f1xx/stm32f1xx.chip"
+#ifdef CONFIG_STM32F103RBT
+#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f1xx/stm32f103rbt.chip"
+#endif
+#ifdef CONFIG_STM32F103VET6
+#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f1xx/stm32f103vet6.chip"
+#endif
+#ifdef CONFIG_STM32F103RCT6
+#define PLATFORM_CHIPSET_H "platform/arm/stm32/stm32f1xx/stm32f103rct6.chip"
+#endif
 
 const stm32_gpio_port_t stm32_gpio_ports[] = {
     [GPIO_PORT_A] = { RCC_APB2Periph_GPIOA, GPIOA },
