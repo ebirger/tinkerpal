@@ -22,22 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __JS_H__
-#define __JS_H__
+#ifndef __JS_GC_H__
+#define __JS_GC_H__
 
-#ifdef CONFIG_JS
-
-void js_uninit(void);
-void js_init(void);
-
-#include "js/js_gc.h"
-
-#else
-
-static inline void js_uninit(void) { }
-static inline void js_init(void) { }
-static inline void js_gc_run(void) { }
-
-#endif
+void js_gc_run(void);
+void __js_gc_run(int sweep_all);
 
 #endif
