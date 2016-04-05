@@ -1,5 +1,5 @@
-/* BOARD_START(_desc, _chipset) */
-BOARD_START("Unix based simulator", NA)
+/* BOARD_START(_desc, _chipset, image) */
+BOARD_START("Unix based simulator", NA, NA)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(STDIO_ID))

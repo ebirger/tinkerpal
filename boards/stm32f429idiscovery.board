@@ -1,5 +1,5 @@
-/* BOARD_START(_desc, _chipset) */
-BOARD_START("STM32F429IDiscovery", stm32f429xx)
+/* BOARD_START(_desc, _chipset, _image) */
+BOARD_START("STM32F429IDiscovery", stm32f429xx, NA)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(USART_PORT3))

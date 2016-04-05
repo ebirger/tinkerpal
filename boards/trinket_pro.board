@@ -1,5 +1,5 @@
-/* BOARD_START(_desc, _chipset) */
-BOARD_START("Trinket Pro", NA)
+/* BOARD_START(_desc, _chipset, _image) */
+BOARD_START("Trinket Pro", NA, NA)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(USART0))

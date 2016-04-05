@@ -14,6 +14,9 @@ $(RESTDOWN_DIR)/.git:
 
 $(RESTDOWN_EXEC): | $(RESTDOWN_DIR)/.git
 
+$(DOCS_DIR)/_static:
+	@ln -s $(realpath doc/_static) $@
+
 $(DOCS_DIR)/boards.h: $(BOARDS)
 	@cat $^ > $@
 
@@ -55,6 +58,6 @@ DOC_LIST=$(DOCS_DIR)/api.html $(DOCS_DIR)/manual.html $(DOCS_DIR)/api.rst \
   $(DOCS_DIR)/chipset_guide.html $(DOCS_DIR)/chipset_guide.rst \
   $(DOCS_DIR)/boards_descs.html $(DOCS_DIR)/boards_descs.rst
 
-docs: $(DOC_LIST)
+docs: $(DOCS_DIR)/_static $(DOC_LIST)
 
 .PHONY: docs

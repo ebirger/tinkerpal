@@ -85,7 +85,7 @@ extern ili93xx_db_transport_t stm32_fsmc_ili93xx_trns;
 #endif
 
 const board_t board = {
-#define BOARD_START(_desc, _chipset) .desc = _desc,
+#define BOARD_START(_desc, _chipset, _image) .desc = _desc,
 
 #define DEFAULT_CONSOLE(uart) .default_console_id = uart,
 

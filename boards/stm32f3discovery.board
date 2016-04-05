@@ -1,5 +1,5 @@
-/* BOARD_START(_desc, _chipset) */
-BOARD_START("STM32F3Discovery", stm32f303xx)
+/* BOARD_START(_desc, _chipset, _image) */
+BOARD_START("STM32F3Discovery", stm32f303xx, stm32f3discovery)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(USART_PORT2))
