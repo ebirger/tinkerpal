@@ -1,5 +1,5 @@
-/* BOARD_START(_desc) */
-BOARD_START("'ARMJishu' 28'' STM32F103RB based board")
+/* BOARD_START(_desc, _chipset) */
+BOARD_START("'ARMJishu' 28'' STM32F103RB based board", stm32f103rbt)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(USART_PORT1))

@@ -45,6 +45,7 @@ static void print_header(void)
 
 struct board {
     const char *desc;
+    const char *chipset;
     struct res {
         enum res_type {
             RES_NONE = 0,
@@ -104,7 +105,10 @@ struct board {
 #define I2C_RES(res) #res
 #define SPI_RES(res) #res
 
-#define BOARD_START(_desc) { .desc = _desc, .res = (struct res []){
+#define BOARD_START(_desc, _chipset) { \
+    .desc = _desc, \
+    .chipset = #_chipset, \
+    .res = (struct res []){
 #define BOARD_END(...) {} } },
 
 #define DEFAULT_CONSOLE(uart) { \
@@ -278,6 +282,11 @@ static void print_boards(void)
         enum res_type t;
 
         print_section("%s", b->desc);
+        if (strcmp(b->chipset, "NA"))
+        {
+            P("Chipset [%s](/page/chipset_guide.html#%s)\n", b->chipset,
+                b->chipset);
+        }
 
         for (t = RES_NONE + 1; t != RES_LAST; t++)
             print_res_by_type(b->res, t);

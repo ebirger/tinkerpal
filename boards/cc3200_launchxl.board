@@ -1,5 +1,5 @@
-/* BOARD_START(_desc) */
-BOARD_START("CC3200-LAUNCHXL (CC3200 Connected Launchpad)")
+/* BOARD_START(_desc, _chipset) */
+BOARD_START("CC3200-LAUNCHXL (CC3200 Connected Launchpad)", cc3200)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(UART0))

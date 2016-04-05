@@ -1,5 +1,5 @@
-/* BOARD_START(_desc) */
-BOARD_START("EK LM4F120XL (Stellaris Launchpad)")
+/* BOARD_START(_desc, _chipset) */
+BOARD_START("EK LM4F120XL (Stellaris Launchpad)", lm4f120xl)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(UART0))

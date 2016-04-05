@@ -1,5 +1,5 @@
-/* BOARD_START(_desc) */
-BOARD_START("Freescale FRDM-KL-25Z")
+/* BOARD_START(_desc, _chipset) */
+BOARD_START("Freescale FRDM-KL-25Z", frdm_kl25z)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(0))
