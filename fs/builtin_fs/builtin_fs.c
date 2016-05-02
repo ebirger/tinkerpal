@@ -50,7 +50,7 @@ static int builtin_fs_file_write(tstr_t *content, tstr_t *file_name)
     return -1; /* Builtin FS is read only */
 }
     
-int builtin_fs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
+static int builtin_fs_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 {
     const builtin_fs_file_t *f;
 

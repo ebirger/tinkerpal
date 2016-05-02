@@ -87,7 +87,7 @@ int buffered_serial_read(int u, char *buf, int size)
     return len;
 }
 
-int buffered_serial_enable(int u, int enabled)
+static int buffered_serial_enable(int u, int enabled)
 {
     if (!!uart_bufs[u] == !!enabled)
         return -1;

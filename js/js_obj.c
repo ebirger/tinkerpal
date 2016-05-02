@@ -356,7 +356,7 @@ obj_t *obj_has_property(obj_t *o, const tstr_t *property)
     return ret;
 }
 
-obj_t *obj_do_in_op(obj_t *oa, obj_t *ob)
+static obj_t *obj_do_in_op(obj_t *oa, obj_t *ob)
 {
     obj_t *ret;
     tstr_t property;
@@ -928,7 +928,7 @@ obj_t *function_new(tstr_list_t *params, void *code, code_free_cb_t code_free,
     return _function_new(params, code, code_free, scope, object_new(), call);
 }
 
-int function_def_construct(obj_t **ret, obj_t *this_obj, int argc, 
+static int function_def_construct(obj_t **ret, obj_t *this_obj, int argc, 
     obj_t *argv[])
 {
     int rc;
