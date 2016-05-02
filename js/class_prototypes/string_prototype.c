@@ -26,6 +26,7 @@
 #include "util/tstr.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
+#include "js/jsapi_decl.h"
 
 int do_string_prototype_split(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {

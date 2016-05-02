@@ -27,6 +27,7 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
+#include "js/jsapi_decl.h"
 #include "drivers/gpio/gpio.h"
 
 #define Sexception_gpio_pin_mode_unavail \

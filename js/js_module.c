@@ -29,6 +29,7 @@
 #include "js/js_module.h"
 #include "js/js_eval.h"
 #include "js/js_types.h"
+#include "js/jsapi_decl.h"
 
 typedef struct js_module_t {
     struct js_module_t *next;

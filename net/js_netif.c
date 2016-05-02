@@ -26,6 +26,7 @@
 #include "net/net_utils.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
+#include "js/jsapi_decl.h"
 
 #define Sinvalid_netif S("Invalid network interface")
 
