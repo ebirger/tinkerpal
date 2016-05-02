@@ -26,6 +26,7 @@
 #include "util/debug.h"
 #include "fs/vfs.h"
 #include "js/js_eval.h"
+#include "apps/app.h"
 
 void app_start(int argc, char *argv[])
 {

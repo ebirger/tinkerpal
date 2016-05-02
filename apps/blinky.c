@@ -26,6 +26,7 @@
 #include "util/event.h"
 #include "drivers/gpio/gpio.h"
 #include "boards/board.h"
+#include "apps/app.h"
 
 static int cur_led;
 

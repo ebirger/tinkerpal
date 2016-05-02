@@ -29,6 +29,7 @@
 #include "net/netif.h"
 #include "platform/platform_consts.h"
 #include "boards/board.h"
+#include "apps/app.h"
 #if defined(CONFIG_LINUX_ETH)
 #include "platform/unix/linux_eth.h"
 #elif defined(CONFIG_NETIF_INET)

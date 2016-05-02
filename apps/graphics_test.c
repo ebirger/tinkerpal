@@ -28,6 +28,7 @@
 #include "boards/board.h"
 #include "graphics/graphics.h"
 #include "graphics/colors.h"
+#include "apps/app.h"
 #include <math.h>
 
 static canvas_t *canvas;

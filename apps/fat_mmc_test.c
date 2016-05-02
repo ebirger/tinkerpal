@@ -29,6 +29,7 @@
 #include "boards/board.h"
 #include "fs/vfs.h"
 #include "drivers/mmc/mmc.h"
+#include "apps/app.h"
 
 static int fat_mmc_test_readdir_cb(tstr_t *file_name, void *ctx)
 {

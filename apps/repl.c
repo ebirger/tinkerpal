@@ -25,6 +25,7 @@
 #include "util/cli.h"
 #include "js/js_eval.h"
 #include "js/js.h"
+#include "apps/app.h"
 
 #ifdef CONFIG_CLI_SYNTAX_HIGHLIGHTING
 

@@ -22,21 +22,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "util/cli.h"
-#include "apps/app.h"
+#ifndef __APP_H__
+#define __APP_H__
 
-void echo_process_line(tstr_t *line)
-{
-    console_printf("Echo: %S\n", line);
-}
+void app_start(int argc, char *argv[]);
 
-static cli_client_t echo_cli_client = {
-    .process_line = echo_process_line,
-};
-
-void app_start(int argc, char *argv[])
-{
-    console_printf("Application - Echo Console\n");
-
-    cli_start(&echo_cli_client);
-}
+#endif

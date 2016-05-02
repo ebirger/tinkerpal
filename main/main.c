@@ -33,9 +33,8 @@
 #include "js/js.h"
 #include "net/net.h"
 #include "usb/usbd.h"
+#include "apps/app.h"
 #include "version.h"
-
-extern void app_start(int argc, char *argv[]);
 
 static inline void tp_banner(void)
 {
