@@ -25,6 +25,7 @@
 #include "graphics/js_canvas.h"
 #include "boards/board.h"
 #include "js/js_obj.h"
+#include "js/jsapi_decl.h"
 
 #define LCD_CONSTRUCTOR(name) \
 int do_##name##_constructor(obj_t **ret, obj_t *this, int argc, obj_t *argv[]) \

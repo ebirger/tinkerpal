@@ -25,8 +25,10 @@
 #include "drivers/serial/serial.h"
 #include "util/event.h"
 #include "main/console.h"
+#include "apps/app.h"
 
-void usb_serial_loopback_trigger(event_t *e, u32 resource_id, u64 timestamp)
+static void usb_serial_loopback_trigger(event_t *e, u32 resource_id,
+    u64 timestamp)
 {
     int size;
     char buf[64];

@@ -26,6 +26,7 @@
 #include "js/js_utils.h"
 #include "main/console.h"
 #include "drivers/serial/js_serial.h"
+#include "js/jsapi_decl.h"
 
 int do_console_set(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
 {

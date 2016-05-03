@@ -74,7 +74,7 @@ static int g_event_id = 0;
 #define watches_foreach(e) for (e = watches; e; e = e->next)
 #define timers_foreach(t) for (t = timers; t; t = t->next)
 
-void event_timer_insert(event_internal_t *t, int ms)
+static void event_timer_insert(event_internal_t *t, int ms)
 {
     event_internal_t **iter;
 
@@ -292,7 +292,7 @@ void event_watch_del_all(void)
         EVENT_SET_DELETED(e);
 }
 
-void event_purge_deleted(event_internal_t **events)
+static void event_purge_deleted(event_internal_t **events)
 {
     event_internal_t *e;
 

@@ -28,6 +28,7 @@
 #include "js/js_utils.h"
 #include "js/js_eval.h"
 #include "js/js_compiler.h"
+#include "js/jsapi_decl.h"
 #include "platform/platform.h"
 #include <math.h>
 

@@ -26,6 +26,7 @@
 #include "js/js_obj.h"
 #include "js/js_emitter.h"
 #include "js/js_utils.h"
+#include "js/jsapi_decl.h"
 
 int do_object_prototype_to_string(obj_t **ret, obj_t *this, int argc, 
     obj_t *argv[])

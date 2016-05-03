@@ -45,6 +45,8 @@ static void print_header(void)
 
 struct board {
     const char *desc;
+    const char *chipset;
+    const char *image;
     struct res {
         enum res_type {
             RES_NONE = 0,
@@ -104,7 +106,11 @@ struct board {
 #define I2C_RES(res) #res
 #define SPI_RES(res) #res
 
-#define BOARD_START(_desc) { .desc = _desc, .res = (struct res []){
+#define BOARD_START(_desc, _chipset, _image) { \
+    .desc = _desc, \
+    .chipset = #_chipset, \
+    .image = #_image, \
+    .res = (struct res []){
 #define BOARD_END(...) {} } },
 
 #define DEFAULT_CONSOLE(uart) { \
@@ -200,7 +206,7 @@ static struct res_ops {
     RS(RES_CONSOLE, "Console",
         ("Console"),
         (OFS(console_name))),
-    RS(RES_SSD1306, "SSD1308",
+    RS(RES_SSD1306, "SSD1306",
         ("I2C Port",            "I2C Address"),
         (OFS(ssd1306_i2c_port), OFS(ssd1306_i2c_addr))),
     RS(RES_MMC, "MMC",
@@ -278,9 +284,18 @@ static void print_boards(void)
         enum res_type t;
 
         print_section("%s", b->desc);
+        if (strcmp(b->chipset, "NA"))
+        {
+            P("Chipset [%s](/page/chipset_guide.html#%s)\n", b->chipset,
+                b->chipset);
+        }
 
         for (t = RES_NONE + 1; t != RES_LAST; t++)
             print_res_by_type(b->res, t);
+
+        if (strcmp(b->image, "NA"))
+            P("![](_static/%s.jpg)\n", b->image);
+
     }
 }
 

@@ -26,6 +26,7 @@
 #include "graphics/js_canvas.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
+#include "js/jsapi_decl.h"
 #include "util/debug.h"
 
 static void canvas_obj_free(void *p)

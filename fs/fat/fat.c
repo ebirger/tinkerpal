@@ -175,7 +175,7 @@ Exit:
     return rc;
 }
 
-int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
+static int fat_readdir(tstr_t *path, readdir_cb_t cb, void *ctx)
 {
     FRESULT res;
     FILINFO fno;

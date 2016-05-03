@@ -27,7 +27,9 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
+#include "js/jsapi_decl.h"
 #include "drivers/serial/serial.h"
+#include "drivers/serial/js_serial.h"
 
 #define Sserial_id S("serial_id")
 

@@ -22,24 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "js/js_obj.h"
-#include "js/js_utils.h"
-#include "js/js_module.h"
-#include "js/jsapi_decl.h"
+#define FUNCTION(n, o, f, ...) \
+    extern int f(obj_t **ret, obj_t *this, int argc, obj_t *argv[]);
+#define CONSTRUCTOR(n, o, f, ...) FUNCTION(n, o, f)
+#define CATEGORY_INIT(init, uninit, ...) \
+    extern void init(void); \
+    extern void uninit(void);
 
-int do_require(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    int rc;
-    tstr_t mod_name;
-
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    mod_name = obj_get_str(argv[1]);
-    rc = module_require(ret, &mod_name);
-    tstr_free(&mod_name);
-    if (rc == -1)
-        return throw_exception(ret, &S("Exception: Module not found"));
-
-    return rc;
-}
+#include "js/_jsapi.h"

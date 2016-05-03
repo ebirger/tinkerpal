@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "util/cli.h"
+#include "apps/app.h"
 
 void echo_process_line(tstr_t *line)
 {

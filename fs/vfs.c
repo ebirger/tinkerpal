@@ -64,7 +64,7 @@ int vfs_is_root_path(tstr_t *path)
     return c == '.' || c == '/';
 }
 
-int vfs_file_read_anyfs(tstr_t *content, tstr_t *file_name)
+static int vfs_file_read_anyfs(tstr_t *content, tstr_t *file_name)
 {
     const fs_t **fs;
     foreach_fs(fs)

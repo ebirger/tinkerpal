@@ -25,6 +25,7 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_event.h"
+#include "js/jsapi_decl.h"
 #include "net/js_netif.h"
 #include "drivers/net/enc28j60.h"
 #include "boards/board.h"

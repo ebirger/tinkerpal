@@ -27,6 +27,7 @@
 #include "main/console.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
+#include "js/jsapi_decl.h"
 #include "drivers/spi/spi.h"
 #ifdef CONFIG_GPIO
 #include "drivers/gpio/gpio.h"

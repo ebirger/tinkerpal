@@ -26,6 +26,7 @@
 #include "main/console.h"
 #include "js/js_types.h"
 #include "js/js_obj.h"
+#include "js/jsapi_decl.h"
 #include "drivers/mmc/mmc.h"
 #include "boards/board.h"
 

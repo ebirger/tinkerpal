@@ -22,24 +22,42 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "js/js_obj.h"
-#include "js/js_utils.h"
-#include "js/js_module.h"
-#include "js/jsapi_decl.h"
+#ifndef FUNCTION
+#define FUNCTION(...)
+#endif
+#ifndef CONSTRUCTOR
+#define CONSTRUCTOR(...)
+#endif
+#ifndef OBJECT
+#define OBJECT(...)
+#endif
+#ifndef CONST
+#define CONST(...)
+#endif
+#ifndef CONST_INT_VAL
+#define CONST_INT_VAL(...)
+#endif
+#ifndef CLASS_PROTOTYPE
+#define CLASS_PROTOTYPE(...)
+#endif
+#ifndef PROTOTYPE
+#define PROTOTYPE(...)
+#endif
+#ifndef CATEGORY
+#define CATEGORY(...)
+#endif
+#ifndef CATEGORY_INIT
+#define CATEGORY_INIT(...)
+#endif
 
-int do_require(obj_t **ret, obj_t *this, int argc, obj_t *argv[])
-{
-    int rc;
-    tstr_t mod_name;
+#include "jsapi.h"
 
-    if (argc != 2)
-        return js_invalid_args(ret);
-
-    mod_name = obj_get_str(argv[1]);
-    rc = module_require(ret, &mod_name);
-    tstr_free(&mod_name);
-    if (rc == -1)
-        return throw_exception(ret, &S("Exception: Module not found"));
-
-    return rc;
-}
+#undef FUNCTION
+#undef OBJECT
+#undef CONSTRUCTOR
+#undef CLASS_PROTOTYPE
+#undef PROTOTYPE
+#undef CONST
+#undef CONST_INT_VAL
+#undef CATEGORY
+#undef CATEGORY_INIT

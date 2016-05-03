@@ -140,7 +140,7 @@ static void chip_init(st7735_t *screen)
     st7735_init_seq(screen);
 }
 
-void st7735_set_window(st7735_t *screen, u8 x0, u8 y0, u8 x1, u8 y1)
+static void st7735_set_window(st7735_t *screen, u8 x0, u8 y0, u8 x1, u8 y1)
 {
     DO_CMD(screen, ST7735_CASET, 0x00, x0, 0x00, x1);
     DO_CMD(screen, ST7735_RASET, 0x00, y0, 0x00, y1);

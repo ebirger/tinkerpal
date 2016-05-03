@@ -27,6 +27,7 @@
 #include "js/js_obj.h"
 #include "js/js_utils.h"
 #include "js/js_eval.h"
+#include "js/jsapi_decl.h"
 
 #define Sbound_func INTERNAL_S("bound_func")
 #define Sbound_this INTERNAL_S("bound_this")

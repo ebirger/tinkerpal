@@ -1,5 +1,5 @@
-/* BOARD_START(_desc) */
-BOARD_START("EK TM4C123GXL (Tiva C Launchpad)")
+/* BOARD_START(_desc, _chipset, _image) */
+BOARD_START("EK TM4C123GXL (Tiva C Launchpad)", tm4c123g, NA)
 
 /* DEFAULT_CONSOLE */
 DEFAULT_CONSOLE(UART_RES(UART0))

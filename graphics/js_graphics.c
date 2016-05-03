@@ -27,6 +27,7 @@
 #include "main/console.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
+#include "js/jsapi_decl.h"
 #include "graphics/graphics.h"
 #include "graphics/js_canvas.h"
 #include "graphics/js_evaluated_canvas.h"

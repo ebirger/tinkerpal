@@ -25,6 +25,7 @@
 #include "util/debug.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
+#include "js/jsapi_decl.h"
 #include <math.h>
 #include <stdlib.h> /* abs */
 

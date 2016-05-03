@@ -25,6 +25,7 @@
 #include "util/debug.h"
 #include "js/js_obj.h"
 #include "js/js_utils.h"
+#include "js/jsapi_decl.h"
 #include "fs/vfs.h"
 
 #define Sexception_path_not_found S("Exception: Path not found")
