@@ -1680,7 +1680,7 @@ static int parse_for_in(scan_t *scan, scan_t **lhs, obj_t **rh_exp)
 
 static int eval_for(obj_t **ret, scan_t *scan)
 {
-    scan_t *in_lhs, *loop, *cond, *repeated, *end;
+    scan_t *in_lhs = NULL, *loop, *cond, *repeated, *end;
     int next = 1, rc = 0;
     obj_t *rh_exp;
       
