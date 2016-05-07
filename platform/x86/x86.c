@@ -24,6 +24,7 @@
  */
 #include "platform/platform.h"
 #include "platform/x86/vga_term.h"
+#include "main/tp.h"
 
 static char *heap_end = 0;
 extern unsigned long _heap_bottom;
@@ -84,7 +85,5 @@ const platform_t platform = {
 
 void kernel_main(int argc, char *argv[])
 {
-    extern int tp_main(int argc, char *argv[]);
-
     tp_main(argc, argv);
 }

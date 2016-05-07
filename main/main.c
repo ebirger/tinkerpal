@@ -34,6 +34,7 @@
 #include "net/net.h"
 #include "usb/usbd.h"
 #include "apps/app.h"
+#include "main/tp.h"
 #include "version.h"
 
 static inline void tp_banner(void)

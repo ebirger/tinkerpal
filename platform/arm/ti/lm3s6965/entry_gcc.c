@@ -25,11 +25,10 @@
 #include "inc/hw_nvic.h"
 #include "inc/hw_types.h"
 #include "platform/arm/cortex-m.h"
+#include "main/tp.h"
 
 void reset_isr(void)
 {
-    extern int tp_main(int argc, char *argv[]);
-
     cortex_m_reset_isr();
 
     tp_main(0, (char **)0);

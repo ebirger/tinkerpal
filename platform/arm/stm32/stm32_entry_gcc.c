@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "platform/arm/cortex-m.h"
+#include "main/tp.h"
 
 void reset_isr(void)
 {
-    extern int tp_main(int argc, char *argv[]);
     extern void SystemInit(void);
 
     cortex_m_reset_isr();

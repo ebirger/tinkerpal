@@ -36,6 +36,7 @@
 #include "drivers/block/block.h"
 #include "platform/platform.h"
 #include "platform/unix/unix.h"
+#include "main/tp.h"
 
 static int pty_fd = -1;
 static int ext_tty_fd = -1;
@@ -320,7 +321,5 @@ const platform_t platform = {
 
 int main(int argc, char *argv[])
 {
-    extern int tp_main(int argc, char *argv[]);
-
     return tp_main(argc, argv);
 }

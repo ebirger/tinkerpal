@@ -31,6 +31,7 @@
 #include "platform/ticks.h"
 #include "platform/avr8/atmega328_i2c.h"
 #include "util/tp_misc.h"
+#include "main/tp.h"
 
 #define DEFAULT_BAUD 19200
 
@@ -191,7 +192,5 @@ const platform_t platform = {
 
 int main(void)
 {
-    extern int tp_main(int argc, char *argv[]);
-
     tp_main(0, 0);
 }

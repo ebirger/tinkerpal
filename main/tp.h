@@ -22,14 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "inc/hw_nvic.h"
-#include "inc/hw_types.h"
-#include "platform/arm/cortex-m.h"
-#include "main/tp.h"
+#ifndef __TP_H__
+#define __TP_H__
 
-void reset_isr(void)
-{
-    cortex_m_reset_isr();
+void tp_init(void);
+void tp_uninit(void);
 
-    tp_main(0, (char **)0);
-}
+/* tp_main calls tp_init */
+int tp_main(int argc, char *argv[]);
+
+#endif

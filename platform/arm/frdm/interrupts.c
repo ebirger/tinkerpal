@@ -25,6 +25,7 @@
 
 #include "platform/arm/cortex-m.h"
 #include "platform/arm/frdm/MKL25Z4.h"
+#include "main/tp.h"
 
 extern void cortex_m_systick_isr(void);
 extern void kl25z_uart_isr(void);

@@ -25,10 +25,10 @@
 #include "inc/hw_nvic.h"
 #include "inc/hw_types.h"
 #include "platform/arm/cortex-m.h"
+#include "main/tp.h"
 
 void main(void)
 {
-    extern int tp_main(int argc, char *argv[]);
     tp_main(0, (char **)0);
 }
 

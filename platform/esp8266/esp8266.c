@@ -25,6 +25,8 @@
 #include "platform/platform.h"
 #include "platform/ticks.h"
 #include "util/tp_misc.h"
+#include "apps/app.h"
+#include "main/tp.h"
 #include "ets_sys.h"
 #include "mem.h"
 #include "osapi.h"
@@ -173,9 +175,6 @@ static void loop(os_event_t *events)
 
 static void system_init_done(void)
 {
-    extern void app_start(int argc, char *argv[]);
-    extern void tp_init(void);
-
     tp_init();
 
     tp_out("SDK Version: %s\n", system_get_sdk_version());

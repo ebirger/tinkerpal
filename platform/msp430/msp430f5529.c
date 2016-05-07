@@ -28,6 +28,7 @@
 #include "platform/msp430/msp430f5529_gpio.h"
 #include "platform/msp430/msp430f5529_usci.h"
 #include "drivers/gpio/gpio_platform.h"
+#include "main/tp.h"
 
 #define SYSCLK 12000000
 
@@ -42,8 +43,6 @@ int _system_pre_init(void)
 
 int main(void)
 {
-    extern int tp_main(int argc, char *argv[]);
-
     tp_main(0, 0);
     return 0;
 }
