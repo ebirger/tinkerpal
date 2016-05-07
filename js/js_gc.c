@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "js/js_obj.h"
+#include "js/js_gc.h"
 
 extern void _obj_put_gc(obj_t *o);
 extern void obj_free(obj_t *o);
