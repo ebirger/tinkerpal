@@ -224,6 +224,8 @@ static inline obj_t *obj_get(obj_t *o)
 }
 
 void _obj_put(obj_t *o);
+void _obj_put_gc(obj_t *o);
+void obj_free(obj_t *o);
 
 static inline void obj_put(obj_t *o)
 {
