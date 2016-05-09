@@ -1923,7 +1923,7 @@ void js_eval_noret(tstr_t *code)
     js_gc_run();
 }
 
-static inline char open_char_recip(char c)
+static inline char get_close_char(char c)
 {
     switch (c)
     {
@@ -1936,7 +1936,7 @@ static inline char open_char_recip(char c)
 
 static inline int is_open_char(char c)
 {
-    return open_char_recip(c) != '\0';
+    return get_close_char(c) != '\0';
 }
 
 static inline int is_close_char(char c)
@@ -1964,7 +1964,7 @@ int js_eval_rank(tstr_t code)
     {
         char c = tstr_peek(&code, idx++);
         if (is_open_char(c))
-            PUSH(open_char_recip(c));
+            PUSH(get_close_char(c));
 	else if (is_close_char(c))
         {
             POP();
