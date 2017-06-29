@@ -821,6 +821,8 @@ static obj_t *bool_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 
     switch (op)
     {
+    case TOK_PLUS:
+        return num_new_int(bool_is_true(oa) + bool_is_true(ob));
     case TOK_NOT_EQ:
         /* assuming there are not bool_t instances other than TRUE/FALSE */
         return oa != ob ? TRUE : FALSE;
