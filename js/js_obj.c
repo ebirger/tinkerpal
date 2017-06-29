@@ -382,6 +382,11 @@ static inline void obj_to_num(obj_t **o)
     obj_put(tmp);
 }
 
+static void no_such_op(token_type_t op, obj_t *oa, obj_t *ob)
+{
+    tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+}
+
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
     obj_t *ret;
@@ -618,7 +623,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         case TOK_NOT_EQ: ret = nan || !fp_is_eq(va, vb) ? TRUE : FALSE; break;
         default:
             ret = UNDEF;
-            tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+            no_such_op(op, oa, ob);
         }
     }
     else
@@ -650,7 +655,7 @@ static obj_t *num_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         case TOK_SHL: ret = nan ? NAN_OBJ : num_new_int(va << vb); break;
         default:
             ret = UNDEF;
-            tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+            no_such_op(op, oa, ob);
         }
     }
     obj_put(ob);
@@ -817,7 +822,7 @@ static obj_t *bool_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         /* assuming there are not bool_t instances other than TRUE/FALSE */
         return oa == ob ? TRUE : FALSE;
     default:
-        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+        no_such_op(op, oa, ob);
     }
     return UNDEF;
 }
@@ -901,7 +906,7 @@ static obj_t *function_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         ret = oa == ob ? TRUE : FALSE;
         break;
     default:
-        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+        no_such_op(op, oa, ob);
     }
     return ret;
 }
@@ -1009,7 +1014,7 @@ static obj_t *object_do_op(token_type_t op, obj_t *oa, obj_t *ob)
     case TOK_IS_EQ:
         return oa == ob ? TRUE : FALSE;
     default:
-        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+        no_such_op(op, oa, ob);
     }
     return UNDEF;
 }
@@ -1407,7 +1412,7 @@ static obj_t *string_do_op(token_type_t op, obj_t *oa, obj_t *ob)
         }
         break;
     default:
-        tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+        no_such_op(op, oa, ob);
     }
     obj_put(ob);
     return ret;
