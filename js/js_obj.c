@@ -384,7 +384,8 @@ static inline void obj_to_num(obj_t **o)
 
 static void no_such_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
-    tp_crit("OP %x:%c not defined for objs %p:%p\n", op, op, oa, ob);
+    tp_crit("OP %x:%c not defined for objs %p[%s]:%p[%s]\n", op, op, oa,
+        CLASS(oa)->name, ob, CLASS(ob)->name);
 }
 
 obj_t *obj_do_op(token_type_t op, obj_t *oa, obj_t *ob)
