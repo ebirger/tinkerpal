@@ -813,6 +813,11 @@ static obj_t *bool_do_op(token_type_t op, obj_t *oa, obj_t *ob)
 {
     if (is_num(ob) || is_string(ob))
         return obj_do_op(op, bool_cast(oa, OBJ_CLASS(ob)), obj_get(ob));
+    if (is_array(ob))
+    {
+        return obj_do_op(op, bool_cast(oa, STRING_CLASS),
+            obj_cast(ob, STRING_CLASS));
+    }
 
     switch (op)
     {
